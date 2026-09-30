@@ -56,6 +56,7 @@ header{padding:16px 0}
 .btn.black{background:var(--ink);color:#fff}
 
 /* ============ HERO ============ */
+.hero>div{min-width:0}
 .hero{padding:44px 0 30px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
 .pill{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;background:var(--lime);border:var(--bd);border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--sh-s)}
 .pill i{width:8px;height:8px;border-radius:50%;background:var(--ink);animation:blink 1.2s infinite}
@@ -273,6 +274,7 @@ footer{margin-top:40px;border-top:var(--bd);background:var(--blue);color:#fff;ov
           <button class="btn blue" type="submit">Clip it →</button>
         </form>
         <p class="hint">no link handy? <button type="button" id="tryEx">try an example</button></p>
+        <button class="copyCa" style="margin-top:14px;display:inline-flex;align-items:center;gap:10px;max-width:100%;height:40px;padding:0 6px 0 12px;border:var(--bd);border-radius:12px;background:#fff;box-shadow:var(--sh-s);font-size:13px"><b>$CLIP</b><span class="mono" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump</span><span style="flex:none;background:var(--lime);border:2px solid var(--ink);border-radius:8px;padding:2px 8px;font-weight:700">Copy CA</span></button>
       </div>
       <div class="float" aria-hidden="true">
         <div class="fcard"><div class="post-h"><span class="pfp" style="background:#ffe14d"></span><div><b>marcus</b><small>@marcus_cooks · X</small></div></div><p class="post-t">my grandma's secret is just more butter</p><div class="arrow">→ <span class="coinchip"><i></i>$BUTTER</span></div></div>
@@ -351,7 +353,10 @@ footer{margin-top:40px;border-top:var(--bd);background:var(--blue);color:#fff;ov
   <section style="padding-top:10px"><div class="wrap">
     <div class="cbox reveal" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--yellow)">
       <div><p class="mono" style="font-size:13px;font-weight:700">$CLIP</p><h3 style="font-size:30px;letter-spacing:-.04em">The coin behind the launchpad</h3></div>
-      <div class="hin" style="background:#fff;padding:0 6px 0 14px;min-width:min(100%,420px)"><span class="mono" id="caText" style="flex:1;color:var(--ink);font-weight:400;height:48px;display:flex;align-items:center">CA dropping soon</span></div>
+      <div style="min-width:0;flex:1 1 420px;max-width:560px">
+        <div class="hin" style="background:#fff;padding:0 6px 0 14px;gap:8px"><span class="mono" id="caText" style="flex:1;min-width:0;color:var(--ink);font-weight:400;height:52px;display:flex;align-items:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px">7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump</span><button class="btn black copyCa" style="height:40px;padding:0 14px">Copy</button></div>
+        <div style="display:flex;gap:16px;margin-top:10px;font-weight:700;font-size:14px"><a href="https://pump.fun/coin/7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump" target="_blank" rel="noopener">DexScreener ↗</a></div>
+      </div>
     </div>
   </div></section>
 </main>
@@ -546,6 +551,8 @@ $("#walletBtn").onclick=async()=>{const p=window.phantom?.solana||window.solana;
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
 $$(".reveal").forEach((el,i)=>{el.style.transitionDelay=(i%3)*90+"ms";io.observe(el)});
 
+function copyText(t){const fb=()=>{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch{}a.remove()};try{navigator.clipboard?navigator.clipboard.writeText(t).catch(fb):fb()}catch{fb()}}
+$$(".copyCa").forEach(b=>b.onclick=()=>{copyText("7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump");toast("Contract address copied")});
 renderStream();renderFeed();
 </script>
 </body>

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Float</title>
+<meta name="description" content="$FLOAT — every hour, every holder rolls a float. Lowest float wins a real CS2 skin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://community.akamai.steamstatic.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Float — dark steel, one bright green for "Factory New". The wear bar (green → red) is the visual thread through the whole page. */
+:root {
+  --bg: #0A0E13;
+  --panel: #111821;
+  --panel-2: #16202B;
+  --line: #1F2A36;
+  --text: #EAF0F6;
+  --dim: #8E9BAC;
+  --fn: #4ADE80;
+  --mw: #A3E635;
+  --ft: #FACC15;
+  --ww: #FB923C;
+  --bs: #F43F5E;
+  --covert: #EB4B4B;
+  --classified: #D32CE6;
+  --restricted: #8847FF;
+  --milspec: #4B69FF;
+  --gold: #E4AE39;
+  --display: "Sora", "Arial Black", system-ui, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --wear: linear-gradient(90deg, var(--fn) 0 7%, var(--mw) 7% 15%, var(--ft) 15% 38%, var(--ww) 38% 45%, var(--bs) 45% 100%);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body { font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--fn); outline-offset: 3px; border-radius: 6px; }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 20px; }
+
+/* Nav */
+nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
+.brand .dot { width: 34px; height: 34px; border-radius: 10px; background: var(--panel-2); display: grid; place-items: center; box-shadow: inset 0 0 0 1px var(--line); }
+.brand .dot i { display: block; width: 18px; height: 6px; border-radius: 3px; background: var(--wear); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 12px; font-family: var(--body); font-weight: 700; font-size: 16px; text-decoration: none; border: 0; cursor: pointer; transition: transform .15s ease, background .15s ease, box-shadow .15s ease; }
+.btn-go { background: var(--fn); color: #06210F; }
+.btn-go:hover { background: #6BEA97; transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1.5px var(--line); }
+.btn-ghost:hover { box-shadow: inset 0 0 0 1.5px var(--dim); }
+.btn-sm { min-height: 44px; padding: 0 18px; font-size: 15px; }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); align-items: center; gap: 48px; padding-block: 40px 80px; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fn); }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(50px, 8.6vw, 100px); line-height: 0.95; letter-spacing: -0.045em; margin: 14px 0 22px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--fn); }
+.lede { font-size: 20px; color: var(--dim); max-width: 32ch; margin: 0 0 30px; }
+.lede strong { color: var(--text); font-weight: 500; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.roll-card { background: var(--panel); border-radius: 24px; padding: 24px; box-shadow: inset 0 0 0 1px var(--line); min-width: 0; }
+.roll-card .skin { aspect-ratio: 4 / 3; display: grid; place-items: center; background: radial-gradient(60% 60% at 50% 55%, rgba(235,75,75,0.22), transparent 70%); border-radius: 16px; }
+.roll-card .skin img { width: 88%; animation: hover 5s ease-in-out infinite; filter: drop-shadow(0 18px 24px rgba(0,0,0,0.5)); }
+@keyframes hover { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
+.roll-card .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.roll-card .name { font-weight: 700; font-size: 18px; }
+.roll-card .name small { display: block; color: var(--covert); font-size: 13px; font-weight: 500; font-family: var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
+.roll-card .val { font-family: var(--mono); font-weight: 700; font-size: 22px; color: var(--fn); }
+.bar { position: relative; height: 10px; border-radius: 5px; background: var(--wear); margin-top: 14px; }
+.bar .pin { position: absolute; top: -6px; width: 4px; height: 22px; border-radius: 2px; background: var(--text); box-shadow: 0 0 0 3px var(--bg); transform: translateX(-50%); }
+.bar-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--dim); margin-top: 8px; }
+
+/* Sections */
+section { padding-block: 72px; border-top: 1px solid var(--line); }
+h2 { font-family: var(--display); font-weight: 800; font-size: clamp(32px, 5vw, 50px); line-height: 1.02; letter-spacing: -0.035em; margin: 0 0 12px; text-wrap: balance; }
+.sub { color: var(--dim); font-size: 19px; max-width: 50ch; margin: 0 0 40px; }
+
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0; }
+.steps li { background: var(--panel); border-radius: 20px; padding: 26px 24px 28px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.steps .n { font-family: var(--mono); font-size: 13px; color: var(--fn); letter-spacing: 0.06em; }
+.steps h3 { font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; margin: 0; }
+.steps p { margin: 0; color: var(--dim); }
+
+/* Wear → prize */
+.tiers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.tier { background: var(--panel); border-radius: 20px; padding: 18px 18px 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; border-top: 4px solid var(--c); }
+.tier .wear { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.tier .wear i { width: 12px; height: 12px; border-radius: 50%; background: var(--w); flex: none; }
+.tier .range { font-family: var(--mono); font-size: 14px; color: var(--dim); }
+.tier .pic { aspect-ratio: 4 / 3; display: grid; place-items: center; background: var(--panel-2); border-radius: 14px; }
+.tier .pic img { width: 86%; }
+.tier .prize { font-size: 15px; color: var(--dim); }
+.tier .prize b { display: block; color: var(--c); font-family: var(--mono); font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; }
+.tier .prize span { color: var(--text); font-weight: 500; }
+
+/* Jackpot */
+.jackpot { background: linear-gradient(135deg, #1B1606, #0F0C04 60%); border-radius: 28px; padding: clamp(24px, 4vw, 44px); box-shadow: inset 0 0 0 1px #3A2F0E; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 32px; align-items: center; }
+.jackpot .eyebrow { color: var(--gold); }
+.jackpot h2 { margin-top: 12px; }
+.jackpot h2 em { font-style: normal; color: var(--gold); font-family: var(--mono); }
+.jackpot .sub { margin-bottom: 0; }
+.jp-items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.jp-items figure { margin: 0; background: rgba(228,174,57,0.07); border-radius: 16px; padding: 12px 10px 14px; text-align: center; min-width: 0; }
+.jp-items img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; }
+.jp-items figcaption { font-size: 14px; font-weight: 500; margin-top: 6px; }
+
+/* Pool */
+.pool { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; list-style: none; padding: 0; margin: 0; }
+.pool li { background: var(--panel); border-radius: 16px; padding: 12px 12px 14px; min-width: 0; border-bottom: 3px solid var(--c); }
+.pool img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; }
+.pool .nm { font-size: 15px; font-weight: 500; margin-top: 6px; line-height: 1.3; }
+.pool .rt { font-family: var(--mono); font-size: 12px; color: var(--c); letter-spacing: 0.04em; text-transform: uppercase; }
+.note { color: var(--dim); font-size: 15px; margin-top: 18px; }
+
+/* FAQ */
+.faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.faq div { background: var(--panel); border-radius: 20px; padding: 22px 24px; min-width: 0; }
+.faq h3 { font-family: var(--display); font-size: 20px; letter-spacing: -0.02em; margin: 0 0 6px; }
+.faq p { margin: 0; color: var(--dim); }
+
+/* Contract strip */
+.ca { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; background: var(--fn); color: #06210F; border-radius: 24px; padding: 24px 28px; margin-block: 8px 64px; }
+.ca .label { font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; }
+.ca .addr { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.ca code { font-family: var(--mono); font-size: 14px; background: rgba(6,33,15,0.12); padding: 10px 14px; border-radius: 12px; overflow-wrap: anywhere; min-width: 0; }
+.ca .btn { background: #06210F; color: var(--fn); }
+.ca .btn:hover { background: #000; }
+
+footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--dim); font-size: 14px; }
+
+/* Opening animation: the pin slides down the wear bar to a Factory New roll */
+#intro { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: grid; place-items: center; cursor: pointer; animation: introOut .45s ease 2.6s forwards; }
+#intro .box { width: min(84vw, 460px); }
+#intro .num { font-family: var(--mono); font-weight: 700; font-size: clamp(48px, 13vw, 76px); letter-spacing: -0.03em; text-align: center; font-variant-numeric: tabular-nums; }
+#intro .bar { height: 12px; margin-top: 18px; }
+#intro .bar .pin { left: 92%; animation: slide 1.5s cubic-bezier(.2,.75,.15,1) .3s forwards; }
+#intro .word { text-align: center; margin-top: 30px; opacity: 0; animation: rise .5s ease-out 1.9s forwards; }
+#intro .word strong { display: block; font-family: var(--display); font-weight: 800; font-size: 44px; letter-spacing: -0.04em; line-height: 1; }
+#intro .word span { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--fn); }
+#intro .skip { position: absolute; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); background: none; border: 0; cursor: pointer; min-height: 44px; padding: 0 16px; }
+@keyframes slide { to { left: 1.5%; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes introOut { to { opacity: 0; visibility: hidden; } }
+
+@media (max-width: 860px) {
+  .tiers, .pool { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .jackpot { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 20px 56px; gap: 28px; }
+  .steps, .faq { grid-template-columns: minmax(0, 1fr); }
+  section { padding-block: 56px; }
+  .ca { padding: 22px; }
+  .nav-buy span { display: none; }
+}
+@media (max-width: 420px) {
+  .jp-items { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .jp-items figcaption { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #intro { display: none; }
+  .roll-card .skin img { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="intro" role="button" tabindex="0" aria-label="Skip intro">
+  <div class="box" aria-hidden="true">
+    <div class="num" id="introNum">0.9214</div>
+    <div class="bar"><span class="pin"></span></div>
+    <div class="word"><strong>Float</strong><span>Factory New · you win</span></div>
+  </div>
+  <button class="skip" type="button">Tap to skip</button>
+</div>
+
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#top" aria-label="Float home"><span class="dot"><i></i></span>Float</a>
+    <a class="btn btn-go btn-sm nav-buy" href="#ca">Buy<span>&nbsp;$FLOAT</span></a>
+  </nav>
+
+  <header class="hero" id="top">
+    <div>
+      <div class="eyebrow">$FLOAT · Solana · pump.fun</div>
+      <h1>Lowest float <em>wins.</em></h1>
+      <p class="lede">Every hour, every holder rolls a float. <strong>The lowest roll gets a real CS2 skin</strong>, sent straight to their Steam.</p>
+      <div class="ctas">
+        <a class="btn btn-go" href="#ca">Buy $FLOAT</a>
+        <a class="btn btn-ghost" href="#how">How it works</a>
+      </div>
+    </div>
+
+    <div class="roll-card" aria-label="Example winning roll">
+      <div class="skin">
+        <img src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwiYbf_jdk7uW-V6V-Kf2cGFidxOp_pewnF3nhxEt0sGnSzN76dH3GOg9xC8FyEORftRe-x9PuYurq71bW3d8UnjK-0H0YSTpMGQ/512fx384f" alt="AWP | Asiimov" referrerpolicy="no-referrer">
+      </div>
+      <div class="meta">
+        <div class="name"><small>Covert · Factory New</small>AWP | Asiimov</div>
+        <div class="val">0.0412</div>
+      </div>
+      <div class="bar"><span class="pin" style="left:4.1%"></span></div>
+      <div class="bar-labels"><span>0.00</span><span>Winning roll</span><span>1.00</span></div>
+    </div>
+  </header>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">Creator fees from $FLOAT buy real CS2 skins. Every hour, one holder gets one.</p>
+    <ol class="steps">
+      <li><span class="n">STEP 1</span><h3>Hold $FLOAT</h3><p>Buy on pump.fun. A bigger bag means more rolls each hour.</p></li>
+      <li><span class="n">STEP 2</span><h3>Link your Steam</h3><p>Add your Steam trade URL once, so a win can be sent to you.</p></li>
+      <li><span class="n">STEP 3</span><h3>Roll every hour</h3><p>Everyone gets a float from 0 to 1. Lowest float takes the skin.</p></li>
+    </ol>
+  </section>
+
+  <section id="tiers">
+    <h2>Your float picks the prize</h2>
+    <p class="sub">The winning roll's wear decides what tier of skin gets sent. Lower float, better skin.</p>
+    <div class="tiers">
+      <div class="tier" style="--c:var(--covert);--w:var(--fn)">
+        <div class="wear"><i></i>Factory New</div>
+        <div class="range">0.00 – 0.07</div>
+        <div class="pic"><img loading="lazy" referrerpolicy="no-referrer" alt="AK-47 | Asiimov" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwlcK3wiFO0POlPPNSIeOaB2qf19F6ueZhW2e2wEt-t2jcytf6dymSO1JxA5oiRecLsRa5kIfkYr-241aLgotHz3-rkGoXuUp8oX57/360fx270f"></div>
+        <div class="prize"><b>Covert</b><span>Top-tier skin</span></div>
+      </div>
+      <div class="tier" style="--c:var(--classified);--w:var(--mw)">
+        <div class="wear"><i></i>Minimal Wear</div>
+        <div class="range">0.07 – 0.15</div>
+        <div class="pic"><img loading="lazy" referrerpolicy="no-referrer" alt="M4A1-S | Decimator" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL8ypexwjFS4_ega6F_H_eAMWrEwL9JtORqRiSygRI1jDGMnYftb3iUb1dxW5ImFLNftxCxktflZLm2tgaP2otGyn_-hytOvy9q5elQV_A7uvqA6CRSoZY/360fx270f"></div>
+        <div class="prize"><b>Classified</b><span>High-tier skin</span></div>
+      </div>
+      <div class="tier" style="--c:var(--restricted);--w:var(--ft)">
+        <div class="wear"><i></i>Field-Tested</div>
+        <div class="range">0.15 – 0.38</div>
+        <div class="pic"><img loading="lazy" referrerpolicy="no-referrer" alt="AK-47 | Slate" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwlcK3wiVI0POlPPNSMOKcCGKD0ud5vuBlcCW6khUz_W3Sytb4cCqTOFUpWJtzTOUD5hPsw9a0Yrnrs1SK3ooXzy6shilM5311o7FVYrIufmI/360fx270f"></div>
+        <div class="prize"><b>Restricted</b><span>Mid-tier skin</span></div>
+      </div>
+      <div class="tier" style="--c:var(--milspec);--w:linear-gradient(90deg,var(--ww) 50%,var(--bs) 50%)">
+        <div class="wear"><i></i>Well-Worn / Battle-Scarred</div>
+        <div class="range">0.38 – 1.00</div>
+        <div class="pic"><img loading="lazy" referrerpolicy="no-referrer" alt="Glock-18 | Candy Apple" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL2kpnj9h1I4M28baBSLPmUBnPelb93teA-FivjzB5wsjzTyI2pIn_CPAMoW8N3ROJZshm5w9zgNbnk5xue1dyMA9ZU_Q/360fx270f"></div>
+        <div class="prize"><b>Mil-Spec</b><span>Still a real skin</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="jackpot">
+    <div class="jackpot">
+      <div>
+        <div class="eyebrow">The 0.00 jackpot</div>
+        <h2>Roll under <em>0.001</em>, win a knife or gloves.</h2>
+        <p class="sub">Part of every fee goes into the jackpot fund. It sits there until someone rolls a near-perfect float.</p>
+      </div>
+      <div class="jp-items">
+        <figure><img loading="lazy" referrerpolicy="no-referrer" alt="Karambit | Fade" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL6kJ_m-B1Q7uCvZaZkNM-SD1iWwOpzj-1gSCGn20tztm_UyIn_JHKUbgYlWMcmQ-ZcskSwldS0MOnntAfd3YlMzH35jntXrnE8SOGRGG8/360fx270f"><figcaption>Karambit | Fade</figcaption></figure>
+        <figure><img loading="lazy" referrerpolicy="no-referrer" alt="Butterfly Knife | Doppler" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL6kJ_m-B1Z-ua6bbZrLOmsD2qv0u9moOlgXSyMmBw1sTGAk5X8JRTFAVp5Xco0W-ENtRXswYC1Mu_ks1fdjN9EyiqthiMbvHtv5btQBPck-KbT2gnHM-Ajoc5Ufn65u8U/360fx270f"><figcaption>Butterfly | Doppler</figcaption></figure>
+        <figure><img loading="lazy" referrerpolicy="no-referrer" alt="Sport Gloves | Pandora's Box" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H-CGHHecxNF6ueZhW2exk01w4j7cmYn4eHPCbAMhApdwTOIN5BPsx9yyYu605FTeid0Uy3j3kGoXueKyz5wo/360fx270f"><figcaption>Sport Gloves | Pandora's Box</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="pool">
+    <h2>What's in the pool</h2>
+    <p class="sub">A look at the kind of skins fees go toward. Every one is a real, tradeable CS2 item.</p>
+    <ul class="pool">
+      <li style="--c:var(--covert)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL1m5fn8Sdk7OeRbKFsJ8-DHG6e1f1iouRoQha_nBovp3OGmdeqInyVP1V0XsYlRbEI50a5wNyzZr605AyI3t5MmCSohylAuC89_a9cBoMY9UkV/360fx270f"><div class="rt">Covert</div><div class="nm">Desert Eagle | Printstream</div></li>
+      <li style="--c:var(--covert)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL8ypexwjFS4_ega6F_H_OGMWrEwL9JuPh5SjuMlxgmoCm6lob-KT-JbwF1WZEjR-YJskK9k9XiYePltAeNjYlAxSn5j34dvCZstb4LB6Ut-7qX0V8Xkv5_2A/360fx270f"><div class="rt">Covert</div><div class="nm">M4A1-S | Hyper Beast</div></li>
+      <li style="--c:var(--covert)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLhx8bf_jdk_6v-JaV-KfmeAXGvzedxuPUnTSjikRgksjuBzoz4dXLFb1QoC8QlTLQD4EPqk4LvN-Pns1aMioNBzTK-0H3gQVv65g/360fx270f"><div class="rt">Covert</div><div class="nm">P90 | Asiimov</div></li>
+      <li style="--c:var(--covert)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLkjYbf7itX6vytbbZSI-WsG3SA_uV_vO1WTCa9kxQ1vjiBpYPwJiPTcFB2Xpp5TO5cskG9lYCxZu_jsVCL3o4Xnij23ClO5ik9tegFA_It8qHJz1aWe-uc160/360fx270f"><div class="rt">Covert</div><div class="nm">USP-S | Kill Confirmed</div></li>
+      <li style="--c:var(--classified)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwlcK3wiFO0POlPPNSI_-RHGavzedxuPUnFniykEtzsWWBzoyuIiifaAchDZUjTOZe4RC_w4buM-6z7wzbgokUyzK-0H08hRGDMA/360fx270f"><div class="rt">Classified</div><div class="nm">AK-47 | Redline</div></li>
+      <li style="--c:var(--classified)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL8js_f_jdk4uL3V6x0JOKSMWuZxuZi_rQ9H363xU5_4GrWnIr8IHqfbwBxA5R2QuZZshm6kdO2Mum35Q3ajoJbjXKp1xQlWoY/360fx270f"><div class="rt">Classified</div><div class="nm">MP9 | Hydra</div></li>
+      <li style="--c:var(--restricted)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL1m5fn8Sdk7vORbqhsLfWAMWuZxuZi_uI_TX6wxxkjsGXXnImsJ37COlUoWcByEOMOtxa5kdXmNu3htVPZjN1bjXKpkHLRfQU/360fx270f"><div class="rt">Restricted</div><div class="nm">Desert Eagle | Blaze</div></li>
+      <li style="--c:var(--restricted)"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL2kpnj9h1a7s2oaaBoH_yaCW-Ej-8u5bZvHnq1w0Vz62TUzNj4eCiVblMmXMAkROJeskLpkdXjMrzksVTAy9US8PY25So/360fx270f"><div class="rt">Restricted</div><div class="nm">Glock-18 | Fade</div></li>
+    </ul>
+    <p class="note">The pool grows as fees come in. Every buy and every winner gets posted with the transaction and the Steam trade.</p>
+  </section>
+
+  <section id="faq">
+    <h2>Quick answers</h2>
+    <div class="faq">
+      <div><h3>Do I have to do anything each hour?</h3><p>No. If you're holding $FLOAT and your Steam is linked, you're in every roll automatically.</p></div>
+      <div><h3>How do I get my skin?</h3><p>It's sent as a Steam trade offer to the trade URL you linked. Keep Steam Guard on so you can accept it.</p></div>
+      <div><h3>Do more tokens help?</h3><p>Yes. A bigger bag gets more rolls each hour, so more chances at a low float.</p></div>
+      <div><h3>Can I check the winners?</h3><p>Yes. Every winning roll is posted with its transaction and trade, so anyone can check it.</p></div>
+    </div>
+  </section>
+
+  <div class="ca" id="ca">
+    <span class="label">$FLOAT</span>
+    <div class="addr">
+      <code id="caText">[CONTRACT ADDRESS]</code>
+      <button class="btn btn-sm" type="button" id="copyBtn">Copy</button>
+    </div>
+  </div>
+
+  <footer>
+    <span>Float · Not affiliated with Valve or Steam.</span>
+    <span>Memecoins are risky. Only spend what you can afford to lose.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var intro = document.getElementById('intro');
+  var num = document.getElementById('introNum');
+  function done() { if (intro) intro.hidden = true; }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) done();
+  intro.addEventListener('animationend', function (e) { if (e.target === intro) done(); });
+  intro.addEventListener('click', done);
+  intro.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') done(); });
+  setTimeout(done, 3400);
+
+  // Count the float down in step with the pin sliding along the bar
+  var start = null, from = 0.9214, to = 0.0031, delay = 300, dur = 1500;
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+  function tick(ts) {
+    if (start === null) start = ts;
+    var t = Math.min(1, Math.max(0, (ts - start - delay) / dur));
+    num.textContent = (from + (to - from) * ease(t)).toFixed(4);
+    num.style.color = t >= 1 ? 'var(--fn)' : '';
+    if (t < 1 && !intro.hidden) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  var copyBtn = document.getElementById('copyBtn');
+  var caText = document.getElementById('caText');
+  copyBtn.addEventListener('click', function () {
+    var text = caText.textContent;
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(caText);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      copyBtn.textContent = 'Selected';
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        copyBtn.textContent = 'Copied';
+        setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1600);
+      }, selectIt);
+    } catch (e) { selectIt(); }
+  });
+})();
+</script>
+</body>
+</html>

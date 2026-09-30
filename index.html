@@ -188,6 +188,20 @@ input[type=range]{width:100%;accent-color:#fff;height:auto;padding:0;border:0;ba
 .ca span.cp{flex:none;height:32px;padding:0 12px;border-radius:8px;background:#fff;color:#000;font-weight:700;font-size:12px;display:grid;place-items:center}
 .ca-links{display:flex;gap:14px;margin-top:10px;font-size:13px;color:var(--muted)}
 .ca-links a:hover{color:var(--text)}
+.soon{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:24px 26px;margin-bottom:22px;border:1px solid var(--line-2);border-radius:20px;background:linear-gradient(120deg,#0f1a13 0%,#0e0e0e 55%)}
+.soon:after{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(60,226,122,.18),transparent 70%);pointer-events:none}
+.soon .badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:var(--paid-dim);color:var(--paid);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.soon h3{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:10px 0 4px}
+.soon p{color:var(--muted);font-size:14px;max-width:520px}
+.pairs{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;max-width:360px;position:relative;z-index:1}
+.pair{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line-2);font-weight:600;font-size:13px}
+.pair i{font-style:normal;color:var(--dim);font-weight:500}
+.pair-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair-pick button{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-weight:700;color:var(--muted)}
+.pair-pick button.on{border-color:#fff;color:var(--text);background:var(--panel-2)}
+.pair-pick button:disabled{cursor:not-allowed;opacity:.6}
+.pair-pick small{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;background:var(--paid-dim);color:var(--paid);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+@media (max-width:760px){.soon{grid-template-columns:1fr}.pairs{justify-content:flex-start}}
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#fff;color:#000;font-weight:600;padding:12px 18px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 
@@ -273,6 +287,18 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       </div>
     </div>
 
+    <div class="soon">
+      <div>
+        <span class="badge"><span class="dot"></span>Coming soon</span>
+        <h3>Stock pairs</h3>
+        <p>Launch coins paired against tokenized stocks instead of SOL. Same deal: every trade still pays the handle you pick.</p>
+      </div>
+      <div class="pairs">
+        <span class="pair">TSLA<i>/ coin</i></span><span class="pair">NVDA<i>/ coin</i></span><span class="pair">AAPL<i>/ coin</i></span>
+        <span class="pair">SPY<i>/ coin</i></span><span class="pair">COIN<i>/ coin</i></span><span class="pair">+ more</span>
+      </div>
+    </div>
+
     <div class="stats">
       <div class="stat"><small>Paid out to handles</small><div class="mono" id="sPaid">$0</div></div>
       <div class="stat"><small>Coins launched</small><div class="mono" id="sCoins">0</div></div>
@@ -323,6 +349,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <div class="handle-in"><span>@</span><input id="fHandle" placeholder="username" maxlength="30" autocomplete="off"></div>
         </div>
 
+        <div class="field">
+          <label>Trading pair</label>
+          <div class="pair-pick"><button class="on" type="button">SOL</button><button type="button" disabled title="Coming soon">Stocks<small>Soon</small></button></div>
+        </div>
         <div class="field">
           <label>Fee split</label>
           <input type="range" id="fSplit" min="50" max="100" step="5" value="80">

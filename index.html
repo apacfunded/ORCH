@@ -263,8 +263,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <button class="btn w" data-go="launch">Launch a coin</button>
           <button class="btn g" data-go="claim">Claim your fees</button>
         </div>
-        <button class="ca" id="caBox" title="Copy contract address"><small>CA</small><code class="mono">22PdZGTDFWZD7gErHdm3EYdKa8Px6L4tYDCxaHP6pump</code><span class="cp">Copy</span></button>
-        <div class="ca-links"><a href="https://pump.fun/coin/22PdZGTDFWZD7gErHdm3EYdKa8Px6L4tYDCxaHP6pump" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/22PdZGTDFWZD7gErHdm3EYdKa8Px6L4tYDCxaHP6pump" target="_blank" rel="noopener">DexScreener ↗</a></div>
+        <button class="ca" id="caBox" title="Copy contract address"><small>CA</small><code class="mono">5g8ge2n6CzgcabN2erL2ncovg2CdxMkLz5sDDAh4pump</code><span class="cp">Copy</span></button>
+        <div class="ca-links"><a href="https://pump.fun/coin/5g8ge2n6CzgcabN2erL2ncovg2CdxMkLz5sDDAh4pump" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/5g8ge2n6CzgcabN2erL2ncovg2CdxMkLz5sDDAh4pump" target="_blank" rel="noopener">DexScreener ↗</a></div>
       </div>
       <div class="flow">
         <div class="flow-row"><div class="flow-n">1</div><div><b>Name a handle</b><span>Anyone with a public account</span><div class="plats"><span class="plat">X</span><span class="plat">Instagram</span><span class="plat">TikTok</span></div></div></div>
@@ -666,7 +666,7 @@ $("#walletBtn").onclick=async()=>{
   try{const r=await p.connect();const k=r.publicKey.toString();$("#walletBtn").textContent=k.slice(0,4)+"…"+k.slice(-4)}catch{toast("Wallet connection cancelled")}
 };
 
-$("#caBox").onclick=()=>{copyText("22PdZGTDFWZD7gErHdm3EYdKa8Px6L4tYDCxaHP6pump");toast("Contract address copied")};
+$("#caBox").onclick=()=>{copyText("5g8ge2n6CzgcabN2erL2ncovg2CdxMkLz5sDDAh4pump");toast("Contract address copied")};
 /* init */
 document.title=CONFIG.name+" · Launchpad";
 ["#brandName","#mW",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));

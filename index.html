@@ -291,7 +291,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <button class="btn w" data-go="launch">Launch a coin</button>
           <button class="btn g" data-go="claim">Claim your fees</button>
         </div>
-        <div class="ca" id="caBox" style="cursor:default"><small>$WAVE</small><code class="mono" style="color:var(--muted)">CA dropping soon</code><span class="cp">Soon</span></div>
+        <button class="ca" id="caBox" title="Copy contract address"><small>$WAVE</small><code class="mono">4bM9QcFUE2vDrsmkW642HcaR19RgJ18ANCphcD6Epump</code><span class="cp" style="background:var(--paid);color:#04140c">Copy</span></button>
+        <div class="ca-links"><a href="https://pump.fun/coin/4bM9QcFUE2vDrsmkW642HcaR19RgJ18ANCphcD6Epump" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/4bM9QcFUE2vDrsmkW642HcaR19RgJ18ANCphcD6Epump" target="_blank" rel="noopener">DexScreener ↗</a></div>
       </div>
       <div class="flow">
         <div class="flow-row"><div class="flow-n">1</div><div><b>Name a handle</b><span>Anyone with a public account</span><div class="plats"><span class="plat">X</span><span class="plat">Instagram</span><span class="plat">TikTok</span></div></div></div>
@@ -705,6 +706,7 @@ $("#walletBtn").onclick=async()=>{
   try{const r=await p.connect();const k=r.publicKey.toString();$("#walletBtn").textContent=k.slice(0,4)+"…"+k.slice(-4)}catch{toast("Wallet connection cancelled")}
 };
 
+$("#caBox").onclick=()=>{copyText("4bM9QcFUE2vDrsmkW642HcaR19RgJ18ANCphcD6Epump");toast("Contract address copied")};
 /* init */
 document.title=CONFIG.name+" · Launchpad";
 ["#brandName",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));

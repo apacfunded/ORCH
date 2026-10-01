@@ -34,21 +34,21 @@ a{color:inherit;text-decoration:none}
 
 /* ============ INTRO ============ */
 #intro{position:fixed;inset:0;z-index:100;background:#05050f;display:grid;place-items:center;overflow:hidden;cursor:pointer}
-#intro .ring{position:absolute;left:50%;top:50%;width:140px;height:140px;margin:-70px;border-radius:50%;border:2px solid rgba(91,255,176,.6);opacity:0}
-#intro .center{display:flex;flex-direction:column;align-items:center;gap:22px;position:relative}
-#intro .mark{width:min(40vw,190px);height:min(40vw,190px)}
-#intro .mark svg{width:100%;height:100%;overflow:visible}
-#intro .word{font-family:"Unbounded",sans-serif;font-weight:800;font-size:clamp(46px,9vw,84px);letter-spacing:-.03em;line-height:1;display:flex}
+#intro .stage{position:relative;width:100%;height:var(--logo-size)}
+#intro .mark{position:absolute;width:var(--logo-size);height:var(--logo-size);left:50%;top:50%;margin:calc(var(--logo-size)/-2) 0 0 calc(var(--logo-size)/-2);opacity:0}
+#intro .mark svg{width:100%;height:100%;display:block;overflow:visible}
+#intro .x{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:300;font-size:calc(var(--logo-size)*.38);line-height:1;color:#f2f1ff;opacity:0}
+#intro .ring{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px;border-radius:50%;border:2px solid rgba(91,255,176,.6);opacity:0}
+#intro .word{position:absolute;left:0;right:0;top:calc(50% + var(--logo-size)*.66);text-align:center;font-family:"Unbounded",sans-serif;font-weight:800;font-size:clamp(44px,8vw,78px);letter-spacing:-.03em;line-height:1}
 #intro .word span{display:inline-block;opacity:0;background:var(--holo);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holo 4s linear infinite}
-#intro .paid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--mint);color:#04140c;font-weight:800;opacity:0;white-space:nowrap}
+#intro .paid{position:absolute;left:50%;top:calc(50% - var(--logo-size)*.85);transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;background:var(--paid);color:#04140c;font-weight:800;opacity:0;white-space:nowrap}
 #intro .skip{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-@keyframes holo{to{background-position:300% 0}}
 
 /* ============ NAV ============ */
 header{position:sticky;top:0;z-index:20;background:rgba(7,7,26,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;gap:22px;height:64px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em;font-size:18px}
-.emblem{width:32px;height:32px;flex:none}
+.emblem{width:34px;height:34px;flex:none}
 .tabs{display:flex;gap:4px;margin-left:8px}
 .tab{padding:8px 14px;border-radius:999px;color:var(--muted);font-weight:600;font-size:14px;transition:.15s}
 .tab:hover{color:var(--text)}
@@ -239,34 +239,26 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 </head>
 <body>
 
-<!-- ================= INTRO: two marks apart, × between, then they combine ================= -->
-<!-- ================= INTRO ================= -->
+<!-- ================= INTRO: wave + orb apart, x between, combine ================= -->
 <div id="intro" aria-hidden="true">
-  <div class="ring"></div><div class="ring"></div><div class="ring"></div>
-  <div class="center">
-    <div class="mark">
-      <svg viewBox="0 0 100 100" fill="none">
-        <defs><linearGradient id="ig" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".35" stop-color="#9d7bff"/><stop offset=".7" stop-color="#4fd8ff"/><stop offset="1" stop-color="#5bffb0"/></linearGradient></defs>
-        <circle id="iDot" cx="24" cy="50" r="9" fill="url(#ig)"/>
-        <path class="iArc" pathLength="1" d="M42 30 A28 28 0 0 1 42 70" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
-        <path class="iArc" pathLength="1" d="M58 18 A44 44 0 0 1 58 82" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
-        <path class="iArc" pathLength="1" d="M74 8 A58 58 0 0 1 74 92" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="word" id="iWord"><span>w</span><span>a</span><span>v</span><span>e</span></div>
+  <div class="stage">
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="mark" id="mWave"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="ig" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".35" stop-color="#9d7bff"/><stop offset=".7" stop-color="#4fd8ff"/><stop offset="1" stop-color="#5bffb0"/></linearGradient></defs><circle id="iDot" cx="24" cy="50" r="9" fill="url(#ig)"/><path class="iArc" d="M42 30 A28 28 0 0 1 42 70" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/><path class="iArc" d="M58 18 A44 44 0 0 1 58 82" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/><path class="iArc" d="M74 8 A58 58 0 0 1 74 92" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/></svg></div>
+    <div class="x" id="mX">×</div>
+    <div class="mark" id="mO"><svg viewBox="0 0 100 100" fill="none"><defs><radialGradient id="og" cx="34%" cy="30%" r="80%"><stop offset="0" stop-color="#ffe3f6"/><stop offset=".22" stop-color="#ff7ad9"/><stop offset=".55" stop-color="#9d7bff"/><stop offset="1" stop-color="#2a5bff"/></radialGradient><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#5bffb0"/><stop offset="1" stop-color="#4fd8ff"/></linearGradient></defs><g transform="rotate(-18 50 50)"><ellipse cx="50" cy="50" rx="46" ry="12" stroke="url(#rg)" stroke-width="4" opacity=".45"/></g><circle cx="50" cy="50" r="30" fill="url(#og)"/><circle cx="40" cy="38" r="7" fill="#fff" opacity=".35"/><g transform="rotate(-18 50 50)"><path d="M4 50 A46 12 0 0 0 96 50" stroke="url(#rg)" stroke-width="4" stroke-linecap="round"/></g></svg></div>
   </div>
-  <div class="paid" id="iPaid"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#04140c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Paid</div>
+  <div class="paid" id="iPaid"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#04140c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Paid</div>
+  <div class="word" id="iWord"><span>w</span><span>a</span><span>v</span><span>e</span></div>
   <div class="skip">tap to skip</div>
 </div>
 
 <div class="aurora"><i></i><i></i><i></i></div>
 
-<div class="aurora"><i></i><i></i><i></i></div>
 <header>
   <div class="wrap">
     <div class="nav">
       <a href="#" class="brand" data-go="explore">
-        <span class="emblem" style="display:block"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true" style="width:32px;height:32px"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".35" stop-color="#9d7bff"/><stop offset=".7" stop-color="#4fd8ff"/><stop offset="1" stop-color="#5bffb0"/></linearGradient></defs><circle cx="24" cy="50" r="9" fill="url(#lg)"/><path d="M42 30 A28 28 0 0 1 42 70" stroke="url(#lg)" stroke-width="9" stroke-linecap="round"/><path d="M58 18 A44 44 0 0 1 58 82" stroke="url(#lg)" stroke-width="9" stroke-linecap="round"/><path d="M74 8 A58 58 0 0 1 74 92" stroke="url(#lg)" stroke-width="9" stroke-linecap="round"/></svg></span>
+        <span class="emblem" style="display:block"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true" style="width:34px;height:34px;overflow:visible"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".35" stop-color="#9d7bff"/><stop offset=".7" stop-color="#4fd8ff"/><stop offset="1" stop-color="#5bffb0"/></linearGradient><radialGradient id="nog" cx="34%" cy="30%" r="80%"><stop offset="0" stop-color="#ffe3f6"/><stop offset=".22" stop-color="#ff7ad9"/><stop offset=".55" stop-color="#9d7bff"/><stop offset="1" stop-color="#2a5bff"/></radialGradient><linearGradient id="nrg" x1="0" x2="1"><stop offset="0" stop-color="#5bffb0"/><stop offset="1" stop-color="#4fd8ff"/></linearGradient></defs><g transform="translate(24 50) scale(.4) translate(-50 -50)"><g transform="rotate(-18 50 50)"><ellipse cx="50" cy="50" rx="46" ry="12" stroke="url(#nrg)" stroke-width="4" opacity=".45"/></g><circle cx="50" cy="50" r="30" fill="url(#nog)"/><circle cx="40" cy="38" r="7" fill="#fff" opacity=".35"/><g transform="rotate(-18 50 50)"><path d="M4 50 A46 12 0 0 0 96 50" stroke="url(#nrg)" stroke-width="4" stroke-linecap="round"/></g></g><path d="M42 30 A28 28 0 0 1 42 70" stroke="url(#lg)" stroke-width="8" stroke-linecap="round"/><path d="M58 18 A44 44 0 0 1 58 82" stroke="url(#lg)" stroke-width="8" stroke-linecap="round"/><path d="M74 8 A58 58 0 0 1 74 92" stroke="url(#lg)" stroke-width="8" stroke-linecap="round"/></svg></span>
         <span id="brandName">Wave</span>
       </a>
       <nav class="tabs">
@@ -501,20 +493,24 @@ function cleanHandle(h){return h.trim().replace(/^@+/,"").replace(/\s+/g,"")}
    INTRO — equal-size marks, × in the middle, slide together, combine
    ===================================================================== */
 (function(){
-  const el=$("#intro"),dot=$("#iDot"),arcs=$$(".iArc"),rings=$$("#intro .ring"),paid=$("#iPaid"),L=$$("#iWord span"),center=el.querySelector(".center");let done=false;
-  const finish=()=>{if(done)return;done=true;el.animate([{opacity:1,transform:"scale(1)"},{opacity:0,transform:"scale(1.08)"}],{duration:550,easing:"ease-in",fill:"forwards"}).onfinish=()=>el.remove()};
+  const el=$("#intro"),W=$("#mWave"),O=$("#mO"),X=$("#mX"),dot=$("#iDot"),arcs=$$("#mWave .iArc"),rings=$$("#intro .ring"),paid=$("#iPaid"),L=$$("#iWord span");let done=false;
+  const finish=()=>{if(done)return;done=true;el.animate([{opacity:1,transform:"scale(1)"},{opacity:0,transform:"scale(1.06)"}],{duration:500,easing:"ease-in",fill:"forwards"}).onfinish=()=>el.remove()};
   el.addEventListener("click",finish);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){setTimeout(finish,300);return}
-  dot.style.transformBox="fill-box";dot.style.transformOrigin="center";
-  arcs.forEach(a=>{a.style.strokeDasharray=1;a.style.strokeDashoffset=1});
-  dot.animate([{transform:"scale(0)"},{transform:"scale(1.4)",offset:.6},{transform:"scale(1)"}],{duration:500,delay:150,easing:"ease-out",fill:"both"});
-  arcs.forEach((a,i)=>a.animate([{strokeDashoffset:1,opacity:.2},{strokeDashoffset:0,opacity:1}],{duration:450,delay:600+i*220,easing:"cubic-bezier(.3,0,.2,1)",fill:"forwards"}));
-  rings.forEach((r,i)=>r.animate([{opacity:.8,transform:"scale(.5)"},{opacity:0,transform:"scale(4)"}],{duration:1400,delay:700+i*260,easing:"ease-out",fill:"forwards"}));
-  // "Paid" chip flashes over the mark
-  center.animate([{transform:"scale(1)",filter:"blur(0)"},{transform:"scale(.9)",filter:"blur(2px)"},{transform:"scale(1)",filter:"blur(0)"}],{duration:900,delay:1600,easing:"ease-in-out"});
-  paid.animate([{opacity:0,transform:"translate(-50%,-50%) scale(.6)"},{opacity:1,transform:"translate(-50%,-50%) scale(1.05)",offset:.25},{opacity:1,transform:"translate(-50%,-50%) scale(1)",offset:.75},{opacity:0,transform:"translate(-50%,-120%) scale(.9)"}],{duration:1000,delay:1650,easing:"ease-out",fill:"forwards"});
-  L.forEach((s,i)=>s.animate([{opacity:0,transform:"translateY(30px)",filter:"blur(8px)"},{opacity:1,transform:"none",filter:"blur(0)"}],{duration:550,delay:2500+i*90,easing:"cubic-bezier(.2,.9,.3,1)",fill:"forwards"}));
-  setTimeout(finish,4000);
+  const size=parseFloat(getComputedStyle(W).width),d=Math.min(innerWidth*.3,size*1.2),ez="cubic-bezier(.65,0,.35,1)";
+  const ox=-(50-24)/100*size, os=.4; // orb lands where the wave's dot is (matches the nav logo)
+  W.animate([{opacity:0,transform:`translateX(${-d-30}px)`},{opacity:1,transform:`translateX(${-d}px)`}],{duration:650,delay:150,easing:"ease-out",fill:"forwards"});
+  O.animate([{opacity:0,transform:`translateX(${d+30}px) rotate(-30deg)`},{opacity:1,transform:`translateX(${d}px) rotate(0)`}],{duration:650,delay:150,easing:"ease-out",fill:"forwards"});
+  X.animate([{opacity:0,transform:"translate(-50%,-50%) scale(.6) rotate(-45deg)"},{opacity:1,transform:"translate(-50%,-50%) scale(1) rotate(0)"}],{duration:500,delay:450,easing:"ease-out",fill:"forwards"});
+  X.animate([{opacity:1,transform:"translate(-50%,-50%) scale(1)"},{opacity:0,transform:"translate(-50%,-50%) scale(0) rotate(90deg)"}],{duration:420,delay:1450,easing:"ease-in",fill:"forwards"});
+  W.animate([{transform:`translateX(${-d}px)`},{transform:"translateX(0)"}],{duration:700,delay:1550,easing:ez,fill:"forwards"});
+  O.animate([{transform:`translateX(${d}px) scale(1)`},{transform:"translateX(0) scale(1)",offset:.6},{transform:`translateX(${ox}px) scale(${os})`}],{duration:1050,delay:1550,easing:ez,fill:"forwards"});
+  dot.animate([{opacity:1},{opacity:0}],{duration:250,delay:2300,fill:"forwards"});
+  arcs.forEach((a,i)=>a.animate([{opacity:1},{opacity:.25},{opacity:1}],{duration:500,delay:2550+i*140,easing:"ease-in-out"}));
+  rings.forEach((r,i)=>r.animate([{opacity:.8,transform:"scale(.6)"},{opacity:0,transform:"scale(4.5)"}],{duration:1300,delay:2550+i*220,easing:"ease-out",fill:"forwards"}));
+  paid.animate([{opacity:0,transform:"translateX(-50%) translateY(10px) scale(.7)"},{opacity:1,transform:"translateX(-50%) scale(1)"}],{duration:450,delay:2700,easing:"cubic-bezier(.2,1.4,.4,1)",fill:"forwards"});
+  L.forEach((sp,i)=>sp.animate([{opacity:0,transform:"translateY(26px)",filter:"blur(8px)"},{opacity:1,transform:"none",filter:"blur(0)"}],{duration:550,delay:2850+i*90,easing:"cubic-bezier(.2,.9,.3,1)",fill:"forwards"}));
+  setTimeout(finish,4500);
 })();
 
 
@@ -711,7 +707,7 @@ $("#walletBtn").onclick=async()=>{
 
 /* init */
 document.title=CONFIG.name+" · Launchpad";
-["#brandName","#mW",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));
+["#brandName",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));
 $("#fSplit").value=CONFIG.defaultSplit; $("#yr").textContent=new Date().getFullYear();
 renderGrid(); renderPreview();
 </script>

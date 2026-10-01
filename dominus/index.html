@@ -149,6 +149,9 @@ h2{font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,4.4vw,3rem)
 .item:hover::before{transform:translateX(120%)}
 .art{aspect-ratio:1;max-width:100%;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;background:radial-gradient(circle at 50% 40%,var(--hue),var(--void) 75%)}
 .art svg{width:58%;height:auto}
+.art img{width:82%;height:auto;display:block;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.item:hover .art img{transform:scale(1.08) rotate(-3deg)}
+.prize .ico img{width:46px;height:46px;object-fit:contain}
 .tier{position:absolute;top:28px;left:28px;font:700 .62rem var(--f-data);letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:var(--void);border:1px solid var(--line)}
 .tier.hourly{color:var(--ash)}
 .tier.daily{color:var(--gilt);border-color:var(--gilt-deep)}
@@ -295,7 +298,7 @@ body.wait .in{animation-play-state:paused}
         <div class="clock" id="clock">00<span class="sep">:</span>00</div>
         <div class="bar"><i id="bar"></i></div>
         <div class="prize">
-          <div class="ico"><svg width="44" viewBox="0 0 200 200"><use href="#coin"/></svg></div>
+          <div class="ico" id="prizeIco"><svg width="44" viewBox="0 0 200 200"><use href="#coin"/></svg></div>
           <div><small>Up for grabs</small><b id="prizeName">Sparkle Time Fedora</b><small id="prizeRap">RAP R$ 214,500</small></div>
         </div>
         <div class="stats">
@@ -430,14 +433,14 @@ body.wait .in{animation-play-state:paused}
 
   /* ---------- data (examples) ---------- */
   const items=[
-    {n:'Sparkle Time Fedora',rap:214500,t:'hourly',hue:'#5a3a8c',shape:'fedora'},
-    {n:'Valkyrie Helm',rap:388000,t:'daily',hue:'#8c6a2a',shape:'helm'},
-    {n:'Clockwork’s Headphones',rap:96200,t:'hourly',hue:'#2a5a6c',shape:'phones'},
-    {n:'Domino Crown',rap:1250000,t:'daily',hue:'#7a1f2e',shape:'crown'},
-    {n:'Red Sparkle Time Fedora',rap:172800,t:'hourly',hue:'#8c2a2a',shape:'fedora'},
-    {n:'Bighead',rap:61400,t:'hourly',hue:'#3a5a2a',shape:'orb'},
-    {n:'10,000 Robux',rap:10000,t:'hourly',hue:'#2a6c4a',shape:'coin'},
-    {n:'Midnight Shades',rap:142000,t:'hourly',hue:'#24244a',shape:'shades'}
+    {n:'Golden Crown',rap:9780,t:'hourly',hue:'#6c5a2a',img:'https://tr.rbxcdn.com/180DAY-78c1b1a33c1fd6650204cf113671ddee/420/420/Hat/Png/noFilter'},
+    {n:'Sparkle Time Fedora',rap:3242116,t:'daily',hue:'#5a3a8c',img:'https://tr.rbxcdn.com/180DAY-021f90eeacf6ea627994dd5ce8365460/420/420/Hat/Png/noFilter'},
+    {n:'Valkyrie Helm',rap:245472,t:'hourly',hue:'#8c6a2a',img:'https://tr.rbxcdn.com/180DAY-33ebc9fedab2e19a669b6686ad7a656b/420/420/Hat/Png/noFilter'},
+    {n:'Clockwork\u2019s Headphones',rap:825139,t:'daily',hue:'#2a5a6c',img:'https://tr.rbxcdn.com/180DAY-d0db3468dbf03000a63aea76ed970dcf/420/420/Hat/Png/noFilter'},
+    {n:'The Classic ROBLOX Fedora',rap:378406,t:'hourly',hue:'#3a3a4a',img:'https://tr.rbxcdn.com/180DAY-1de084fa35fdeace0b12fd5b21077677/420/420/Hat/Png/noFilter'},
+    {n:'Bighead',rap:2715,t:'hourly',hue:'#3a5a2a',img:'https://tr.rbxcdn.com/180DAY-d9861256dda2bcdef1e98de4817b8664/420/420/Hat/Png/noFilter'},
+    {n:'10,000 Robux',rap:10000,t:'hourly',hue:'#2a6c4a'},
+    {n:'1,000 Robux',rap:1000,t:'hourly',hue:'#2a5a4a'}
   ];
   const shapes={
     fedora:'<path d="M20 120 Q100 150 180 120 Q150 110 140 100 L132 50 Q100 38 68 50 L60 100 Q50 110 20 120Z"/><path d="M60 92 Q100 104 140 92" stroke="var(--blood)" stroke-width="10" fill="none"/>',
@@ -448,12 +451,13 @@ body.wait .in{animation-play-state:paused}
     coin:'<circle cx="100" cy="90" r="60"/><path d="M100 50 L130 90 L100 130 L70 90Z" fill="var(--void)"/>',
     shades:'<path d="M20 70 L180 70 L172 100 Q160 125 125 120 L110 90 L90 90 L75 120 Q40 125 28 100Z"/>'
   };
+  const art=i=>i.img?`<img src="${i.img}" alt="${i.n}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<svg viewBox=&quot;0 0 200 200&quot;><use href=&quot;#coin&quot;/></svg>'">`:'<svg viewBox="0 0 200 200"><use href="#coin"/></svg>';
   const fmt=n=>'R$ '+n.toLocaleString('en-US');
   const grid=document.getElementById('vaultGrid');
   function renderVault(f){
     grid.innerHTML=items.filter(i=>f==='all'||i.t===f).map(i=>`
       <article class="item" data-t="${i.t}">
-        <div class="art" style="--hue:${i.hue}"><svg viewBox="0 0 200 160" fill="var(--gilt)" stroke="var(--gilt)" stroke-linejoin="round">${shapes[i.shape]}</svg></div>
+        <div class="art" style="--hue:${i.hue}">${art(i)}</div>
         <span class="tier ${i.t}">${i.t==='daily'?'Grand Drop':'Hourly'}</span>
         <h3>${i.n}</h3>
         <div class="row"><span>RAP</span><b>${fmt(i.rap)}</b></div>
@@ -502,10 +506,11 @@ body.wait .in{animation-play-state:paused}
       if(rows.children.length>8) rows.lastElementChild.remove();
       prizeIdx++;
       const next=hourly[prizeIdx%hourly.length];
-      document.getElementById('prizeName').textContent=next.n;
-      document.getElementById('prizeRap').textContent='RAP '+fmt(next.rap);
+      showPrize(next);
     }
   }
+  function showPrize(p){document.getElementById('prizeName').textContent=p.n;document.getElementById('prizeRap').textContent='RAP '+fmt(p.rap);document.getElementById('prizeIco').innerHTML=p.img?`<img src="${p.img}" alt="" referrerpolicy="no-referrer">`:'<svg viewBox="0 0 200 200"><use href="#coin"/></svg>'}
+  showPrize(hourly[0]);
   update(); setInterval(update,1000);
 
   /* copy */

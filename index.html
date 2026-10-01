@@ -3,557 +3,717 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clip · Paste a post, get a coin</title>
+<title>Wave · Launchpad</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#f3f0e8; --paper-2:#e9e4d7; --ink:#0d0d0d; --ink-2:#3b3b3b; --muted:#77736a;
-  --blue:#2b3cff; --lime:#c6ff3d; --pink:#ff5fa2; --yellow:#ffe14d;
-  --bd:2.5px solid var(--ink); --sh:5px 5px 0 var(--ink); --sh-s:3px 3px 0 var(--ink);
+  --bg:#07071a; --panel:#0f0f28; --panel-2:#17173a; --line:#24244a; --line-2:#33335e;
+  --text:#f2f1ff; --muted:#9b98c4; --dim:#5f5c8a;
+  --paid:#5bffb0; --paid-dim:rgba(91,255,176,.12); --red:#ff6b8a;
+  --holo:conic-gradient(from 200deg at 50% 50%,#ff7ad9,#9d7bff,#4fd8ff,#5bffb0,#ffd66b,#ff7ad9);
+  --radius:18px;
+  --logo-size:min(40vw,190px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-html,body{background:var(--paper);color:var(--ink)}
-body{font-family:"Space Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(13,13,13,.09) 1px,transparent 1px);background-size:22px 22px}
+html,body{background:var(--bg);color:var(--text)}
+.aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(90px);opacity:.45}
+.aurora i{position:absolute;width:44vw;height:44vw;border-radius:50%;animation:drift 22s ease-in-out infinite}
+.aurora i:nth-child(1){background:#5b2cff;left:-5%;top:0}.aurora i:nth-child(2){background:#00b3ff;right:0;top:25%;animation-delay:-7s;opacity:.55}.aurora i:nth-child(3){background:#ff3cc7;left:30%;bottom:-10%;animation-delay:-14s;opacity:.4}
+@keyframes drift{50%{transform:translate(8vw,6vh) scale(1.15)}}
+@keyframes holo{to{background-position:300% 0}}
 main,header,footer{position:relative;z-index:1}
-button,input{font:inherit;color:inherit}
+h1,.panel h2,.d-head h2,.brand,.stat div,.bal .amt,.soon h3{font-family:"Unbounded",system-ui,sans-serif}
+body{font-family:"Manrope",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
-a{color:inherit}
-.mono{font-family:"Space Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
-.wrap{max-width:1140px;margin:0 auto;padding:0 20px}
+a{color:inherit;text-decoration:none}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 
 /* ============ INTRO ============ */
-#intro{position:fixed;inset:0;z-index:100;background:var(--blue);display:grid;place-items:center;cursor:pointer;overflow:hidden}
-#intro .stack{display:flex;flex-direction:column;align-items:center;gap:18px}
-#intro .ilogo{width:min(42vw,210px);height:min(42vw,210px)}
-#intro .ilogo svg{width:100%;height:100%;overflow:visible}
-#intro .iword{display:flex;gap:4px;font-weight:700;font-size:clamp(56px,11vw,104px);line-height:1;letter-spacing:-.04em;color:#fff}
-#intro .iword span{display:inline-block;opacity:0}
-#intro .iword span.dot{color:var(--lime)}
-#intro .tag{font-family:"Space Mono",monospace;font-size:13px;color:rgba(255,255,255,.75);letter-spacing:.14em;text-transform:uppercase;opacity:0}
-#intro .skip{position:absolute;bottom:22px;right:24px;font-family:"Space Mono",monospace;font-size:12px;color:rgba(255,255,255,.6);text-transform:uppercase}
+#intro{position:fixed;inset:0;z-index:100;background:#05050f;display:grid;place-items:center;overflow:hidden;cursor:pointer}
+#intro .ring{position:absolute;left:50%;top:50%;width:140px;height:140px;margin:-70px;border-radius:50%;border:2px solid rgba(91,255,176,.6);opacity:0}
+#intro .center{display:flex;flex-direction:column;align-items:center;gap:22px;position:relative}
+#intro .mark{width:min(40vw,190px);height:min(40vw,190px)}
+#intro .mark svg{width:100%;height:100%;overflow:visible}
+#intro .word{font-family:"Unbounded",sans-serif;font-weight:800;font-size:clamp(46px,9vw,84px);letter-spacing:-.03em;line-height:1;display:flex}
+#intro .word span{display:inline-block;opacity:0;background:var(--holo);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holo 4s linear infinite}
+#intro .paid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--mint);color:#04140c;font-weight:800;opacity:0;white-space:nowrap}
+#intro .skip{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+@keyframes holo{to{background-position:300% 0}}
 
 /* ============ NAV ============ */
-header{padding:16px 0}
-.nav{display:flex;align-items:center;gap:14px;height:62px;padding:0 10px 0 14px;background:#fff;border:var(--bd);border-radius:18px;box-shadow:var(--sh)}
-.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:24px;letter-spacing:-.03em;text-decoration:none}
-.brand svg{width:38px;height:38px}
-.brand b{color:var(--blue)}
-.links{display:flex;gap:4px;margin-left:auto}
-.links a{padding:8px 14px;border-radius:10px;font-weight:500;text-decoration:none}
-.links a:hover{background:var(--paper-2)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border:var(--bd);border-radius:14px;font-weight:700;box-shadow:var(--sh-s);transition:transform .1s,box-shadow .1s;white-space:nowrap;text-decoration:none}
-.btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
-.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:var(--sh-s)}
-.btn.blue{background:var(--blue);color:#fff}
-.btn.lime{background:var(--lime)}
-.btn.yel{background:var(--yellow)}
-.btn.white{background:#fff}
-.btn.black{background:var(--ink);color:#fff}
+header{position:sticky;top:0;z-index:20;background:rgba(7,7,26,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:22px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em;font-size:18px}
+.emblem{width:32px;height:32px;flex:none}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tab{padding:8px 14px;border-radius:999px;color:var(--muted);font-weight:600;font-size:14px;transition:.15s}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--panel-2);color:var(--text)}
+.nav .sp{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:999px;font-weight:700;font-size:14px;transition:.15s;white-space:nowrap}
+.btn.w{color:#0a0820;background:var(--holo);background-size:200% 200%;animation:holo 6s linear infinite;box-shadow:0 10px 30px -12px rgba(157,123,255,.8)}.btn.w:hover{box-shadow:0 12px 34px -10px rgba(91,255,176,.8)}
+.btn.g{border:1px solid var(--line-2);color:var(--text)}.btn.g:hover{border-color:#555}
+.btn.pay{background:#000;color:#fff;border:1px solid #3a3a3a;height:52px;border-radius:12px;font-size:16px;width:100%}
+.btn.pay:hover{border-color:#777}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ============ HERO ============ */
+/* ============ VIEWS ============ */
+.view{display:none;padding:34px 0 80px}
+.view.on{display:block;animation:rise .45s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding:26px 0 40px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--paid);box-shadow:0 0 12px var(--paid)}
+h1{font-size:clamp(38px,5.6vw,68px);line-height:1.02;letter-spacing:-.035em;font-weight:800;margin:14px 0 18px}
+h1 em{font-style:normal;background:var(--holo);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holo 6s linear infinite}
+.lede{color:var(--muted);font-size:17px;max-width:520px}
+.hero .cta{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.flow{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px}
+.flow-row{display:flex;align-items:center;gap:14px;padding:14px 0}
+.flow-row+.flow-row{border-top:1px dashed var(--line-2)}
+.flow-n{width:30px;height:30px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font-size:12px;color:var(--muted);flex:none}
+.flow-row b{display:block;font-size:15px}
+.flow-row span{color:var(--muted);font-size:13px}
+.plats{display:flex;gap:6px;margin-top:6px}
+.plat{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.02em;background:var(--panel-2);border:1px solid var(--line-2);color:var(--text)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:34px}
+.stat{padding:18px 20px;background:var(--panel)}
+.stat+.stat{border-left:1px solid var(--line)}
+.stat small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.stat div{font-size:26px;font-weight:700;margin-top:4px}
+
+/* Toolbar */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.search{flex:1;min-width:220px;height:44px;border-radius:12px;background:var(--panel);border:1px solid var(--line);padding:0 14px 0 40px;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m11 11 4 4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:14px center}
+.search:focus,.field input:focus,.field textarea:focus{border-color:#555}
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{height:36px;padding:0 13px;border-radius:9px;color:var(--muted);font-weight:600;font-size:13px}
+.seg button.on{background:var(--panel-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line-2)}
+
+/* Token grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;transition:.15s;text-align:left;display:block;width:100%}
+.card{position:relative;overflow:hidden;--mx:50%;--my:50%}
+.card:before{content:"";position:absolute;inset:0;background:var(--holo);opacity:0;mix-blend-mode:color-dodge;transition:opacity .3s;pointer-events:none}
+.card:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.16),transparent 50%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover{border-color:#4a4a80;transform:translateY(-3px)}.card:hover:before{opacity:.16}.card:hover:after{opacity:1}
+.card-top{display:flex;gap:12px;align-items:center}
+.av{width:52px;height:52px;border-radius:12px;flex:none;display:grid;place-items:center;font-weight:800;font-size:20px;color:#000;overflow:hidden;background-size:cover;background-position:center}
+.card-top h3{font-size:16px;font-weight:700;line-height:1.2}
+.card-top .tk{color:var(--muted);font-size:12px}
+.to{display:flex;align-items:center;gap:8px;margin:14px 0 12px;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font-size:13px}
+.to .arrow{color:var(--dim)}
+.to .h{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kv{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.kv b{color:var(--text);font-weight:600}
+.kv .paidv{color:var(--paid)}
+.bar{height:5px;border-radius:9px;background:var(--panel-2);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--holo);background-size:300% 100%;animation:holo 5s linear infinite;border-radius:9px}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0;border:1px dashed var(--line-2);border-radius:var(--radius)}
+
+/* Forms */
+.two{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px}
+.panel h2{font-size:26px;letter-spacing:-.02em;font-weight:800;margin-bottom:4px}
+.panel .sub{color:var(--muted);margin-bottom:22px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+.field label small{color:var(--muted);font-weight:500}
+.field input,.field textarea{width:100%;height:46px;border-radius:12px;background:var(--bg);border:1px solid var(--line);padding:0 14px;outline:none;transition:.15s}
+.field textarea{height:90px;padding:12px 14px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.handle-in{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding-left:14px}
+.handle-in:focus-within{border-color:#555}
+.handle-in span{color:var(--muted)}
+.handle-in input{border:0;background:none;padding-left:2px}
+.plat-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.plat-pick button{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-weight:700;color:var(--muted);transition:.15s}
+.plat-pick button.on{border-color:#9d7bff;color:var(--text);background:var(--panel-2)}
+.drop{display:flex;align-items:center;gap:14px;padding:12px;border:1px dashed var(--line-2);border-radius:12px;cursor:pointer}
+.drop .av{width:56px;height:56px;background:var(--panel-2);color:var(--muted);font-size:24px;font-weight:400}
+.drop div{font-size:13px;color:var(--muted)}
+.drop b{color:var(--text);display:block;font-size:14px}
+input[type=range]{width:100%;accent-color:#9d7bff;height:auto;padding:0;border:0;background:none}
+.split{display:flex;justify-content:space-between;font-size:13px;margin-top:6px}
+.split .r{color:var(--paid);font-weight:700}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+.preview-wrap{position:sticky;top:88px}
+.preview-wrap .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600;margin-bottom:10px}
+.summary{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.summary .kv+.kv{margin-top:8px}
+
+/* Claim */
+.claim{max-width:560px;margin:0 auto}
+.bal{margin:22px 0 18px;padding:22px;border-radius:16px;background:linear-gradient(160deg,rgba(91,255,176,.12),rgba(157,123,255,.1));border:1px solid var(--line);text-align:center}
+.bal small{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.bal .amt{font-size:46px;font-weight:800;letter-spacing:-.03em;margin:4px 0}
+.bal .sol{color:var(--muted);font-size:13px}
+.lines{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.line{display:flex;align-items:center;gap:12px;padding:12px 14px;font-size:14px}
+.line+.line{border-top:1px solid var(--line)}
+.line .av{width:34px;height:34px;border-radius:8px;font-size:14px}
+.line .grow{flex:1}
+.line small{color:var(--muted);display:block;font-size:12px}
+.done{text-align:center;padding:10px 0}
+.check{width:64px;height:64px;border-radius:50%;background:var(--paid-dim);display:grid;place-items:center;margin:0 auto 12px}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;backdrop-filter:blur(4px)}
+.modal.on{display:flex;animation:fade .2s ease}
+@keyframes fade{from{opacity:0}}
+.sheet{width:100%;max-width:920px;background:var(--panel);border:1px solid var(--line-2);border-radius:22px;padding:22px;position:relative}
+.close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:var(--panel-2);color:var(--muted);font-size:20px;line-height:1}
+.close:hover{color:var(--text)}
+.d-head{display:flex;gap:14px;align-items:center;margin-bottom:18px;padding-right:40px}
+.d-head .av{width:64px;height:64px;border-radius:14px;font-size:26px}
+.d-head h2{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.d-grid{display:grid;grid-template-columns:1fr 300px;gap:18px}
+.chart{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;height:260px;position:relative}
+.chart svg{width:100%;height:100%;display:block}
+.chart .price{position:absolute;top:14px;left:16px;font-size:22px;font-weight:700}
+.chart .chg{font-size:13px;margin-left:6px}
+.trade{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px}
+.trade .seg{margin-bottom:12px}
+.trade .seg button{flex:1}
+.quick{display:flex;gap:6px;margin:8px 0 12px}
+.quick button{flex:1;height:32px;border-radius:8px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+.quick button:hover{color:var(--text);border-color:#555}
+.route{margin-top:14px;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--bg)}
+.route h4{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.route .kv+.kv{margin-top:6px}
+.desc{color:var(--muted);font-size:14px;margin-top:14px}
+
+/* Toast */
 .hero>div{min-width:0}
-.hero{padding:44px 0 30px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;background:var(--lime);border:var(--bd);border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--sh-s)}
-.pill i{width:8px;height:8px;border-radius:50%;background:var(--ink);animation:blink 1.2s infinite}
-@keyframes blink{50%{opacity:.2}}
-h1{font-size:clamp(46px,7.4vw,96px);line-height:.92;letter-spacing:-.055em;font-weight:700;margin:22px 0 30px}
-h1 .hl{background:var(--yellow);border:var(--bd);border-radius:14px;padding:0 .12em;box-shadow:var(--sh);display:inline-block;transform:rotate(-2deg)}
-h1 .bl{color:var(--blue)}
-.lede{font-size:19px;color:var(--ink-2);max-width:520px}
-.paste{margin-top:28px;display:flex;gap:10px;padding:10px;background:#fff;border:var(--bd);border-radius:20px;box-shadow:var(--sh);max-width:600px}
-.paste .ic{width:48px;height:48px;flex:none;border-radius:12px;background:var(--paper-2);display:grid;place-items:center}
-.paste input{flex:1;min-width:0;border:0;outline:none;background:none;font-family:"Space Mono",monospace;font-size:15px}
-.hint{margin-top:12px;font-size:13px;color:var(--muted);font-family:"Space Mono",monospace}
-.hint button{text-decoration:underline;color:var(--ink);font-family:inherit;font-size:inherit}
-
-/* floating demo stack */
-.float{position:relative;height:430px}
-.fcard{position:absolute;width:280px;background:#fff;border:var(--bd);border-radius:18px;box-shadow:var(--sh);padding:14px;animation:bob 6s ease-in-out infinite}
-.fcard:nth-child(1){left:6%;top:6%;transform:rotate(-5deg)}
-.fcard:nth-child(2){right:0;top:34%;animation-delay:-2s;transform:rotate(4deg);background:var(--lime)}
-.fcard:nth-child(3){left:14%;bottom:0;animation-delay:-4s;transform:rotate(-2deg);background:var(--yellow)}
-@keyframes bob{50%{translate:0 -12px}}
-.post-h{display:flex;align-items:center;gap:10px}
-.pfp{width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);flex:none;background:var(--pink);overflow:hidden;position:relative}
-.pfp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.post-h b{display:block;font-size:14px;line-height:1.1}
-.post-h small{color:var(--muted);font-size:12px}
-.post-t{font-size:14px;margin:10px 0}
-.arrow{display:flex;align-items:center;gap:8px;font-family:"Space Mono",monospace;font-size:12px;font-weight:700}
-.coinchip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px 0 4px;border:2px solid var(--ink);border-radius:999px;background:#fff;font-weight:700;font-size:13px}
-.coinchip i{width:20px;height:20px;border-radius:50%;background:var(--yellow);border:2px solid var(--ink)}
-
-/* ============ PIPELINE (post → coin) ============ */
-#build{display:none;margin:10px 0 40px}
-#build.on{display:block;animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
-@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}}
-.buildbox{display:grid;grid-template-columns:1fr 1fr;gap:22px;background:#fff;border:var(--bd);border-radius:24px;box-shadow:var(--sh);padding:22px}
-.bh{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.bh h2{font-size:28px;letter-spacing:-.03em}
-.bh .url{font-family:"Space Mono",monospace;font-size:13px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.src{position:relative;border:var(--bd);border-radius:18px;padding:16px;overflow:hidden;background:var(--paper)}
-.src .img{margin-top:12px;aspect-ratio:16/10;border-radius:12px;border:2px solid var(--ink);background:var(--paper-2);overflow:hidden;position:relative}
-.src .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
-.src .img img.on[src]{opacity:1}
-.sk{height:12px;border-radius:6px;background:var(--paper-2);margin-top:8px}
-.scan{position:absolute;left:0;right:0;height:60px;top:-60px;background:linear-gradient(180deg,transparent,rgba(43,60,255,.25),transparent);border-bottom:2px solid var(--blue);pointer-events:none}
-.src.scanning .scan{animation:scan 1.1s linear infinite}
-@keyframes scan{to{top:100%}}
-.steps{display:flex;flex-direction:column;gap:10px}
-.st{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--paper-2);border-radius:14px;color:var(--muted);transition:.2s}
-.st .ico{width:28px;height:28px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;flex:none;font-size:13px;font-weight:700}
-.st.run{border-color:var(--ink);color:var(--ink);background:var(--paper)}
-.st.run .ico{border-color:var(--blue);border-right-color:transparent;animation:spin .7s linear infinite}
-.st.ok{color:var(--ink);border-color:var(--ink);background:var(--lime)}
-.st.ok .ico{background:var(--ink);color:var(--lime);border-color:var(--ink)}
-@keyframes spin{to{transform:rotate(360deg)}}
-.st small{display:block;font-size:12px;font-family:"Space Mono",monospace;color:var(--ink-2)}
-.result{display:none;margin-top:6px}
-.result.on{display:block;animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
-.frow{display:grid;grid-template-columns:1fr 130px;gap:10px;margin:12px 0}
-.fld label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.fld input{width:100%;height:48px;border:var(--bd);border-radius:12px;background:#fff;padding:0 12px;outline:none;font-weight:500}
-.fld input:focus{box-shadow:var(--sh-s)}
-.route{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:var(--bd);border-radius:14px;background:var(--yellow);margin-bottom:12px;font-weight:700}
-.route small{display:block;font-weight:500;font-size:12px}
-input[type=range]{width:100%;accent-color:#2b3cff}
-
-/* ============ SECTIONS ============ */
-section{padding:50px 0}
-.sh2{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
-.sh2 h2{font-size:clamp(34px,5vw,56px);letter-spacing:-.045em;line-height:.95}
-.sh2 p{color:var(--ink-2);max-width:420px}
-.how{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.hc{border:var(--bd);border-radius:22px;box-shadow:var(--sh);padding:22px;background:#fff;position:relative;transition:transform .2s}
-.hc:hover{transform:rotate(-1deg) translateY(-4px)}
-.hc .n{position:absolute;top:-18px;right:18px;width:44px;height:44px;border:var(--bd);border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--yellow)}
-.hc h3{font-size:24px;letter-spacing:-.03em;margin:10px 0 6px}
-.hc p{color:var(--ink-2)}
-.hc .glyph{height:86px;display:flex;align-items:center}
-.hc:nth-child(2){background:var(--blue);color:#fff}.hc:nth-child(2) p{color:rgba(255,255,255,.85)}
-.hc:nth-child(3){background:var(--lime)}
-
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.3,1)}
-.reveal.in{opacity:1;transform:none}
-
-/* stream strip */
-.stream{border-block:var(--bd);background:var(--ink);color:#fff;overflow:hidden;white-space:nowrap}
-.stream .run{display:inline-flex;gap:40px;padding:14px 0;animation:tick 36s linear infinite}
-.stream span{font-family:"Space Mono",monospace;font-size:14px}
-.stream b{color:var(--lime)}
-@keyframes tick{to{transform:translateX(-50%)}}
-
-/* feed */
-.filters{display:flex;gap:8px;flex-wrap:wrap}
-.fbtn{height:40px;padding:0 14px;border:var(--bd);border-radius:12px;background:#fff;font-weight:700;font-size:14px}
-.fbtn.on{background:var(--ink);color:#fff}
-.demo{display:inline-block;margin-left:10px;vertical-align:middle;font-size:12px;letter-spacing:.08em;padding:3px 8px;border:2px solid var(--ink);border-radius:8px;background:var(--pink);font-family:"Space Mono",monospace;font-weight:700}
-.feed{columns:3 300px;column-gap:18px}
-.fc{break-inside:avoid;margin-bottom:18px;border:var(--bd);border-radius:20px;background:#fff;box-shadow:var(--sh);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;display:block;width:100%;text-align:left}
-.fc:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 var(--ink)}
-.fc .top{padding:14px}
-.fc .img{border-block:var(--bd);aspect-ratio:16/10;position:relative;background:var(--paper-2)}
-.fc .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.fc .bot{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.fc .bot b{font-size:18px;letter-spacing:-.02em}
-.fc .bot small{display:block;color:var(--muted);font-family:"Space Mono",monospace;font-size:12px}
-.fc .live{padding:10px 14px;background:var(--paper);border-top:2px dashed var(--ink);font-family:"Space Mono",monospace;font-size:12px;display:flex;justify-content:space-between;gap:8px}
-.fc .live b{color:var(--blue)}
-.plat{display:inline-flex;align-items:center;height:22px;padding:0 8px;border:2px solid var(--ink);border-radius:8px;font-size:11px;font-weight:700;background:#fff}
-.plat.x{background:var(--ink);color:#fff}.plat.tiktok{background:var(--lime)}.plat.instagram{background:var(--pink)}
-
-/* claim */
-.claim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch}
-.cbox{border:var(--bd);border-radius:24px;box-shadow:var(--sh);padding:24px;background:#fff}
-.cbox.dark{background:var(--ink);color:#fff}
-.cbox h3{font-size:30px;letter-spacing:-.04em;line-height:1}
-.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 10px}
-.pick button{height:46px;border:var(--bd);border-radius:12px;font-weight:700;background:#fff}
-.pick button.on{background:var(--blue);color:#fff}
-.hin{display:flex;align-items:center;border:var(--bd);border-radius:12px;padding-left:12px;background:#fff}
-.hin span{font-weight:700;color:var(--muted)}
-.hin input{flex:1;min-width:0;height:48px;border:0;outline:none;background:none;padding-left:2px}
-.amt{font-size:clamp(46px,7vw,72px);font-weight:700;letter-spacing:-.05em;line-height:1;margin:14px 0 6px;color:var(--lime)}
-.clines{margin:14px 0;border:2px solid #333;border-radius:14px;overflow:hidden}
-.cl{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;font-size:14px}
-.cl+.cl{border-top:1px solid #333}
-.muted{color:var(--muted)}
-.cbox.dark .muted{color:#a8a8a8}
-
-/* modal */
-.modal{position:fixed;inset:0;z-index:60;background:rgba(13,13,13,.5);display:none;align-items:center;justify-content:center;padding:18px}
-.modal.on{display:flex}
-.mbox{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--paper);border:var(--bd);border-radius:24px;box-shadow:8px 8px 0 var(--ink);padding:20px;animation:pop .35s cubic-bezier(.2,1.4,.4,1);position:relative}
-.mbox .x{position:absolute;top:14px;right:14px;width:40px;height:40px;border:var(--bd);border-radius:12px;background:#fff;font-size:20px;font-weight:700}
-.mh{display:flex;gap:12px;align-items:center;padding-right:50px}
-.mh .cimg{width:64px;height:64px;border:var(--bd);border-radius:16px;overflow:hidden;position:relative;flex:none;background:var(--yellow)}
-.mh .cimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.mh h3{font-size:26px;letter-spacing:-.03em;line-height:1}
-.chart{margin:16px 0;height:170px;border:var(--bd);border-radius:16px;background:#fff;position:relative;overflow:hidden}
-.chart svg{position:absolute;inset:0;width:100%;height:100%}
-.chart .p{position:absolute;top:10px;left:12px;font-weight:700;font-size:24px;z-index:1}
-.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px dashed var(--paper-2)}
-.tr{display:flex;gap:8px;margin-top:14px}
-.tr input{flex:1;min-width:0;height:48px;border:var(--bd);border-radius:12px;padding:0 12px;outline:none;background:#fff}
-
-#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,24px);opacity:0;z-index:200;background:var(--yellow);border:var(--bd);border-radius:14px;box-shadow:var(--sh-s);padding:12px 18px;font-weight:700;transition:.25s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.ca{width:100%;text-align:left;display:flex;align-items:center;gap:10px;margin-top:22px;max-width:560px;padding:6px 6px 6px 14px;border:1px solid var(--line-2);border-radius:12px;background:var(--panel);cursor:pointer;transition:.15s}
+.ca:hover{border-color:#555}
+.ca small{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.1em;flex:none}
+.ca code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.ca span.cp{flex:none;height:32px;padding:0 12px;border-radius:8px;background:var(--glass-2,rgba(255,255,255,.1));color:var(--muted);font-weight:700;font-size:12px;display:grid;place-items:center}
+.ca-links{display:flex;gap:14px;margin-top:10px;font-size:13px;color:var(--muted)}
+.ca-links a:hover{color:var(--text)}
+.soon{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:24px 26px;margin-bottom:22px;border:1px solid var(--line-2);border-radius:20px;background:linear-gradient(120deg,#13123a 0%,#0f0f28 60%)}
+.soon:after{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(60,226,122,.18),transparent 70%);pointer-events:none}
+.soon .badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:var(--paid-dim);color:var(--paid);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.soon h3{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:10px 0 4px}
+.soon p{color:var(--muted);font-size:14px;max-width:520px}
+.pairs{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;max-width:360px;position:relative;z-index:1}
+.pair{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line-2);font-weight:600;font-size:13px}
+.pair i{font-style:normal;color:var(--dim);font-weight:500}
+.pair-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair-pick button{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-weight:700;color:var(--muted)}
+.pair-pick button.on{border-color:#9d7bff;color:var(--text);background:var(--panel-2)}
+.pair-pick button:disabled{cursor:not-allowed;opacity:.6}
+.pair-pick small{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;background:var(--paid-dim);color:var(--paid);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+@media (max-width:760px){.soon{grid-template-columns:1fr}.pairs{justify-content:flex-start}}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--paid);color:#04140c;font-weight:600;padding:12px 18px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
-.confetti{position:fixed;width:12px;height:12px;border:2px solid var(--ink);z-index:150;pointer-events:none;top:0;left:0}
 
-footer{margin-top:40px;border-top:var(--bd);background:var(--blue);color:#fff;overflow:hidden}
-.bigword{font-size:clamp(90px,22vw,300px);font-weight:700;letter-spacing:-.07em;line-height:.8;white-space:nowrap;padding:30px 0 0;display:inline-flex;gap:.3em;animation:tick 30s linear infinite}
-.bigword span{-webkit-text-stroke:3px #fff;color:transparent}
-.bigword span:nth-child(even){color:var(--lime);-webkit-text-stroke:0}
-.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px;font-size:13px;font-family:"Space Mono",monospace;border-top:2px solid rgba(255,255,255,.3)}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--dim);font-size:12px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 @media (max-width:900px){
-  .hero,.buildbox,.claim{grid-template-columns:1fr}
-  .float{height:360px}
-  .how{grid-template-columns:1fr;gap:28px}
+  .hero,.two,.d-grid{grid-template-columns:1fr}
+  .preview-wrap{position:static}
+  .tabs{display:none}
+  .mtabs{display:flex!important}
 }
-@media (max-width:600px){
-  .links a:not(.btn){display:none}
-  .brand span{display:none}
-  .paste{flex-wrap:wrap}
-  .paste .ic{display:none}
-  .paste input{flex:1 1 100%;height:44px;padding:0 6px}
-  .paste .btn{flex:1}
-  .float{height:320px}
-  .fcard{width:230px}
-  .frow{grid-template-columns:1fr}
-  .buildbox{padding:16px}
+@media (max-width:560px){
+  .stats{grid-template-columns:1fr}
+  .stat+.stat{border-left:0;border-top:1px solid var(--line)}
+  .row2{grid-template-columns:1fr}
+  .nav .btn.g{display:none}
+  .bal .amt{font-size:38px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+.mtabs{display:none;gap:4px;padding:10px 0 0}
+.mtabs .tab{flex:1;text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
+<!-- ================= INTRO: two marks apart, × between, then they combine ================= -->
 <!-- ================= INTRO ================= -->
 <div id="intro" aria-hidden="true">
-  <div class="stack">
-    <div class="ilogo">
+  <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+  <div class="center">
+    <div class="mark">
       <svg viewBox="0 0 100 100" fill="none">
-        <g transform="rotate(-28 50 51)">
-          <circle id="iCoin" cx="50" cy="52" r="21" fill="#ffe14d" stroke="#0d0d0d" stroke-width="3.5"/>
-          <text id="iCoinS" x="50" y="60" text-anchor="middle" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="22" fill="#0d0d0d">$</text>
-          <path id="iClip" pathLength="1" d="M42 34 V68 A8 8 0 0 0 58 68 V24 A14 14 0 0 0 30 24 V72 A20 20 0 0 0 70 72 V36" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-        </g>
+        <defs><linearGradient id="ig" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".35" stop-color="#9d7bff"/><stop offset=".7" stop-color="#4fd8ff"/><stop offset="1" stop-color="#5bffb0"/></linearGradient></defs>
+        <circle id="iDot" cx="24" cy="50" r="9" fill="url(#ig)"/>
+        <path class="iArc" pathLength="1" d="M42 30 A28 28 0 0 1 42 70" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
+        <path class="iArc" pathLength="1" d="M58 18 A44 44 0 0 1 58 82" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
+        <path class="iArc" pathLength="1" d="M74 8 A58 58 0 0 1 74 92" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
       </svg>
     </div>
-    <div class="iword" id="iWord"><span>c</span><span>l</span><span>i</span><span>p</span><span class="dot">.</span></div>
-    <div class="tag" id="iTag">paste a post · get a coin</div>
+    <div class="word" id="iWord"><span>w</span><span>a</span><span>v</span><span>e</span></div>
   </div>
+  <div class="paid" id="iPaid"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#04140c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Paid</div>
   <div class="skip">tap to skip</div>
 </div>
 
-<header><div class="wrap">
-  <nav class="nav">
-    <a href="#top" class="brand"><svg viewBox="0 0 100 100" aria-hidden="true"><rect x="3" y="3" width="94" height="94" rx="24" fill="#2b3cff" stroke="#0d0d0d" stroke-width="5"/><g transform="translate(10 10) scale(.8)"><g transform="rotate(-28 50 51)"><circle cx="50" cy="52" r="21" fill="#ffe14d" stroke="#0d0d0d" stroke-width="3.5"/><text x="50" y="60" text-anchor="middle" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="22" fill="#0d0d0d">$</text><path d="M42 34 V68 A8 8 0 0 0 58 68 V24 A14 14 0 0 0 30 24 V72 A20 20 0 0 0 70 72 V36" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></g></svg><span>clip<b>.</b></span></a>
-    <div class="links">
-      <a href="#how">How it works</a><a href="#feed">Feed</a><a href="#claim">Get paid</a>
-      <button class="btn black" id="walletBtn" style="height:44px">Connect</button>
-    </div>
-  </nav>
-</div></header>
+<div class="aurora"><i></i><i></i><i></i></div>
 
-<main id="top">
+<div class="aurora"><i></i><i></i><i></i></div>
+<header>
   <div class="wrap">
+    <div class="nav">
+      <a href="#" class="brand" data-go="explore">
+        <span class="emblem" style="display:block"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true" style="width:32px;height:32px"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".35" stop-color="#9d7bff"/><stop offset=".7" stop-color="#4fd8ff"/><stop offset="1" stop-color="#5bffb0"/></linearGradient></defs><circle cx="24" cy="50" r="9" fill="url(#lg)"/><path d="M42 30 A28 28 0 0 1 42 70" stroke="url(#lg)" stroke-width="9" stroke-linecap="round"/><path d="M58 18 A44 44 0 0 1 58 82" stroke="url(#lg)" stroke-width="9" stroke-linecap="round"/><path d="M74 8 A58 58 0 0 1 74 92" stroke="url(#lg)" stroke-width="9" stroke-linecap="round"/></svg></span>
+        <span id="brandName">Wave</span>
+      </a>
+      <nav class="tabs">
+        <button class="tab on" data-go="explore">Explore</button>
+        <button class="tab" data-go="launch">Launch</button>
+        <button class="tab" data-go="claim">Claim</button>
+      </nav>
+      <div class="sp"></div>
+      <button class="btn g" data-go="launch">Launch a coin</button>
+      <button class="btn w" id="walletBtn">Connect wallet</button>
+    </div>
+    <nav class="mtabs">
+      <button class="tab on" data-go="explore">Explore</button>
+      <button class="tab" data-go="launch">Launch</button>
+      <button class="tab" data-go="claim">Claim</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= EXPLORE ================= -->
+  <section class="view on" id="v-explore">
     <div class="hero">
       <div>
-        <span class="pill"><i></i>New launchpad · Solana</span>
-        <h1>Paste a post.<br><span class="hl">Get a coin.</span></h1>
-        <p class="lede">Drop any X, TikTok or Instagram link. Clip reads it, builds the coin, and streams the creator fees to <b>whoever made the post</b> — every second, paid out to Apple Pay.</p>
-        <form class="paste" id="pasteForm" autocomplete="off">
-          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0d0d0d" stroke-width="2.4" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span>
-          <input id="url" placeholder="" aria-label="Post link">
-          <button class="btn blue" type="submit">Clip it →</button>
-        </form>
-        <p class="hint">no link handy? <button type="button" id="tryEx">try an example</button></p>
-        <button class="copyCa" style="margin-top:14px;display:inline-flex;align-items:center;gap:10px;max-width:100%;height:40px;padding:0 6px 0 12px;border:var(--bd);border-radius:12px;background:#fff;box-shadow:var(--sh-s);font-size:13px"><b>$CLIP</b><span class="mono" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump</span><span style="flex:none;background:var(--lime);border:2px solid var(--ink);border-radius:8px;padding:2px 8px;font-weight:700">Copy CA</span></button>
-      </div>
-      <div class="float" aria-hidden="true">
-        <div class="fcard"><div class="post-h"><span class="pfp" style="background:#ffe14d"></span><div><b>marcus</b><small>@marcus_cooks · X</small></div></div><p class="post-t">my grandma's secret is just more butter</p><div class="arrow">→ <span class="coinchip"><i></i>$BUTTER</span></div></div>
-        <div class="fcard"><div class="post-h"><span class="pfp" style="background:#ff5fa2"></span><div><b>skate.lu</b><small>@skate.lu · TikTok</small></div></div><p class="post-t">landed it on the 47th try</p><div class="arrow">→ <span class="coinchip"><i></i>$47TRY</span></div></div>
-        <div class="fcard"><div class="post-h"><span class="pfp" style="background:#2b3cff"></span><div><b>plant dad</b><small>@plantdad.jay · IG</small></div></div><p class="post-t">he grew a new leaf overnight</p><div class="arrow">→ <span class="coinchip"><i></i>$LEAF</span></div></div>
-      </div>
-    </div>
-
-    <!-- post → coin builder -->
-    <div id="build">
-      <div class="buildbox">
-        <div class="bh"><h2 id="bTitle">Clipping post…</h2><span class="url" id="bUrl"></span></div>
-        <div class="src" id="src">
-          <div class="scan"></div>
-          <div class="post-h"><span class="pfp" id="sPfp"></span><div><b id="sName"><span class="sk" style="display:inline-block;width:90px"></span></b><small id="sHandle">&nbsp;</small></div></div>
-          <p class="post-t" id="sText"><span class="sk" style="display:block"></span><span class="sk" style="display:block;width:70%"></span></p>
-          <div class="img"><img id="sImg" alt=""></div>
+        <span class="eyebrow"><span class="dot"></span>New launchpad · Apple Pay payouts</span>
+        <h1>Launch a coin.<br><em>They get paid.</em></h1>
+        <p class="lede">Pick an X, Instagram or TikTok handle. Every trade on the coin sends creator fees to that person — no wallet, no crypto, no signup needed on their end.</p>
+        <div class="cta">
+          <button class="btn w" data-go="launch">Launch a coin</button>
+          <button class="btn g" data-go="claim">Claim your fees</button>
         </div>
-        <div>
-          <div class="steps" id="steps">
-            <div class="st" data-s="0"><span class="ico">1</span><div>Reading the post<small>platform, author, text</small></div></div>
-            <div class="st" data-s="1"><span class="ico">2</span><div>Pulling the image<small>becomes the coin art</small></div></div>
-            <div class="st" data-s="2"><span class="ico">3</span><div>Naming the coin<small>name + ticker from the post</small></div></div>
-            <div class="st" data-s="3"><span class="ico">4</span><div>Routing fees to the author<small>streamed by the second</small></div></div>
+        <div class="ca" id="caBox" style="cursor:default"><small>$WAVE</small><code class="mono" style="color:var(--muted)">CA dropping soon</code><span class="cp">Soon</span></div>
+      </div>
+      <div class="flow">
+        <div class="flow-row"><div class="flow-n">1</div><div><b>Name a handle</b><span>Anyone with a public account</span><div class="plats"><span class="plat">X</span><span class="plat">Instagram</span><span class="plat">TikTok</span></div></div></div>
+        <div class="flow-row"><div class="flow-n">2</div><div><b>People trade the coin</b><span>Creator fees build up on every buy and sell</span></div></div>
+        <div class="flow-row"><div class="flow-n">3</div><div><b>They get paid</b><span>Fees convert to dollars and go straight to Apple Pay</span></div></div>
+      </div>
+    </div>
+
+    <div class="soon">
+      <div>
+        <span class="badge"><span class="dot"></span>Coming soon</span>
+        <h3>Stock pairs</h3>
+        <p>Launch coins paired against tokenized stocks instead of SOL. Same deal: every trade still pays the handle you pick.</p>
+      </div>
+      <div class="pairs">
+        <span class="pair">TSLA<i>/ coin</i></span><span class="pair">NVDA<i>/ coin</i></span><span class="pair">AAPL<i>/ coin</i></span>
+        <span class="pair">SPY<i>/ coin</i></span><span class="pair">COIN<i>/ coin</i></span><span class="pair">+ more</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><small>Paid out to handles</small><div class="mono" id="sPaid">$0</div></div>
+      <div class="stat"><small>Coins launched</small><div class="mono" id="sCoins">0</div></div>
+      <div class="stat"><small>People getting paid</small><div class="mono" id="sPeople">0</div></div>
+    </div>
+
+    <p class="note" style="margin:-20px 0 16px"><span style="display:inline-block;padding:2px 8px;border:1px solid #ff7ad9;color:#ff7ad9;border-radius:6px;font-weight:700;font-size:11px;letter-spacing:.08em;margin-right:6px">DEMO</span>Sample coins and numbers until real launches come in.</p>
+    <div class="toolbar">
+      <input class="search" id="q" placeholder="Search coin, ticker or @handle">
+      <div class="seg" id="fPlat">
+        <button class="on" data-v="all">All</button><button data-v="x">X</button><button data-v="instagram">IG</button><button data-v="tiktok">TikTok</button>
+      </div>
+      <div class="seg" id="fSort">
+        <button class="on" data-v="new">New</button><button data-v="mcap">Market cap</button><button data-v="paid">Most paid</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- ================= LAUNCH ================= -->
+  <section class="view" id="v-launch">
+    <div class="two">
+      <div class="panel">
+        <h2>Launch a coin</h2>
+        <p class="sub">Choose who gets paid. The split locks at launch and can't be changed.</p>
+
+        <div class="field">
+          <label>Coin image</label>
+          <label class="drop" for="fImg">
+            <span class="av" id="imgPrev">+</span>
+            <div><b>Upload an image</b>PNG, JPG or GIF · square works best</div>
+          </label>
+          <input type="file" id="fImg" accept="image/*" hidden>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Name</label><input id="fName" maxlength="32" placeholder="Coin name"></div>
+          <div class="field"><label>Ticker</label><input id="fTicker" maxlength="10" placeholder="TICKER" style="text-transform:uppercase"></div>
+        </div>
+        <div class="field"><label>Description <small>(optional)</small></label><textarea id="fDesc" maxlength="280" placeholder="What's the coin about?"></textarea></div>
+
+        <div class="field">
+          <label>Who gets the fees?</label>
+          <div class="plat-pick" id="fPlatPick">
+            <button class="on" data-v="x">X</button><button data-v="instagram">Instagram</button><button data-v="tiktok">TikTok</button>
           </div>
-          <div class="result" id="result">
-            <div class="frow">
-              <div class="fld"><label>Coin name</label><input id="rName" maxlength="32"></div>
-              <div class="fld"><label>Ticker</label><input id="rTicker" maxlength="10" style="text-transform:uppercase"></div>
-            </div>
-            <div class="route"><div><small>Fees stream to</small><span id="rTo"></span></div><span class="mono" id="rSplit">80%</span></div>
-            <div class="fld" id="rHandleWrap" style="display:none;margin-bottom:12px"><label>Author's handle</label><div class="hin"><span>@</span><input id="rHandle" placeholder="username"></div></div>
-            <input type="range" id="rRange" min="50" max="100" step="5" value="80" aria-label="Fee share">
-            <div style="display:flex;gap:10px;margin-top:14px"><button class="btn lime" id="launch" style="flex:1">Launch coin</button><button class="btn white" id="cancel">Cancel</button></div>
-          </div>
+        </div>
+        <div class="field">
+          <label>Handle</label>
+          <div class="handle-in"><span>@</span><input id="fHandle" placeholder="username" maxlength="30" autocomplete="off"></div>
+        </div>
+
+        <div class="field">
+          <label>Trading pair</label>
+          <div class="pair-pick"><button class="on" type="button">SOL</button><button type="button" disabled title="Coming soon">Stocks<small>Soon</small></button></div>
+        </div>
+        <div class="field">
+          <label>Fee split</label>
+          <input type="range" id="fSplit" min="50" max="100" step="5" value="80">
+          <div class="split"><span class="r" id="splitR">80% to @handle</span><span id="splitP">20% to platform</span></div>
+        </div>
+        <div class="field">
+          <label>Initial buy <small>(optional, in SOL)</small></label>
+          <input id="fBuy" type="number" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
+        </div>
+
+        <button class="btn w" id="launchBtn" style="width:100%;height:50px">Launch coin</button>
+        <p class="note">The person you name doesn't need to do anything. Their fees wait under their handle until they claim or get paid out.</p>
+      </div>
+
+      <div class="preview-wrap">
+        <div class="lbl">Preview</div>
+        <div id="preview"></div>
+        <div class="summary">
+          <div class="kv"><span>Network</span><b>Solana</b></div>
+          <div class="kv"><span>Payout</span><b>Apple Pay (USD)</b></div>
+          <div class="kv"><span>Recipient share</span><b class="paidv" id="sumR">80%</b></div>
+          <div class="kv"><span>Launch cost</span><b>Network fee only</b></div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="stream"><div class="run" id="stream"></div></div>
-
-  <section id="how"><div class="wrap">
-    <div class="sh2 reveal"><h2>Any post can<br>be a coin.</h2><p>No forms, no image uploads, no guessing tickers. The link is the launch.</p></div>
-    <div class="how">
-      <div class="hc reveal"><span class="n">1</span><div class="glyph"><svg width="120" height="70" viewBox="0 0 120 70"><rect x="3" y="12" width="114" height="46" rx="12" fill="#fff" stroke="#0d0d0d" stroke-width="3"/><text x="16" y="42" font-family="Space Mono,monospace" font-size="14" fill="#0d0d0d">x.com/…/status</text></svg></div><h3>Paste a link</h3><p>X, TikTok or Instagram. Any public post works.</p></div>
-      <div class="hc reveal"><span class="n">2</span><div class="glyph"><svg width="120" height="70" viewBox="0 0 120 70"><circle cx="35" cy="35" r="26" fill="#ffe14d" stroke="#0d0d0d" stroke-width="3"/><text x="35" y="43" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="22">$</text><path d="M70 35h40m-12-12 12 12-12 12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>It builds the coin</h3><p>Name, ticker and art are pulled from the post. Tweak them if you want.</p></div>
-      <div class="hc reveal"><span class="n">3</span><div class="glyph"><svg width="120" height="70" viewBox="0 0 120 70"><rect x="3" y="14" width="80" height="42" rx="10" fill="#0d0d0d"/><text x="14" y="41" font-family="Space Mono,monospace" font-size="14" fill="#c6ff3d">+$0.004/s</text></svg></div><h3>Fees stream out</h3><p>The post's author earns every second the coin trades. Cash out to Apple Pay.</p></div>
-    </div>
-  </div></section>
-
-  <section id="feed"><div class="wrap">
-    <div class="sh2 reveal"><h2>Fresh clips<span class="demo">DEMO</span></h2>
-      <div class="filters" id="fPl"><button class="fbtn on" data-v="all">All</button><button class="fbtn" data-v="x">X</button><button class="fbtn" data-v="tiktok">TikTok</button><button class="fbtn" data-v="instagram">IG</button></div></div>
-    <div class="feed" id="feedGrid"></div>
-  </div></section>
-
-  <section id="claim"><div class="wrap">
-    <div class="claim">
-      <div class="cbox reveal">
-        <h3>Someone clipped<br>your post?</h3>
-        <p class="muted" style="margin-top:8px">Check what's streamed to you so far.</p>
-        <div class="pick" id="cPl"><button class="on" data-v="x">X</button><button data-v="tiktok">TikTok</button><button data-v="instagram">IG</button></div>
-        <div class="hin"><span>@</span><input id="cHandle" placeholder="your username" autocomplete="off"></div>
-        <button class="btn blue" id="cFind" style="width:100%;margin-top:12px">Check my stream</button>
-        <p class="hint">demo: try <b>marcus_cooks</b> on X</p>
-      </div>
-      <div class="cbox dark reveal" id="cOut">
-        <p class="muted mono" style="font-size:13px">YOUR STREAM</p>
-        <div class="amt mono">$0.00</div>
-        <p class="muted">Enter your handle to see what's waiting.</p>
-      </div>
-    </div>
-  </div></section>
-
-  <section style="padding-top:10px"><div class="wrap">
-    <div class="cbox reveal" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--yellow)">
-      <div><p class="mono" style="font-size:13px;font-weight:700">$CLIP</p><h3 style="font-size:30px;letter-spacing:-.04em">The coin behind the launchpad</h3></div>
-      <div style="min-width:0;flex:1 1 420px;max-width:560px">
-        <div class="hin" style="background:#fff;padding:0 6px 0 14px;gap:8px"><span class="mono" id="caText" style="flex:1;min-width:0;color:var(--ink);font-weight:400;height:52px;display:flex;align-items:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px">7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump</span><button class="btn black copyCa" style="height:40px;padding:0 14px">Copy</button></div>
-        <div style="display:flex;gap:16px;margin-top:10px;font-weight:700;font-size:14px"><a href="https://pump.fun/coin/7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump" target="_blank" rel="noopener">DexScreener ↗</a></div>
-      </div>
-    </div>
-  </div></section>
+  <!-- ================= CLAIM ================= -->
+  <section class="view" id="v-claim">
+    <div class="claim panel" id="claimBox"></div>
+  </section>
 </main>
 
-<footer>
-  <div class="bigword" aria-hidden="true"><span>clip</span><span>it.</span><span>clip</span><span>it.</span><span>clip</span><span>it.</span><span>clip</span><span>it.</span></div>
-  <div class="foot"><span>clip. — paste a post, get a coin</span><span>Coins are memes with no promise of value. Trade at your own risk.</span></div>
-</footer>
-
-<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<!-- Token detail -->
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div id="toast"></div>
 
-<script>
-/* ============ CONFIG ============ */
-const CONFIG={name:"Clip",defaultSplit:80,solUsd:150};
+<footer><div class="wrap"><span>© <span id="yr"></span> <span class="bn">Wave</span></span><span>Coins are memes with no promise of value. Trade at your own risk.</span></div></footer>
 
-/* ============ INTEGRATION HOOKS ============
-   Everything here is simulated for the demo. Swap in real calls. */
-const API={
-  // Read a post link → {platform, handle, displayName, text, image}. (Real version: your backend fetching the post.)
-  async parsePost(url){
-    const p=detect(url); if(!p) throw new Error("That doesn't look like an X, TikTok or Instagram post link");
-    await wait(700);
-    const h=hash(url), txt=SAMPLE_TEXT[h%SAMPLE_TEXT.length];
-    return {platform:p.platform, handle:p.handle, displayName:p.handle?p.handle.replace(/[._]/g," "):"", text:txt,
-            image:`https://picsum.photos/seed/clip-${h}/640/400`};
-  },
-  // Suggest name + ticker from the post text.
-  suggest(text){ const w=text.replace(/[^a-zA-Z0-9 ]/g,"").split(/\s+/).filter(x=>x.length>2&&!STOP.has(x.toLowerCase()));
-    const pick=w.sort((a,b)=>b.length-a.length)[0]||"Clip"; const name=pick[0].toUpperCase()+pick.slice(1).toLowerCase();
-    return {name, ticker:pick.toUpperCase().slice(0,8)}; },
-  // Create the token and fee routing on-chain.
-  async launchToken(c){ await wait(900); return {...c, mint:randMint(), mcap:5200, feesUsd:0, rate:.0008+Math.random()*.002, created:Date.now()}; },
-  // Prove handle ownership (OAuth) and pay out. >>> APPLE PAY PAYOUT GOES HERE <<<
-  async verifyHandle(platform,handle){ await wait(600); return true; },
-  async payoutApplePay({platform,handle,amountUsd}){ await wait(1100); return {ok:true,reference:"demo-"+Math.random().toString(36).slice(2,9)}; },
+<script>
+/* =====================================================================
+   CONFIG — change the name / split / fees here
+   ===================================================================== */
+const CONFIG = {
+  name: "Wave",
+  defaultSplit: 80,           // % of creator fees to the named handle
+  solUsd: 150,                // placeholder price used for USD display
 };
 
-/* ============ DEMO DATA (made-up handles; labelled DEMO on the page) ============ */
-const SAMPLE_TEXT=["my grandma's secret is just more butter","landed it on the 47th try","he grew a new leaf overnight","rate my desk setup honestly",
- "the bodega cat finally approved of me","first sunrise run of the year","made ramen from scratch, 14 hours","my dog learned to open the fridge"];
-const STOP=new Set(["the","and","my","just","more","from","finally","of","on","it","is","me","year","honestly","rate","first","made","learned","to"]);
-let coins=[
- ["Butter","BUTTER","x","marcus_cooks","my grandma's secret is just more butter",8200,212],
- ["47 Tries","47TRY","tiktok","skate.lu","landed it on the 47th try",31400,655],
- ["Leaf","LEAF","instagram","plantdad.jay","he grew a new leaf overnight",12900,188],
- ["Desk","DESK","x","setup_sam","rate my desk setup honestly",6400,74],
- ["Bodega","BODEGA","tiktok","bodegacat.nyc","the bodega cat finally approved of me",44100,1210],
- ["Sunrise","SUNRISE","instagram","run.with.ria","first sunrise run of the year",9800,131],
- ["Ramen","RAMEN","tiktok","slurp.lab","made ramen from scratch, 14 hours",22700,402],
- ["Fridge","FRIDGE","x","doggo_rufus","my dog learned to open the fridge",17300,296],
-].map((d,i)=>({name:d[0],ticker:d[1],platform:d[2],handle:d[3],text:d[4],mcap:d[5],feesUsd:d[6],split:80,mint:randMint(),
-  image:`https://picsum.photos/seed/clipfeed-${d[1].toLowerCase()}/640/400`,rate:.0006+i*.0003,created:Date.now()-i*4e6}));
+/* =====================================================================
+   INTEGRATION HOOKS — wire your backend + Apple Pay in here.
+   Every function is async; the UI already awaits them and handles errors.
+   ===================================================================== */
+const API = {
+  // Create the token (pump.fun / your program) and store token → handle routing.
+  // Must resolve to a token object like the ones in DEMO below.
+  async launchToken(input){
+    // input = { name, ticker, description, imageFile, imageUrl, platform, handle, split, initialBuySol }
+    await wait(900);
+    return {
+      mint: randMint(), name: input.name, ticker: input.ticker, desc: input.description,
+      img: input.imageUrl, platform: input.platform, handle: input.handle, split: input.split,
+      mcap: 4800 + (input.initialBuySol||0)*CONFIG.solUsd*6, feesUsd: 0, curve: Math.min(3+(input.initialBuySol||0)*4,90), created: Date.now(), vol: 0
+    };
+  },
 
-/* ============ HELPERS ============ */
+  // Prove the person owns the handle (OAuth with X / Instagram / TikTok).
+  async verifyHandle(platform, handle){ await wait(700); return true; },
+
+  // Unclaimed fees sitting under this handle, per token.
+  async getClaimable(platform, handle){
+    await wait(400);
+    return tokens.filter(t => t.platform===platform && t.handle.toLowerCase()===handle.toLowerCase())
+                 .map(t => ({ token:t, usd: t.unclaimed ?? +(t.feesUsd*0.18).toFixed(2) }));
+  },
+
+  // >>> YOUR APPLE PAY PAYOUT GOES HERE <<<
+  // Called when the person taps "Claim with Apple Pay". Resolve on success, throw on failure.
+  async payoutApplePay({ platform, handle, amountUsd, mints }){
+    await wait(1200);
+    return { ok:true, reference: "demo-" + Math.random().toString(36).slice(2,10) };
+  },
+
+  // Optional: buy/sell on the curve.
+  async trade({ mint, side, amountSol }){ await wait(600); return { ok:true }; },
+};
+
+/* =====================================================================
+   DEMO DATA (made-up handles) — remove once API returns real tokens
+   ===================================================================== */
+const DEMO = [
+  ["Grill Master","GRILL","x","backyardbrisket",82,184000,4210,100],
+  ["Nana Knits","KNIT","instagram","nanaknitsalot",80,62000,1330,64],
+  ["Late Shift","SHIFT","tiktok","nightshiftnurse.co",90,41500,980,48],
+  ["Pixel Pete","PETE","x","pixelpete_dev",75,238000,6120,100],
+  ["Corner Store","BODEGA","tiktok","bodegacat.nyc",85,97000,2240,88],
+  ["Trail Dog","TRAIL","instagram","trail.dog.max",80,23800,410,31],
+  ["Chess Kid","CHECK","x","gm_in_training",100,15600,190,22],
+  ["Wok Hei","WOK","tiktok","wokhei.daily",80,71200,1720,72],
+  ["Lo-Fi Beats","LOFI","x","lofi_at_3am",70,33000,640,40],
+  ["Garden Gnome","GNOME","instagram","gnome.garden.co",80,9100,72,12],
+];
+const COLORS=["#ffffff","#3ce27a","#f5d547","#7cc4ff","#ff8fb1","#c7a4ff","#ffb36b","#9ff0e0"];
+let tokens = DEMO.map((d,i)=>({mint:randMint(),name:d[0],ticker:d[1],platform:d[2],handle:d[3],split:d[4],mcap:d[5],feesUsd:d[6],curve:d[7],
+  created:Date.now()-i*3.7e6,desc:"",img:`https://picsum.photos/seed/wave-${d[1].toLowerCase()}/240/240`,color:COLORS[i%COLORS.length],vol:d[5]*0.6}));
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
 function wait(ms){return new Promise(r=>setTimeout(r,ms))}
-function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
-function randMint(){const c="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";let s="";for(let i=0;i<40;i++)s+=c[Math.random()*c.length|0];return s+"clip"}
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function randMint(){const c="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";let s="";for(let i=0;i<40;i++)s+=c[Math.random()*c.length|0];return s+"wave"}
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const usd=(n,d=2)=>n>=1e6?"$"+(n/1e6).toFixed(2)+"M":n>=1e4?"$"+(n/1e3).toFixed(1)+"K":"$"+n.toFixed(d);
-const PL={x:"X",tiktok:"TikTok",instagram:"Instagram"};
-function detect(url){url=url.trim();let m;
-  if(m=url.match(/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status\/\d+/i))return{platform:"x",handle:m[1]};
-  if(m=url.match(/tiktok\.com\/@([A-Za-z0-9._]{1,30})\/(?:video|photo)\/\d+/i))return{platform:"tiktok",handle:m[1]};
-  if(/instagram\.com\/(?:[A-Za-z0-9._]{1,30}\/)?(?:p|reel|reels)\/[A-Za-z0-9_-]+/i.test(url)){m=url.match(/instagram\.com\/(?!p\/|reels?\/)([A-Za-z0-9._]{1,30})\/(?:p|reels?)\//i);return{platform:"instagram",handle:m?m[1]:""}}
-  return null}
-let tt;function toast(m){const e=$("#toast");e.textContent=m;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),2600)}
-function confetti(){const cols=["#2b3cff","#c6ff3d","#ff5fa2","#ffe14d","#fff"];for(let i=0;i<46;i++){const d=document.createElement("div");d.className="confetti";
-  d.style.background=cols[i%5];d.style.borderRadius=i%3?"3px":"50%";document.body.appendChild(d);
-  const x=innerWidth/2,y=innerHeight*.45,a=Math.random()*Math.PI*2,v=180+Math.random()*320;
-  d.animate([{transform:`translate(${x}px,${y}px) rotate(0)`,opacity:1},{transform:`translate(${x+Math.cos(a)*v}px,${y+Math.sin(a)*v+260}px) rotate(${Math.random()*720}deg)`,opacity:0}],{duration:1300+Math.random()*600,easing:"cubic-bezier(.2,.7,.4,1)"}).onfinish=()=>d.remove()}}
+const usd=n=>n>=1e6?"$"+(n/1e6).toFixed(2)+"M":n>=1e3?"$"+(n/1e3).toFixed(1)+"K":"$"+n.toFixed(2);
+const PL={x:"X",instagram:"Instagram",tiktok:"TikTok"};
+const ago=t=>{const m=(Date.now()-t)/6e4;return m<1?"just now":m<60?(m|0)+"m ago":m<1440?(m/60|0)+"h ago":(m/1440|0)+"d ago"};
+function avatar(t,cls="av"){const letter=esc((t.ticker||"?")[0]);return `<span class="${cls}" style="background:${t.color||"#fff"};position:relative">${letter}${t.img?`<img src="${esc(t.img)}" alt="" loading="lazy" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:""}</span>`}
+function copyText(t){const fb=()=>{const a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch{}a.remove()};
+  try{navigator.clipboard?navigator.clipboard.writeText(t).catch(fb):fb()}catch{fb()}}
+let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),2600)}
+function cleanHandle(h){return h.trim().replace(/^@+/,"").replace(/\s+/g,"")}
 
-/* ============ INTRO: coin spins in → clip draws around it → snaps → word stamps in → wipe up ============ */
+/* =====================================================================
+   INTRO — equal-size marks, × in the middle, slide together, combine
+   ===================================================================== */
 (function(){
-  const el=$("#intro"),coin=$("#iCoin"),S=$("#iCoinS"),clip=$("#iClip"),svg=el.querySelector("svg"),L=$$("#iWord span"),tag=$("#iTag");let done=false;
-  const finish=()=>{if(done)return;done=true;el.animate([{transform:"translateY(0)"},{transform:"translateY(-100%)"}],{duration:650,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"}).onfinish=()=>el.remove()};
+  const el=$("#intro"),dot=$("#iDot"),arcs=$$(".iArc"),rings=$$("#intro .ring"),paid=$("#iPaid"),L=$$("#iWord span"),center=el.querySelector(".center");let done=false;
+  const finish=()=>{if(done)return;done=true;el.animate([{opacity:1,transform:"scale(1)"},{opacity:0,transform:"scale(1.08)"}],{duration:550,easing:"ease-in",fill:"forwards"}).onfinish=()=>el.remove()};
   el.addEventListener("click",finish);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){setTimeout(finish,300);return}
-  [coin,S].forEach(n=>{n.style.transformBox="fill-box";n.style.transformOrigin="center"});
-  clip.style.strokeDasharray=1;clip.style.strokeDashoffset=1;
-  coin.animate([{transform:"scale(0) rotateY(0)",opacity:0},{transform:"scale(1.15)",opacity:1,offset:.5},{transform:"scale(1)"}],{duration:600,delay:150,easing:"ease-out",fill:"forwards"});
-  S.animate([{opacity:0},{opacity:1}],{duration:300,delay:500,fill:"forwards"});
-  // coin flip
-  [coin,S].forEach(n=>n.animate([{transform:"scaleX(1)"},{transform:"scaleX(-1)"},{transform:"scaleX(1)"}],{duration:700,delay:750,easing:"ease-in-out",composite:"add"}));
-  clip.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:900,delay:1200,easing:"cubic-bezier(.6,0,.3,1)",fill:"forwards"});
-  // snap
-  svg.animate([{transform:"scale(1)"},{transform:"scale(.9) rotate(-4deg)"},{transform:"scale(1.06) rotate(2deg)"},{transform:"scale(1)"}],{duration:450,delay:2100,easing:"ease-out"});
-  L.forEach((s,i)=>s.animate([{opacity:0,transform:"translateY(40px) rotate(12deg) scale(1.4)"},{opacity:1,transform:"translateY(-6px) rotate(-3deg) scale(1)",offset:.7},{opacity:1,transform:"none"}],{duration:420,delay:2300+i*90,easing:"cubic-bezier(.2,1.4,.4,1)",fill:"forwards"}));
-  tag.animate([{opacity:0},{opacity:1}],{duration:500,delay:2900,fill:"forwards"});
+  dot.style.transformBox="fill-box";dot.style.transformOrigin="center";
+  arcs.forEach(a=>{a.style.strokeDasharray=1;a.style.strokeDashoffset=1});
+  dot.animate([{transform:"scale(0)"},{transform:"scale(1.4)",offset:.6},{transform:"scale(1)"}],{duration:500,delay:150,easing:"ease-out",fill:"both"});
+  arcs.forEach((a,i)=>a.animate([{strokeDashoffset:1,opacity:.2},{strokeDashoffset:0,opacity:1}],{duration:450,delay:600+i*220,easing:"cubic-bezier(.3,0,.2,1)",fill:"forwards"}));
+  rings.forEach((r,i)=>r.animate([{opacity:.8,transform:"scale(.5)"},{opacity:0,transform:"scale(4)"}],{duration:1400,delay:700+i*260,easing:"ease-out",fill:"forwards"}));
+  // "Paid" chip flashes over the mark
+  center.animate([{transform:"scale(1)",filter:"blur(0)"},{transform:"scale(.9)",filter:"blur(2px)"},{transform:"scale(1)",filter:"blur(0)"}],{duration:900,delay:1600,easing:"ease-in-out"});
+  paid.animate([{opacity:0,transform:"translate(-50%,-50%) scale(.6)"},{opacity:1,transform:"translate(-50%,-50%) scale(1.05)",offset:.25},{opacity:1,transform:"translate(-50%,-50%) scale(1)",offset:.75},{opacity:0,transform:"translate(-50%,-120%) scale(.9)"}],{duration:1000,delay:1650,easing:"ease-out",fill:"forwards"});
+  L.forEach((s,i)=>s.animate([{opacity:0,transform:"translateY(30px)",filter:"blur(8px)"},{opacity:1,transform:"none",filter:"blur(0)"}],{duration:550,delay:2500+i*90,easing:"cubic-bezier(.2,.9,.3,1)",fill:"forwards"}));
   setTimeout(finish,4000);
 })();
 
-/* ============ TYPING PLACEHOLDER ============ */
-const EXAMPLES=["x.com/marcus_cooks/status/1840217765","tiktok.com/@skate.lu/video/7421982264","instagram.com/plantdad.jay/p/C9xLm2Q"];
-(function type(){const inp=$("#url");let i=0,j=0,del=false;
-  (function step(){const s=EXAMPLES[i];if(document.activeElement===inp||inp.value){inp.placeholder="paste a post link";return setTimeout(step,800)}
-    inp.placeholder=s.slice(0,j)+(j%2?"|":"");
-    if(!del&&j<s.length)j++;else if(!del){del=true;return setTimeout(step,1400)}else if(j>0)j-=2;else{del=false;i=(i+1)%EXAMPLES.length}
-    setTimeout(step,del?25:55)})()})();
-$("#tryEx").onclick=()=>{$("#url").value="https://"+EXAMPLES[Math.random()*3|0];$("#pasteForm").requestSubmit()};
 
-/* ============ POST → COIN BUILDER ============ */
-let draft=null,busy=false;
-$("#pasteForm").onsubmit=async e=>{e.preventDefault();if(busy)return;const url=$("#url").value.trim();if(!url){$("#url").focus();return toast("Paste a post link first")}
-  if(!detect(url))return toast("Use an X, TikTok or Instagram post link");
-  busy=true;const b=$("#build");b.classList.add("on");$("#result").classList.remove("on");$("#bTitle").textContent="Clipping post…";$("#bUrl").textContent=url;
-  $$("#steps .st").forEach(s=>s.className="st");$("#src").classList.add("scanning");$("#sImg").classList.remove("on");
-  $("#sName").innerHTML='<span class="sk" style="display:inline-block;width:90px"></span>';$("#sHandle").innerHTML="&nbsp;";$("#sText").innerHTML='<span class="sk" style="display:block"></span><span class="sk" style="display:block;width:70%"></span>';$("#sPfp").style.background="var(--paper-2)";
-  b.scrollIntoView({behavior:"smooth",block:"start"});
-  const st=n=>$(`#steps .st[data-s="${n}"]`);
+/* =====================================================================
+   ROUTING
+   ===================================================================== */
+function go(v){
+  $$(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+v));
+  $$("[data-go]").forEach(b=>b.classList.contains("tab")&&b.classList.toggle("on",b.dataset.go===v));
+  scrollTo({top:0,behavior:"smooth"});
+  if(v==="claim")renderClaim();
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){e.preventDefault();go(b.dataset.go)}});
+
+/* =====================================================================
+   EXPLORE
+   ===================================================================== */
+let fPlat="all", fSort="new";
+function seg(id,cb){$$(`#${id} button`).forEach(b=>b.onclick=()=>{$$(`#${id} button`).forEach(x=>x.classList.remove("on"));b.classList.add("on");cb(b.dataset.v)})}
+seg("fPlat",v=>{fPlat=v;renderGrid()}); seg("fSort",v=>{fSort=v;renderGrid()});
+$("#q").oninput=renderGrid;
+
+function cardHTML(t,preview){
+  return `<${preview?"div":"button"} class="card" ${preview?"":`data-mint="${t.mint}"`}>
+    <div class="card-top">${avatar(t)}<div style="min-width:0"><h3>${esc(t.name||"Coin name")}</h3><div class="tk mono">$${esc(t.ticker||"TICKER")} · ${preview?"now":ago(t.created)}</div></div></div>
+    <div class="to"><span class="plat">${PL[t.platform]}</span><span class="arrow">→</span><span class="h">@${esc(t.handle||"handle")}</span><span style="margin-left:auto;color:var(--muted)" class="mono">${t.split}%</span></div>
+    <div class="kv"><span>Market cap</span><b class="mono">${usd(t.mcap)}</b></div>
+    <div class="kv" style="margin-top:4px"><span>Paid to @${esc(t.handle||"handle")}</span><b class="mono paidv">${usd(t.feesUsd)}</b></div>
+    <div class="bar"><i style="width:${t.curve}%"></i></div>
+  </${preview?"div":"button"}>`;
+}
+function renderGrid(){
+  const q=$("#q").value.trim().toLowerCase().replace(/^@/,"");
+  let list=tokens.filter(t=>(fPlat==="all"||t.platform===fPlat)&&(!q||[t.name,t.ticker,t.handle].some(s=>s.toLowerCase().includes(q))));
+  list.sort((a,b)=>fSort==="mcap"?b.mcap-a.mcap:fSort==="paid"?b.feesUsd-a.feesUsd:b.created-a.created);
+  $("#grid").innerHTML=list.length?list.map(t=>cardHTML(t)).join(""):`<div class="empty">No coins match that. <a href="#" data-go="launch" style="color:#fff;text-decoration:underline">Launch one</a></div>`;
+  $$("#grid .card").forEach(c=>c.onclick=()=>openToken(c.dataset.mint));
+  const paid=tokens.reduce((s,t)=>s+t.feesUsd,0);
+  $("#sPaid").textContent=usd(paid); $("#sCoins").textContent=tokens.length.toLocaleString();
+  $("#sPeople").textContent=new Set(tokens.map(t=>t.platform+":"+t.handle.toLowerCase())).size.toLocaleString();
+}
+
+/* =====================================================================
+   TOKEN DETAIL
+   ===================================================================== */
+function chartSVG(t){
+  const n=60, pts=[]; let v=1; const seed=t.mint.charCodeAt(3);
+  for(let i=0;i<n;i++){v*=1+(Math.sin(i*.7+seed)*.04+(Math.random()-.42)*.08);pts.push(v)}
+  const mn=Math.min(...pts),mx=Math.max(...pts),W=600,H=200;
+  const xy=pts.map((p,i)=>[i/(n-1)*W,H-10-(p-mn)/(mx-mn||1)*(H-60)]);
+  const d=xy.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const up=pts[n-1]>=pts[0], col=up?"var(--paid)":"var(--red)";
+  const chg=((pts[n-1]/pts[0]-1)*100).toFixed(1);
+  return {svg:`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${up?"#5bffb0":"#ff6b8a"}" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient></defs><path d="${d} L${W} ${H} L0 ${H}Z" fill="url(#gf)"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`,chg,up};
+}
+let side="buy";
+function openToken(mint){
+  const t=tokens.find(x=>x.mint===mint); if(!t)return;
+  const c=chartSVG(t);
+  $("#sheet").innerHTML=`<button class="close" aria-label="Close">×</button>
+    <div class="d-head">${avatar(t)}<div><h2>${esc(t.name)}</h2><div class="mono" style="color:var(--muted);font-size:13px">$${esc(t.ticker)} · ${t.mint.slice(0,6)}…${t.mint.slice(-4)} <button id="copyCA" style="color:#fff;text-decoration:underline;font-size:12px;margin-left:4px">copy</button></div></div></div>
+    <div class="d-grid">
+      <div>
+        <div class="chart"><div class="price mono">${usd(t.mcap)}<span class="chg" style="color:${c.up?"var(--paid)":"var(--red)"}">${c.up?"+":""}${c.chg}%</span></div>${c.svg}</div>
+        <div class="route">
+          <h4>Where the fees go</h4>
+          <div class="kv"><span>Recipient</span><b><span class="plat" style="margin-right:6px">${PL[t.platform]}</span>@${esc(t.handle)}</b></div>
+          <div class="kv"><span>Recipient share</span><b class="paidv">${t.split}% of creator fees</b></div>
+          <div class="kv"><span>Paid out so far</span><b class="mono paidv">${usd(t.feesUsd)}</b></div>
+          <div class="kv"><span>Payout method</span><b>Apple Pay (USD)</b></div>
+          <div class="kv"><span>Bonding curve</span><b class="mono">${t.curve}%</b></div>
+          <div class="bar"><i style="width:${t.curve}%"></i></div>
+        </div>
+        ${t.desc?`<p class="desc">${esc(t.desc)}</p>`:""}
+      </div>
+      <div class="trade">
+        <div class="seg" id="sideSeg" style="display:flex"><button class="on" data-v="buy">Buy</button><button data-v="sell">Sell</button></div>
+        <div class="field" style="margin-bottom:0"><label id="amtLbl">Amount (SOL)</label><input id="amt" type="number" min="0" step="0.1" placeholder="0.0" inputmode="decimal"></div>
+        <div class="quick" id="quick"></div>
+        <button class="btn w" id="tradeBtn" style="width:100%">Buy $${esc(t.ticker)}</button>
+        <p class="note">Every trade adds to what @${esc(t.handle)} gets paid.</p>
+      </div>
+    </div>`;
+  side="buy"; setQuick(t);
+  $("#sheet .close").onclick=closeModal;
+  $("#copyCA").onclick=()=>{copyText(t.mint);toast("Contract address copied")};
+  seg("sideSeg",v=>{side=v;setQuick(t)});
+  $("#tradeBtn").onclick=async()=>{
+    const a=parseFloat($("#amt").value); if(!(a>0))return toast("Enter an amount");
+    const b=$("#tradeBtn"); b.disabled=true; b.textContent="Confirming…";
+    try{ await API.trade({mint:t.mint,side,amountSol:a});
+      const fee=a*CONFIG.solUsd*0.0095*t.split/100; t.feesUsd+=fee; t.unclaimed=(t.unclaimed??0)+fee; t.mcap*=side==="buy"?1+a*0.02:1-a*0.015;
+      toast(`${side==="buy"?"Bought":"Sold"} · +${usd(fee)} to @${t.handle}`); renderGrid(); openToken(t.mint);
+    }catch(e){toast(e.message||"Trade failed");b.disabled=false;setQuick(t)}
+  };
+  $("#modal").classList.add("on"); document.body.style.overflow="hidden";
+}
+function setQuick(t){
+  const buy=side==="buy";
+  $("#amtLbl").textContent=buy?"Amount (SOL)":"Amount (% of your bag)";
+  $("#quick").innerHTML=(buy?["0.1","0.5","1","5"]:["25","50","75","100"]).map(v=>`<button data-q="${v}">${v}${buy?"":"%"}</button>`).join("");
+  $$("#quick button").forEach(b=>b.onclick=()=>$("#amt").value=b.dataset.q);
+  const tb=$("#tradeBtn"); tb.disabled=false; tb.textContent=(buy?"Buy $":"Sell $")+t.ticker;
+}
+function closeModal(){$("#modal").classList.remove("on");document.body.style.overflow=""}
+$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
+addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+/* =====================================================================
+   LAUNCH
+   ===================================================================== */
+let lPlat="x", imgUrl=null, imgFile=null;
+$$("#fPlatPick button").forEach(b=>b.onclick=()=>{$$("#fPlatPick button").forEach(x=>x.classList.remove("on"));b.classList.add("on");lPlat=b.dataset.v;renderPreview()});
+$("#fImg").onchange=e=>{const f=e.target.files[0];if(!f)return;imgFile=f;const r=new FileReader();r.onload=()=>{imgUrl=r.result;$("#imgPrev").style.backgroundImage=`url('${imgUrl}')`;$("#imgPrev").textContent="";renderPreview()};r.readAsDataURL(f)};
+["fName","fTicker","fHandle","fSplit","fBuy"].forEach(id=>$("#"+id).addEventListener("input",renderPreview));
+function formVals(){return{name:$("#fName").value.trim(),ticker:$("#fTicker").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""),description:$("#fDesc").value.trim(),
+  platform:lPlat,handle:cleanHandle($("#fHandle").value),split:+$("#fSplit").value,initialBuySol:parseFloat($("#fBuy").value)||0,imageUrl:imgUrl,imageFile:imgFile}}
+function renderPreview(){
+  const v=formVals(), h=v.handle||"handle";
+  $("#splitR").textContent=`${v.split}% to @${h}`; $("#splitP").textContent=`${100-v.split}% to platform`; $("#sumR").textContent=v.split+"%";
+  $("#preview").innerHTML=cardHTML({name:v.name,ticker:v.ticker,platform:v.platform,handle:v.handle,split:v.split,mcap:4800+v.initialBuySol*CONFIG.solUsd*6,feesUsd:0,curve:Math.min(3+v.initialBuySol*4,90),img:v.imageUrl,color:"#fff"},true);
+}
+$("#launchBtn").onclick=async()=>{
+  const v=formVals();
+  if(!v.name)return toast("Give your coin a name");
+  if(!v.ticker)return toast("Add a ticker");
+  if(!/^[A-Za-z0-9._]{1,30}$/.test(v.handle))return toast("Enter a valid "+PL[v.platform]+" handle");
+  const b=$("#launchBtn"); b.disabled=true; b.textContent="Launching…";
   try{
-    st(0).classList.add("run");const p=await API.parsePost(url);st(0).className="st ok";st(0).querySelector(".ico").textContent="✓";
-    $("#sName").textContent=p.displayName||"Instagram post";$("#sHandle").textContent=(p.handle?"@"+p.handle:"handle not in link")+" · "+PL[p.platform];$("#sText").textContent=p.text;$("#sPfp").style.background=["#ffe14d","#ff5fa2","#c6ff3d","#2b3cff"][hash(url)%4];
-    st(1).classList.add("run");await new Promise(r=>{const im=$("#sImg");im.onload=r;im.onerror=()=>{im.removeAttribute("src");r()};im.src=p.image;setTimeout(r,1500)});$("#sImg").classList.add("on");await wait(300);st(1).className="st ok";st(1).querySelector(".ico").textContent="✓";
-    st(2).classList.add("run");await wait(650);const sg=API.suggest(p.text);st(2).className="st ok";st(2).querySelector(".ico").textContent="✓";
-    st(3).classList.add("run");await wait(600);st(3).className="st ok";st(3).querySelector(".ico").textContent="✓";
-    $("#src").classList.remove("scanning");$("#bTitle").textContent="Your coin is ready";
-    draft={...p,url,name:sg.name,ticker:sg.ticker,split:CONFIG.defaultSplit};
-    $("#rName").value=draft.name;$("#rTicker").value=draft.ticker;$("#rRange").value=draft.split;
-    $("#rHandleWrap").style.display=p.handle?"none":"block";$("#rHandle").value="";renderRoute();$("#result").classList.add("on");
-  }catch(err){toast(err.message||"Couldn't read that post");$("#src").classList.remove("scanning");b.classList.remove("on")}
-  busy=false};
-function renderRoute(){if(!draft)return;const h=draft.handle||clean($("#rHandle").value)||"author";
-  $("#rTo").innerHTML=`<span class="plat ${draft.platform}" style="margin-right:6px">${PL[draft.platform]}</span>@${esc(h)}`;$("#rSplit").textContent=$("#rRange").value+"% of fees"}
-const clean=h=>h.trim().replace(/^@+/,"").replace(/\s+/g,"");
-["rRange","rHandle"].forEach(id=>$("#"+id).addEventListener("input",renderRoute));
-$("#cancel").onclick=()=>{$("#build").classList.remove("on");draft=null};
-$("#launch").onclick=async()=>{if(!draft)return;
-  const name=$("#rName").value.trim(),ticker=$("#rTicker").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""),handle=draft.handle||clean($("#rHandle").value);
-  if(!name)return toast("Give it a name");if(!ticker)return toast("Add a ticker");if(!/^[A-Za-z0-9._]{1,30}$/.test(handle))return toast("Add the author's handle");
-  const b=$("#launch");b.disabled=true;b.textContent="Launching…";
-  try{const c=await API.launchToken({name,ticker,platform:draft.platform,handle,text:draft.text,image:draft.image,split:+$("#rRange").value,url:draft.url});
-    coins.unshift(c);renderFeed();renderStream();confetti();toast(`$${c.ticker} is live · streaming to @${c.handle}`);
-    $("#build").classList.remove("on");$("#url").value="";draft=null;setTimeout(()=>{$("#feed").scrollIntoView({behavior:"smooth"});},500)}
-  catch(e){toast(e.message||"Launch failed")}b.disabled=false;b.textContent="Launch coin"};
+    const t=await API.launchToken(v); t.color=t.color||COLORS[tokens.length%COLORS.length];
+    tokens.unshift(t);
+    ["fName","fTicker","fDesc","fHandle","fBuy"].forEach(id=>$("#"+id).value=""); imgUrl=imgFile=null; $("#imgPrev").style.backgroundImage="";$("#imgPrev").textContent="+";
+    renderPreview(); renderGrid(); go("explore"); setTimeout(()=>openToken(t.mint),350);
+    toast(`$${t.ticker} is live · fees go to @${t.handle}`);
+  }catch(e){toast(e.message||"Launch failed")}
+  b.disabled=false; b.textContent="Launch coin";
+};
 
-/* ============ STREAM STRIP + FEED ============ */
-function renderStream(){const s=[...coins].slice(0,10).map(c=>`<span>▲ <b>+$${c.rate.toFixed(4)}/s</b> → @${esc(c.handle)} from $${esc(c.ticker)}</span>`).join("");$("#stream").innerHTML=s+s}
-let fPl="all";
-$$("#fPl .fbtn").forEach(b=>b.onclick=()=>{$$("#fPl .fbtn").forEach(x=>x.classList.remove("on"));b.classList.add("on");fPl=b.dataset.v;renderFeed()});
-function renderFeed(){const l=coins.filter(c=>fPl==="all"||c.platform===fPl);
-  $("#feedGrid").innerHTML=l.map(c=>`<button class="fc" data-mint="${c.mint}">
-    <div class="top"><div class="post-h"><span class="pfp" style="background:${["#ffe14d","#ff5fa2","#c6ff3d","#2b3cff"][hash(c.handle)%4]}"></span><div><b>@${esc(c.handle)}</b><small><span class="plat ${c.platform}">${PL[c.platform]}</span></small></div></div><p class="post-t" style="margin-bottom:0">${esc(c.text)}</p></div>
-    <div class="img"><img src="${esc(c.image)}" alt="" loading="lazy" onerror="this.remove()"></div>
-    <div class="bot"><div><b>${esc(c.name)}</b><small>$${esc(c.ticker)} · MC ${usd(c.mcap,0)}</small></div><span class="coinchip"><i></i>${c.split}%</span></div>
-    <div class="live"><span>streamed to @${esc(c.handle)}</span><b data-live="${c.mint}">${usd(c.feesUsd)}</b></div></button>`).join("")||`<p class="muted">No clips here yet.</p>`;
-  $$("#feedGrid .fc").forEach(f=>f.onclick=()=>openCoin(f.dataset.mint))}
-// live per-second streaming counters (demo)
-let last=performance.now();(function loop(t){const dt=(t-last)/1000;last=t;coins.forEach(c=>{c.feesUsd+=c.rate*dt;c.unclaimed=(c.unclaimed??c.feesUsd*.2)+c.rate*dt});
-  $$("[data-live]").forEach(el=>{const c=coins.find(x=>x.mint===el.dataset.live);if(c)el.textContent="$"+c.feesUsd.toFixed(c.feesUsd<100?3:2)});requestAnimationFrame(loop)})(last);
+/* =====================================================================
+   CLAIM
+   ===================================================================== */
+const claim={step:"find",platform:"x",handle:"",items:[],ref:null};
+function renderClaim(){
+  const box=$("#claimBox"), c=claim;
+  if(c.step==="find"){
+    box.innerHTML=`<h2>Claim your fees</h2><p class="sub">Someone launched a coin with your name on it? Find what's waiting for you.</p>
+      <div class="field"><label>Your account</label><div class="plat-pick" id="cPlat">${["x","instagram","tiktok"].map(p=>`<button data-v="${p}" class="${c.platform===p?"on":""}">${PL[p]}</button>`).join("")}</div></div>
+      <div class="field"><label>Handle</label><div class="handle-in"><span>@</span><input id="cHandle" placeholder="username" value="${esc(c.handle)}" autocomplete="off"></div></div>
+      <button class="btn w" id="cFind" style="width:100%;height:50px">Check my fees</button>
+      <p class="note">Try <b style="color:#fff">backyardbrisket</b> on X to see a demo.</p>`;
+    $$("#cPlat button").forEach(b=>b.onclick=()=>{c.platform=b.dataset.v;c.handle=$("#cHandle").value;renderClaim()});
+    const find=async()=>{c.handle=cleanHandle($("#cHandle").value);if(!c.handle)return toast("Enter your handle");
+      const b=$("#cFind");b.disabled=true;b.textContent="Looking…";
+      c.items=(await API.getClaimable(c.platform,c.handle)).filter(i=>i.usd>0);c.step="list";renderClaim()};
+    $("#cFind").onclick=find; $("#cHandle").onkeydown=e=>{if(e.key==="Enter")find()};
+  }
+  else if(c.step==="list"){
+    const total=c.items.reduce((s,i)=>s+i.usd,0);
+    box.innerHTML=`<button class="btn g" id="cBack" style="height:34px;padding:0 12px;font-size:13px">← Back</button>
+      <div class="bal"><small>Waiting for <span class="plat" style="margin:0 4px">${PL[c.platform]}</span>@${esc(c.handle)}</small>
+      <div class="amt mono">${usd(total)}</div><div class="sol mono">≈ ${(total/CONFIG.solUsd).toFixed(3)} SOL in creator fees</div></div>
+      ${c.items.length?`<div class="lines">${c.items.map(i=>`<div class="line">${avatar(i.token)}<div class="grow"><b>${esc(i.token.name)}</b><small class="mono">$${esc(i.token.ticker)} · ${i.token.split}% share</small></div><b class="mono" style="color:var(--paid)">${usd(i.usd)}</b></div>`).join("")}</div>
+      <button class="btn pay" id="cPay">Claim with Apple Pay</button>
+      <p class="note">You'll sign in with ${PL[c.platform]} to prove it's you, then the money goes to your Apple Pay in USD.</p>`
+      :`<div class="empty" style="margin-bottom:0">No fees under @${esc(c.handle)} yet. Once someone launches a coin for this handle and people trade it, fees show up here.</div>`}`;
+    $("#cBack").onclick=()=>{c.step="find";renderClaim()};
+    if(c.items.length)$("#cPay").onclick=async()=>{
+      const b=$("#cPay");b.disabled=true;b.textContent=`Verifying @${c.handle}…`;
+      try{
+        const ok=await API.verifyHandle(c.platform,c.handle); if(!ok)throw new Error("Couldn't verify that handle");
+        b.textContent="Sending to Apple Pay…";
+        const r=await API.payoutApplePay({platform:c.platform,handle:c.handle,amountUsd:+total.toFixed(2),mints:c.items.map(i=>i.token.mint)});
+        c.items.forEach(i=>i.token.unclaimed=0); c.ref=r.reference; c.paid=total; c.step="done"; renderClaim();
+      }catch(e){toast(e.message||"Payout failed");b.disabled=false;b.textContent="Claim with Apple Pay"}
+    };
+  }
+  else{
+    box.innerHTML=`<div class="done"><div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ce27a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>${usd(c.paid)} sent</h2><p class="sub" style="margin:6px 0 18px">On its way to your Apple Pay. Future fees keep stacking under @${esc(c.handle)}.</p>
+      <div class="kv mono" style="justify-content:center;gap:8px;font-size:12px"><span>Reference</span><b>${esc(c.ref)}</b></div>
+      <button class="btn g" id="cAgain" style="margin-top:20px">Done</button></div>`;
+    $("#cAgain").onclick=()=>{c.step="find";renderClaim()};
+  }
+}
 
-/* ============ COIN MODAL ============ */
-function openCoin(mint){const c=coins.find(x=>x.mint===mint);if(!c)return;
-  let v=1,s=hash(c.mint);const pts=[];for(let i=0;i<40;i++){s=(s*9301+49297)%233280;v*=1+((s/233280)-.42)*.1;pts.push(v)}
-  const mn=Math.min(...pts),mx=Math.max(...pts),d=pts.map((p,i)=>(i?"L":"M")+(i/39*400).toFixed(1)+" "+(160-(p-mn)/(mx-mn||1)*110).toFixed(1)).join(" ");
-  $("#mbox").innerHTML=`<button class="x" aria-label="Close">×</button>
-    <div class="mh"><span class="cimg"><img src="${esc(c.image)}" alt="" onerror="this.remove()"></span><div><h3>${esc(c.name)}</h3><span class="mono muted" style="font-size:13px">$${esc(c.ticker)} · ${c.mint.slice(0,5)}…${c.mint.slice(-4)}</span></div></div>
-    <div class="chart"><span class="p mono">${usd(c.mcap,0)}</span><svg viewBox="0 0 400 170" preserveAspectRatio="none"><path d="${d} L400 170 L0 170Z" fill="#c6ff3d"/><path d="${d}" fill="none" stroke="#0d0d0d" stroke-width="3" vector-effect="non-scaling-stroke"/></svg></div>
-    <div class="kv"><span>Clipped from</span><b><span class="plat ${c.platform}">${PL[c.platform]}</span> @${esc(c.handle)}</b></div>
-    <div class="kv"><span>Author's cut</span><b>${c.split}% of creator fees</b></div>
-    <div class="kv"><span>Streaming now</span><b class="mono">+$${c.rate.toFixed(4)}/s</b></div>
-    <div class="kv"><span>Paid out in</span><b>Apple Pay · USD</b></div>
-    <div class="tr"><input id="amt" type="number" min="0" step="0.1" placeholder="0.0 SOL" inputmode="decimal"><button class="btn lime" id="buy">Buy</button><button class="btn white" id="sell">Sell</button></div>`;
-  $("#mbox .x").onclick=closeCoin;
-  const trade=side=>async()=>{const a=parseFloat($("#amt").value);if(!(a>0))return toast("Enter an amount");await wait(400);const fee=a*CONFIG.solUsd*.0095*c.split/100;c.feesUsd+=fee;c.mcap*=side==="buy"?1+a*.02:1-a*.015;toast(`${side==="buy"?"Bought":"Sold"} · +${usd(fee)} streamed to @${c.handle}`);renderFeed();openCoin(c.mint)};
-  $("#buy").onclick=trade("buy");$("#sell").onclick=trade("sell");
-  $("#modal").classList.add("on");document.body.style.overflow="hidden"}
-function closeCoin(){$("#modal").classList.remove("on");document.body.style.overflow=""}
-$("#modal").onclick=e=>{if(e.target.id==="modal")closeCoin()};addEventListener("keydown",e=>{if(e.key==="Escape")closeCoin()});
+/* =====================================================================
+   WALLET (Phantom / any window.solana provider)
+   ===================================================================== */
+$("#walletBtn").onclick=async()=>{
+  const p=window.phantom?.solana||window.solana;
+  if(!p){toast("No Solana wallet found — install Phantom");return}
+  try{const r=await p.connect();const k=r.publicKey.toString();$("#walletBtn").textContent=k.slice(0,4)+"…"+k.slice(-4)}catch{toast("Wallet connection cancelled")}
+};
 
-/* ============ CLAIM ============ */
-let cPl="x";$$("#cPl button").forEach(b=>b.onclick=()=>{$$("#cPl button").forEach(x=>x.classList.remove("on"));b.classList.add("on");cPl=b.dataset.v});
-async function findStream(){const h=clean($("#cHandle").value);if(!h)return toast("Enter your handle");
-  const mine=coins.filter(c=>c.platform===cPl&&c.handle.toLowerCase()===h.toLowerCase());const tot=mine.reduce((s,c)=>s+(c.unclaimed||0),0);const out=$("#cOut");
-  out.innerHTML=`<p class="muted mono" style="font-size:13px">STREAMED TO @${esc(h).toUpperCase()}</p><div class="amt mono">${usd(tot)}</div>`+
-   (mine.length?`<div class="clines">${mine.map(c=>`<div class="cl"><span>$${esc(c.ticker)} <span class="muted">· ${c.split}%</span></span><b class="mono">${usd(c.unclaimed||0)}</b></div>`).join("")}</div>
-    <button class="btn lime" id="cPay" style="width:100%">Cash out to Apple Pay</button><p class="muted" style="font-size:13px;margin-top:10px">You'll sign in with ${PL[cPl]} to prove it's you.</p>`
-   :`<p class="muted">No clips of your posts yet. When someone clips one and people trade it, it streams here.</p>`);
-  if(mine.length)$("#cPay").onclick=async()=>{const b=$("#cPay");b.disabled=true;b.textContent="Verifying…";
-    try{if(!await API.verifyHandle(cPl,h))throw new Error("Couldn't verify that handle");b.textContent="Sending to Apple Pay…";
-      const r=await API.payoutApplePay({platform:cPl,handle:h,amountUsd:+tot.toFixed(2)});mine.forEach(c=>c.unclaimed=0);
-      out.innerHTML=`<p class="muted mono" style="font-size:13px">SENT</p><div class="amt mono">${usd(tot)}</div><p>On its way to your Apple Pay. New fees keep streaming in.</p><p class="muted mono" style="font-size:12px;margin-top:10px">ref ${esc(r.reference)}</p>`;confetti()}
-    catch(e){toast(e.message||"Payout failed");b.disabled=false;b.textContent="Cash out to Apple Pay"}}}
-$("#cFind").onclick=findStream;$("#cHandle").onkeydown=e=>{if(e.key==="Enter")findStream()};
-
-/* ============ WALLET ============ */
-$("#walletBtn").onclick=async()=>{const p=window.phantom?.solana||window.solana;if(!p)return toast("No Solana wallet found — install Phantom");
-  try{const r=await p.connect(),k=r.publicKey.toString();$("#walletBtn").textContent=k.slice(0,4)+"…"+k.slice(-4)}catch{toast("Wallet connection cancelled")}};
-
-/* ============ SCROLL REVEAL ============ */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
-$$(".reveal").forEach((el,i)=>{el.style.transitionDelay=(i%3)*90+"ms";io.observe(el)});
-
-function copyText(t){const fb=()=>{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch{}a.remove()};try{navigator.clipboard?navigator.clipboard.writeText(t).catch(fb):fb()}catch{fb()}}
-$$(".copyCa").forEach(b=>b.onclick=()=>{copyText("7v8ggTSJ2GxPQ55vHzC7R9XaZ9JDwocoSqjkoHTopump");toast("Contract address copied")});
-renderStream();renderFeed();
+/* init */
+document.title=CONFIG.name+" · Launchpad";
+["#brandName","#mW",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));
+$("#fSplit").value=CONFIG.defaultSplit; $("#yr").textContent=new Date().getFullYear();
+renderGrid(); renderPreview();
 </script>
 </body>
 </html>

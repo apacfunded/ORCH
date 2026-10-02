@@ -16,6 +16,7 @@
 <meta property="og:image" content="https://orch.lol/orchid-banner.png">
 <meta property="og:image:width" content="1500"><meta property="og:image:height" content="500">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Orchid_Pad">
 <meta name="twitter:title" content="Orchid · Paired with $PAID">
 <meta name="twitter:description" content="Launch a coin for anyone. Fees land in their Apple Pay. Fair launch on pump.fun.">
 <meta name="twitter:image" content="https://orch.lol/orchid-banner.png">
@@ -498,6 +499,14 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
 }
 @media (min-width:561px) and (max-width:1100px){.navpx{display:none}}
 
+
+.xbtn{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);color:var(--text);transition:.15s}
+.xbtn:hover{border-color:#555;background:var(--panel-2)}
+.xl{color:var(--text);text-decoration:underline;text-underline-offset:2px}
+.foot-links a{display:inline-flex;align-items:center;gap:6px}
+.foot-links svg{width:13px;height:13px}
+@media (max-width:560px){.nav .xbtn{display:none}.mtabs{align-items:center}.mtabs .xbtn{display:inline-grid;flex:none;width:36px;height:36px}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -531,6 +540,7 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
         <button class="tab" data-go="claim">Claim</button>
       </nav>
       <div class="sp"></div>
+      <a class="xbtn" href="https://x.com/Orchid_Pad" target="_blank" rel="noopener" aria-label="Orchid on X" title="@Orchid_Pad on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.2 8.3L23.3 22h-6.6l-5.2-6.8L5.5 22H2.3l7.7-8.8L1 2h6.8l4.7 6.2L18.9 2zm-1.2 18h1.8L7.2 3.9H5.3L17.7 20z"/></svg></a>
       <a class="navpx" id="navPaid" href="https://dexscreener.com/solana/98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump" target="_blank" rel="noopener" hidden><img class="pImg" alt=""><span>$PAID</span><b class="mono" data-k="price"></b><i class="mono" data-k="chg"></i></a>
       <button class="btn g" data-go="launch">Launch a coin</button>
       <button class="btn w" id="walletBtn">Connect wallet</button>
@@ -539,6 +549,7 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
       <button class="tab on" data-go="explore">Explore</button>
       <button class="tab" data-go="launch">Launch</button>
       <button class="tab" data-go="claim">Claim</button>
+      <a class="xbtn" href="https://x.com/Orchid_Pad" target="_blank" rel="noopener" aria-label="Orchid on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.2 8.3L23.3 22h-6.6l-5.2-6.8L5.5 22H2.3l7.7-8.8L1 2h6.8l4.7 6.2L18.9 2zm-1.2 18h1.8L7.2 3.9H5.3L17.7 20z"/></svg></a>
     </nav>
   </div>
 </header>
@@ -559,7 +570,7 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
         </div>
         <button class="ca" id="caBox" title="Copy contract address"><small>$ORCHID</small><code class="mono" id="caText">Contract address drops at launch</code><span class="cp">Copy</span></button>
         <div class="ca-links" id="caLinks"></div>
-        <p class="note" style="margin-top:8px">Only trust the CA posted here. Anything else using the old Orchard name isn't us.</p>
+        <p class="note" style="margin-top:8px">Only trust the CA posted here or on <a href="https://x.com/Orchid_Pad" target="_blank" rel="noopener" class="xl">@Orchid_Pad</a>. Anything else using the old Orchard name isn't us.</p>
       </div>
       <div class="orb" aria-hidden="true">
         <div class="halo"></div>
@@ -691,14 +702,14 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
         <details><summary>How is $ORCHID launching?</summary><p>Fair launch on pump.fun. No presale, so everyone buys on the same curve at the same time.</p></details>
         <details><summary>Can the fee split change later?</summary><p>No. The split locks the moment the coin launches, so the person you named always gets their share.</p></details>
         <details><summary>What is $PAID?</summary><p>$PAID is the memecoin behind Paid, a Solana app that routes creator fees to real X accounts. It has paid out over $1.4M so far. Orchid is built with the Paid team and paired with $PAID.</p></details>
-        <details><summary>How do I know a coin is the real $ORCHID?</summary><p>Only trust the contract address on this site. Anything else using the old Orchard name isn't us.</p></details>
+        <details><summary>How do I know a coin is the real $ORCHID?</summary><p>Only trust the contract address posted on this site and on <a href="https://x.com/Orchid_Pad" target="_blank" rel="noopener" class="xl">@Orchid_Pad</a>. Anything else using the old Orchard name isn't us.</p></details>
       </div>
     </section>
 
     <div class="cta-final">
       <h2>Put someone's name on a coin. Watch them get paid.</h2>
       <p>Launching takes a minute. The person you pick doesn't have to do a thing.</p>
-      <div class="row"><button class="btn w" data-go="launch">Launch a coin</button><button class="btn g" data-go="claim">Claim your fees</button></div>
+      <div class="row"><button class="btn w" data-go="launch">Launch a coin</button><a class="btn g" href="https://x.com/Orchid_Pad" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.2 8.3L23.3 22h-6.6l-5.2-6.8L5.5 22H2.3l7.7-8.8L1 2h6.8l4.7 6.2L18.9 2zm-1.2 18h1.8L7.2 3.9H5.3L17.7 20z"/></svg> Follow @Orchid_Pad</a></div>
     </div>
   </section>
 
@@ -782,7 +793,7 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
       <div><b>Orchid</b><small>Paired with $PAID · Fair launch on pump.fun</small></div>
     </div>
     <nav class="foot-links" aria-label="Links">
-      <a href="#" data-go="launch">Launch</a><a href="#" data-go="claim">Claim</a>
+      <a href="https://x.com/Orchid_Pad" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.2 8.3L23.3 22h-6.6l-5.2-6.8L5.5 22H2.3l7.7-8.8L1 2h6.8l4.7 6.2L18.9 2zm-1.2 18h1.8L7.2 3.9H5.3L17.7 20z"/></svg> @Orchid_Pad</a><a href="#" data-go="launch">Launch</a><a href="#" data-go="claim">Claim</a>
       <a href="https://usepaid.app/" target="_blank" rel="noopener">Paid ↗</a>
       <a href="https://pump.fun/coin/98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump" target="_blank" rel="noopener">$PAID on pump.fun ↗</a>
       <a href="https://dexscreener.com/solana/98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump" target="_blank" rel="noopener">$PAID chart ↗</a>

@@ -1162,7 +1162,7 @@ $("#caPaid").onclick=()=>{if(!PAID_CA)return toast("$PAID CA coming soon");copyT
    with the ORCHID ticker. Only coins created by that wallet count.
    ===================================================================== */
 let CA="";
-const CREATOR_WALLET="";                 // your pump.fun wallet address
+const CREATOR_WALLET="FuGgCD26SNC3n9WTAuk3N9XhuRFVR5w2woX8E6D48sjZ"; // launch wallet
 const EXPECT_TICKER="ORCHID";            // ticker the new coin must have
 const WATCH_FROM=1790905109;                     // ignore anything created before the site went up
 const RPC="https://api.mainnet-beta.solana.com";
@@ -1183,18 +1183,18 @@ try{const c=localStorage.getItem("orchid-ca");if(!CA&&c&&/^[1-9A-HJ-NP-Za-km-z]{
 const B58="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 function b58decode(str){const bytes=[0];for(const ch of str){let c=B58.indexOf(ch);if(c<0)return null;for(let i=0;i<bytes.length;i++){c+=bytes[i]*58;bytes[i]=c&255;c>>=8}while(c>0){bytes.push(c&255);c>>=8}}for(const ch of str){if(ch!=="1")break;bytes.push(0)}return Uint8Array.from(bytes.reverse())}
 function readStr(b,o){const n=b[o]|b[o+1]<<8|b[o+2]<<16|b[o+3]<<24;return [new TextDecoder().decode(b.slice(o+4,o+4+n)),o+4+n]}
-const CREATE_DISC=[24,30,200,40,5,28,7,119];      // pump.fun "create" instruction
+const CREATE_DISCS=[[24,30,200,40,5,28,7,119],[214,144,76,236,95,139,49,180]]; // pump.fun create + create_v2
 function parseCreate(ix){ // -> {name,symbol,mint} or null
   if(!ix||ix.programId!==PUMP_PROGRAM||typeof ix.data!=="string")return null;
   const b=b58decode(ix.data); if(!b||b.length<8)return null;
-  if(!CREATE_DISC.every((v,i)=>b[i]===v))return null;
+  if(!CREATE_DISCS.some(d=>d.every((v,i)=>b[i]===v)))return null;
   try{let o=8,name,symbol;[name,o]=readStr(b,o);[symbol,o]=readStr(b,o);return {name,symbol,mint:(ix.accounts||[])[0]}}catch{return null}
 }
 async function rpc(method,params){const r=await fetch(RPC,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params})});const j=await r.json();if(j.error)throw new Error(j.error.message);return j.result}
 const seenSigs=new Set();
 async function watchLaunch(){
   if(CA||!CREATOR_WALLET)return;
-  const sigs=await rpc("getSignaturesForAddress",[CREATOR_WALLET,{limit:20}]);
+  const sigs=await rpc("getSignaturesForAddress",[CREATOR_WALLET,{limit:100}]);
   for(const sg of sigs||[]){
     if(sg.err||seenSigs.has(sg.signature))continue;
     seenSigs.add(sg.signature);
@@ -1205,7 +1205,7 @@ async function watchLaunch(){
     const ixs=[...(msg.instructions||[]),...((tx.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[]))];
     for(const ix of ixs){
       const c=parseCreate(ix); if(!c||!c.mint)continue;
-      if(c.symbol.trim().toUpperCase()!==EXPECT_TICKER)continue;
+      if(c.symbol.trim().toUpperCase()!==EXPECT_TICKER&&c.name.trim().toUpperCase()!==EXPECT_TICKER)continue;
       CA=c.mint; try{localStorage.setItem("orchid-ca",CA)}catch{}
       applyCA(); toast(`$${EXPECT_TICKER} is live · CA posted`); return;
     }

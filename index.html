@@ -507,6 +507,10 @@ footer{padding:0;border-top:1px solid var(--line);background:linear-gradient(180
 .foot-links svg{width:13px;height:13px}
 @media (max-width:560px){.nav .xbtn{display:none}.mtabs{align-items:center}.mtabs .xbtn{display:inline-grid;flex:none;width:36px;height:36px}}
 
+
+.is-live .fl{background:var(--paid)}
+.is-live .fl:after{content:" · LIVE"}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1150,11 +1154,69 @@ const PAID_CA="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump";
 if(PAID_CA)$("#caPaidTxt").textContent=PAID_CA;
 $("#caPaid").onclick=()=>{if(!PAID_CA)return toast("$PAID CA coming soon");copyText(PAID_CA);toast("$PAID contract address copied")};
 
-/* Paste the new $ORCHID contract address here once it's live */
-const CA="";
-if(CA){$("#caText").textContent=CA;$("#caLinks").innerHTML=`<a href="https://pump.fun/coin/${CA}" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/${CA}" target="_blank" rel="noopener">DexScreener ↗</a>`}
-if(CA)$("#caOrchidTxt").textContent=CA;
+/* =====================================================================
+   $ORCHID CONTRACT ADDRESS
+   Option A (manual): paste the CA into CA below.
+   Option B (automatic): put your pump.fun wallet in CREATOR_WALLET. The page
+   watches that wallet on-chain and goes live the moment it creates a coin
+   with the ORCHID ticker. Only coins created by that wallet count.
+   ===================================================================== */
+let CA="";
+const CREATOR_WALLET="";                 // your pump.fun wallet address
+const EXPECT_TICKER="ORCHID";            // ticker the new coin must have
+const WATCH_FROM=1790905109;                     // ignore anything created before the site went up
+const RPC="https://api.mainnet-beta.solana.com";
+const PUMP_PROGRAM="6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
+function applyCA(){
+  if(!CA)return;
+  $("#caText").textContent=CA;
+  $("#caLinks").innerHTML=`<a href="https://pump.fun/coin/${CA}" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/${CA}" target="_blank" rel="noopener">DexScreener ↗</a>`;
+  $("#caOrchidTxt").textContent=CA;
+  const w=$("#pcOrc .wait"); if(w)w.innerHTML="<div><b>Loading chart…</b>Pulling live data</div>";
+  if(window.livePrice)livePrice($("#pcOrc"),CA);
+  document.body.classList.add("is-live");
+}
 $("#caBox").onclick=$("#caOrchid").onclick=()=>{if(!CA)return toast("CA drops at launch");copyText(CA);toast("Contract address copied")};
+try{const c=localStorage.getItem("orchid-ca");if(!CA&&c&&/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(c))CA=c}catch{}
+
+/* ---- on-chain launch watcher ---- */
+const B58="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function b58decode(str){const bytes=[0];for(const ch of str){let c=B58.indexOf(ch);if(c<0)return null;for(let i=0;i<bytes.length;i++){c+=bytes[i]*58;bytes[i]=c&255;c>>=8}while(c>0){bytes.push(c&255);c>>=8}}for(const ch of str){if(ch!=="1")break;bytes.push(0)}return Uint8Array.from(bytes.reverse())}
+function readStr(b,o){const n=b[o]|b[o+1]<<8|b[o+2]<<16|b[o+3]<<24;return [new TextDecoder().decode(b.slice(o+4,o+4+n)),o+4+n]}
+const CREATE_DISC=[24,30,200,40,5,28,7,119];      // pump.fun "create" instruction
+function parseCreate(ix){ // -> {name,symbol,mint} or null
+  if(!ix||ix.programId!==PUMP_PROGRAM||typeof ix.data!=="string")return null;
+  const b=b58decode(ix.data); if(!b||b.length<8)return null;
+  if(!CREATE_DISC.every((v,i)=>b[i]===v))return null;
+  try{let o=8,name,symbol;[name,o]=readStr(b,o);[symbol,o]=readStr(b,o);return {name,symbol,mint:(ix.accounts||[])[0]}}catch{return null}
+}
+async function rpc(method,params){const r=await fetch(RPC,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params})});const j=await r.json();if(j.error)throw new Error(j.error.message);return j.result}
+const seenSigs=new Set();
+async function watchLaunch(){
+  if(CA||!CREATOR_WALLET)return;
+  const sigs=await rpc("getSignaturesForAddress",[CREATOR_WALLET,{limit:20}]);
+  for(const sg of sigs||[]){
+    if(sg.err||seenSigs.has(sg.signature))continue;
+    seenSigs.add(sg.signature);
+    if(sg.blockTime&&sg.blockTime<WATCH_FROM)continue;
+    const tx=await rpc("getTransaction",[sg.signature,{encoding:"jsonParsed",maxSupportedTransactionVersion:0,commitment:"confirmed"}]);
+    if(!tx)continue;
+    const msg=tx.transaction.message;
+    const ixs=[...(msg.instructions||[]),...((tx.meta?.innerInstructions||[]).flatMap(x=>x.instructions||[]))];
+    for(const ix of ixs){
+      const c=parseCreate(ix); if(!c||!c.mint)continue;
+      if(c.symbol.trim().toUpperCase()!==EXPECT_TICKER)continue;
+      CA=c.mint; try{localStorage.setItem("orchid-ca",CA)}catch{}
+      applyCA(); toast(`$${EXPECT_TICKER} is live · CA posted`); return;
+    }
+  }
+}
+function startWatcher(){
+  if(CA||!CREATOR_WALLET)return;
+  const run=()=>watchLaunch().catch(()=>{});
+  run(); const iv=setInterval(()=>{if(CA)clearInterval(iv);else run()},30000);
+  const w=$("#pcOrc .wait"); if(w)w.innerHTML="<div><b>Watching the launch wallet</b>The CA and chart appear here the second $ORCHID is created.</div>";
+}
 
 /* =====================================================================
    SIDEBAR — coins made on Paid / on Orchid
@@ -1213,7 +1275,7 @@ function startPrices(){
 document.title=CONFIG.name+" · Launchpad";
 ["#brandName",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));
 $("#fSplit").value=CONFIG.defaultSplit; $("#yr").textContent=new Date().getFullYear();
-renderGrid(); renderPreview(); renderSide(); startPrices();
+renderGrid(); renderPreview(); renderSide(); applyCA(); startPrices(); startWatcher();
 </script>
 </body>
 </html>

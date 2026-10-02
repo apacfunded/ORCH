@@ -404,6 +404,33 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
 .slist-f{padding:9px 14px;border-top:1px solid var(--line);color:var(--dim);font-size:11px}
 @media (max-width:1000px){.ex{grid-template-columns:1fr}.side{position:static}}
 
+
+/* live prices */
+.prices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pcard{border:1px solid var(--line);border-radius:20px;background:var(--panel);overflow:hidden;min-width:0;display:flex;flex-direction:column}
+.pcard-h{display:flex;align-items:center;gap:12px;padding:16px 18px;flex-wrap:wrap}
+.pcard-h .lg{width:42px;height:42px;border-radius:12px;background:#000;border:1px solid var(--line-2);display:grid;place-items:center;position:relative;flex:none}
+.pcard-h .lg img{width:70%;height:70%}
+.pcard-h .lg img.p{position:absolute;width:24%;height:24%}
+.pcard-h .nm b{display:block;font-size:16px}
+.pcard-h .nm small{color:var(--muted);font-size:12px}
+.pcard-h .px{margin-left:auto;text-align:right}
+.pcard-h .px .v{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.pcard-h .px .c{font-size:13px;font-weight:700}
+.up{color:var(--paid)}.down{color:var(--red)}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.pstats div{padding:10px 18px;font-size:12px;color:var(--muted)}
+.pstats div+div{border-left:1px solid var(--line)}
+.pstats b{display:block;color:var(--text);font-size:14px;margin-top:2px}
+.pchart{position:relative;height:380px;background:#000}
+.pchart iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.pchart .wait{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;color:var(--muted);font-size:14px;background:radial-gradient(300px 160px at 50% 50%,rgba(60,226,122,.12),transparent 70%)}
+.pchart .wait b{display:block;color:var(--text);font-size:18px;margin-bottom:4px}
+.pcard-f{display:flex;gap:14px;padding:10px 18px;font-size:12px;color:var(--muted)}
+.pcard-f a:hover{color:var(--text)}
+.pcard-f .sp{flex:1}
+@media (max-width:900px){.prices{grid-template-columns:1fr}.pchart{height:320px}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -494,6 +521,24 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
           <button class="pca" id="caOrchid" type="button"><code class="mono" id="caOrchidTxt">Drops at launch</code><span>Copy</span></button>
           <small>$PAID</small>
           <button class="pca" id="caPaid" type="button"><code class="mono" id="caPaidTxt">Add $PAID CA</code><span>Copy</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="pxH">
+      <div class="sec-h"><div><span class="kicker">Live prices</span><h2 id="pxH">$PAID and $ORCHID, side by side.</h2></div><p>Live charts from DexScreener. Prices refresh every 20 seconds.</p></div>
+      <div class="prices">
+        <div class="pcard" id="pcPaid">
+          <div class="pcard-h"><span class="lg"><img class="pImg" alt=""></span><span class="nm"><b>Paid</b><small>$PAID</small></span><span class="px"><span class="v mono" data-k="price">…</span><span class="c mono" data-k="chg"></span></span></div>
+          <div class="pstats"><div>Market cap<b class="mono" data-k="mcap">…</b></div><div>24h volume<b class="mono" data-k="vol">…</b></div><div>Liquidity<b class="mono" data-k="liq">…</b></div></div>
+          <div class="pchart" data-k="chart"><div class="wait"><div><b>Loading chart…</b>Pulling live data</div></div></div>
+          <div class="pcard-f"><a data-k="pf" target="_blank" rel="noopener">pump.fun ↗</a><a data-k="dx" target="_blank" rel="noopener">DexScreener ↗</a><span class="sp"></span><span data-k="upd"></span></div>
+        </div>
+        <div class="pcard" id="pcOrc">
+          <div class="pcard-h"><span class="lg"><img class="oImg" alt=""><img class="pImg p" alt=""></span><span class="nm"><b>Orchid</b><small>$ORCHID</small></span><span class="px"><span class="v mono" data-k="price">—</span><span class="c mono" data-k="chg"></span></span></div>
+          <div class="pstats"><div>Market cap<b class="mono" data-k="mcap">—</b></div><div>24h volume<b class="mono" data-k="vol">—</b></div><div>Liquidity<b class="mono" data-k="liq">—</b></div></div>
+          <div class="pchart" data-k="chart"><div class="wait"><div><b>Chart goes live at launch</b>Fair launch on pump.fun. The CA will be posted here first.</div></div></div>
+          <div class="pcard-f"><a data-k="pf" target="_blank" rel="noopener" hidden>pump.fun ↗</a><a data-k="dx" target="_blank" rel="noopener" hidden>DexScreener ↗</a><span class="sp"></span><span data-k="upd"></span></div>
         </div>
       </div>
     </section>
@@ -1023,7 +1068,7 @@ const ORCHID_DEMO = [["backyardbrisket","x",42.10,"2m ago"],["nanaknitsalot","in
 })();
 
 /* Paste the $PAID contract address here */
-const PAID_CA="";
+const PAID_CA="98kfF7rmsg1QDUEoCqNE7g7M1FdrTt92TEp2CLzypump";
 if(PAID_CA)$("#caPaidTxt").textContent=PAID_CA;
 $("#caPaid").onclick=()=>{if(!PAID_CA)return toast("$PAID CA coming soon");copyText(PAID_CA);toast("$PAID contract address copied")};
 
@@ -1057,11 +1102,39 @@ function renderSide(){
   $("#sideOrcCount").textContent=tokens.length+" coins";
   $("#sideOrcNote").textContent=real.length?"Live coins launched on Orchid":"Sample coins until $ORCHID is live";
 }
+
+/* =====================================================================
+   LIVE PRICES — DexScreener (refreshes every 20s)
+   ===================================================================== */
+function fmtPrice(p){p=+p;if(!p)return "—";if(p>=1)return "$"+p.toFixed(3);const z=Math.max(2,Math.ceil(-Math.log10(p))+2);return "$"+p.toFixed(Math.min(z,10))}
+function fmtBig(n){n=+n||0;return n>=1e9?"$"+(n/1e9).toFixed(2)+"B":n>=1e6?"$"+(n/1e6).toFixed(2)+"M":n>=1e3?"$"+(n/1e3).toFixed(1)+"K":"$"+n.toFixed(0)}
+const chartSet={};
+async function livePrice(card,ca){
+  const q=k=>card.querySelector(`[data-k="${k}"]`);
+  q("pf").href=`https://pump.fun/coin/${ca}`; q("dx").href=`https://dexscreener.com/solana/${ca}`; q("pf").hidden=q("dx").hidden=false;
+  try{
+    const r=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${ca}`,{cache:"no-store"}); const j=await r.json();
+    const pairs=(j.pairs||[]).filter(p=>p.chainId==="solana").sort((a,b)=>(b.liquidity?.usd||0)-(a.liquidity?.usd||0));
+    const p=pairs[0]; if(!p)throw new Error("no pair");
+    q("price").textContent=fmtPrice(p.priceUsd);
+    const ch=+(p.priceChange?.h24??0); const c=q("chg"); c.textContent=(ch>=0?"+":"")+ch.toFixed(2)+"% 24h"; c.className="c mono "+(ch>=0?"up":"down");
+    q("mcap").textContent=fmtBig(p.marketCap??p.fdv); q("vol").textContent=fmtBig(p.volume?.h24); q("liq").textContent=fmtBig(p.liquidity?.usd);
+    q("upd").textContent="Updated "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"});
+    if(!chartSet[ca]){chartSet[ca]=1;
+      q("chart").innerHTML=`<iframe title="Live chart" loading="lazy" src="https://dexscreener.com/solana/${p.pairAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=1&chartType=usd&interval=15"></iframe>`;}
+  }catch(e){
+    if(!chartSet[ca])q("chart").innerHTML=`<div class="wait"><div><b>Chart unavailable right now</b>Open it on <a href="https://dexscreener.com/solana/${ca}" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">DexScreener ↗</a></div></div>`;
+  }
+}
+function startPrices(){
+  const tick=()=>{livePrice($("#pcPaid"),PAID_CA); if(CA)livePrice($("#pcOrc"),CA)};
+  tick(); setInterval(tick,20000);
+}
 /* init */
 document.title=CONFIG.name+" · Launchpad";
 ["#brandName",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));
 $("#fSplit").value=CONFIG.defaultSplit; $("#yr").textContent=new Date().getFullYear();
-renderGrid(); renderPreview(); renderSide();
+renderGrid(); renderPreview(); renderSide(); startPrices();
 </script>
 </body>
 </html>

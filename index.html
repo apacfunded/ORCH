@@ -355,6 +355,8 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
 .heroTags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .heroTags .fl{margin-left:0}
 .pay-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.pay-top.one{grid-template-columns:1fr}
+.pay-top.one .big{font-size:clamp(40px,6vw,64px)}
 .ptile{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:var(--panel);min-width:0}
 .ptile small{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .ptile .big{font-size:clamp(30px,4vw,44px);font-weight:800;letter-spacing:-.03em;margin-top:6px;line-height:1.05}
@@ -498,7 +500,7 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
         <div class="orbit"><i></i></div><div class="orbit o2"></div>
         <div class="flower"><img class="oImg" alt=""></div>
         <div class="core"><img class="pImg" alt=""></div>
-        <div class="chip c1"><span class="g">●</span> @backyardbrisket <small>got paid</small> <b class="g mono">+$42.10</b></div>
+        <div class="chip c1"><span class="g">●</span> $PAID <small>paid out</small> <b class="g mono">$1.44M+</b></div>
         <div class="chip c2"><small>Paired with</small> $PAID <small>× $ORCHID</small></div>
       </div>
     </div>
@@ -544,14 +546,12 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
     </section>
 
     <section class="sec" aria-labelledby="payH">
-      <div class="sec-h"><div><span class="kicker">Payouts</span><h2 id="payH">Real people are getting paid.</h2></div><p>Every payout from $PAID and Orchid in one feed. Fair launch on pump.fun, so everyone starts at the same price.</p></div>
-      <div class="pay-top">
-        <div class="ptile total"><small>Total paid · $PAID + Orchid</small><div class="big mono" id="tTotal">$0</div><p id="tTotalNote"></p></div>
-        <div class="ptile"><small><span class="src"><img class="pImg" alt="">PAID</span>Paid out by $PAID</small><div class="big mono" id="tPaid">$0</div><p id="tPaidNote"></p></div>
-        <div class="ptile"><small><span class="src orc"><img class="oImg" alt="">ORCHID</span>Paid out on Orchid</small><div class="big mono" id="tOrc">$0</div><p id="tOrcNote"></p></div>
+      <div class="sec-h"><div><span class="kicker">Payouts</span><h2 id="payH">Real people are getting paid by $PAID.</h2></div><p>Paid sends trading fees to real accounts. Orchid is paired with $PAID and brings the same idea to X, Instagram and TikTok.</p></div>
+      <div class="pay-top one">
+        <div class="ptile total"><small><span class="src"><img class="pImg" alt="">PAID</span>Total paid out by $PAID</small><div class="big mono" id="tTotal">$0</div><p id="tTotalNote"></p></div>
       </div>
       <div class="feed">
-        <div class="feed-h"><b>Recent payouts</b><span class="live">Updating live</span></div>
+        <div class="feed-h"><b>Recent payouts by $PAID</b><span class="live">Updating live</span></div>
         <div id="feedRows"></div>
         <div class="feed-f" id="feedNote"></div>
       </div>
@@ -1030,41 +1030,22 @@ const PAID_TOTAL_NOTE = "Reported in September 2026";
 const PAID_PAYOUTS = [
   // ["somehandle","x",1250,"2h ago"],
 ];
-// Orchid's real total and payouts. Stays at 0 until $ORCHID is live.
-const ORCHID_TOTAL_USD = 0;
-const ORCHID_PAYOUTS = [
-  // ["somehandle","tiktok",42.10,"5m ago"],
-];
-// Sample Orchid rows shown only while ORCHID_PAYOUTS is empty (marked "demo").
-const ORCHID_DEMO = [["backyardbrisket","x",42.10,"2m ago"],["nanaknitsalot","instagram",18.75,"9m ago"],["pixelpete_dev","x",96.40,"21m ago"],["bodegacat.nyc","tiktok",27.30,"44m ago"],["wokhei.daily","tiktok",33.90,"1h ago"]];
 
 (function payouts(){
   const big=n=>n>=1e6?"$"+(n/1e6).toFixed(2)+"M":n>=1e3?"$"+(n/1e3).toFixed(1)+"K":"$"+n.toFixed(2);
-  const pImg=$(".emblem img.p").src, oImg=$(".emblem img").src;
-  const chip=k=>k==="paid"?`<span class="src"><img src="${pImg}" alt="">PAID</span>`:`<span class="src orc"><img src="${oImg}" alt="">ORCHID</span>`;
-  const orcRows=ORCHID_PAYOUTS.length?ORCHID_PAYOUTS:ORCHID_DEMO, orcDemo=!ORCHID_PAYOUTS.length;
-  const rows=[];
-  const n=Math.max(PAID_PAYOUTS.length,orcRows.length);
-  for(let i=0;i<n;i++){ if(PAID_PAYOUTS[i])rows.push(["paid",...PAID_PAYOUTS[i],false]); if(orcRows[i])rows.push(["orchid",...orcRows[i],orcDemo]); }
-  // totals
-  $("#tPaid").textContent=big(PAID_TOTAL_USD)+(PAID_TOTAL_NOTE?"+":"");
-  $("#tPaidNote").textContent=PAID_TOTAL_NOTE;
-  $("#tOrc").textContent=ORCHID_TOTAL_USD?big(ORCHID_TOTAL_USD):"Launching";
-  $("#tOrcNote").textContent=ORCHID_TOTAL_USD?"Since launch":"Fair launch on pump.fun";
-  const total=PAID_TOTAL_USD+ORCHID_TOTAL_USD;
-  // count up
+  const pImg=$(".emblem img.p").src;
+  const chip=`<span class="src"><img src="${pImg}" alt="">PAID</span>`;
+  const plus=PAID_TOTAL_NOTE?"+":"";
   const el=$("#tTotal"),t0=performance.now(),dur=1400;
-  (function step(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=big(total*e)+(k===1&&PAID_TOTAL_NOTE?"+":"");if(k<1)requestAnimationFrame(step)})(t0);
-  $("#tTotalNote").textContent="Across $PAID and Orchid";
-  // feed
-  const row=(r,cls="")=>`<div class="frow ${cls}">${chip(r[0])}<span class="who"><b>@${esc(r[1])}</b><small>${PL[r[2]]||""}${r[5]?" · demo":""}</small></span><span class="amt mono">+${big(r[3])}</span><span class="when">${esc(r[4])}</span></div>`;
-  const shown=rows.slice(0,8);
-  $("#feedRows").innerHTML=shown.length?shown.map(r=>row(r)).join(""):`<div class="feed-empty">Payouts show up here as they happen.</div>`;
-  $("#feedNote").textContent=(PAID_PAYOUTS.length?"":"$PAID payouts appear here once added. ")+(orcDemo?"Orchid rows are samples until $ORCHID is live.":"");
-  // ticker: both sources
-  const tk=rows.map(r=>`<span>${r[0]==="paid"?"$PAID":"Orchid"} · <b>@${esc(r[1])}</b> got <em>+${big(r[3])}</em>${r[5]?" (demo)":""}</span>`);
-  tk.unshift(`<span><b>$PAID</b> has paid out <em>${big(PAID_TOTAL_USD)}+</em> to real accounts</span>`,`<span><b>$ORCHID</b> · fair launch on <em>pump.fun</em></span>`);
-  const one=tk.join("");$("#tickTrack").innerHTML=one+one;
+  (function step(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=big(PAID_TOTAL_USD*e)+(k===1?plus:"");if(k<1)requestAnimationFrame(step)})(t0);
+  $("#tTotalNote").textContent=PAID_TOTAL_NOTE;
+  const rows=PAID_PAYOUTS.slice(0,8);
+  $("#feedRows").innerHTML=rows.length?rows.map(r=>`<div class="frow">${chip}<span class="who"><b>@${esc(r[0])}</b><small>${PL[r[1]]||""}</small></span><span class="amt mono">+${big(r[2])}</span><span class="when">${esc(r[3]||"")}</span></div>`).join("")
+    :`<div class="feed-empty">Paid's latest payouts show up here. Follow them live on <a href="https://usepaid.app/" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">usepaid.app ↗</a></div>`;
+  $("#feedNote").textContent="";$("#feedNote").hidden=true;
+  const tk=[`<span><b>$PAID</b> has paid out <em>${big(PAID_TOTAL_USD)}${plus}</em> to real accounts</span>`,`<span><b>$ORCHID</b> · paired with <em>$PAID</em></span>`,`<span><b>$ORCHID</b> · fair launch on <em>pump.fun</em></span>`]
+    .concat(rows.map(r=>`<span>$PAID · <b>@${esc(r[0])}</b> got <em>+${big(r[2])}</em></span>`));
+  const one=tk.concat(tk).join("");$("#tickTrack").innerHTML=one+one;
 })();
 
 /* Paste the $PAID contract address here */

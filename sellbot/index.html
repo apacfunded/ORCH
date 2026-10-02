@@ -7,7 +7,7 @@
 <meta name="description" content="$SELLBOT: paste your Solana wallet and SellBot screams when to sell, clip, hold, set a stop or buy more. Free, read-only, no wallet connect.">
 <meta property="og:title" content="SellBot ($SELLBOT)">
 <meta property="og:description" content="you aped in. it 2x'd. you didn't sell. never again.">
-<meta property="og:image" content="https://orch.lol/sellbot/pfp.png">
+<meta property="og:image" content="https://orch.lol/sellbot/banner.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="pfp.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,10 +132,61 @@ footer .fine{max-width:70ch;opacity:.8}
 @media (prefers-reduced-motion:reduce){
   .marquee-track,.bot.scream,.bot.scream .siren-glow,.chip.live::before{animation:none}
 }
+
+/* intro */
+.intro{position:fixed;inset:0;z-index:50;background:var(--ink);color:var(--paper);display:grid;place-items:center;padding:24px 16px;overflow:hidden;cursor:pointer;animation:intro-out .55s cubic-bezier(.7,0,.3,1) 3.7s forwards}
+.intro.flash{animation:intro-out .55s cubic-bezier(.7,0,.3,1) 3.7s forwards,red-flash .5s ease-out 1.55s}
+.intro-lines{display:grid;gap:4px;justify-items:center;text-align:center;font-family:var(--display);text-transform:uppercase;line-height:.95;font-size:clamp(40px,11vw,96px)}
+.intro-lines > span{opacity:0;transform:translateY(20px);animation:line-in .28s cubic-bezier(.2,.9,.3,1.3) forwards}
+.intro-lines .a{animation-delay:.15s}
+.intro-lines .b{animation-delay:.6s;color:var(--mint)}
+.intro-lines .c{animation-delay:1.05s}
+.intro-lines .d{animation-delay:1.5s;color:var(--red)}
+.intro-stage{animation:collapse .3s ease-in 2.15s forwards}
+.intro-d-shake{display:inline-block;animation:shake .1s linear 1.55s 5}
+.intro-bot{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:12px;pointer-events:none}
+.intro-bot img{width:min(62vw,340px);height:auto;border:4px solid var(--paper);border-radius:28px;opacity:0;transform:scale(2.4) rotate(-8deg);animation:slam .32s cubic-bezier(.3,1.6,.5,1) 2.35s forwards}
+.intro-stamp{font-family:var(--display);text-transform:uppercase;font-size:clamp(44px,12vw,104px);line-height:1;color:var(--yellow);opacity:0;transform:scale(3) rotate(4deg);animation:slam .26s cubic-bezier(.3,1.6,.5,1) 2.9s forwards}
+.intro-skip{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));font:500 14px var(--body);color:#b9b4a6;background:none;border:1px solid #4a4a44;border-radius:999px;padding:10px 16px;min-height:44px;cursor:pointer}
+@keyframes line-in{to{opacity:1;transform:none}}
+@keyframes collapse{to{opacity:0;transform:scale(.85)}}
+@keyframes slam{to{opacity:1;transform:none}}
+@keyframes red-flash{0%{background:var(--red)}100%{background:var(--ink)}}
+@keyframes intro-out{to{transform:translateY(-100%)}}
+@media (prefers-reduced-motion:reduce){.intro{display:none}}
 </style>
 
 </head>
 <body>
+<div class="intro flash" id="intro" aria-hidden="true">
+  <div class="intro-stage">
+    <div class="intro-lines">
+      <span class="a">you aped in.</span>
+      <span class="b">it 2x'd.</span>
+      <span class="c">you didn't sell.</span>
+      <span class="d"><span class="intro-d-shake">it's now −60%.</span></span>
+    </div>
+  </div>
+  <div class="intro-bot">
+    <img src="pfp.png" alt="" width="340" height="340">
+    <div class="intro-stamp">Never again.</div>
+  </div>
+  <button class="intro-skip" id="introSkip" type="button" tabindex="-1">Skip</button>
+</div>
+<script>
+(() => {
+  const el = document.getElementById("intro");
+  let seen = false;
+  try { seen = sessionStorage.getItem("sellbot:intro") === "1"; sessionStorage.setItem("sellbot:intro","1"); } catch(e){}
+  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches){ el.remove(); return; }
+  document.documentElement.style.overflow = "hidden";
+  const done = () => { if (!el.isConnected) return; el.remove(); document.documentElement.style.overflow = ""; };
+  el.addEventListener("animationend", e => { if (e.animationName === "intro-out") done(); });
+  el.addEventListener("click", done);
+  addEventListener("keydown", done, {once:true});
+  setTimeout(done, 4600);
+})();
+</script>
 <div class="wrap">
   <header class="top">
     <div class="logo">SellBot</div>

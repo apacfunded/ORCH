@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SellBot</title>
+<meta name="description" content="$SELLBOT: paste your Solana wallet and SellBot screams when to sell, clip, hold, set a stop or buy more. Free, read-only, no wallet connect.">
+<meta property="og:title" content="SellBot ($SELLBOT)">
+<meta property="og:description" content="you aped in. it 2x'd. you didn't sell. never again.">
+<meta property="og:image" content="https://orch.lol/sellbot/pfp.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Silkscreen&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+/* Poster: one screaming robot, one input, sticker cards with thick black borders on pump green */
+:root{
+  --green:#2EE860; --green-deep:#1FC94D; --paper:#F3EEDF; --paper-shade:#D9D1BC;
+  --ink:#141414; --screen:#0E0F10; --red:#FF2E3F; --yellow:#FFD23F; --mint:#3DFF6E;
+  --muted:#4A4A44;
+  --display:"Anton","Impact","Arial Narrow",sans-serif;
+  --body:"Work Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --pixel:"Silkscreen","Courier New",monospace;
+  --b:3px solid var(--ink);
+  --shadow:6px 6px 0 var(--ink);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--green);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:0 48px;overflow-x:hidden}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px}
+.logo{font-family:var(--display);font-size:28px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.ticker{font-family:var(--pixel);font-size:13px;background:var(--ink);color:var(--mint);padding:8px 12px;border-radius:4px}
+
+/* marquee */
+.marquee{border-block:var(--b);background:var(--ink);color:var(--paper);overflow:hidden;margin-inline:-16px}
+.marquee-track{display:flex;gap:40px;padding:10px 0;white-space:nowrap;font-family:var(--display);font-size:20px;text-transform:uppercase;letter-spacing:.04em;animation:slide 28s linear infinite;width:max-content}
+.marquee-track span::after{content:"✕";margin-left:40px;color:var(--red)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:center;padding-block:28px 12px}
+@media(min-width:880px){.hero{grid-template-columns:1.05fr .95fr;gap:40px;padding-block:44px 20px}}
+.story{display:grid;gap:2px;font-family:var(--display);text-transform:uppercase;line-height:.95;font-size:clamp(34px,8.5vw,64px)}
+.story .l2{color:var(--paper);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.story .l4{color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.story .l5{font-size:.62em;margin-top:10px;background:var(--ink);color:var(--yellow);justify-self:start;padding:6px 12px 4px;transform:rotate(-2deg)}
+.pitch{max-width:46ch;font-size:18px;font-weight:500;margin-top:18px;text-wrap:pretty}
+
+/* bot stage */
+.stage{position:relative;justify-self:center;width:100%;max-width:440px}
+.bubble{position:absolute;z-index:2;top:2%;right:-2%;max-width:62%;background:var(--paper);border:var(--b);border-radius:18px;box-shadow:var(--shadow);padding:10px 14px;font-family:var(--display);font-size:clamp(18px,4.6vw,26px);text-transform:uppercase;line-height:1.05;transform:rotate(4deg)}
+.bubble::after{content:"";position:absolute;left:18px;bottom:-16px;width:22px;height:22px;background:var(--paper);border-right:var(--b);border-bottom:var(--b);transform:rotate(45deg) skew(10deg,10deg)}
+.bot{display:block;width:100%;height:auto;overflow:visible}
+.bot .siren{transform-origin:512px 200px}
+.bot.scream{animation:shake .12s linear infinite}
+.bot.scream .siren-glow{animation:flash .35s steps(2) infinite}
+@keyframes shake{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(-4px,2px) rotate(-.8deg)}50%{transform:translate(3px,-2px) rotate(.6deg)}75%{transform:translate(-2px,-3px) rotate(-.4deg)}100%{transform:translate(0,0)}}
+@keyframes flash{50%{opacity:.1}}
+
+/* check panel */
+.panel{background:var(--paper);border:var(--b);border-radius:14px;box-shadow:var(--shadow);padding:18px;margin-top:20px}
+@media(min-width:640px){.panel{padding:24px}}
+.panel h2{font-family:var(--display);text-transform:uppercase;font-size:clamp(26px,5vw,36px);line-height:1;margin:0 0 6px;font-weight:400;text-wrap:balance}
+.panel p.sub{margin:0 0 16px;color:var(--muted)}
+label.lbl{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.row input{flex:1 1 260px;min-width:0;height:52px;padding:0 14px;font:500 16px var(--body);border:var(--b);border-radius:10px;background:#fff;color:var(--ink)}
+.row input::placeholder{color:#8a8a80}
+.btn{height:52px;padding:0 22px;border:var(--b);border-radius:10px;background:var(--red);color:var(--paper);font-family:var(--display);font-size:22px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .08s,box-shadow .08s;flex:0 0 auto}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn[disabled]{opacity:.6;cursor:wait}
+.hint{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:14px;color:var(--muted)}
+.hint b{color:var(--ink);font-weight:600}
+.err{margin-top:12px;padding:10px 12px;border:2px solid var(--red);border-radius:8px;background:#ffe3e5;font-weight:500}
+.sound{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;cursor:pointer;min-height:44px}
+.sound input{width:20px;height:20px;accent-color:var(--ink)}
+
+/* results */
+.results{margin-top:28px}
+.res-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;margin-bottom:12px}
+.res-head h3{font-family:var(--display);text-transform:uppercase;font-weight:400;font-size:clamp(24px,5vw,34px);line-height:1;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;font-weight:500}
+.chip{font-family:var(--pixel);font-size:12px;border:2px solid var(--ink);border-radius:999px;padding:3px 10px;background:var(--paper)}
+.chip.live{background:var(--ink);color:var(--mint)}
+.chip.live::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mint);margin-right:6px;vertical-align:1px;animation:flash 1.2s steps(2) infinite}
+.chip.example{background:var(--yellow)}
+
+.cards{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:700px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--paper);border:var(--b);border-radius:14px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr;overflow:hidden;min-width:0}
+.verdict{display:grid;place-items:center;width:104px;padding:12px 8px;border-right:var(--b);font-family:var(--display);text-transform:uppercase;font-size:26px;line-height:1;text-align:center;color:var(--paper)}
+.verdict small{display:block;font-family:var(--pixel);font-size:12px;margin-top:6px;letter-spacing:0;text-transform:none}
+.v-GTFO{background:var(--ink);color:var(--red)}
+@media(max-width:480px){.verdict{width:84px;font-size:22px}.cname{flex-wrap:wrap;gap:0 8px}}
+.v-SELL{background:var(--red)}
+.v-CLIP{background:var(--yellow);color:var(--ink)}
+.v-STOP{background:#FF8A3D;color:var(--ink)}
+.v-BUY{background:var(--mint);color:var(--ink)}
+.v-HOLD{background:var(--paper-shade);color:var(--ink)}
+.cbody{padding:12px 14px;min-width:0;display:grid;gap:6px}
+.cname{display:flex;align-items:baseline;gap:8px;min-width:0}
+.cname strong{font-family:var(--display);font-weight:400;font-size:22px;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cname span{font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.why{font-weight:500;font-size:15px;line-height:1.35}
+.stats{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:600}
+.up{color:#0d7a2c!important}.down{color:#c0121f!important}
+.card a.dex{font-size:13px;font-weight:600;text-underline-offset:3px}
+
+.empty{background:var(--paper);border:var(--b);border-radius:14px;padding:20px;font-weight:500}
+
+/* how it reads */
+.legend{margin-top:40px}
+.legend h3{font-family:var(--display);text-transform:uppercase;font-weight:400;font-size:clamp(24px,5vw,34px);margin:0 0 12px;line-height:1}
+.legend-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.leg{display:flex;gap:12px;align-items:center;background:var(--paper);border:var(--b);border-radius:12px;padding:10px 12px}
+.leg .tag{flex:0 0 76px;text-align:center;font-family:var(--display);text-transform:uppercase;font-size:20px;border:2px solid var(--ink);border-radius:8px;padding:4px 0}
+.leg p{margin:0;font-size:14px;line-height:1.35}
+
+footer{margin-top:40px;display:grid;gap:10px;font-size:13px;color:var(--ink)}
+footer .fine{max-width:70ch;opacity:.8}
+.big-sign{font-family:var(--display);text-transform:uppercase;font-size:clamp(40px,12vw,120px);line-height:.9;color:var(--paper);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;letter-spacing:.01em}
+
+@media (prefers-reduced-motion:reduce){
+  .marquee-track,.bot.scream,.bot.scream .siren-glow,.chip.live::before{animation:none}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">SellBot</div>
+    <div class="ticker">$SELLBOT · CA soon</div>
+  </header>
+</div>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee"></div>
+</div>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="story">
+        <span>you aped in.</span>
+        <span class="l2">it 2x'd.</span>
+        <span>you didn't sell.</span>
+        <span class="l4">it's now −60%.</span>
+        <span class="l5">never again.</span>
+      </div>
+      <p class="pitch">Paste your Solana address. SellBot checks every coin you hold and screams what to do: sell, clip, hold, set a stop, or buy more. Free, read-only, no wallet connect.</p>
+    </div>
+
+    <div class="stage">
+      <div class="bubble" id="bubble">Paste your wallet. I'll tell you when to sell.</div>
+      <svg class="bot" id="bot" viewBox="120 20 784 1004" role="img" aria-label="SellBot, a panicked robot whose screen shows the current call">
+        <defs>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FF2E3F" stop-opacity=".6"/><stop offset="1" stop-color="#FF2E3F" stop-opacity="0"/></radialGradient>
+        </defs>
+        <circle class="siren-glow" id="glowCircle" cx="512" cy="200" r="190" fill="url(#glow)"/>
+        <g stroke="#141414" stroke-width="16" stroke-linecap="round">
+          <line x1="400" y1="120" x2="360" y2="80"/><line x1="624" y1="120" x2="664" y2="80"/>
+          <line x1="380" y1="190" x2="320" y2="185"/><line x1="644" y1="190" x2="704" y2="185"/>
+          <line x1="512" y1="85" x2="512" y2="40"/>
+        </g>
+        <rect x="362" y="700" width="300" height="324" rx="40" fill="#F3EEDF" stroke="#141414" stroke-width="18"/>
+        <rect x="362" y="700" width="300" height="60" fill="#D9D1BC" stroke="#141414" stroke-width="18"/>
+        <circle cx="440" cy="840" r="22" fill="#FF2E3F" stroke="#141414" stroke-width="12"/>
+        <circle cx="512" cy="840" r="22" fill="#3DFF6E" stroke="#141414" stroke-width="12"/>
+        <circle cx="584" cy="840" r="22" fill="#FFD23F" stroke="#141414" stroke-width="12"/>
+        <rect x="420" y="900" width="184" height="28" rx="8" fill="#141414"/>
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M372 780 C 250 780, 190 700, 220 560" stroke="#141414" stroke-width="66"/>
+          <path d="M652 780 C 774 780, 834 700, 804 560" stroke="#141414" stroke-width="66"/>
+          <path d="M372 780 C 250 780, 190 700, 220 560" stroke="#F3EEDF" stroke-width="34"/>
+          <path d="M652 780 C 774 780, 834 700, 804 560" stroke="#F3EEDF" stroke-width="34"/>
+        </g>
+        <g stroke="#141414" stroke-width="16" stroke-linejoin="round" fill="#F3EEDF">
+          <rect x="180" y="490" width="86" height="86" rx="22"/><rect x="760" y="490" width="86" height="86" rx="22"/>
+          <rect x="236" y="508" width="70" height="30" rx="14"/><rect x="718" y="508" width="70" height="30" rx="14"/>
+        </g>
+        <rect x="462" y="660" width="100" height="60" fill="#D9D1BC" stroke="#141414" stroke-width="18"/>
+        <rect x="292" y="250" width="440" height="430" rx="56" fill="#F3EEDF" stroke="#141414" stroke-width="20"/>
+        <path d="M312 650 L 712 650" stroke="#D9D1BC" stroke-width="30" stroke-linecap="round"/>
+        <g stroke="#141414" stroke-width="6" stroke-linecap="round" opacity=".55"><line x1="660" y1="285" x2="690" y2="300"/><line x1="668" y1="300" x2="684" y2="309"/></g>
+        <g fill="#D9D1BC" stroke="#141414" stroke-width="8"><circle cx="330" cy="290" r="11"/><circle cx="694" cy="640" r="11"/><circle cx="330" cy="640" r="11"/></g>
+        <g stroke="#141414" stroke-width="14"><circle cx="430" cy="315" r="34" fill="#fff"/><circle cx="594" cy="315" r="34" fill="#fff"/></g>
+        <circle id="pupilL" cx="434" cy="326" r="11" fill="#141414"/><circle id="pupilR" cx="590" cy="326" r="11" fill="#141414"/>
+        <g id="brows" stroke="#141414" stroke-width="12" stroke-linecap="round"><line x1="390" y1="268" x2="455" y2="282"/><line x1="634" y1="268" x2="569" y2="282"/></g>
+        <rect x="322" y="365" width="380" height="270" rx="22" fill="#0E0F10" stroke="#141414" stroke-width="16"/>
+        <g opacity=".12" stroke="#fff" stroke-width="2" id="scan"></g>
+        <text id="screenWord" x="512" y="470" text-anchor="middle" font-family="Silkscreen, 'Courier New', monospace" font-size="96" fill="#FF2E3F" letter-spacing="4">SELL</text>
+        <g id="candles"></g>
+        <rect x="452" y="222" width="120" height="38" rx="8" fill="#D9D1BC" stroke="#141414" stroke-width="16"/>
+        <path id="sirenDome" d="M462 222 L462 190 A50 50 0 0 1 562 190 L562 222 Z" fill="#FF2E3F" stroke="#141414" stroke-width="16" stroke-linejoin="round"/>
+        <path d="M486 190 A26 26 0 0 1 512 166" stroke="#FFB3B9" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <g id="sweat">
+          <path d="M262 330 q -18 30 0 40 q 18 -10 0 -40 Z" fill="#7FD3FF" stroke="#141414" stroke-width="8"/>
+          <path d="M770 360 q -16 26 0 35 q 16 -9 0 -35 Z" fill="#7FD3FF" stroke="#141414" stroke-width="8"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="checkTitle">
+    <h2 id="checkTitle">Check my bags</h2>
+    <p class="sub">Paste any Solana wallet address. Nothing to sign, nothing to connect.</p>
+    <form id="form" novalidate>
+      <label class="lbl" for="addr">Solana wallet address</label>
+      <div class="row">
+        <input id="addr" name="addr" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="e.g. 7xKX…9fQa">
+        <button class="btn" id="go" type="submit">Scream at me</button>
+      </div>
+      <div class="hint">
+        <label class="sound" for="sound"><input type="checkbox" id="sound" checked> Alarm sound</label>
+        <span>Rechecks every <b>30 seconds</b> while this page is open.</span>
+      </div>
+      <div class="err" id="err" role="alert" hidden></div>
+    </form>
+  </section>
+
+  <section class="results" aria-live="polite">
+    <div class="res-head">
+      <h3 id="resTitle">Example wallet</h3>
+      <div class="meta" id="meta"><span class="chip example">Example data</span></div>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="legend">
+    <h3>What he screams</h3>
+    <div class="legend-grid">
+      <div class="leg"><span class="tag v-GTFO">GTFO</span><p>It's bleeding hard or the liquidity is gone. Get out now.</p></div>
+      <div class="leg"><span class="tag v-SELL">Sell</span><p>Huge run and it's starting to turn. Take the win before it round-trips.</p></div>
+      <div class="leg"><span class="tag v-CLIP">Clip</span><p>Up big. Sell a chunk, ride the rest for free.</p></div>
+      <div class="leg"><span class="tag v-STOP">Stop</span><p>Slipping. Decide your exit price now, not at −60%.</p></div>
+      <div class="leg"><span class="tag v-BUY">Buy</span><p>Climbing with real liquidity. Momentum is on your side.</p></div>
+      <div class="leg"><span class="tag v-HOLD">Hold</span><p>Nothing loud happening. Sit tight.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="big-sign">Never again.</div>
+    <p class="fine">SellBot reads public on-chain balances and live DEX prices, then makes a momentum call from the last 5 minutes to 24 hours of price action, volume and liquidity. It doesn't know your entry price. Calls are for fun and not financial advice. SellBot never asks you to connect or sign anything.</p>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const RPCS = ["https://solana-rpc.publicnode.com", "https://api.mainnet-beta.solana.com"];
+  const TOKEN_PROGRAMS = ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"];
+  const SKIP = new Set(["So11111111111111111111111111111111111111112","EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"]);
+  const ADDR_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  const PRIORITY = ["GTFO","SELL","CLIP","STOP","BUY","HOLD"];
+  const SCREEN = {
+    GTFO:{word:"GTFO",color:"#FF2E3F",trend:"down"}, SELL:{word:"SELL",color:"#FF2E3F",trend:"top"},
+    CLIP:{word:"CLIP",color:"#FFD23F",trend:"top"}, STOP:{word:"STOP",color:"#FF8A3D",trend:"down"},
+    BUY:{word:"BUY",color:"#3DFF6E",trend:"up"}, HOLD:{word:"HOLD",color:"#F3EEDF",trend:"flat"}
+  };
+  const $ = id => document.getElementById(id);
+  const fmtUsd = n => n >= 1e6 ? "$" + (n/1e6).toFixed(2) + "M" : n >= 1e3 ? "$" + (n/1e3).toFixed(1) + "K" : "$" + n.toFixed(n < 10 ? 2 : 0);
+  const pct = n => (n > 0 ? "+" : "") + (Math.round(n * 10) / 10) + "%";
+  const cls = n => n > 0 ? "up" : n < 0 ? "down" : "";
+
+  // marquee
+  const lines = ["you aped in","it 2x'd","you didn't sell","it's now −60%","never again","$SELLBOT","sell the pump","clip it","gtfo"];
+  $("marquee").innerHTML = [...lines, ...lines].map(t => `<span>${t}</span>`).join("");
+
+  // scanlines
+  $("scan").innerHTML = Array.from({length:25}, (_, i) => `<line x1="330" y1="${380 + i*10}" x2="694" y2="${380 + i*10}"/>`).join("");
+
+  function drawCandles(trend, color){
+    const base = 520, out = [];
+    let y = trend === "up" ? 600 : 520;
+    for (let i = 0; i < 8; i++){
+      const x = 352 + i*42;
+      let step = 0;
+      if (trend === "down") step = 10;
+      else if (trend === "up") step = -10;
+      else if (trend === "top") step = i < 5 ? -9 : 14;
+      else step = (i % 2 ? 4 : -4);
+      const o = y, c = y + step + (trend === "flat" ? 0 : (step > 0 ? 6 : -6));
+      const green = c < o;
+      const col = trend === "flat" ? (green ? "#3DFF6E" : "#8a8a80") : (green ? "#3DFF6E" : "#FF2E3F");
+      const y1 = Math.min(o,c), h = Math.max(6, Math.abs(c - o));
+      out.push(`<line x1="${x+11}" y1="${y1-10}" x2="${x+11}" y2="${y1+h+10}" stroke="${col}" stroke-width="4"/><rect x="${x}" y="${y1}" width="22" height="${h}" fill="${col}"/>`);
+      y = c;
+    }
+    $("candles").innerHTML = out.join("");
+  }
+
+  let audioCtx = null;
+  function alarm(level){
+    if (!$("sound").checked) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audioCtx.currentTime, beeps = level === "loud" ? 4 : 2;
+      for (let i = 0; i < beeps; i++){
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "square";
+        o.frequency.setValueAtTime(level === "loud" ? 880 : 660, t0 + i*0.22);
+        o.frequency.linearRampToValueAtTime(level === "loud" ? 1320 : 520, t0 + i*0.22 + 0.18);
+        g.gain.setValueAtTime(0.0001, t0 + i*0.22);
+        g.gain.exponentialRampToValueAtTime(0.12, t0 + i*0.22 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + i*0.22 + 0.19);
+        o.connect(g).connect(audioCtx.destination);
+        o.start(t0 + i*0.22); o.stop(t0 + i*0.22 + 0.2);
+      }
+    } catch(e) {}
+  }
+
+  function setBot(key, bubbleText, scream){
+    const s = SCREEN[key];
+    const w = $("screenWord");
+    w.textContent = s.word; w.setAttribute("fill", s.color);
+    w.setAttribute("font-size", s.word.length > 3 ? 96 : 110);
+    drawCandles(s.trend, s.color);
+    $("sirenDome").setAttribute("fill", key === "BUY" ? "#3DFF6E" : key === "HOLD" ? "#D9D1BC" : "#FF2E3F");
+    $("sweat").style.display = (key === "HOLD" || key === "BUY") ? "none" : "";
+    $("glowCircle").style.display = key === "HOLD" ? "none" : "";
+    $("bubble").textContent = bubbleText;
+    const bot = $("bot");
+    bot.classList.remove("scream");
+    if (scream && !matchMedia("(prefers-reduced-motion: reduce)").matches){
+      void bot.getBoundingClientRect();
+      bot.classList.add("scream");
+      clearTimeout(setBot._t);
+      setBot._t = setTimeout(() => bot.classList.remove("scream"), key === "GTFO" || key === "SELL" ? 2600 : 1200);
+    }
+  }
+
+  // ---- the call ----
+  function callFor(p){
+    const ch = p.priceChange || {}, m5 = +ch.m5 || 0, h1 = +ch.h1 || 0, h6 = +ch.h6 || 0, h24 = +ch.h24 || 0;
+    const liq = +(p.liquidity && p.liquidity.usd) || 0;
+    const tx = p.txns && p.txns.h1 ? p.txns.h1 : {buys:0,sells:0};
+    const sellHeavy = (tx.sells || 0) > (tx.buys || 0) * 1.4;
+    if (liq > 0 && liq < 5000) return {key:"GTFO", why:"Liquidity is almost gone. Get out while you still can."};
+    if (h1 <= -25 || h6 <= -45) return {key:"GTFO", why:`Down ${pct(h1 <= -25 ? h1 : h6)} in ${h1 <= -25 ? "an hour" : "6 hours"}. It's bleeding. Get out.`};
+    if (h24 >= 150 || (h6 >= 60 && (h1 <= -5 || sellHeavy))) return {key:"SELL", why:`Up ${pct(Math.max(h24,h6))} and it's turning. Take the win before it round-trips.`};
+    if (h6 >= 30 || h24 >= 60) return {key:"CLIP", why:`Up ${pct(h6 >= 30 ? h6 : h24)}. Sell a chunk, ride the rest for free.`};
+    if (h1 <= -10 || (h6 <= -20 && m5 <= 0)) return {key:"STOP", why:`Slipping ${pct(h1 <= -10 ? h1 : h6)}. Pick your exit price now.`};
+    if (h1 >= 8 && m5 >= 0 && h6 >= 0 && liq >= 20000 && !sellHeavy) return {key:"BUY", why:`Climbing ${pct(h1)} this hour with real liquidity. Momentum's with you.`};
+    return {key:"HOLD", why:"Nothing loud happening. Sit tight."};
+  }
+
+  function render(rows, opts){
+    const cards = $("cards");
+    if (!rows.length){
+      cards.innerHTML = `<div class="empty">No meme coins with a live price found in this wallet. SOL and stablecoins are skipped.</div>`;
+      setBot("HOLD", "Empty bags. Nothing to scream about.", false);
+      return;
+    }
+    cards.innerHTML = rows.map(r => {
+      const c = r.call, s = SCREEN[c.key];
+      const ch = r.pair.priceChange || {};
+      return `<article class="card">
+        <div class="verdict v-${c.key}">${s.word}<small>${fmtUsd(r.value)}</small></div>
+        <div class="cbody">
+          <div class="cname"><strong>$${esc(r.symbol)}</strong><span>${esc(r.name)}</span></div>
+          <div class="why">${esc(c.why)}</div>
+          <div class="stats">
+            <span>5m <b class="${cls(+ch.m5||0)}">${pct(+ch.m5||0)}</b></span>
+            <span>1h <b class="${cls(+ch.h1||0)}">${pct(+ch.h1||0)}</b></span>
+            <span>6h <b class="${cls(+ch.h6||0)}">${pct(+ch.h6||0)}</b></span>
+            <span>24h <b class="${cls(+ch.h24||0)}">${pct(+ch.h24||0)}</b></span>
+            <span>Liq <b>${fmtUsd(+(r.pair.liquidity && r.pair.liquidity.usd) || 0)}</b></span>
+          </div>
+          ${r.pair.url ? `<a class="dex" href="${esc(r.pair.url)}" target="_blank" rel="noopener">Open chart ↗</a>` : ""}
+        </div>
+      </article>`;
+    }).join("");
+
+    // the scream: most urgent call among positions worth ≥5% of the bag
+    const total = rows.reduce((a, r) => a + r.value, 0);
+    const big = rows.filter(r => r.value >= total * 0.05);
+    const pool = big.length ? big : rows;
+    const top = pool.slice().sort((a, b) => PRIORITY.indexOf(a.call.key) - PRIORITY.indexOf(b.call.key) || b.value - a.value)[0];
+    const k = top.call.key, sym = "$" + top.symbol;
+    const lines = {
+      GTFO:`GTFO ${sym}! NOW!`, SELL:`SELL ${sym}! DON'T ROUND TRIP IT!`, CLIP:`CLIP ${sym}! TAKE SOME OFF!`,
+      STOP:`${sym} IS SLIPPING! SET A STOP!`, BUY:`${sym} IS RUNNING! BUY MORE?`, HOLD:`ALL QUIET. HOLD.`
+    };
+    setBot(k, lines[k], opts && opts.scream);
+    if (opts && opts.sound) alarm(k === "GTFO" || k === "SELL" ? "loud" : k === "HOLD" ? null : "soft");
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  // ---- data ----
+  async function rpc(method, params){
+    let lastErr;
+    for (const url of RPCS){
+      try {
+        const r = await fetch(url, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({jsonrpc:"2.0", id:1, method, params})});
+        if (!r.ok) throw new Error("http " + r.status);
+        const j = await r.json();
+        if (j.error) throw new Error(j.error.message || "rpc error");
+        return j.result;
+      } catch(e){ lastErr = e; }
+    }
+    throw lastErr || new Error("rpc");
+  }
+
+  async function holdings(owner){
+    const res = await Promise.all(TOKEN_PROGRAMS.map(pid =>
+      rpc("getTokenAccountsByOwner", [owner, {programId: pid}, {encoding:"jsonParsed", commitment:"confirmed"}]).catch(() => ({value:[]}))
+    ));
+    const map = new Map();
+    for (const r of res) for (const acc of (r.value || [])){
+      const info = acc.account && acc.account.data && acc.account.data.parsed && acc.account.data.parsed.info;
+      if (!info) continue;
+      const amt = +info.tokenAmount.uiAmount || 0;
+      if (amt <= 0 || SKIP.has(info.mint)) continue;
+      map.set(info.mint, (map.get(info.mint) || 0) + amt);
+    }
+    return map;
+  }
+
+  async function prices(mints){
+    const best = new Map();
+    for (let i = 0; i < mints.length; i += 30){
+      const chunk = mints.slice(i, i + 30);
+      try {
+        const r = await fetch("https://api.dexscreener.com/tokens/v1/solana/" + chunk.join(","));
+        if (!r.ok) continue;
+        const pairs = await r.json();
+        for (const p of (Array.isArray(pairs) ? pairs : [])){
+          const m = p.baseToken && p.baseToken.address;
+          if (!m || !chunk.includes(m)) continue;
+          const cur = best.get(m);
+          if (!cur || ((p.liquidity && p.liquidity.usd) || 0) > ((cur.liquidity && cur.liquidity.usd) || 0)) best.set(m, p);
+        }
+      } catch(e){}
+    }
+    return best;
+  }
+
+  let timer = null, current = "", busy = false;
+  async function check(addr, firstRun){
+    if (busy) return; busy = true;
+    const btn = $("go");
+    if (firstRun){ btn.disabled = true; btn.textContent = "Checking…"; setBot("HOLD", "Checking your bags…", false); }
+    try {
+      const h = await holdings(addr);
+      const mints = [...h.keys()].slice(0, 150);
+      const pm = mints.length ? await prices(mints) : new Map();
+      const rows = [];
+      for (const m of mints){
+        const p = pm.get(m); if (!p) continue;
+        const price = +p.priceUsd || 0, value = price * h.get(m);
+        if (value < 1) continue;
+        rows.push({mint:m, pair:p, value, symbol:(p.baseToken.symbol || "?").slice(0, 14), name:(p.baseToken.name || "").slice(0, 40), call:callFor(p)});
+      }
+      rows.sort((a, b) => b.value - a.value);
+      const shown = rows.slice(0, 30);
+      if (addr !== current) return;
+      $("err").hidden = true;
+      $("resTitle").textContent = "Your bags";
+      const total = rows.reduce((a, r) => a + r.value, 0);
+      const t = new Date().toLocaleTimeString([], {hour:"numeric", minute:"2-digit", second:"2-digit"});
+      $("meta").innerHTML = `<span class="chip live">Watching</span><span>${shown.length} coin${shown.length === 1 ? "" : "s"} · ${fmtUsd(total)}</span><span>Updated ${t}</span>`;
+      render(shown, {scream:true, sound:firstRun});
+    } catch(e){
+      if (firstRun){
+        $("err").textContent = "Couldn't reach Solana right now. Wait a few seconds and press the button again.";
+        $("err").hidden = false;
+        setBot("HOLD", "Network's choking. Try again.", false);
+      }
+    } finally {
+      busy = false;
+      if (firstRun){ btn.disabled = false; btn.textContent = "Scream at me"; }
+    }
+  }
+
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const addr = $("addr").value.trim();
+    if (!ADDR_RE.test(addr)){
+      $("err").textContent = "That doesn't look like a Solana address. Paste the full wallet address (32 to 44 letters and numbers).";
+      $("err").hidden = false;
+      $("addr").focus();
+      return;
+    }
+    $("err").hidden = true;
+    current = addr;
+    try { localStorage.setItem("sellbot:addr", addr); } catch(e){}
+    clearInterval(timer);
+    check(addr, true);
+    timer = setInterval(() => { if (!document.hidden) check(addr, false); }, 30000);
+  });
+  $("addr").addEventListener("input", () => { $("err").hidden = true; });
+
+  // ---- example state at rest ----
+  const ex = (sym, name, value, m5, h1, h6, h24, liq) => {
+    const pair = {priceChange:{m5,h1,h6,h24}, liquidity:{usd:liq}, txns:{h1:{buys:100,sells:90}}};
+    return {pair, value, symbol:sym, name, call:callFor(pair)};
+  };
+  const demo = [
+    ex("MOONPIG","Moon Pig", 842, -2, -6, 74, 210, 61000),
+    ex("FROGGO","Froggo", 315, -9, -31, -52, -18, 22000),
+    ex("CHAD","Chad Coin", 260, 1, 4, 38, 55, 88000),
+    ex("BONKER","Bonker", 190, 3, 12, 9, 22, 140000)
+  ];
+  render(demo, {scream:false});
+
+  try { const saved = localStorage.getItem("sellbot:addr"); if (saved) $("addr").value = saved; } catch(e){}
+})();
+</script>
+
+</body>
+</html>

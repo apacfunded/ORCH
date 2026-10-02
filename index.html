@@ -382,6 +382,28 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
 @media (max-width:900px){.pay-top{grid-template-columns:1fr}}
 @media (max-width:560px){.frow{grid-template-columns:auto 1fr auto}.frow .when{display:none}}
 
+
+/* explore + side lists */
+.ex{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.side{position:sticky;top:84px;display:flex;flex-direction:column;gap:12px}
+.slist{border:1px solid var(--line);border-radius:18px;background:var(--panel);overflow:hidden}
+.slist-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.slist-h b{display:flex;align-items:center;gap:8px;font-size:14px}
+.slist-h a,.slist-h span{font-size:12px;color:var(--muted)}
+.slist-h a:hover{color:var(--text)}
+.sitem{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);text-align:left;width:100%;transition:background .15s}
+.sitem:first-child{border-top:0}
+.sitem:hover{background:var(--panel-2)}
+.sitem .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:13px;color:#000;overflow:hidden;position:relative}
+.sitem .ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sitem .nm{min-width:0}
+.sitem .nm b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sitem .nm small{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sitem .mc{font-size:12px;font-weight:700;text-align:right}
+.sitem .mc small{display:block;color:var(--dim);font-weight:500;font-size:11px}
+.slist-f{padding:9px 14px;border-top:1px solid var(--line);color:var(--dim);font-size:11px}
+@media (max-width:1000px){.ex{grid-template-columns:1fr}.side{position:static}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -520,6 +542,8 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
       <div class="stat"><small>People getting paid</small><div class="mono" id="sPeople">0</div></div>
     </div>
 
+    <div class="ex">
+      <div class="ex-main">
     <div class="toolbar">
       <input class="search" id="q" placeholder="Search coin, ticker or @handle">
       <div class="seg" id="fPlat">
@@ -530,6 +554,20 @@ h1{font-size:clamp(40px,6.2vw,76px)!important;letter-spacing:-.045em!important;l
       </div>
     </div>
     <div class="grid" id="grid"></div>
+      </div>
+      <aside class="side" aria-label="Coins by launchpad">
+        <div class="slist">
+          <div class="slist-h"><b><span class="src"><img class="pImg" alt="">PAID</span>Coins made on Paid</b><a href="https://usepaid.app/" target="_blank" rel="noopener">See all ↗</a></div>
+          <div id="sidePaid"></div>
+          <div class="slist-f" id="sidePaidNote"></div>
+        </div>
+        <div class="slist">
+          <div class="slist-h"><b><span class="src orc"><img class="oImg" alt="">ORCHID</span>Coins made on Orchid</b><span id="sideOrcCount"></span></div>
+          <div id="sideOrc"></div>
+          <div class="slist-f" id="sideOrcNote"></div>
+        </div>
+      </aside>
+    </div>
 
     <section class="sec" aria-labelledby="faqH">
       <div class="sec-h"><div><span class="kicker">FAQ</span><h2 id="faqH">Questions people ask</h2></div></div>
@@ -689,7 +727,7 @@ const DEMO = [
 ];
 const COLORS=["#ffffff","#3ce27a","#f5d547","#7cc4ff","#ff8fb1","#c7a4ff","#ffb36b","#9ff0e0"];
 let tokens = DEMO.map((d,i)=>({mint:randMint(),name:d[0],ticker:d[1],platform:d[2],handle:d[3],split:d[4],mcap:d[5],feesUsd:d[6],curve:d[7],
-  created:Date.now()-i*3.7e6,desc:"",img:`https://picsum.photos/seed/orchid-${d[1].toLowerCase()}/240/240`,color:COLORS[i%COLORS.length],vol:d[5]*0.6}));
+  created:Date.now()-i*3.7e6,demo:true,desc:"",img:`https://picsum.photos/seed/orchid-${d[1].toLowerCase()}/240/240`,color:COLORS[i%COLORS.length],vol:d[5]*0.6}));
 
 /* =====================================================================
    HELPERS
@@ -777,6 +815,7 @@ function renderGrid(){
   $$("#grid .card").forEach(c=>c.onclick=()=>openToken(c.dataset.mint));
   const paid=tokens.reduce((s,t)=>s+t.feesUsd,0);
   $("#sPaid").textContent=usd(paid); $("#sCoins").textContent=tokens.length.toLocaleString();
+  if(window.renderSide&&$("#sideOrc"))try{renderSide()}catch{}
   $("#sPeople").textContent=new Set(tokens.map(t=>t.platform+":"+t.handle.toLowerCase())).size.toLocaleString();
 }
 
@@ -993,11 +1032,36 @@ const CA="";
 if(CA){$("#caText").textContent=CA;$("#caLinks").innerHTML=`<a href="https://pump.fun/coin/${CA}" target="_blank" rel="noopener">pump.fun ↗</a><a href="https://dexscreener.com/solana/${CA}" target="_blank" rel="noopener">DexScreener ↗</a>`}
 if(CA)$("#caOrchidTxt").textContent=CA;
 $("#caBox").onclick=$("#caOrchid").onclick=()=>{if(!CA)return toast("CA drops at launch");copyText(CA);toast("Contract address copied")};
+
+/* =====================================================================
+   SIDEBAR — coins made on Paid / on Orchid
+   ===================================================================== */
+// Coins launched on UsePaid: [name, ticker, recipient handle, market cap USD]
+// Market caps as listed on usepaid.app on PAID_COINS_ASOF — update anytime.
+const PAID_COINS_ASOF = "Oct 1";
+const PAID_COINS = [
+  ["Effective Accelerationism","e/acc","beffjezos",19.2e6],
+  ["CALI","CALI","mayemusk",4.2e6],
+  ["Elon Coin","ELON","elonmusk",998e3],
+  ["parafactual","parafactual","parafactual",844.6e3],
+  ["Kardashev Research","KARDASHEV","beffjezos",390.3e3],
+  ["JACK","JACK","jackdoherty",292.3e3],
+];
+function renderSide(){
+  const pal=["#ffffff","#3ce27a","#f5d547","#7cc4ff","#ff8fb1","#c7a4ff"];
+  $("#sidePaid").innerHTML=PAID_COINS.map((c,i)=>`<a class="sitem" href="https://usepaid.app/" target="_blank" rel="noopener"><span class="ic" style="background:${pal[i%pal.length]}">${esc(c[1][0].toUpperCase())}</span><span class="nm"><b>${esc(c[0])}</b><small>$${esc(c[1])} → @${esc(c[2])}</small></span><span class="mc mono">${usd(c[3])}<small>mcap</small></span></a>`).join("");
+  $("#sidePaidNote").textContent=`Market caps as of ${PAID_COINS_ASOF}, from usepaid.app`;
+  const real=tokens.filter(t=>!t.demo), list=[...tokens].sort((a,b)=>b.mcap-a.mcap).slice(0,6);
+  $("#sideOrc").innerHTML=list.map(t=>`<button class="sitem" data-mint="${t.mint}" type="button">${avatar(t,"ic")}<span class="nm"><b>${esc(t.name)}</b><small>$${esc(t.ticker)} → @${esc(t.handle)}</small></span><span class="mc mono">${usd(t.mcap)}<small>mcap</small></span></button>`).join("");
+  $$("#sideOrc .sitem").forEach(b=>b.onclick=()=>openToken(b.dataset.mint));
+  $("#sideOrcCount").textContent=tokens.length+" coins";
+  $("#sideOrcNote").textContent=real.length?"Live coins launched on Orchid":"Sample coins until $ORCHID is live";
+}
 /* init */
 document.title=CONFIG.name+" · Launchpad";
 ["#brandName",".bn"].forEach(s=>$$(s).forEach(e=>e.textContent=CONFIG.name));
 $("#fSplit").value=CONFIG.defaultSplit; $("#yr").textContent=new Date().getFullYear();
-renderGrid(); renderPreview();
+renderGrid(); renderPreview(); renderSide();
 </script>
 </body>
 </html>

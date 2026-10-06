@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f14">
+<title>Gap Scanner</title>
+<meta name="description" content="Paper-trading crypto arbitrage scanner. Live prices, simulated trades, no real money.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#0a0f14;--sf:#111820;--sf2:#17212b;--ln:#22303d;--fg:#e8eef4;--mu:#8a9bab;--ac:#4ade80;--dn:#f87171;--wn:#fbbf24;--bl:#60a5fa;
+--sans:Inter,system-ui,-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--sans);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font:600 24px/1 var(--sans);margin:0;letter-spacing:-.02em}
+.badge{font:500 12px/1 var(--mono);padding:7px 9px;border-radius:6px;background:rgba(251,191,36,.12);color:var(--wn);border:1px solid rgba(251,191,36,.35);letter-spacing:.04em}
+.badge.demo{background:rgba(96,165,250,.12);color:var(--bl);border-color:rgba(96,165,250,.4)}
+.hdr-r{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--ln);background:var(--sf);color:var(--fg);font:600 14px/1 var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+button:hover{border-color:#3a4d60}
+button.pri{background:var(--ac);color:#05200f;border-color:var(--ac)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--bl);outline-offset:2px}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+@media (max-width:900px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.st{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:12px 14px;display:grid;gap:6px;min-width:0}
+.st span{font-size:12px;color:var(--mu);letter-spacing:.02em}
+.st b{font:600 22px/1.1 var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up{color:var(--ac)}.dn{color:var(--dn)}.mu{color:var(--mu)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px}
+@media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:16px;min-width:0}
+.card h2{font:600 16px/1.2 var(--sans);margin:0 0 4px}
+.card .sub{font-size:13px;color:var(--mu);margin:0 0 12px}
+#eq{width:100%;height:150px;display:block}
+.exs{display:flex;flex-wrap:wrap;gap:8px}
+.ex{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--sf2);border:1px solid var(--ln);font-size:13px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mu);flex:none}
+.dot.live{background:var(--ac);box-shadow:0 0 0 3px rgba(74,222,128,.15)}.dot.conn{background:var(--wn)}.dot.off{background:var(--dn)}
+.ex small{color:var(--mu);font-family:var(--mono)}
+.tbl{overflow-x:auto;margin:0 -16px;padding:0 16px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+th{font:500 12px/1 var(--sans);color:var(--mu);text-align:right;padding:8px 8px;border-bottom:1px solid var(--ln);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 8px;border-bottom:1px solid #18232e;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.coin{font-family:var(--sans);font-weight:600}
+td .exn{font-family:var(--sans);font-size:12px;color:var(--mu);margin-left:6px}
+.route{display:none;font:400 12px/1.3 var(--sans);color:var(--mu);margin-top:3px}
+@media (max-width:600px){table{min-width:0}th:nth-child(2),th:nth-child(3),td:nth-child(2),td:nth-child(3){display:none}.route{display:block}}
+.pill{display:inline-block;padding:3px 7px;border-radius:5px;font-size:12px}
+.pill.pos{background:rgba(74,222,128,.12);color:var(--ac)}.pill.neg{background:rgba(248,113,113,.1);color:var(--dn)}
+.log{max-height:420px;overflow:auto;display:grid;gap:6px}
+.lg{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--sf2);font-size:13px}
+.lg .t{font:400 12px/1 var(--mono);color:var(--mu)}
+.lg .m{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg.trade{border-left:3px solid var(--ac)}
+.lg.gap{opacity:.75}
+.empty{color:var(--mu);font-size:14px;padding:16px 4px}
+.settings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:700px){.settings{grid-template-columns:repeat(2,minmax(0,1fr))}}
+label{display:grid;gap:6px;font-size:13px;color:var(--mu)}
+input[type=number]{width:100%;min-height:44px;background:var(--bg);border:1px solid var(--ln);border-radius:8px;color:var(--fg);padding:0 12px;font:500 15px var(--mono)}
+.fees{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (max-width:700px){.fees{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.real ul{margin:0;padding-left:18px;display:grid;gap:8px;color:#c9d4de}
+.real b{color:var(--fg)}
+.callout{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sf2);font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.note{font-size:12px;color:var(--mu)}
+section{margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Gap Scanner</h1>
+    <span class="badge" id="modeBadge">PAPER MODE · NO REAL MONEY</span>
+    <div class="hdr-r">
+      <button class="pri" id="runBtn" type="button">Pause</button>
+      <button id="demoBtn" type="button">Use demo feed</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="st"><span>Paper balance</span><b class="mono" id="sBal">$68.00</b></div>
+    <div class="st"><span>Profit / loss</span><b class="mono" id="sPnl">$0.00</b></div>
+    <div class="st"><span>Paper trades</span><b class="mono" id="sTrades">0</b></div>
+    <div class="st"><span>Markets live</span><b class="mono" id="sMk">0 / 72</b></div>
+    <div class="st"><span>Gaps before fees</span><b class="mono" id="sGross">0</b></div>
+    <div class="st"><span>Gaps after fees</span><b class="mono" id="sNet">0</b></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Live markets</h2>
+      <p class="sub">Cheapest place to buy vs. best place to sell, right now. Green means the gap beats your fees.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Coin</th><th>Buy at (lowest ask)</th><th>Sell at (highest bid)</th><th>Gap before fees</th><th>After fees</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="5" class="empty">Connecting to exchanges…</td></tr></tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h2>Paper balance over time</h2>
+      <p class="sub" id="eqSub">Starts at $68, like the post.</p>
+      <canvas id="eq"></canvas>
+      <section>
+        <h2>Exchanges</h2>
+        <p class="sub">Public price feeds only. No accounts, no keys.</p>
+        <div class="exs" id="exs"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <h2>Activity</h2>
+      <p class="sub">Paper trades in green. Gaps that fees would eat are shown faded.</p>
+      <div class="log" id="log"><div class="empty">Nothing yet. Gaps show up here the moment they appear.</div></div>
+      <div class="row"><button id="csvBtn" type="button">Export trades (CSV)</button><button id="resetBtn" type="button">Reset paper account</button></div>
+    </div>
+    <div class="card real">
+      <h2>Reality check</h2>
+      <p class="sub">What the scanner shows you, live.</p>
+      <div class="callout" id="realStat">Waiting for data…</div>
+      <ul style="margin-top:14px">
+        <li><b>Fees eat most gaps.</b> Buying on one exchange and selling on another pays two fees. Small gaps vanish.</li>
+        <li><b>You'd need money on both exchanges</b> already, because moving coins between them takes minutes to hours.</li>
+        <li><b>Paper fills are perfect.</b> Real orders arrive late and miss the price. Big firms with faster servers take most real gaps first.</li>
+        <li><b>$68 → $750K posts are marketing.</b> If a bot really did that, nobody would give it away for a follow.</li>
+      </ul>
+      <p class="note" style="margin-top:12px">Not financial advice. This tool never places real trades.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Settings</h2>
+    <p class="sub">Fees are each exchange's starter taker fee. Check your own tier and adjust.</p>
+    <div class="settings">
+      <label for="iStart">Starting balance ($)<input id="iStart" type="number" min="1" step="1" value="68"></label>
+      <label for="iMin">Min profit after fees (%)<input id="iMin" type="number" min="0" step="0.01" value="0.05"></label>
+      <label for="iSlip">Slippage per side (%)<input id="iSlip" type="number" min="0" step="0.01" value="0.02"></label>
+      <label for="iStale">Ignore prices older than (sec)<input id="iStale" type="number" min="1" step="1" value="3"></label>
+    </div>
+    <div class="fees" id="fees"></div>
+    <p class="note" style="margin-top:12px">USDT prices are converted to USD using the live USDT/USD rate, so stablecoin wiggle doesn't show up as fake gaps.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const COINS=['BTC','ETH','SOL','XRP','DOGE','ADA','AVAX','LINK','LTC','DOT','BCH','SHIB'];
+const EX={
+  coinbase:{name:'Coinbase',fee:1.20,usdt:false},
+  kraken:{name:'Kraken',fee:0.40,usdt:false},
+  binanceus:{name:'Binance.US',fee:0.60,usdt:true},
+  binance:{name:'Binance',fee:0.10,usdt:true},
+  okx:{name:'OKX',fee:0.10,usdt:true},
+  bybit:{name:'Bybit',fee:0.10,usdt:true}
+};
+const EXK=Object.keys(EX);
+const Q={}; EXK.forEach(k=>{ Q[k]={}; EX[k].status='conn'; EX[k].msgs=0; });
+let usdtUsd=1, usdtSrc='';
+let demo=false, demoTimer=null;
+const store={ get(k,d){ try{ const v=localStorage.getItem('gs_'+k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem('gs_'+k,JSON.stringify(v)); }catch(e){} } };
+
+/* ---------- settings ---------- */
+const S=store.get('settings',{start:68,min:0.05,slip:0.02,stale:3,fees:{}});
+EXK.forEach(k=>{ if(S.fees[k]!=null) EX[k].fee=S.fees[k]; });
+$('iStart').value=S.start; $('iMin').value=S.min; $('iSlip').value=S.slip; $('iStale').value=S.stale;
+$('fees').innerHTML=EXK.map(k=>'<label for="fee_'+k+'">'+EX[k].name+' fee (%)<input id="fee_'+k+'" type="number" min="0" step="0.01" value="'+EX[k].fee+'"></label>').join('');
+function saveSettings(){ S.start=Math.max(1,+$('iStart').value||68); S.min=Math.max(0,+$('iMin').value||0); S.slip=Math.max(0,+$('iSlip').value||0); S.stale=Math.max(1,+$('iStale').value||3);
+  EXK.forEach(k=>{ const v=+$('fee_'+k).value; if(v>=0){ EX[k].fee=v; S.fees[k]=v; } }); store.set('settings',S); }
+document.querySelectorAll('input').forEach(i=>i.addEventListener('change',saveSettings));
+
+/* ---------- paper account ---------- */
+let A=null; const accKey=()=>demo?'account_demo':'account';
+function newAccount(){ A={bal:S.start,start:S.start,trades:[],eq:[[Date.now(),S.start]],gross:0,net:0,since:Date.now()}; store.set(accKey(),A); }
+function loadAcc(){ A=store.get(accKey(),null); if(!A) newAccount(); }
+loadAcc();
+
+/* ---------- feeds ---------- */
+const sockets={};
+function setQ(ex,coin,bid,ask,bq,aq){ if(!(bid>0&&ask>0)) return; Q[ex][coin]={bid:+bid,ask:+ask,bq:+bq||0,aq:+aq||0,t:Date.now()}; EX[ex].msgs++; if(EX[ex].status!=='live'){ EX[ex].status='live'; drawEx(); } }
+function open(ex,url,onOpen,onMsg,pingFn){
+  let ws, pinger, tries=0;
+  const connect=()=>{
+    if(demo||!running) return;
+    EX[ex].status='conn'; drawEx();
+    try{ ws=new WebSocket(url); }catch(e){ EX[ex].status='off'; drawEx(); return; }
+    sockets[ex]=ws;
+    ws.onopen=()=>{ tries=0; onOpen(ws); if(pingFn) pinger=setInterval(()=>{ try{ pingFn(ws); }catch(e){} },20000); };
+    ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(_){ return; } try{ onMsg(m); }catch(_){} };
+    ws.onerror=()=>{};
+    ws.onclose=()=>{ clearInterval(pinger); if(sockets[ex]===ws) delete sockets[ex]; if(demo||!running) return; EX[ex].status=EX[ex].msgs?'conn':'off'; drawEx(); tries++; setTimeout(connect,Math.min(30000,2000*tries)); };
+  };
+  connect();
+}
+function startFeeds(){
+  open('coinbase','wss://ws-feed.exchange.coinbase.com',ws=>ws.send(JSON.stringify({type:'subscribe',product_ids:COINS.map(c=>c+'-USD').concat(['USDT-USD']),channels:['ticker']})),
+    m=>{ if(m.type!=='ticker') return; const [c,qq]=m.product_id.split('-'); if(c==='USDT'){ usdtUsd=(+m.best_bid + +m.best_ask)/2; usdtSrc='Coinbase'; return; } setQ('coinbase',c,m.best_bid,m.best_ask,m.best_bid_size,m.best_ask_size); });
+  open('kraken','wss://ws.kraken.com/v2',ws=>ws.send(JSON.stringify({method:'subscribe',params:{channel:'ticker',symbol:COINS.map(c=>c+'/USD').concat(['USDT/USD'])}})),
+    m=>{ if(m.channel!=='ticker'||!m.data) return; m.data.forEach(d=>{ const c=d.symbol.split('/')[0]; if(c==='USDT'){ if(!usdtSrc||usdtSrc==='Kraken'){ usdtUsd=(d.bid+d.ask)/2; usdtSrc='Kraken'; } return; } setQ('kraken',c,d.bid,d.ask,d.bid_qty,d.ask_qty); }); });
+  const bstreams=COINS.map(c=>c.toLowerCase()+'usdt@bookTicker').join('/');
+  const bmsg=ex=>m=>{ const d=m.data||m; if(!d||!d.s) return; const c=d.s.replace(/USDT$/,''); setQ(ex,c,d.b,d.a,d.B,d.A); };
+  open('binanceus','wss://stream.binance.us:9443/stream?streams='+bstreams,()=>{},bmsg('binanceus'));
+  open('binance','wss://stream.binance.com:9443/stream?streams='+bstreams,()=>{},bmsg('binance'));
+  open('okx','wss://ws.okx.com:8443/ws/v5/public',ws=>ws.send(JSON.stringify({op:'subscribe',args:COINS.map(c=>({channel:'tickers',instId:c+'-USDT'}))})),
+    m=>{ if(!m.data||!m.arg||m.arg.channel!=='tickers') return; m.data.forEach(d=>{ const c=d.instId.split('-')[0]; setQ('okx',c,d.bidPx,d.askPx,d.bidSz,d.askSz); }); }, ws=>ws.send('ping'));
+  open('bybit','wss://stream.bybit.com/v5/public/spot',ws=>{ const args=COINS.map(c=>'orderbook.1.'+c+'USDT'); for(let i=0;i<args.length;i+=10) ws.send(JSON.stringify({op:'subscribe',args:args.slice(i,i+10)})); },
+    m=>{ if(!m.topic||!m.data) return; const d=m.data, c=String(d.s||'').replace(/USDT$/,''); if(!d.b||!d.a||!d.b[0]||!d.a[0]) return; setQ('bybit',c,d.b[0][0],d.a[0][0],d.b[0][1],d.a[0][1]); }, ws=>ws.send(JSON.stringify({op:'ping'})));
+}
+function stopFeeds(){ Object.values(sockets).forEach(ws=>{ try{ ws.close(); }catch(e){} }); }
+
+/* ---------- demo feed (clearly labeled, for when exchanges are blocked) ---------- */
+
+const BASE={BTC:64000,ETH:3100,SOL:150,XRP:.55,DOGE:.12,ADA:.38,AVAX:28,LINK:13,LTC:68,DOT:4.3,BCH:330,SHIB:.000018};
+function demoTick(){ COINS.forEach(c=>{ BASE[c]*=1+(Math.random()-.5)*.0006; EXK.forEach(k=>{ let m=BASE[c]*(1+(Math.random()-.5)*.0012); if(Math.random()<.0002) m*=1+(Math.random()-.5)*.02; const sp=m*.0004; setQ(k,c,m-sp/2,m+sp/2,1e6/m,1e6/m); }); }); usdtUsd=1; }
+function setDemo(on){ demo=on; $('modeBadge').textContent=on?'DEMO FEED · FAKE PRICES':'PAPER MODE · NO REAL MONEY'; $('modeBadge').classList.toggle('demo',on); $('demoBtn').textContent=on?'Use live prices':'Use demo feed';
+  EXK.forEach(k=>{ Q[k]={}; EX[k].msgs=0; EX[k].status='conn'; });
+  loadAcc(); logN=0; const nf=$('noFeed'); if(nf&&on) nf.remove(); logEl.innerHTML='<div class="empty">'+(on?'Demo account. Fake prices, fake trades.':'Live prices, paper trades.')+'</div>';
+  if(on){ stopFeeds(); clearInterval(demoTimer); demoTimer=setInterval(demoTick,300); }
+  else { clearInterval(demoTimer); startFeeds(); } drawEx(); }
+$('demoBtn').addEventListener('click',()=>setDemo(!demo));
+
+/* ---------- scanner ---------- */
+let running=true; const cool={}; const best={};
+function toUsd(ex,p){ return EX[ex].usdt?p*usdtUsd:p; }
+function scan(){
+  if(!running) return;
+  const now=Date.now(), stale=S.stale*1000, slip=S.slip;
+  let live=0;
+  COINS.forEach(c=>{
+    const qs=[]; EXK.forEach(k=>{ const q=Q[k][c]; if(q&&now-q.t<stale){ live++; qs.push({k,bid:toUsd(k,q.bid),ask:toUsd(k,q.ask),bq:q.bq,aq:q.aq}); } });
+    best[c]=null; if(qs.length<2) return;
+    let top=null;
+    qs.forEach(b=>qs.forEach(s=>{ if(b.k===s.k) return; const gross=(s.bid-b.ask)/b.ask*100, net=gross-EX[b.k].fee-EX[s.k].fee-2*slip;
+      if(!top||net>top.net) top={buy:b,sell:s,gross,net}; }));
+    best[c]=top;
+    if(top.gross>0 && !(cool['g'+c]>now)){ cool['g'+c]=now+2000; A.gross++; if(top.net<S.min) addLog('gap',c,top); }
+    if(top.net>=S.min && !(cool['t'+c]>now)){
+      cool['t'+c]=now+4000;
+      const maxUsd=Math.min(top.buy.aq*top.buy.ask, top.sell.bq*top.sell.bid);
+      const size=Math.max(0,Math.min(A.bal,maxUsd>0?maxUsd:A.bal));
+      const profit=size*top.net/100;
+      A.bal+=profit; A.net++;
+      const tr={t:now,coin:c,buy:EX[top.buy.k].name,sell:EX[top.sell.k].name,buyPx:top.buy.ask,sellPx:top.sell.bid,size,grossPct:top.gross,netPct:top.net,profit,demo};
+      A.trades.unshift(tr); if(A.trades.length>500) A.trades.length=500;
+      A.eq.push([now,A.bal]); if(A.eq.length>2000) A.eq.splice(0,A.eq.length-2000);
+      addLog('trade',c,top,tr);
+    }
+  });
+  $('sMk').textContent=live+' / 72';
+}
+setInterval(scan,250);
+
+/* ---------- rendering ---------- */
+const fmtUsd=v=>(v<0?'-':'')+'$'+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtPx=v=>v>=100?v.toLocaleString(undefined,{maximumFractionDigits:2}):v>=1?v.toFixed(4):v<.001?v.toPrecision(4):v.toFixed(5);
+const pct=v=>(v>=0?'+':'')+v.toFixed(3)+'%';
+function drawEx(){ $('exs').innerHTML=EXK.map(k=>{ const e=EX[k], st=e.status; const txt=st==='live'?'live':st==='off'?'blocked here':'connecting'; return '<div class="ex"><span class="dot '+st+'"></span>'+e.name+' <small>'+txt+'</small></div>'; }).join(''); }
+drawEx();
+const logEl=$('log'); let logN=0;
+function addLog(kind,c,top,tr){
+  if(logN===0) logEl.innerHTML=''; logN++;
+  const d=document.createElement('div'); d.className='lg '+kind;
+  const time=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if(kind==='trade') d.innerHTML='<span class="t">'+time+'</span><span class="m">'+(tr.demo?'[demo] ':'')+'<b>'+c+'</b> buy '+EX[top.buy.k].name+' → sell '+EX[top.sell.k].name+'</span><span class="mono up">+'+fmtUsd(tr.profit)+'</span>';
+  else d.innerHTML='<span class="t">'+time+'</span><span class="m">'+c+' gap '+pct(top.gross)+' · fees eat it</span><span class="mono dn">'+pct(top.net)+'</span>';
+  logEl.prepend(d); while(logEl.children.length>80) logEl.lastElementChild.remove();
+}
+function drawRows(){
+  const list=COINS.map(c=>({c,b:best[c]})).sort((x,y)=>(y.b?y.b.gross:-99)-(x.b?x.b.gross:-99));
+  const any=list.some(x=>x.b);
+  if(!any){ $('rows').innerHTML='<tr><td colspan="5" class="empty">'+(demo?'Starting demo feed…':'Waiting for at least two exchanges to send prices…')+'</td></tr>'; return; }
+  $('rows').innerHTML=list.map(({c,b})=>{ if(!b) return '<tr><td class="coin">'+c+'</td><td colspan="4" class="mu">needs 2+ exchanges</td></tr>';
+    return '<tr><td class="coin">'+c+'<div class="route">'+EX[b.buy.k].name+' → '+EX[b.sell.k].name+'</div></td><td>$'+fmtPx(b.buy.ask)+'<span class="exn">'+EX[b.buy.k].name+'</span></td><td>$'+fmtPx(b.sell.bid)+'<span class="exn">'+EX[b.sell.k].name+'</span></td>'
+      +'<td><span class="pill '+(b.gross>0?'pos':'neg')+'">'+pct(b.gross)+'</span></td><td><span class="pill '+(b.net>=S.min?'pos':'neg')+'">'+pct(b.net)+'</span></td></tr>'; }).join('');
+}
+function drawStats(){
+  $('sBal').textContent=fmtUsd(A.bal); const pnl=A.bal-A.start; $('sPnl').textContent=(pnl>=0?'+':'')+fmtUsd(pnl); $('sPnl').className='mono '+(pnl>0?'up':pnl<0?'dn':'');
+  $('sTrades').textContent=A.net; $('sGross').textContent=A.gross; $('sNet').textContent=A.net;
+  const mins=Math.max(1,(Date.now()-A.since)/60000);
+  $('realStat').innerHTML='In the last <b>'+(mins<60?Math.round(mins)+' min':(mins/60).toFixed(1)+' hr')+'</b>: <b>'+A.gross+'</b> gaps appeared before fees, and <b>'+A.net+'</b> were still worth taking after fees.'
+    +(A.net? ' Paper profit so far: <b class="'+(pnl>=0?'up':'dn')+'">'+(pnl>=0?'+':'')+fmtUsd(pnl)+'</b>.' : '')+(usdtSrc?'<br><span class="note">USDT/USD rate: '+usdtUsd.toFixed(5)+' ('+usdtSrc+')</span>':'');
+  $('eqSub').textContent='Started at '+fmtUsd(A.start)+(demo?' · demo prices':'');
+}
+const cv=$('eq'), g=cv.getContext('2d');
+function drawEq(){
+  const r=cv.getBoundingClientRect(), dpr=Math.min(2,devicePixelRatio||1); if(!r.width) return;
+  cv.width=r.width*dpr; cv.height=r.height*dpr; g.setTransform(dpr,0,0,dpr,0,0);
+  const W=r.width, H=r.height, pts=A.eq.concat([[Date.now(),A.bal]]);
+  g.clearRect(0,0,W,H);
+  let lo=Math.min(...pts.map(p=>p[1])), hi=Math.max(...pts.map(p=>p[1])); if(hi-lo<A.start*.002){ hi=A.start*1.001+(hi-A.start); lo=Math.min(lo,A.start*.999); }
+  const t0=pts[0][0], t1=pts[pts.length-1][0]||t0+1, X=t=>8+(W-16)*((t-t0)/Math.max(1,t1-t0)), Y=v=>H-14-(H-28)*((v-lo)/Math.max(1e-9,hi-lo));
+  g.strokeStyle='#22303d'; g.lineWidth=1; g.setLineDash([3,4]); g.beginPath(); g.moveTo(8,Y(A.start)); g.lineTo(W-8,Y(A.start)); g.stroke(); g.setLineDash([]);
+  g.fillStyle='#8a9bab'; g.font='11px "JetBrains Mono", monospace'; g.fillText(fmtUsd(A.start),10,Y(A.start)-5);
+  const grd=g.createLinearGradient(0,0,0,H); grd.addColorStop(0,'rgba(74,222,128,.25)'); grd.addColorStop(1,'rgba(74,222,128,0)');
+  g.beginPath(); pts.forEach((p,i)=>{ const x=X(p[0]), y=Y(p[1]); if(i===0) g.moveTo(x,y); else { g.lineTo(x,Y(pts[i-1][1])); g.lineTo(x,y); } });
+  g.strokeStyle='#4ade80'; g.lineWidth=2; g.stroke();
+  g.lineTo(X(t1),H); g.lineTo(X(t0),H); g.closePath(); g.fillStyle=grd; g.fill();
+  const lp=pts[pts.length-1]; g.fillStyle='#4ade80'; g.beginPath(); g.arc(X(lp[0]),Y(lp[1]),4,0,7); g.fill();
+}
+setInterval(()=>{ drawRows(); drawStats(); drawEq(); store.set(accKey(),A); },1000);
+addEventListener('resize',drawEq);
+
+/* ---------- controls ---------- */
+$('runBtn').addEventListener('click',()=>{ running=!running; $('runBtn').textContent=running?'Pause':'Resume'; $('runBtn').classList.toggle('pri',running);
+  if(running){ if(demo) setDemo(true); else startFeeds(); } else { stopFeeds(); clearInterval(demoTimer); EXK.forEach(k=>{ EX[k].status='conn'; }); drawEx(); } });
+let resetArm=0;
+$('resetBtn').addEventListener('click',()=>{ const b=$('resetBtn'); if(Date.now()<resetArm){ saveSettings(); newAccount(); logN=0; logEl.innerHTML='<div class="empty">Paper account reset to '+fmtUsd(A.start)+'.</div>'; b.textContent='Reset paper account'; resetArm=0; return; }
+  resetArm=Date.now()+4000; b.textContent='Tap again to reset'; setTimeout(()=>{ if(resetArm&&Date.now()>=resetArm){ b.textContent='Reset paper account'; resetArm=0; } },4100); });
+$('csvBtn').addEventListener('click',()=>{ const head='time,coin,buy_exchange,sell_exchange,buy_price_usd,sell_price_usd,size_usd,gap_before_fees_pct,profit_after_fees_pct,paper_profit_usd,demo\n';
+  const rows=A.trades.map(t=>[new Date(t.t).toISOString(),t.coin,t.buy,t.sell,t.buyPx,t.sellPx,t.size.toFixed(2),t.grossPct.toFixed(4),t.netPct.toFixed(4),t.profit.toFixed(4),t.demo?'yes':'no'].join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([head+rows],{type:'text/csv'})); a.download='gap-scanner-paper-trades.csv'; document.body.appendChild(a); a.click(); a.remove(); });
+
+/* ---------- go ---------- */
+startFeeds();
+setTimeout(()=>{ if(!demo && !EXK.some(k=>EX[k].msgs>0)){ const n=document.createElement('div'); n.id='noFeed'; n.className='callout'; n.style.marginBottom='14px'; n.innerHTML='No exchange has sent prices yet. Your network or region may block these feeds. Tap <b>Use demo feed</b> to see how the scanner works with fake prices.'; document.querySelector('.stats').before(n); } },12000);
+})();
+</script>
+</body>
+</html>

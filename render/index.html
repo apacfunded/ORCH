@@ -336,6 +336,22 @@ footer a{color:var(--fg)}
 @media (max-width:480px){.cabar code{flex-basis:100%}}
 
 /* ---- v8: simpler ---- */
+.lockcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;display:grid;gap:20px;align-content:start}
+.lc-top{display:flex;gap:16px;align-items:center}
+.lc-ic{position:relative;width:60px;height:60px;border-radius:14px;background:var(--bg);display:grid;place-items:center;flex:none}
+.lc-ic .mark{width:40px;height:40px}
+.lc-lock{position:absolute;right:-8px;bottom:-8px;width:28px;height:28px;border-radius:50%;background:var(--str);color:#2a1600;display:grid;place-items:center;border:3px solid var(--surface)}
+.lc-lock svg{width:14px;height:14px}
+.lc-title{font:600 22px/1.2 var(--display)}
+.lc-sub{color:var(--muted);font-size:15px;margin-top:4px}
+.lc-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.lc-steps li{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.lc-steps li b{width:26px;height:26px;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;font:500 13px/1 var(--mono);flex:none}
+.lc-steps li span{display:grid;gap:3px;font-weight:600}
+.lc-steps li small{font-weight:400;color:var(--muted);font-size:14px}
+.lc-steps li.next{border-color:var(--accent)}
+.lc-steps li.next b{background:var(--accent);color:var(--accent-ink)}
+
 .x-soon{opacity:.6;cursor:default}
 .soon-tag{color:var(--accent);text-decoration:none;border:1px dashed #2f5e5b;background:none}
 .soon-tag:hover{border-style:solid}
@@ -580,7 +596,7 @@ footer a{color:var(--fg)}
 <nav class="nav" id="nav" aria-label="Main">
   <div class="wrap">
     <a class="logo" href="#top"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg>Render</a>
-    <div class="nav-links"><a href="#try">Try it</a><a href="#install">Install</a><a href="#mods">Mods</a><a href="#how">Coins</a><a href="#faq">FAQ</a></div>
+    <div class="nav-links"><a href="#try">Start a mod</a><a href="#install">Install</a><a href="#mods">Mods</a><a href="#how">Coins</a><a href="#faq">FAQ</a></div>
     <div class="nav-right"><a class="xbtn" id="xNav" href="#" target="_blank" rel="noopener" aria-label="Follow Render on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2.3h3.4l-7.4 8.5 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9.1L.9 2.3h7l4.8 6.4zm-1.2 18h1.9L7.1 4.2H5.1z"/></svg></a><button class="ca" id="caBtn" type="button">CA: coming soon</button><a class="btn btn-primary" href="#launch">Launch a mod coin</a></div>
   </div>
 </nav>
@@ -592,7 +608,7 @@ footer a{color:var(--fg)}
         <div class="eyebrow">AI that makes game mods</div>
         <h1><span class="line">Type a mod.</span><span class="line"><em>Play it.</em></span></h1>
         <p class="lead">Want a <b>jetpack in Minecraft</b> or a <b>laser sword in Terraria</b>? Launch a coin for your idea. Its <b>creator fees pay for the AI</b> that writes, builds and tests your mod. No coding needed.</p>
-        <div class="paths"><a class="path" href="#launch"><span class="path-k">Get a mod made</span><span class="path-s">Launch a coin for your mod idea.</span><span class="path-go" aria-hidden="true">→</span></a><a class="path alt" href="#try"><span class="path-k">Watch a demo</span><span class="path-s">See the AI build a sample mod.</span><span class="path-go" aria-hidden="true">→</span></a></div>
+        <div class="paths"><a class="path" href="#try"><span class="path-k">Get a mod made</span><span class="path-s">Launch a coin for your mod idea.</span><span class="path-go" aria-hidden="true">→</span></a><a class="path alt" href="#how"><span class="path-k">How it works</span><span class="path-s">Every mod starts as a coin.</span><span class="path-go" aria-hidden="true">→</span></a></div>
         <div class="cabar" id="caBar"><span class="cabar-l">$RENDER <button class="term" type="button" data-term="ca">CA</button></span><code id="caText">Drops at launch</code><button class="cabar-btn" id="caCopy" type="button">Copy</button><a class="cabar-btn buy" id="pumpLink" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a><a class="cabar-btn xb" id="xHero" href="#" target="_blank" rel="noopener" aria-label="Follow Render on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2.3h3.4l-7.4 8.5 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9.1L.9 2.3h7l4.8 6.4zm-1.2 18h1.9L7.1 4.2H5.1z"/></svg><span>Follow</span></a></div>
         <div class="works"><span>Works with</span><div><span class="tag">Minecraft</span><span class="tag">Skyrim</span><span class="tag">GTA V</span><span class="tag">Roblox</span><span class="tag">Stardew Valley</span><span class="tag">Terraria</span><a class="tag soon-tag" href="#soon">+ 16 coming soon</a></div></div>
       </div>
@@ -633,32 +649,26 @@ footer a{color:var(--fg)}
 
   <section class="block" id="try">
     <div class="wrap">
-      <div class="sec-head" data-reveal><div><div class="eyebrow">Try it</div><h2>Watch the AI build a mod</h2></div><p>This demo builds a sample mod. To get your own mod made, <a href="#launch" style="color:var(--accent)">launch a coin for it</a>.</p></div>
+      <div class="sec-head" data-reveal><div><div class="eyebrow">Start a mod</div><h2>Start your mod</h2></div><p>Pick a game and describe your mod. Then launch its coin. The coin's creator fees pay for the AI that builds it.</p></div>
       <div class="try-grid">
         <div><form class="promptbox" id="genForm">
           <div class="pstep"><span class="pnum">1</span><span>Pick a game</span></div>
           <div class="games" role="group" aria-label="Pick a game" id="gameChips"></div>
           <div class="pstep"><span class="pnum">2</span><label for="prompt">Describe your mod</label></div>
-          <div class="prow"><input id="prompt" maxlength="120" autocomplete="off"><button class="btn btn-primary" type="submit" id="genBtn">Generate</button></div>
+          <div class="prow"><input id="prompt" maxlength="120" autocomplete="off"><button class="btn btn-primary" type="submit" id="genBtn">Next: launch coin</button></div>
           <div class="ideas"><span>No idea? Tap one:</span><div id="ideas"></div></div>
         </form>
-        <p class="fine">Demo build · single-player and private-server mods only, no online cheats.</p></div>
-        <div class="ide" aria-label="Render mod studio">
-        <div class="ide-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="proj" id="projName">render studio</span><span class="stat" aria-live="polite"><span class="dot" id="statDot"></span><span id="statTxt">Writing</span></span></div>
-        <div class="ide-simple" id="simple"><div class="sim-top"><div class="sim-ic"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div><div class="sim-title" id="simTitle">The AI is writing your mod…</div><div class="sim-sub" id="simSub">Minecraft</div></div></div><div class="build-bar"><i id="simFill"></i></div><ul class="sim-steps" id="simSteps"></ul><div class="sim-done" id="simDone" hidden><div class="sim-file"><b id="simFile">mod.jar</b><span id="simMeta">ready</span></div><a class="btn btn-primary" href="#install">How to install it</a></div></div>
-        <div class="ide-body">
-          <div class="tree"><div class="t-head">Project</div><div id="tree"></div></div>
-          <div class="editor">
-            <div class="tabs"><div class="tab"><span id="tabFile">Main.java</span><span class="lang" id="tabLang">Java</span></div></div>
-            <div class="code" id="codeWrap"><div class="ln" id="lines">1</div><pre id="code"></pre></div>
-          </div>
+        <p class="fine">Single-player and private-server mods only, no online cheats.</p></div>
+        <div class="lockcard">
+          <div class="lc-top"><div class="lc-ic"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg><span class="lc-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span></div>
+            <div><div class="lc-title">Mods only get built with a coin</div><div class="lc-sub">No coin, no mod. Here's what happens after you press Next.</div></div></div>
+          <ol class="lc-steps">
+            <li class="next"><b>1</b><span>Launch your mod's coin<small>Name it, pick a ticker, launch on pump.fun</small></span></li>
+            <li><b>2</b><span>Creator fees fill the AI fuel tank<small>Every buy and sell adds fuel</small></span></li>
+            <li><b>3</b><span>The AI writes, builds and tests it<small>Starts as soon as the tank is full</small></span></li>
+            <li><b>4</b><span>Your mod ships free<small>Anyone can download and install it</small></span></li>
+          </ol>
         </div>
-        <div class="console" id="console" aria-live="polite"></div>
-        <div class="ide-foot">
-          <span class="artifact" id="artifact">Building…</span>
-          <button class="btn btn-ghost" id="codeToggle" type="button" aria-expanded="false">Show code</button><button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy code</button>
-        </div>
-      </div>
       </div>
     </div>
   </section>
@@ -770,7 +780,7 @@ footer a{color:var(--fg)}
     <div class="wrap">
       <div class="sec-head" data-reveal><div><div class="eyebrow">FAQ</div><h2>Questions</h2></div></div>
       <div data-stagger class="faq">
-        <details><summary>Is this real?</summary><p>Yes. The studio on this page is a demo that shows sample mods. Real mods are built with each game's modding tools once their coin's creator fees fill the AI fuel tank, and every mod is tested before anyone can download it.</p></details>
+        <details><summary>Is this real?</summary><p>Yes. The animation at the top and the mod cards are examples. Real mods are built with each game's modding tools once their coin's creator fees fill the AI fuel tank, and every mod is tested before anyone can download it.</p></details>
         <details><summary>Does it work for any game?</summary><p>It works with games that allow mods, like Minecraft, Skyrim, GTA V story mode, Stardew Valley, Terraria, many Unity games and your own Roblox games. If a game doesn't allow mods, Render can't mod it.</p></details>
         <details><summary>Will it make cheats or aimbots?</summary><p>No. Render only builds single-player mods, co-op mods for friends and private-server content. Cheats for online games break those games' rules and get accounts banned, so Render refuses those prompts.</p></details>
         <details><summary>How do I install a mod?</summary><p>Check the <a href="#install">install guide</a> above. It's three steps for every game, and each mod comes with its own short guide too.</p></details>
@@ -790,7 +800,7 @@ footer a{color:var(--fg)}
   </div>
 </main>
 
-<div class="mbar" id="mbar"><a class="btn btn-ghost" href="#try">Try it</a><a class="btn btn-primary" id="mbarBuy" href="https://pump.fun" target="_blank" rel="noopener">Buy $RENDER</a></div>
+<div class="mbar" id="mbar"><a class="btn btn-ghost" href="#try">Start a mod</a><a class="btn btn-primary" id="mbarBuy" href="https://pump.fun" target="_blank" rel="noopener">Buy $RENDER</a></div>
 <footer><div class="wrap"><span>Render · the AI mod scripter · <a id="xFoot" href="#" target="_blank" rel="noopener">X / Twitter</a> · <a id="pumpFoot" href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a></span><span>Not affiliated with any game publisher. $RENDER is a memecoin with no promise of value.</span></div></footer>
 <script>
 (function(){
@@ -1152,9 +1162,11 @@ const header=(g,p)=>g.cmt+' Prompt: "'+p.replace(/"/g,"'")+'"\n'+g.cmt+' Generat
 let cur='mc', job=0, currentCode='';
 const chips=$('gameChips');
 ORDER.forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.dataset.g=k; b.textContent=G[k].name; b.setAttribute('aria-pressed',k===cur?'true':'false');
-  b.addEventListener('click',()=>{ cur=k; chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false')); $('prompt').value=G[k].prompt; run(); }); chips.appendChild(b); });
+  b.addEventListener('click',()=>{ cur=k; chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false')); $('prompt').value=G[k].prompt; }); chips.appendChild(b); });
 $('prompt').value=G[cur].prompt;
-$('genForm').addEventListener('submit',e=>{ e.preventDefault(); if(!$('prompt').value.trim()) $('prompt').value=G[cur].prompt; run(); });
+$('genForm').addEventListener('submit',e=>{ e.preventDefault(); if(!$('prompt').value.trim()) $('prompt').value=G[cur].prompt; toLaunch(); });
+function toLaunch(){ lg=cur; lgWrap.querySelectorAll('.chip').forEach(x=>{ const o=x.dataset.g===lg; x.setAttribute('aria-checked',o); x.setAttribute('aria-pressed',o); });
+  $('fIdea').value=$('prompt').value.trim(); $('fName').value=''; $('fTicker').value=''; preview(); wzShow(2); document.getElementById('launch').scrollIntoView({behavior:reduce?'auto':'smooth'}); setTimeout(()=>$('fName').focus({preventScroll:true}),reduce?0:600); }
 
 
 const PLAIN=g=>['Building the mod file','Checking it works with '+g.name,'Testing it in the game','Packing it up for download'];
@@ -1164,10 +1176,9 @@ function simStep(g,i){ const ul=$('simSteps'), lastLi=ul.lastElementChild; if(la
   $('simFill').style.width=(50+50*(i+1)/g.build.length)+'%'; $('simTitle').textContent='Building and testing…'; }
 function simFinish(g){ $('simSteps').querySelectorAll('li').forEach(l=>{ l.classList.remove('on'); l.classList.add('ok'); });
   $('simTitle').textContent='✓ Your mod is ready!'; $('simFile').textContent=g.out; $('simMeta').textContent=g.size+' · works with '+g.name; $('simDone').hidden=false; $('simFill').style.width='100%'; }
-$('codeToggle').addEventListener('click',()=>{ const ide=document.querySelector('.ide'), on=ide.classList.toggle('show-code'); $('codeToggle').textContent=on?'Hide code':'Show code'; $('codeToggle').setAttribute('aria-expanded',on); });
 const IDEAS=[['mc','Jetpack'],['ter','Laser sword'],['gta','Getaway car'],['rbx','Speed pad'],['sky','Gold rain spell'],['sdv','Crops grow overnight']];
 IDEAS.forEach(([k,label])=>{ const b=document.createElement('button'); b.type='button'; b.className='idea-chip'; b.textContent=label;
-  b.addEventListener('click',()=>{ cur=k; chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.g===k?'true':'false')); $('prompt').value=G[k].prompt; run(); }); $('ideas').appendChild(b); });
+  b.addEventListener('click',()=>{ cur=k; chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.g===k?'true':'false')); $('prompt').value=G[k].prompt; }); $('ideas').appendChild(b); });
 function setStatus(txt,ok){ $('statTxt').textContent=txt; $('statDot').classList.toggle('ok',!!ok); }
 function run(){
   const id=++job, g=G[cur], p=$('prompt').value.trim()||g.prompt;
@@ -1195,11 +1206,7 @@ function build(id,g){
       setStatus('Build passed',true); const ie=document.querySelector('.ide'); ie.classList.remove('building'); ie.classList.add('passed'); $('artifact').innerHTML=esc(g.out)+' <span>· '+g.size+' · '+esc(g.loader)+'</span>'; $('copyBtn').disabled=false; $('genBtn').disabled=false; simFinish(g); } };
   setTimeout(next,reduce?0:300);
 }
-$('copyBtn').addEventListener('click',()=>{ const b=$('copyBtn');
-  const done=()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy code'; },1600); };
-  try{ navigator.clipboard.writeText(currentCode).then(done,()=>selectCode()); }catch(e){ selectCode(); } });
 function selectCode(){ const r=document.createRange(); r.selectNodeContents($('code')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); $('copyBtn').textContent='Code selected'; }
-run();
 
 /* ---------- supported games ---------- */
 const SUP=[

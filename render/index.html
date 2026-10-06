@@ -591,22 +591,22 @@ footer a{color:var(--fg)}
       <div>
         <div class="eyebrow">AI that makes game mods</div>
         <h1><span class="line">Type a mod.</span><span class="line"><em>Play it.</em></span></h1>
-        <p class="lead">Want a <b>jetpack in Minecraft</b> or a <b>laser sword in Terraria</b>? Just type it. Render's AI writes the code and turns it into a mod you can download and play. No coding needed.</p>
-        <div class="paths"><a class="path" href="#try"><span class="path-k">I want a mod</span><span class="path-s">Type an idea and get a mod. Free.</span><span class="path-go" aria-hidden="true">→</span></a><a class="path alt" href="#launch"><span class="path-k">I want to launch a coin</span><span class="path-s">Post your mod idea as a coin.</span><span class="path-go" aria-hidden="true">→</span></a></div>
+        <p class="lead">Want a <b>jetpack in Minecraft</b> or a <b>laser sword in Terraria</b>? Launch a coin for your idea. Its <b>creator fees pay for the AI</b> that writes, builds and tests your mod. No coding needed.</p>
+        <div class="paths"><a class="path" href="#launch"><span class="path-k">Get a mod made</span><span class="path-s">Launch a coin for your mod idea.</span><span class="path-go" aria-hidden="true">→</span></a><a class="path alt" href="#try"><span class="path-k">Watch a demo</span><span class="path-s">See the AI build a sample mod.</span><span class="path-go" aria-hidden="true">→</span></a></div>
         <div class="cabar" id="caBar"><span class="cabar-l">$RENDER <button class="term" type="button" data-term="ca">CA</button></span><code id="caText">Drops at launch</code><button class="cabar-btn" id="caCopy" type="button">Copy</button><a class="cabar-btn buy" id="pumpLink" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a><a class="cabar-btn xb" id="xHero" href="#" target="_blank" rel="noopener" aria-label="Follow Render on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2.3h3.4l-7.4 8.5 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9.1L.9 2.3h7l4.8 6.4zm-1.2 18h1.9L7.1 4.2H5.1z"/></svg><span>Follow</span></a></div>
         <div class="works"><span>Works with</span><div><span class="tag">Minecraft</span><span class="tag">Skyrim</span><span class="tag">GTA V</span><span class="tag">Roblox</span><span class="tag">Stardew Valley</span><span class="tag">Terraria</span><a class="tag soon-tag" href="#soon">+ 16 coming soon</a></div></div>
       </div>
       <div class="stage" id="stage" aria-label="Animated example: Render turning a typed idea into a mod">
-        <div class="stage-top"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg><span class="st-cap" id="stCap" aria-live="polite"><span class="num">1.</span>You type the mod you want</span><span class="st-game" id="stGame">Minecraft</span></div>
+        <div class="stage-top"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg><span class="st-cap" id="stCap" aria-live="polite"><span class="num">1.</span>Launch a coin for your mod</span><span class="st-game" id="stGame">Minecraft</span></div>
         <div class="scenes">
-          <div class="scene sc-type"><div class="chat"><div class="chat-label">What should your mod do?</div><div class="chat-input"><span id="typeTxt"></span><span class="caret"></span></div><div class="send-wrap"><span class="fake-btn">Make my mod</span><span class="cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l15 9.5-6.6 1.4L9.6 20z" fill="#fff" stroke="#071615" stroke-width="1.6" stroke-linejoin="round"/></svg></span></div></div></div>
-          <div class="scene sc-build"><div class="ai-orb"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div class="build-title">The AI is writing the code…</div><div class="mini-code"><pre id="miniCode"></pre></div><div class="build-meter"><div class="build-bar"><i id="buildFill"></i></div><div class="build-txt"><span id="buildStep">Writing code</span><span id="buildPct">0%</span></div></div></div>
+          <div class="scene sc-type"><div class="chat"><div class="chat-label">What should your mod do?</div><div class="chat-input"><span id="typeTxt"></span><span class="caret"></span></div><div class="send-wrap"><span class="fake-btn">Launch mod coin</span><span class="cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l15 9.5-6.6 1.4L9.6 20z" fill="#fff" stroke="#071615" stroke-width="1.6" stroke-linejoin="round"/></svg></span></div></div></div>
+          <div class="scene sc-build"><div class="ai-orb"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div class="build-title">Creator fees are powering the AI…</div><div class="mini-code"><pre id="miniCode"></pre></div><div class="build-meter"><div class="build-bar"><i id="buildFill"></i></div><div class="build-txt"><span id="buildStep">Writing code</span><span id="buildPct">0%</span></div></div></div>
           <div class="scene sc-ready"><div class="file-card"><div class="file-ic"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div><b id="fileName">jetpack-mod.jar</b><span>Built and tested ✓</span></div></div><div class="dl-wrap"><span class="fake-btn">Download mod</span><span class="cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l15 9.5-6.6 1.4L9.6 20z" fill="#fff" stroke="#071615" stroke-width="1.6" stroke-linejoin="round"/></svg></span></div><div class="folder"><svg viewBox="0 0 44 36" aria-hidden="true"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h20a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#0d2221" stroke="#3fe0c0" stroke-width="2"/></svg><span id="folderName">Minecraft › mods</span></div><div class="installed">Installed ✓</div></div>
           <div class="scene sc-play"><canvas id="playCv"></canvas><div class="play-badge" id="playDone">You can fly now!</div><span class="play-tag">Example gameplay</span></div>
         </div>
         <div class="steps-bar" id="stepsBar">
-          <button class="sb" type="button" data-i="0"><span class="sb-fill"></span><b>1</b>Type it</button>
-          <button class="sb" type="button" data-i="1"><span class="sb-fill"></span><b>2</b>AI builds it</button>
+          <button class="sb" type="button" data-i="0"><span class="sb-fill"></span><b>1</b>Launch coin</button>
+          <button class="sb" type="button" data-i="1"><span class="sb-fill"></span><b>2</b>Fees fuel AI</button>
           <button class="sb" type="button" data-i="2"><span class="sb-fill"></span><b>3</b>Download</button>
           <button class="sb" type="button" data-i="3"><span class="sb-fill"></span><b>4</b>Play</button>
         </div>
@@ -633,7 +633,7 @@ footer a{color:var(--fg)}
 
   <section class="block" id="try">
     <div class="wrap">
-      <div class="sec-head" data-reveal><div><div class="eyebrow">Try it</div><h2>Make a mod right now</h2></div><p>Pick a game, type what you want, press Generate. That's it.</p></div>
+      <div class="sec-head" data-reveal><div><div class="eyebrow">Try it</div><h2>Watch the AI build a mod</h2></div><p>This demo builds a sample mod. To get your own mod made, <a href="#launch" style="color:var(--accent)">launch a coin for it</a>.</p></div>
       <div class="try-grid">
         <div><form class="promptbox" id="genForm">
           <div class="pstep"><span class="pnum">1</span><span>Pick a game</span></div>
@@ -681,25 +681,26 @@ footer a{color:var(--fg)}
 
   <section class="block" id="how">
     <div class="wrap">
-      <div class="sec-head" data-reveal><div><div class="eyebrow">The coin part</div><h2>How mod coins work</h2></div><p>Big mods on Render start as coins. People pick what gets built by buying the coins for the mods they want.</p></div>
+      <div class="sec-head" data-reveal><div><div class="eyebrow">The coin part</div><h2>Every mod starts as a coin</h2></div><p>No coin, no mod. Each mod's coin pays for its own AI through creator fees.</p></div>
       <div class="coinflow" data-stagger>
-        <div class="cf"><span class="n">1</span><h3>Someone posts an idea</h3><p>They launch a coin for a mod, like $JETPK for a Minecraft jetpack.</p></div>
-        <div class="cf"><span class="n">2</span><h3>People buy the coin</h3><p>When the coin hits a $10K <button class="term" type="button" data-term="mc">market cap</button>, the mod unlocks.</p></div>
-        <div class="cf"><span class="n">3</span><h3>The AI builds it</h3><p>Render writes, builds and tests the mod. Anyone can download it for free.</p></div>
-        <div class="cf"><span class="n">4</span><h3>Fees get shared</h3><p><button class="term" type="button" data-term="fees">Trading fees</button> pay the person who launched it, and part buys and <button class="term" type="button" data-term="burn">burns</button> $RENDER.</p></div>
+        <div class="cf"><span class="n">1</span><h3>Launch a coin</h3><p>Pick a game, describe the mod and launch its coin, like $JETPK for a Minecraft jetpack.</p></div>
+        <div class="cf"><span class="n">2</span><h3>People trade it</h3><p>Every buy and sell pays a small <button class="term" type="button" data-term="fees">creator fee</button>.</p></div>
+        <div class="cf"><span class="n">3</span><h3>Fees fuel the AI</h3><p>Creator fees buy the AI tokens that write, build and test the mod. When the fuel tank is full, the AI builds it.</p></div>
+        <div class="cf"><span class="n">4</span><h3>Mod ships free</h3><p>Anyone can download it. After that, fees go to the creator and <button class="term" type="button" data-term="burn">burn</button> $RENDER.</p></div>
       </div>
       <div class="sizes" data-stagger>
-        <div class="size"><b>$10K MC</b><span>a simple mod with one cool thing</span></div>
-        <div class="size"><b>$25K MC</b><span>a bigger pack with new items and art</span></div>
-        <div class="size"><b>$50K MC</b><span>a huge overhaul or new game mode</span></div>
+        <div class="size"><b>Small tank</b><span>a simple mod with one cool thing</span></div>
+        <div class="size"><b>Medium tank</b><span>a bigger pack with new items and art</span></div>
+        <div class="size"><b>Big tank</b><span>a huge overhaul or new game mode</span></div>
       </div>
       <div class="fees" data-reveal>
-        <h3>Where the trading fees go</h3>
+        <h3>Where creator fees go</h3>
+        <p class="muted" style="margin:6px 0 0"><b style="color:var(--fg)">Until the mod is built:</b> 100% of creator fees fuel the AI. <b style="color:var(--fg)">After it ships:</b> fees split like this.</p>
         <div class="split" id="split" aria-hidden="true"><div class="s1">50%</div><div class="s2">30%</div><div class="s3">20%</div></div>
         <div class="legend">
           <div><i style="background:var(--fg)"></i><div><b>50% to the creator</b><p>Paid in SOL to whoever launched the mod coin.</p></div></div>
           <div><i style="background:var(--accent)"></i><div><b>30% buys and burns $RENDER</b><p>Done automatically. Every burn is public on-chain.</p></div></div>
-          <div><i style="background:var(--surface-2);border:1px solid var(--line)"></i><div><b>20% pays for building</b><p>Covers the AI and the testing behind each mod.</p></div></div>
+          <div><i style="background:var(--surface-2);border:1px solid var(--line)"></i><div><b>20% funds updates</b><p>Keeps the mod working when the game patches.</p></div></div>
         </div>
       </div>
     </div>
@@ -709,13 +710,13 @@ footer a{color:var(--fg)}
     <div class="wrap">
       <div class="sec-head" data-reveal>
         <div><div class="eyebrow">Mods</div><h2>Built on Render</h2></div>
-        <p>Live mods are ready to download. Locked mods build the moment their coin hits the goal.</p>
+        <p>Live mods are ready to download. Fueling mods build as soon as their creator fees fill the tank.</p>
       </div>
       <div class="filters" role="group" aria-label="Filter mods">
         <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
         <button class="chip" type="button" data-f="live" aria-pressed="false">Live</button>
         <button class="chip" type="button" data-f="building" aria-pressed="false">Building</button>
-        <button class="chip" type="button" data-f="locked" aria-pressed="false">Almost unlocked</button>
+        <button class="chip" type="button" data-f="locked" aria-pressed="false">Fueling up</button>
       </div>
       <div class="feed" id="feed"></div>
       <p class="example-note">Example data until launch.</p>
@@ -732,7 +733,7 @@ footer a{color:var(--fg)}
     <div class="wrap">
       <div class="sec-head" data-reveal>
         <div><div class="eyebrow">Launch</div><h2>Launch a mod coin</h2></div>
-        <p>Three quick steps. If your coin hits a $10K market cap, the AI builds the mod.</p>
+        <p>Three quick steps. Your coin's creator fees fuel the AI that builds your mod.</p>
       </div>
       <div data-stagger class="launch">
         <form class="panel wz" id="launchForm" novalidate>
@@ -753,12 +754,12 @@ footer a{color:var(--fg)}
         </form>
         <div class="panel preview">
           <div class="pv-meta"><div><div class="eyebrow">Mod preview</div><h3 id="pvName" style="margin-top:10px">Rug Jetpack</h3></div><span class="tk" id="pvTicker">$JETPK</span></div>
-          <div class="art locked pv-art" id="pvArt" style="--h:160"><svg viewBox="0 0 64 64" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="pvSvg"></svg><span class="art-game" id="pvGame">Minecraft</span><div class="lockmsg">Builds at $10K market cap</div></div>
+          <div class="art locked pv-art" id="pvArt" style="--h:160"><svg viewBox="0 0 64 64" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="pvSvg"></svg><span class="art-game" id="pvGame">Minecraft</span><div class="lockmsg">Builds when the fuel tank is full</div></div>
           <ul class="pv-steps">
             <li class="on" id="pv1"><span>Coin launches</span><span>Ready</span></li>
-            <li id="pv2"><span>Mod builds at $10K MC</span><span>Tier 1</span></li>
-            <li><span>Mod pack at $25K MC</span><span>Tier 2</span></li>
-            <li><span>Overhaul at $50K MC</span><span>Tier 3</span></li>
+            <li id="pv2"><span>Creator fees fill the AI fuel tank</span><span>Fueling</span></li>
+            <li><span>AI writes, builds and tests the mod</span><span>Building</span></li>
+            <li><span>Mod ships free to everyone</span><span>Live</span></li>
           </ul>
         </div>
       </div>
@@ -769,13 +770,14 @@ footer a{color:var(--fg)}
     <div class="wrap">
       <div class="sec-head" data-reveal><div><div class="eyebrow">FAQ</div><h2>Questions</h2></div></div>
       <div data-stagger class="faq">
-        <details><summary>Is this real?</summary><p>Yes. The studio on this page is a demo that shows sample mods. Live mods are built with each game's official modding tools once their coin hits the goal, and every mod is tested before anyone can download it.</p></details>
+        <details><summary>Is this real?</summary><p>Yes. The studio on this page is a demo that shows sample mods. Real mods are built with each game's modding tools once their coin's creator fees fill the AI fuel tank, and every mod is tested before anyone can download it.</p></details>
         <details><summary>Does it work for any game?</summary><p>It works with games that allow mods, like Minecraft, Skyrim, GTA V story mode, Stardew Valley, Terraria, many Unity games and your own Roblox games. If a game doesn't allow mods, Render can't mod it.</p></details>
         <details><summary>Will it make cheats or aimbots?</summary><p>No. Render only builds single-player mods, co-op mods for friends and private-server content. Cheats for online games break those games' rules and get accounts banned, so Render refuses those prompts.</p></details>
         <details><summary>How do I install a mod?</summary><p>Check the <a href="#install">install guide</a> above. It's three steps for every game, and each mod comes with its own short guide too.</p></details>
-        <details><summary>Are the mods free?</summary><p>Yes. Mods are free to download. The creator earns from the mod coin's trading fees, not from selling the mod.</p></details>
-        <details><summary>What happens if my coin never hits the goal?</summary><p>The coin still trades normally. The mod stays locked until the coin reaches a $10K market cap, with no deadline.</p></details>
-        <details><summary>How does the $RENDER burn work?</summary><p>30% of creator fees from every mod coin go to a public buyback wallet. It market-buys $RENDER and sends it to the burn address. Every burn is public on-chain.</p></details>
+        <details><summary>Do I need to launch a coin to get a mod?</summary><p>Yes. Every mod starts as a coin. The coin's creator fees pay for the AI tokens that write, build and test it, so nobody pays for the mod up front.</p></details>
+        <details><summary>Are the mods free?</summary><p>Yes. Mods are free to download. The coin's creator fees pay for building them.</p></details>
+        <details><summary>What if my coin doesn't make enough fees?</summary><p>The coin still trades normally. The mod builds as soon as its creator fees fill the fuel tank, with no deadline. Bigger mods need a bigger tank.</p></details>
+        <details><summary>How does the $RENDER burn work?</summary><p>Once a mod is built, 30% of its coin's creator fees go to a public buyback wallet. It market-buys $RENDER and sends it to the burn address. Every burn is public on-chain.</p></details>
       </div>
     </div>
   </section>
@@ -1031,7 +1033,7 @@ const header=(g,p)=>g.cmt+' Prompt: "'+p.replace(/"/g,"'")+'"\n'+g.cmt+' Generat
     {g:'ter',game:'Terraria',idea:'a gold sword that shoots lasers',file:'laser-sword.tmod',folder:'Terraria › Mods',play:'sword',done:'Your sword shoots lasers!'},
     {g:'sky',game:'Skyrim',idea:'a spell that makes it rain gold',file:'gold-rain.zip',folder:'Skyrim › Data',play:'rain',done:'It’s raining gold!'}
   ];
-  const SC=[{cap:'You type the mod you want',dur:3400},{cap:'The AI writes the code',dur:3200},{cap:'Your mod is ready to download',dur:3400},{cap:'Now play it in your game',dur:5000}];
+  const SC=[{cap:'Launch a coin for your mod',dur:3400},{cap:'Creator fees power the AI',dur:3200},{cap:'Your mod is ready to download',dur:3400},{cap:'Now play it in your game',dur:5000}];
   let si=0, vi=0, t0=performance.now(), last=0, visible=true, st=null;
   const cv=$('playCv'), g=cv.getContext('2d'); let W=0,H=0;
   const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -1233,13 +1235,13 @@ const ART={
  RAIN:[40,'<ellipse cx="32" cy="46" rx="16" ry="6"/><path d="M16 46v-7c0 3 7 6 16 6s16-3 16-6v7"/><ellipse cx="32" cy="39" rx="16" ry="6"/><circle cx="18" cy="14" r="4"/><circle cx="34" cy="8" r="4"/><circle cx="48" cy="18" r="4"/>'],
  SPEED:[190,'<path d="M36 6L14 36h16l-4 22 22-30H32z"/>']};
 function renderFeed(f){
-  $('feed').innerHTML=coins.filter(c=>f==='all'||c.st===f).map(c=>{ const g=G[c.g], goal=c.st==='live'?tierGoal(c.vol):10000, pct=Math.min(100,c.vol/goal*100);
-    const badge='<span class="badge '+c.st+'">'+(c.st==='live'?'Live':c.st==='building'?'Building':'Locked')+'</span>';
-    const lbl=c.st==='live'?(c.vol>=50000?'Tier 3 reached':'Next tier'):'Unlock';
+  $('feed').innerHTML=coins.filter(c=>f==='all'||c.st===f).map(c=>{ const g=G[c.g], goal=c.st==='live'?tierGoal(c.vol):10000, pct=c.st==='locked'?Math.min(99,c.vol/10000*100):100;
+    const badge='<span class="badge '+c.st+'">'+(c.st==='live'?'Live':c.st==='building'?'Building':'Fueling')+'</span>';
+    const fuel=c.st==='locked'?Math.round(Math.min(99,c.vol/10000*100)):100;
     const a=ART[c.tk]||[160,''];
-    return '<article class="card"><div class="art'+(c.st==='locked'?' locked':'')+'" style="--h:'+a[0]+'"><svg viewBox="0 0 64 64" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+a[1]+'</svg>'+badge+'<span class="art-game">'+g.name+'</span>'+(c.st==='locked'?'<div class="lockmsg">Unlocks at $10K MC</div>':'')+'</div>'
+    return '<article class="card"><div class="art'+(c.st==='locked'?' locked':'')+'" style="--h:'+a[0]+'"><svg viewBox="0 0 64 64" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+a[1]+'</svg>'+badge+'<span class="art-game">'+g.name+'</span>'+(c.st==='locked'?'<div class="lockmsg">Fueling up · '+fuel+'%</div>':'')+'</div>'
      +'<div class="card-body"><div class="card-top"><div><h3>'+c.name+'</h3><div class="tick">$'+c.tk+'</div></div><span class="chg '+(c.chg>=0?'up':'dn')+'">'+(c.chg>=0?'+':'')+c.chg.toFixed(1)+'%</span></div>'
-     +'<p class="idea">"'+c.idea+'"</p><div><div class="bar"><i style="width:0" data-w="'+pct+'"></i></div><div class="bar-meta"><span>'+fmt(c.vol)+' mc</span><span>'+lbl+' '+fmt(goal)+'</span></div></div>'
+     +'<p class="idea">"'+c.idea+'"</p><div><div class="bar"><i style="width:0" data-w="'+pct+'"></i></div><div class="bar-meta"><span>AI fuel '+fuel+'%</span><span>'+(c.st==='live'?'Built ✓':c.st==='building'?'AI building now':'from creator fees')+'</span></div></div>'
      +'<div class="card-foot">'+(c.st==='live'?'<a class="btn btn-primary" href="#mods">Download · '+c.dl+'</a>':'<a class="btn btn-primary" href="#launch">Buy $'+c.tk+'</a>')+'<a class="btn btn-ghost" href="#mods">Chart</a></div></div></article>'; }).join('');
 }
 renderFeed('all');
@@ -1276,7 +1278,7 @@ $('launchForm').addEventListener('submit',e=>{ e.preventDefault(); const err=$('
   if(!$('fTicker').value.trim()) return fail('Add a ticker, like JETPK.','fTicker');
   if($('fIdea').value.trim().length<8) return fail('Describe the mod in a few more words so Render knows what to build.','fIdea');
   const b=$('fBuy').value.trim(); if(b&&!(Number(b)>=0)) return fail('Enter the dev buy as a number of SOL, like 0.5.','fBuy');
-  $('toast').textContent='Preview only: $'+$('fTicker').value.toUpperCase()+' is ready to launch. Its '+G[lg].name+' mod builds at a $10K market cap.'; $('toast').hidden=false; $('pv2').classList.add('on'); });
+  $('toast').textContent='Preview only: $'+$('fTicker').value.toUpperCase()+' is ready to launch. Its '+G[lg].name+' mod builds once creator fees fill its AI fuel tank.'; $('toast').hidden=false; $('pv2').classList.add('on'); });
 /* ---------- your links: paste them here ---------- */
 const CONFIG={
   twitter:'',  // your X / Twitter link, e.g. 'https://x.com/rendermods'
@@ -1315,7 +1317,7 @@ renderInstall();
 const TERMS={mc:'Market cap = what all of a coin is worth right now. The more people buy, the higher it goes.',
  ca:'CA = contract address. It’s the coin’s unique ID. Paste it into pump.fun to find the exact right coin.',
  burn:'Burning = sending coins to a wallet nobody can open. They’re gone forever, so there are fewer left.',
- fees:'Every time someone buys or sells the coin, a tiny cut goes to fees.'};
+ fees:'Creator fee = a tiny cut of every buy and sell. On Render, it buys the AI tokens that build your mod.'};
 const tip=document.createElement('div'); tip.className='tip'; tip.setAttribute('role','tooltip'); tip.hidden=true; document.body.appendChild(tip);
 let tipFor=null;
 function showTip(el){ tipFor=el; tip.textContent=TERMS[el.dataset.term]||''; tip.hidden=false;

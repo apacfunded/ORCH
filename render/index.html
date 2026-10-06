@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071615">
+<meta name="description" content="Render is the AI that makes game mods. Type a mod, play it. $RENDER">
+<link rel="icon" type="image/png" href="/render/pfp.png">
+<link rel="apple-touch-icon" href="/render/pfp.png">
+<meta property="og:title" content="Render · Mod any game. Just ask.">
+<meta property="og:description" content="The AI that makes game mods. Type a mod, play it. $RENDER">
+<meta property="og:image" content="https://orch.lol/render/banner.png">
+<meta property="og:url" content="https://orch.lol/render/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://orch.lol/render/banner.png">
+<title>Render</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: terminal / studio. Hero = prompt on the left, a live mod IDE on the right (file tree, typed code, build console). Then supported games, steps, mod feed, tiers, fee split + burn log, launch form, FAQ. Single deliberate dark look. */
+:root{
+  --bg:#071615; --surface:#0d2221; --surface-2:#122c2a; --line:#1f4442;
+  --fg:#e3f6f2; --muted:#8fb5ae; --accent:#3fe0c0; --accent-ink:#03201b;
+  --kw:#ff7ab6; --str:#ffc27a; --type:#b9a4ff; --num:#7fd3ff; --com:#5f8a83; --dump:#ff6b6b;
+  --display:"Familjen Grotesk", system-ui, -apple-system, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px; --wrap:1220px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.55 var(--display);margin:0;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-.025em}
+.eyebrow{font:500 13px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:8px;font:600 16px/1 var(--display);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:#68ecd2}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn[disabled]{opacity:.45;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font:600 21px/1 var(--display);text-decoration:none;letter-spacing:-.02em}
+.logo-mark{font:500 15px/1 var(--mono);color:var(--accent-ink);background:var(--accent);border-radius:6px;padding:6px 7px}
+.nav-links{display:flex;gap:22px;margin-left:8px}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:15px}
+.nav-links a:hover{color:var(--fg)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.ca{font:500 13px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:0 12px;min-height:44px;background:none;cursor:pointer}
+.ca:hover{color:var(--fg)}
+.nav .btn{min-height:44px;font-size:15px;padding:0 16px}
+@media (max-width:860px){.nav-links,.ca{display:none}}
+
+/* hero */
+.hero{position:relative;padding-block:56px 72px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:44px 44px;opacity:.35;-webkit-mask-image:radial-gradient(80% 70% at 70% 40%,#000 0%,transparent 75%);mask-image:radial-gradient(80% 70% at 70% 40%,#000 0%,transparent 75%)}
+.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.3fr);gap:44px;align-items:start}
+@media (max-width:1000px){.hero-grid{grid-template-columns:minmax(0,1fr);gap:32px}}
+.hero h1{font-size:clamp(50px,7.2vw,96px);margin-top:18px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead{font-size:19px;color:#c4e3dd;margin:22px 0 28px;max-width:30em}
+.promptbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px}
+.promptbox label{font:500 13px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.prow{display:flex;gap:10px}
+.prow input{flex:1;min-width:0}
+.games{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--muted);font:500 14px/1 var(--mono);cursor:pointer}
+.chip:hover{color:var(--fg);border-color:#2f5e5b}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.fine{font:400 13px/1.5 var(--mono);color:var(--muted);margin:14px 0 0}
+input,textarea{width:100%;min-height:48px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font:400 16px/1.4 var(--display)}
+textarea{min-height:100px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+
+/* IDE */
+.ide{background:#061211;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 40px 100px -40px rgba(63,224,192,.35);min-width:0}
+.ide-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font:500 13px/1 var(--mono);color:var(--muted);background:var(--surface)}
+.ide-bar .dots{display:flex;gap:6px}.ide-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.ide-bar .proj{color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ide-bar .stat{margin-left:auto;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--str);flex:none;animation:blink 1s infinite}
+.dot.ok{background:var(--accent);animation:none}
+@keyframes blink{50%{opacity:.3}}
+.ide-body{display:grid;grid-template-columns:200px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:430px}
+.tree{border-right:1px solid var(--line);padding:12px 0;font:400 13px/1 var(--mono);color:var(--muted);overflow:auto}
+.tree .t-head{padding:0 14px 10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.tree div.f{padding:8px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree div.f.on{background:var(--surface-2);color:var(--fg);box-shadow:inset 2px 0 0 var(--accent)}
+.editor{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line);font:400 13px/1 var(--mono)}
+.tab{padding:11px 16px;color:var(--fg);border-right:1px solid var(--line);background:#061211;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.tab .lang{color:var(--muted)}
+.code{flex:1;min-height:0;overflow:auto;padding:14px 0;font:400 13.5px/1.62 var(--mono);display:grid;grid-template-columns:auto minmax(0,1fr)}
+.code .ln{color:#35605b;text-align:right;padding:0 14px 0 16px;user-select:none;white-space:pre;font-variant-numeric:tabular-nums}
+.code pre{margin:0;white-space:pre;color:var(--fg);padding-right:20px;font:inherit}
+.caret{display:inline-block;width:8px;height:1.15em;background:var(--accent);vertical-align:-3px;animation:blink 1s infinite}
+.k{color:var(--kw)} .s{color:var(--str)} .ty{color:var(--type)} .n{color:var(--num)} .c{color:var(--com);font-style:italic} .an{color:var(--str)}
+.console{border-top:1px solid var(--line);background:#051010;height:150px;overflow:auto;padding:12px 16px;font:400 13px/1.7 var(--mono);color:var(--muted)}
+.console .ok{color:var(--accent)} .console .hd{color:var(--fg)}
+.ide-foot{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);background:var(--surface);flex-wrap:wrap}
+.artifact{font:500 14px/1.3 var(--mono);color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.artifact span{color:var(--muted)}
+.ide-foot .btn{margin-left:auto;min-height:44px;font-size:15px}
+@media (max-width:640px){.ide-body{grid-template-columns:minmax(0,1fr);height:400px}.tree{display:none}.console{height:130px}.code{font-size:12.5px}}
+
+/* bands */
+.statband{border-block:1px solid var(--line)}
+.statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.statgrid div{padding:22px 0;display:grid;gap:6px}
+.statgrid div+div{padding-left:24px;border-left:1px solid var(--line)}
+.statgrid b{font:600 30px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.statgrid span{font:400 13px/1 var(--mono);color:var(--muted);letter-spacing:.04em}
+@media (max-width:700px){.statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.statgrid div:nth-child(3){padding-left:0;border-left:0}.statgrid div:nth-child(n+3){border-top:1px solid var(--line)}}
+.ticker{border-bottom:1px solid var(--line);background:var(--surface);overflow:hidden}
+.ticker-track{display:flex;gap:44px;padding-block:13px;width:max-content;animation:scroll 48s linear infinite}
+.ticker-item{font:400 13px/1 var(--mono);color:var(--muted);white-space:nowrap;display:flex;gap:8px}
+.ticker-item b{color:var(--fg);font-weight:500}.ticker-item .up{color:var(--accent)}.ticker-item .w{color:var(--str)}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+section.block{padding-block:96px 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:32px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(36px,4.8vw,58px);margin-top:12px;max-width:14em}
+.sec-head p{max-width:34em;color:var(--muted);margin:0}
+
+/* supported games */
+.support{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+@media (max-width:960px){.support{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.support{grid-template-columns:minmax(0,1fr)}}
+.sg{background:var(--bg);padding:22px;display:grid;gap:10px;align-content:start}
+.sg h3{font-size:22px}
+.sg .tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:400 12px/1 var(--mono);padding:6px 8px;border-radius:6px;background:var(--surface-2);color:var(--muted)}
+.sg p{margin:0;color:var(--muted);font-size:15px}
+.sg.more{background:var(--surface)}
+.sg.more h3{color:var(--accent)}
+
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.steps{grid-template-columns:minmax(0,1fr)}}
+.step{border-top:2px solid var(--accent);padding-top:18px;display:grid;gap:10px;align-content:start}
+.step .n{font:500 13px/1 var(--mono);color:var(--accent)}
+.step h3{font-size:22px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+
+/* feed */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.feed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:960px){.feed{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.feed{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s ease}
+.card:hover{border-color:#2f5e5b}
+.snip{position:relative;background:#061211;border-bottom:1px solid var(--line);min-width:0}
+.snip-bar{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);font:400 12px/1 var(--mono);color:var(--muted)}
+.snip pre{margin:0;padding:12px;font:400 12.5px/1.6 var(--mono);white-space:pre;overflow:hidden;height:132px;color:var(--fg)}
+.snip.locked pre{filter:blur(4px);opacity:.5}
+.snip .lockmsg{position:absolute;inset:34px 0 0;display:grid;place-items:center;font:500 14px/1 var(--mono);color:var(--fg)}
+.badge{font:500 12px/1 var(--mono);padding:5px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.06em}
+.badge.live{background:var(--accent);color:var(--accent-ink)}
+.badge.building{background:var(--str);color:#2a1600}
+.badge.locked{background:var(--surface-2);color:var(--fg)}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.card-top{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.card-top h3{font-size:21px}
+.card-top .tick{font:400 13px/1 var(--mono);color:var(--muted);margin-top:7px}
+.chg{font:500 14px/1 var(--mono);font-variant-numeric:tabular-nums}
+.chg.up{color:var(--accent)}.chg.dn{color:var(--dump)}
+.idea{font-size:15px;color:var(--muted);margin:0}
+.bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar-meta{display:flex;justify-content:space-between;font:400 12px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;margin-top:8px}
+.card-foot{display:flex;gap:8px;margin-top:auto}
+.card-foot .btn{flex:1;min-height:44px;font-size:15px;padding:0 12px}
+.example-note{font:400 13px/1.4 var(--mono);color:var(--muted);margin-top:16px}
+
+/* tiers */
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.tiers{grid-template-columns:minmax(0,1fr)}}
+.tier{border:1px solid var(--line);border-radius:var(--r);padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.tier.hot{background:var(--surface);border-color:var(--accent)}
+.tier .vol{font:600 52px/1 var(--display);letter-spacing:-.03em}
+.tier .lbl{font:500 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tier ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.tier li{display:flex;gap:10px;font-size:15px}
+.tier li::before{content:">";font:500 14px/1.55 var(--mono);color:var(--accent)}
+
+/* econ */
+.econ{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.econ{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:28px}
+.panel h3{font-size:24px;margin-bottom:6px}
+.split{display:flex;height:56px;border-radius:8px;overflow:hidden;margin:24px 0 20px;gap:3px}
+.split div{display:flex;align-items:center;padding-left:14px;font:500 17px/1 var(--mono)}
+.s1{flex:50;background:var(--fg);color:var(--bg)}.s2{flex:30;background:var(--accent);color:var(--accent-ink)}.s3{flex:20;background:var(--surface-2);color:var(--fg);border:1px solid var(--line)}
+.legend{display:grid;gap:14px}
+.legend>div{display:grid;grid-template-columns:14px minmax(0,1fr);gap:12px}
+.legend i{width:14px;height:14px;border-radius:3px;margin-top:5px}
+.legend b{font-weight:600}
+.legend p{margin:2px 0 0;color:var(--muted);font-size:15px}
+.burn-total{display:flex;align-items:baseline;gap:10px;margin:18px 0 20px;flex-wrap:wrap}
+.burn-total b{font:500 36px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--accent)}
+.log-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
+.log-row .t{font:400 12px/1 var(--mono);color:var(--muted);width:56px}
+.log-row .w{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log-row .a{font:500 13px/1 var(--mono);color:var(--accent);font-variant-numeric:tabular-nums}
+.log-row.new{animation:flash 1.2s ease}
+@keyframes flash{from{background:rgba(63,224,192,.12)}to{background:transparent}}
+
+/* launch */
+.launch{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.launch{grid-template-columns:minmax(0,1fr)}}
+form.panel{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.field{display:grid;gap:8px}
+.field label,.flabel{font:500 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hint{font-size:13px;color:var(--muted)}
+.row2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px}
+.err{color:var(--dump);font-size:15px;margin:0}
+.toast{margin:0;padding:14px;border-radius:8px;background:rgba(63,224,192,.08);border:1px solid rgba(63,224,192,.4);color:var(--accent);font-size:15px}
+.preview{position:sticky;top:88px}
+.preview .snip{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:18px 0}
+.preview .snip pre{height:180px}
+.pv-meta{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.pv-meta h3{font-size:26px}
+.tk{font:500 14px/1 var(--mono);color:var(--accent)}
+.pv-steps{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.pv-steps li{display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:12px 14px;border:1px solid var(--line);border-radius:8px}
+.pv-steps li span:last-child{font:400 13px/1.4 var(--mono);color:var(--muted);white-space:nowrap}
+.pv-steps li.on{border-color:var(--accent)}.pv-steps li.on span:last-child{color:var(--accent)}
+
+/* faq */
+.faq{border-top:1px solid var(--line)}
+details{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 0;font:600 20px/1.3 var(--display);min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 24px/1 var(--mono);color:var(--accent);transition:transform .2s ease}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 22px;color:var(--muted);max-width:46em}
+
+.cta-band{margin-top:104px;padding-block:72px;border-top:1px solid var(--line)}
+.cta-band h2{font-size:clamp(46px,7vw,92px)}
+.cta-band h2 em{font-style:normal;color:var(--accent)}
+.cta-band .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font:400 13px/1.5 var(--mono)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ---- brand mark ---- */
+.mark{width:30px;height:30px;display:block;flex:none;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.logo:hover .mark{transform:rotate(-8deg) scale(1.06)}
+.mark-caret{animation:caret 1.1s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+.progress{position:fixed;left:0;top:0;height:2px;width:100%;background:var(--accent);transform-origin:0 50%;transform:scaleX(0);z-index:40;pointer-events:none}
+.nav{transition:box-shadow .25s ease,background .25s ease}
+.nav.scrolled{box-shadow:0 8px 30px -12px rgba(0,0,0,.6)}
+
+/* ---- guided prompt ---- */
+.promptbox{gap:14px;padding:18px}
+.pstep{display:flex;align-items:center;gap:10px;font:500 13px/1 var(--mono);color:var(--fg);letter-spacing:.04em;text-transform:uppercase}
+.pstep label{color:inherit}
+.pnum{width:22px;height:22px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:12px}
+.chip{transition:background .18s ease,color .18s ease,border-color .18s ease,transform .12s ease}
+.chip:active{transform:scale(.96)}
+#prompt{transition:border-color .2s ease,box-shadow .2s ease}
+#prompt:focus{box-shadow:0 0 0 4px rgba(63,224,192,.12)}
+
+/* ---- buttons & cards ---- */
+.btn{transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .25s ease}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 26px -10px rgba(63,224,192,.65)}
+.btn-ghost:hover{transform:translateY(-1px)}
+.card{transition:border-color .2s ease,transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 22px 40px -24px rgba(0,0,0,.8)}
+.tier{transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .2s ease}
+.tier:hover{transform:translateY(-4px);border-color:#2f5e5b}
+.sg{transition:background .2s ease}
+.sg:hover{background:var(--surface)}
+.ticker:hover .ticker-track{animation-play-state:paused}
+
+/* ---- hero entrance ---- */
+.hero h1 .line{display:block;animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+.hero h1 .line:nth-child(2){animation-delay:.12s}
+.hero .eyebrow,.hero .lead,.promptbox,.fine{animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+.hero .lead{animation-delay:.2s}.promptbox{animation-delay:.3s}.fine{animation-delay:.4s}
+.ide{animation:riseIde 1s cubic-bezier(.2,.8,.2,1) .15s both}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+@keyframes riseIde{from{opacity:0;transform:translateY(28px) scale(.98)}}
+
+/* ---- IDE states ---- */
+.ide{transition:box-shadow .5s ease,border-color .5s ease}
+.ide.building{box-shadow:0 40px 110px -36px rgba(255,194,122,.35);border-color:#3b4a3a}
+.ide.passed{border-color:#2f6e63}
+.console div{animation:logIn .3s ease both}
+@keyframes logIn{from{opacity:0;transform:translateX(-6px)}}
+.ide-foot .artifact{transition:color .3s ease}
+.ide.passed .artifact{color:var(--accent)}
+#code{transition:opacity .2s ease}
+#code.swap{opacity:.25}
+
+/* ---- scroll reveal (only applied to content below the fold) ---- */
+.pre{opacity:0;transform:translateY(22px)}
+.reveal-in{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:var(--d,0s)}
+.bar i{transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.split div{transition:flex-grow 1s cubic-bezier(.2,.8,.2,1)}
+.split.pre-split div{flex-grow:.001}
+
+/* ---- CTA mark ---- */
+.cta-band{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center}
+.cta-band>.cta-mark{order:2}
+.cta-mark{width:clamp(120px,18vw,220px);aspect-ratio:1;max-width:100%;animation:float 6s ease-in-out infinite;filter:drop-shadow(0 30px 50px rgba(63,224,192,.28))}
+.cta-mark .mark{width:100%;height:100%}
+@keyframes float{50%{transform:translateY(-12px) rotate(-3deg)}}
+@media (max-width:700px){.cta-band{grid-template-columns:minmax(0,1fr)}.cta-band>.cta-mark{order:0;width:96px}}
+@media (prefers-reduced-motion:reduce){.pre{opacity:1;transform:none}.mark-caret{animation:none}}
+
+/* socials + CA */
+.xbtn{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--fg);transition:border-color .18s ease,transform .18s ease}
+.xbtn:hover{border-color:var(--muted);transform:translateY(-1px)}
+.xbtn svg{width:18px;height:18px}
+.cabar{margin-top:22px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 14px;max-width:560px;animation:rise .8s cubic-bezier(.2,.8,.2,1) .35s both}
+.cabar-l{font:500 12px/1 var(--mono);letter-spacing:.08em;color:var(--accent);white-space:nowrap}
+.cabar code{flex:1 1 140px;min-width:0;font:500 14px/1.3 var(--mono);color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;user-select:all}
+.cabar-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:600 14px/1 var(--display);text-decoration:none;cursor:pointer;white-space:nowrap;transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.cabar-btn:hover{border-color:var(--muted);transform:translateY(-1px)}
+.cabar-btn.buy{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cabar-btn svg{width:14px;height:14px}
+.cabar-btn.copied{border-color:var(--accent);color:var(--accent)}
+footer a{color:var(--fg)}
+@media (max-width:860px){.nav .xbtn{display:none}}
+@media (max-width:480px){.cabar code{flex-basis:100%}}
+
+/* ---- v8: simpler ---- */
+.x-soon{opacity:.6;cursor:default}
+.soon-tag{color:var(--accent);text-decoration:none;border:1px dashed #2f5e5b;background:none}
+.soon-tag:hover{border-style:solid}
+.soon-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:960px){.soon-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:700px){.soon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sn{position:relative;overflow:hidden;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:8px;align-content:start;cursor:pointer;color:var(--fg);font:inherit;transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .2s ease}
+.sn:hover{transform:translateY(-3px);border-color:#2f5e5b}
+.sn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(63,224,192,.08) 50%,transparent 70%);transform:translateX(-100%);animation:shimmer 3.2s ease-in-out infinite;animation-delay:var(--d,0s);pointer-events:none}
+@keyframes shimmer{60%,100%{transform:translateX(100%)}}
+.sn-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sn-badge{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--str);border:1px solid rgba(255,194,122,.4);border-radius:5px;padding:5px 6px;white-space:nowrap}
+.sn b{font:600 18px/1.2 var(--display)}
+.sn span.k{font-size:14px;color:var(--muted)}
+.sn-vote{font:500 13px/1 var(--mono);color:var(--muted);margin-top:4px;transition:color .2s ease}
+.sn.voted{border-color:var(--accent)}
+.sn.voted .sn-vote{color:var(--accent)}
+
+.pv-art{border:1px solid var(--line);border-radius:12px;margin:18px 0}
+[hidden]{display:none!important}
+.size b{white-space:nowrap}
+.paths{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:560px;animation:rise .8s cubic-bezier(.2,.8,.2,1) .3s both}
+.path{position:relative;display:grid;gap:4px;padding:16px 44px 16px 16px;border-radius:12px;background:var(--accent);color:var(--accent-ink);text-decoration:none;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease}
+.path.alt{background:var(--surface);color:var(--fg);border:1px solid var(--line)}
+.path:hover{transform:translateY(-2px);box-shadow:0 14px 30px -14px rgba(63,224,192,.6)}
+.path-k{font:600 18px/1.2 var(--display)}
+.path-s{font-size:14px;opacity:.8}
+.path-go{position:absolute;right:16px;top:50%;transform:translateY(-50%);font:600 22px/1 var(--display);transition:transform .2s ease}
+.path:hover .path-go{transform:translate(4px,-50%)}
+@media (max-width:480px){.paths{grid-template-columns:minmax(0,1fr)}}
+.term{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:help;text-decoration:underline dotted var(--accent);text-underline-offset:3px;text-decoration-thickness:2px}
+.term:hover,.term:focus-visible{color:var(--accent)}
+.tip{position:fixed;z-index:60;max-width:280px;background:var(--fg);color:var(--bg);font:500 14px/1.45 var(--display);padding:12px 14px;border-radius:10px;box-shadow:0 18px 40px -16px rgba(0,0,0,.7);pointer-events:none;animation:tipIn .15s ease}
+@keyframes tipIn{from{opacity:0;transform:translateY(4px)}}
+.ideas{display:grid;gap:8px}
+.ideas>span{font:500 12px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+#ideas{display:flex;flex-wrap:wrap;gap:6px}
+.idea-chip{min-height:40px;padding:0 12px;border-radius:999px;border:1px dashed #2f5e5b;background:none;color:var(--fg);font:500 14px/1 var(--display);cursor:pointer;transition:border-color .18s ease,background .18s ease,transform .12s ease}
+.idea-chip:hover{border-style:solid;border-color:var(--accent);background:rgba(63,224,192,.08)}
+.idea-chip:active{transform:scale(.96)}
+.ide:not(.show-code) .ide-body,.ide:not(.show-code) .console,.ide:not(.show-code) #copyBtn{display:none}
+.ide.show-code .ide-simple{display:none}
+.ide-simple{padding:24px;display:grid;gap:18px;min-height:340px;align-content:start}
+.sim-top{display:flex;gap:14px;align-items:center}
+.sim-ic{width:56px;height:56px;border-radius:14px;background:var(--surface);display:grid;place-items:center;flex:none}
+.sim-ic .mark{width:38px;height:38px}
+.ide.building .sim-ic .mark{animation:bob 1s ease-in-out infinite}
+.sim-title{font:600 22px/1.2 var(--display)}
+.sim-sub{font:500 13px/1 var(--mono);color:var(--muted);margin-top:6px}
+#simFill{transition:width .4s ease}
+.sim-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.sim-steps li{display:flex;align-items:center;gap:10px;font-size:16px;color:var(--muted);animation:logIn .3s ease both}
+.sim-steps li::before{content:"";width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none}
+.sim-steps li.on{color:var(--fg)}
+.sim-steps li.on::before{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.sim-steps li.ok{color:var(--fg)}
+.sim-steps li.ok::before{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 3px #061211}
+.sim-done{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--surface);border:1px solid #2f6e63;border-radius:12px;padding:14px 16px;animation:rise .4s ease both}
+.sim-file b{display:block;font:500 15px/1.3 var(--mono)}
+.sim-file span{display:block;font-size:14px;color:var(--accent);margin-top:2px}
+.inst{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+@media (max-width:800px){.inst{grid-template-columns:minmax(0,1fr)}}
+.ist{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start;animation:rise .4s ease both}
+.ist:nth-child(2){animation-delay:.06s}.ist:nth-child(3){animation-delay:.12s}
+.ist .n{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:600 16px/1 var(--mono)}
+.ist h3{font-size:20px}
+.ist p{margin:0;color:var(--muted);font-size:15px}
+.ist code{font:500 13px/1.4 var(--mono);color:var(--fg);background:var(--bg);padding:2px 6px;border-radius:5px}
+.fees{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
+.fees h3{font-size:22px}
+.art{position:relative;aspect-ratio:2/1;max-width:100%;display:grid;place-items:center;background:radial-gradient(circle at 50% 62%,hsl(var(--h) 55% 24%),#061211 72%);border-bottom:1px solid var(--line);overflow:hidden}
+.art svg{width:84px;height:84px;stroke:hsl(var(--h) 85% 72%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.card:hover .art svg{transform:translateY(-6px) rotate(-4deg) scale(1.06)}
+.art .badge{position:absolute;top:12px;left:12px}
+.art-game{position:absolute;right:12px;bottom:10px;font:500 12px/1 var(--mono);color:var(--muted)}
+.art.locked svg{filter:blur(3px);opacity:.35}
+.art .lockmsg{position:absolute;inset:0;display:grid;place-items:center;font:500 14px/1 var(--mono);color:var(--fg)}
+.wz-dots{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wz-dots li{display:flex;align-items:center;gap:8px;font:500 13px/1.2 var(--mono);color:var(--muted);padding-bottom:10px;border-bottom:3px solid var(--line);transition:border-color .3s ease,color .3s ease}
+.wz-dots li b{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:var(--surface-2);color:var(--fg);font-weight:500;flex:none}
+.wz-dots li.on,.wz-dots li.done{color:var(--fg);border-color:var(--accent)}
+.wz-dots li.on b,.wz-dots li.done b{background:var(--accent);color:var(--accent-ink)}
+.wz-step{display:grid;gap:12px;animation:rise .35s ease both}
+.wz-q{font:600 22px/1.25 var(--display);color:var(--fg)}
+.wz-nav{display:flex;gap:10px;justify-content:flex-end}
+.wz-nav .btn{min-width:120px}
+.mbar{display:none}
+@media (max-width:760px){
+  .mbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;z-index:35;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  .mbar.show{transform:none}
+  .mbar .btn{min-height:48px}
+  footer{padding-bottom:96px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ================= v5: kid-simple home + autoplay story ================= */
+.hero2{position:relative;padding-block:48px 64px;overflow:hidden}
+.hero2::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:44px 44px;opacity:.3;-webkit-mask-image:radial-gradient(80% 70% at 70% 45%,#000 0%,transparent 75%);mask-image:radial-gradient(80% 70% at 70% 45%,#000 0%,transparent 75%)}
+.hero2 .hero-grid{align-items:center}
+.hero2 h1{font-size:clamp(46px,6.6vw,88px);margin-top:16px}
+.hero2 h1 .line{display:block;animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+.hero2 h1 .line:nth-child(2){animation-delay:.12s}
+.hero2 h1 em{font-style:normal;color:var(--accent)}
+.hero2 .lead{font-size:20px;line-height:1.5;color:#c4e3dd;margin:20px 0 28px;max-width:28em;animation:rise .8s cubic-bezier(.2,.8,.2,1) .2s both}
+.hero2 .lead b{color:var(--fg);font-weight:600}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;animation:rise .8s cubic-bezier(.2,.8,.2,1) .3s both}
+.works{margin-top:28px;display:grid;gap:10px;animation:rise .8s cubic-bezier(.2,.8,.2,1) .4s both}
+.works span{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.works div{display:flex;flex-wrap:wrap;gap:6px}
+
+/* story stage */
+.stage{position:relative;background:#061211;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 40px 100px -40px rgba(63,224,192,.4);animation:riseIde 1s cubic-bezier(.2,.8,.2,1) .15s both;min-width:0}
+.stage-top{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--surface)}
+.stage-top .mark{width:24px;height:24px}
+.st-cap{font:600 19px/1.2 var(--display);letter-spacing:-.01em;min-width:0}
+.st-cap .num{color:var(--accent);margin-right:6px}
+.st-game{margin-left:auto;font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 10px;white-space:nowrap}
+.scenes{position:relative;height:380px}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;opacity:0;visibility:hidden;transform:scale(.98);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s}
+.scene.on{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease,visibility 0s}
+.steps-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line)}
+.sb{position:relative;overflow:hidden;background:none;border:0;border-right:1px solid var(--line);color:var(--muted);font:500 13px/1.2 var(--mono);min-height:52px;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.sb:last-child{border-right:0}
+.sb b{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:var(--surface-2);color:var(--fg);font-weight:500;flex:none;transition:background .3s ease,color .3s ease}
+.sb.on{color:var(--fg)}
+.sb.on b,.sb.done b{background:var(--accent);color:var(--accent-ink)}
+.sb-fill{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--accent)}
+.sb.on .sb-fill{animation:fill var(--dur,3s) linear forwards}
+.sb.done .sb-fill{width:100%}
+@keyframes fill{to{width:100%}}
+.cursor{position:absolute;left:0;top:0;width:26px;height:26px;pointer-events:none;z-index:3;opacity:0}
+.cursor svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,.6))}
+.cursor::after{content:"";position:absolute;left:-10px;top:-10px;width:26px;height:26px;border-radius:50%;border:2px solid var(--accent);opacity:0}
+
+/* scene 1: type */
+.chat{width:min(100%,460px);display:grid;gap:12px}
+.chat-label{font:600 22px/1.2 var(--display);text-align:center}
+.chat-input{min-height:64px;border:2px solid var(--accent);border-radius:14px;background:var(--bg);padding:16px 18px;font:400 19px/1.4 var(--display);box-shadow:0 0 0 6px rgba(63,224,192,.08)}
+.chat-input .caret{display:inline-block;width:2px;height:1.1em;background:var(--accent);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite}
+.send-wrap{position:relative;justify-self:end}
+.fake-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font:600 17px/1 var(--display);border:0}
+.sc-type.on .send-wrap .cursor{animation:cur1 var(--dur,3.4s) ease both}
+.sc-type.on .send-wrap .cursor::after{animation:ring var(--dur,3.4s) ease both}
+.sc-type.on .send-wrap .fake-btn{animation:press var(--dur,3.4s) ease both}
+@keyframes cur1{0%,55%{opacity:0;transform:translate(120px,90px)}62%{opacity:1;transform:translate(120px,90px)}78%{opacity:1;transform:translate(40px,20px)}82%{transform:translate(40px,20px) scale(.85)}86%,100%{opacity:1;transform:translate(40px,20px)}}
+@keyframes ring{0%,81%{opacity:0;transform:scale(.4)}84%{opacity:1}96%,100%{opacity:0;transform:scale(1.8)}}
+@keyframes press{0%,81%{transform:none}84%{transform:scale(.94);background:#68ecd2}90%,100%{transform:none}}
+
+/* scene 2: build */
+.ai-orb{width:76px;height:76px;position:relative;display:grid;place-items:center}
+.ai-orb .mark{width:64px;height:64px;position:relative;z-index:1}
+.ai-orb::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px dashed rgba(63,224,192,.5)}
+.sc-build.on .ai-orb::before{animation:spin 2.4s linear infinite}
+.sc-build.on .ai-orb .mark{animation:bob 1s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{50%{transform:translateY(-4px) scale(1.04)}}
+.build-title{font:600 22px/1.2 var(--display);text-align:center}
+.mini-code{width:min(100%,460px);height:118px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--bg);position:relative;-webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.mini-code pre{margin:0;padding:10px 14px;font:400 12.5px/1.6 var(--mono);white-space:pre;color:var(--fg)}
+.sc-build.on .mini-code pre{animation:codeScroll var(--dur,3.2s) linear both}
+@keyframes codeScroll{from{transform:translateY(40px)}to{transform:translateY(calc(-100% + 110px))}}
+.build-meter{width:min(100%,460px);display:grid;gap:8px}
+.build-bar{height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.build-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2cc9a8,var(--accent));border-radius:99px}
+.build-txt{display:flex;justify-content:space-between;font:500 13px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* scene 3: ready */
+.file-card{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid #2f6e63;border-radius:14px;padding:14px 18px;min-width:min(100%,320px)}
+.file-ic{width:46px;height:46px;border-radius:10px;background:var(--bg);display:grid;place-items:center;flex:none}
+.file-ic .mark{width:34px;height:34px}
+.file-card b{display:block;font:500 16px/1.3 var(--mono)}
+.file-card span{display:block;font-size:14px;color:var(--accent);margin-top:3px}
+.folder{display:flex;align-items:center;gap:10px;font:500 14px/1 var(--mono);color:var(--muted)}
+.folder svg{width:44px;height:36px}
+.installed{font:600 15px/1 var(--display);color:var(--accent);opacity:0}
+.sc-ready.on .file-card{animation:fileFlow var(--dur,3s) cubic-bezier(.2,.8,.2,1) both}
+.sc-ready.on .dl-wrap .fake-btn{animation:press2 var(--dur,3s) ease both}
+.sc-ready.on .dl-wrap .cursor{animation:cur2 var(--dur,3s) ease both}
+.sc-ready.on .dl-wrap .cursor::after{animation:ring2 var(--dur,3s) ease both}
+.sc-ready.on .folder svg{animation:bump var(--dur,3s) ease both}
+.sc-ready.on .installed{animation:showIn var(--dur,3s) ease both}
+.dl-wrap{position:relative}
+@keyframes fileFlow{0%{opacity:0;transform:translateY(-14px) scale(.85)}12%{opacity:1;transform:none}62%{opacity:1;transform:none}80%,100%{opacity:0;transform:translateY(var(--fly,150px)) scale(.3)}}
+@keyframes cur2{0%,15%{opacity:0;transform:translate(110px,70px)}22%{opacity:1;transform:translate(110px,70px)}38%{transform:translate(70px,18px)}42%{transform:translate(70px,18px) scale(.85)}46%,62%{opacity:1;transform:translate(70px,18px)}70%,100%{opacity:0}}
+@keyframes ring2{0%,41%{opacity:0;transform:scale(.4)}44%{opacity:1}56%,100%{opacity:0;transform:scale(1.8)}}
+@keyframes press2{0%,41%{transform:none}44%{transform:scale(.94)}50%,100%{transform:none}}
+@keyframes bump{0%,78%{transform:none}84%{transform:scale(1.18)}90%,100%{transform:none}}
+@keyframes showIn{0%,82%{opacity:0;transform:translateY(6px)}90%,100%{opacity:1;transform:none}}
+
+/* scene 4: play */
+.sc-play{padding:0}
+.sc-play canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.play-badge{position:absolute;left:50%;top:22px;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);font:600 18px/1 var(--display);padding:12px 18px;border-radius:999px;white-space:nowrap;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)}
+.sc-play.on .play-badge{animation:pop .5s cubic-bezier(.2,1.4,.4,1) .9s both}
+@keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.6)}}
+.play-tag{position:absolute;left:14px;bottom:14px;font:500 12px/1 var(--mono);color:#fff;background:rgba(0,0,0,.45);padding:7px 9px;border-radius:6px}
+
+@media (max-width:640px){
+  .scenes{height:340px}
+  .st-cap{font-size:16px}
+  .chat-label,.build-title{font-size:19px}
+  .chat-input{font-size:17px}
+  .sb{font-size:0;gap:0}.sb b{font-size:12px}
+  .file-card{--fly:120px}
+  .sc-ready{--fly:120px}
+}
+
+/* what's a mod */
+.explain{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:40px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:40px}
+.explain h2{font-size:clamp(34px,4.4vw,52px)}
+.explain p{color:#c4e3dd;font-size:19px;line-height:1.55;margin:14px 0 0;max-width:30em}
+.mod-ex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mx{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:10px;align-content:start;transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .2s ease}
+.mx:hover{transform:translateY(-4px);border-color:#2f5e5b}
+.mx svg{width:44px;height:44px}
+.mx b{font:600 18px/1.2 var(--display)}
+.mx span{font-size:15px;color:var(--muted)}
+@media (max-width:900px){.explain{grid-template-columns:minmax(0,1fr);padding:28px}}
+@media (max-width:560px){.mod-ex{grid-template-columns:minmax(0,1fr)}}
+
+/* coin explainer */
+.coinflow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;position:relative}
+@media (max-width:900px){.coinflow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.coinflow{grid-template-columns:minmax(0,1fr)}}
+.cf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start;position:relative}
+.cf .n{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:600 16px/1 var(--mono)}
+.cf h3{font-size:21px}
+.cf p{margin:0;color:var(--muted);font-size:15px}
+.sizes{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.size{flex:1 1 200px;border:1px dashed var(--line);border-radius:12px;padding:14px 16px;display:flex;align-items:baseline;gap:10px}
+.size b{font:500 20px/1 var(--mono);color:var(--accent)}
+.size span{color:var(--muted);font-size:15px}
+.try-head{text-align:left}
+.try-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.3fr);gap:28px;align-items:start}
+@media (max-width:1000px){.try-grid{grid-template-columns:minmax(0,1fr)}}
+
+</style>
+
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<nav class="nav" id="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="logo" href="#top"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg>Render</a>
+    <div class="nav-links"><a href="#try">Try it</a><a href="#install">Install</a><a href="#mods">Mods</a><a href="#how">Coins</a><a href="#faq">FAQ</a></div>
+    <div class="nav-right"><a class="xbtn" id="xNav" href="#" target="_blank" rel="noopener" aria-label="Follow Render on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2.3h3.4l-7.4 8.5 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9.1L.9 2.3h7l4.8 6.4zm-1.2 18h1.9L7.1 4.2H5.1z"/></svg></a><button class="ca" id="caBtn" type="button">CA: coming soon</button><a class="btn btn-primary" href="#launch">Launch a mod coin</a></div>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero2">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">AI that makes game mods</div>
+        <h1><span class="line">Type a mod.</span><span class="line"><em>Play it.</em></span></h1>
+        <p class="lead">Want a <b>jetpack in Minecraft</b> or a <b>laser sword in Terraria</b>? Just type it. Render's AI writes the code and turns it into a mod you can download and play. No coding needed.</p>
+        <div class="paths"><a class="path" href="#try"><span class="path-k">I want a mod</span><span class="path-s">Type an idea and get a mod. Free.</span><span class="path-go" aria-hidden="true">→</span></a><a class="path alt" href="#launch"><span class="path-k">I want to launch a coin</span><span class="path-s">Post your mod idea as a coin.</span><span class="path-go" aria-hidden="true">→</span></a></div>
+        <div class="cabar" id="caBar"><span class="cabar-l">$RENDER <button class="term" type="button" data-term="ca">CA</button></span><code id="caText">Drops at launch</code><button class="cabar-btn" id="caCopy" type="button">Copy</button><a class="cabar-btn buy" id="pumpLink" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a><a class="cabar-btn xb" id="xHero" href="#" target="_blank" rel="noopener" aria-label="Follow Render on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2.3h3.4l-7.4 8.5 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9.1L.9 2.3h7l4.8 6.4zm-1.2 18h1.9L7.1 4.2H5.1z"/></svg><span>Follow</span></a></div>
+        <div class="works"><span>Works with</span><div><span class="tag">Minecraft</span><span class="tag">Skyrim</span><span class="tag">GTA V</span><span class="tag">Roblox</span><span class="tag">Stardew Valley</span><span class="tag">Terraria</span><a class="tag soon-tag" href="#soon">+ 12 coming soon</a></div></div>
+      </div>
+      <div class="stage" id="stage" aria-label="Animated example: Render turning a typed idea into a mod">
+        <div class="stage-top"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg><span class="st-cap" id="stCap" aria-live="polite"><span class="num">1.</span>You type the mod you want</span><span class="st-game" id="stGame">Minecraft</span></div>
+        <div class="scenes">
+          <div class="scene sc-type"><div class="chat"><div class="chat-label">What should your mod do?</div><div class="chat-input"><span id="typeTxt"></span><span class="caret"></span></div><div class="send-wrap"><span class="fake-btn">Make my mod</span><span class="cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l15 9.5-6.6 1.4L9.6 20z" fill="#fff" stroke="#071615" stroke-width="1.6" stroke-linejoin="round"/></svg></span></div></div></div>
+          <div class="scene sc-build"><div class="ai-orb"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div class="build-title">The AI is writing the code…</div><div class="mini-code"><pre id="miniCode"></pre></div><div class="build-meter"><div class="build-bar"><i id="buildFill"></i></div><div class="build-txt"><span id="buildStep">Writing code</span><span id="buildPct">0%</span></div></div></div>
+          <div class="scene sc-ready"><div class="file-card"><div class="file-ic"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div><b id="fileName">jetpack-mod.jar</b><span>Built and tested ✓</span></div></div><div class="dl-wrap"><span class="fake-btn">Download mod</span><span class="cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l15 9.5-6.6 1.4L9.6 20z" fill="#fff" stroke="#071615" stroke-width="1.6" stroke-linejoin="round"/></svg></span></div><div class="folder"><svg viewBox="0 0 44 36" aria-hidden="true"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h20a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#0d2221" stroke="#3fe0c0" stroke-width="2"/></svg><span id="folderName">Minecraft › mods</span></div><div class="installed">Installed ✓</div></div>
+          <div class="scene sc-play"><canvas id="playCv"></canvas><div class="play-badge" id="playDone">You can fly now!</div><span class="play-tag">Example gameplay</span></div>
+        </div>
+        <div class="steps-bar" id="stepsBar">
+          <button class="sb" type="button" data-i="0"><span class="sb-fill"></span><b>1</b>Type it</button>
+          <button class="sb" type="button" data-i="1"><span class="sb-fill"></span><b>2</b>AI builds it</button>
+          <button class="sb" type="button" data-i="2"><span class="sb-fill"></span><b>3</b>Download</button>
+          <button class="sb" type="button" data-i="3"><span class="sb-fill"></span><b>4</b>Play</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  
+
+  
+  <section class="block" id="what">
+    <div class="wrap">
+      <div class="explain" data-reveal>
+        <div><div class="eyebrow">New here?</div><h2 style="margin-top:12px">What's a mod?</h2>
+          <p>A mod is something extra you add to a game you already have, like new items, new powers or new things to do. Normally you'd need to know how to code to make one. With Render, you just describe it.</p></div>
+        <div class="mod-ex" data-stagger>
+          <div class="mx"><svg viewBox="0 0 44 44" fill="none" stroke="#3fe0c0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="11" y="8" width="9" height="20" rx="3"/><rect x="24" y="8" width="9" height="20" rx="3"/><path d="M15.5 32l-2 6M15.5 32l2 6M28.5 32l-2 6M28.5 32l2 6"/></svg><b>New items</b><span>Like a jetpack that lets you fly</span></div>
+          <div class="mx"><svg viewBox="0 0 44 44" fill="none" stroke="#3fe0c0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 5l3.5 10.5L36 19l-10.5 3.5L22 33l-3.5-10.5L8 19l10.5-3.5z"/><path d="M34 32l1.5 4 4 1.5-4 1.5L34 43"/></svg><b>New powers</b><span>Like a spell that rains gold</span></div>
+          <div class="mx"><svg viewBox="0 0 44 44" fill="none" stroke="#3fe0c0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 40V6"/><path d="M10 7h24v16H10"/><path d="M16 7v16M22 7v16M28 7v16M10 15h24"/></svg><b>New ways to play</b><span>Like a race mode or a speed pad</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="try">
+    <div class="wrap">
+      <div class="sec-head" data-reveal><div><div class="eyebrow">Try it</div><h2>Make a mod right now</h2></div><p>Pick a game, type what you want, press Generate. That's it.</p></div>
+      <div class="try-grid">
+        <div><form class="promptbox" id="genForm">
+          <div class="pstep"><span class="pnum">1</span><span>Pick a game</span></div>
+          <div class="games" role="group" aria-label="Pick a game" id="gameChips"></div>
+          <div class="pstep"><span class="pnum">2</span><label for="prompt">Describe your mod</label></div>
+          <div class="prow"><input id="prompt" maxlength="120" autocomplete="off"><button class="btn btn-primary" type="submit" id="genBtn">Generate</button></div>
+          <div class="ideas"><span>No idea? Tap one:</span><div id="ideas"></div></div>
+        </form>
+        <p class="fine">Demo build · single-player and private-server mods only, no online cheats.</p></div>
+        <div class="ide" aria-label="Render mod studio">
+        <div class="ide-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="proj" id="projName">render studio</span><span class="stat" aria-live="polite"><span class="dot" id="statDot"></span><span id="statTxt">Writing</span></span></div>
+        <div class="ide-simple" id="simple"><div class="sim-top"><div class="sim-ic"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div><div><div class="sim-title" id="simTitle">The AI is writing your mod…</div><div class="sim-sub" id="simSub">Minecraft</div></div></div><div class="build-bar"><i id="simFill"></i></div><ul class="sim-steps" id="simSteps"></ul><div class="sim-done" id="simDone" hidden><div class="sim-file"><b id="simFile">mod.jar</b><span id="simMeta">ready</span></div><a class="btn btn-primary" href="#install">How to install it</a></div></div>
+        <div class="ide-body">
+          <div class="tree"><div class="t-head">Project</div><div id="tree"></div></div>
+          <div class="editor">
+            <div class="tabs"><div class="tab"><span id="tabFile">Main.java</span><span class="lang" id="tabLang">Java</span></div></div>
+            <div class="code" id="codeWrap"><div class="ln" id="lines">1</div><pre id="code"></pre></div>
+          </div>
+        </div>
+        <div class="console" id="console" aria-live="polite"></div>
+        <div class="ide-foot">
+          <span class="artifact" id="artifact">Building…</span>
+          <button class="btn btn-ghost" id="codeToggle" type="button" aria-expanded="false">Show code</button><button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy code</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="sec-head" data-reveal><div><div class="eyebrow">Install</div><h2>How to install your mod</h2></div><p>Three steps for every game. Pick yours.</p></div>
+      <div class="games" role="tablist" aria-label="Pick your game" id="instTabs"></div>
+      <div class="inst" id="instSteps" aria-live="polite"></div>
+      <p class="example-note">Only download the free modding tools from their official sites.</p>
+    </div>
+  </section>
+
+  <section class="block" id="soon">
+    <div class="wrap">
+      <div class="sec-head" data-reveal><div><div class="eyebrow">Coming soon</div><h2>More games on the way</h2></div><p>These games all allow mods, and they're next in line. Tap the ones you want first.</p></div>
+      <div class="soon-grid" id="soonGrid" data-stagger></div>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <div class="wrap">
+      <div class="sec-head" data-reveal><div><div class="eyebrow">The coin part</div><h2>How mod coins work</h2></div><p>Big mods on Render start as coins. People pick what gets built by buying the coins for the mods they want.</p></div>
+      <div class="coinflow" data-stagger>
+        <div class="cf"><span class="n">1</span><h3>Someone posts an idea</h3><p>They launch a coin for a mod, like $JETPK for a Minecraft jetpack.</p></div>
+        <div class="cf"><span class="n">2</span><h3>People buy the coin</h3><p>When the coin hits a $10K <button class="term" type="button" data-term="mc">market cap</button>, the mod unlocks.</p></div>
+        <div class="cf"><span class="n">3</span><h3>The AI builds it</h3><p>Render writes, builds and tests the mod. Anyone can download it for free.</p></div>
+        <div class="cf"><span class="n">4</span><h3>Fees get shared</h3><p><button class="term" type="button" data-term="fees">Trading fees</button> pay the person who launched it, and part buys and <button class="term" type="button" data-term="burn">burns</button> $RENDER.</p></div>
+      </div>
+      <div class="sizes" data-stagger>
+        <div class="size"><b>$10K MC</b><span>a simple mod with one cool thing</span></div>
+        <div class="size"><b>$25K MC</b><span>a bigger pack with new items and art</span></div>
+        <div class="size"><b>$50K MC</b><span>a huge overhaul or new game mode</span></div>
+      </div>
+      <div class="fees" data-reveal>
+        <h3>Where the trading fees go</h3>
+        <div class="split" id="split" aria-hidden="true"><div class="s1">50%</div><div class="s2">30%</div><div class="s3">20%</div></div>
+        <div class="legend">
+          <div><i style="background:var(--fg)"></i><div><b>50% to the creator</b><p>Paid in SOL to whoever launched the mod coin.</p></div></div>
+          <div><i style="background:var(--accent)"></i><div><b>30% buys and burns $RENDER</b><p>Done automatically. Every burn is public on-chain.</p></div></div>
+          <div><i style="background:var(--surface-2);border:1px solid var(--line)"></i><div><b>20% pays for building</b><p>Covers the AI and the testing behind each mod.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="mods">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div><div class="eyebrow">Mods</div><h2>Built on Render</h2></div>
+        <p>Live mods are ready to download. Locked mods build the moment their coin hits the goal.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filter mods">
+        <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-f="live" aria-pressed="false">Live</button>
+        <button class="chip" type="button" data-f="building" aria-pressed="false">Building</button>
+        <button class="chip" type="button" data-f="locked" aria-pressed="false">Almost unlocked</button>
+      </div>
+      <div class="feed" id="feed"></div>
+      <p class="example-note">Example data until launch.</p>
+    </div>
+  </section>
+
+  
+  
+
+  
+  
+
+  <section class="block" id="launch">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div><div class="eyebrow">Launch</div><h2>Launch a mod coin</h2></div>
+        <p>Three quick steps. If your coin hits a $10K market cap, the AI builds the mod.</p>
+      </div>
+      <div data-stagger class="launch">
+        <form class="panel wz" id="launchForm" novalidate>
+          <ol class="wz-dots"><li class="on"><b>1</b>Game</li><li><b>2</b>Mod idea</li><li><b>3</b>Your coin</li></ol>
+          <div class="wz-step" data-s="0"><div class="wz-q" id="lgLbl">Which game is your mod for?</div><div class="games" role="radiogroup" aria-labelledby="lgLbl" id="launchGames"></div></div>
+          <div class="wz-step" data-s="1" hidden><label class="wz-q" for="fIdea">What should the mod do?</label>
+            <textarea id="fIdea" maxlength="160">jetpack that launches you wherever you look</textarea>
+            <span class="hint"><span id="ideaCount">0</span>/160 characters. Be specific, like "a sword that shoots fire".</span></div>
+          <div class="wz-step" data-s="2" hidden><div class="wz-q">Name your coin</div>
+            <div class="row2">
+              <div class="field"><label for="fName">Coin name</label><input id="fName" maxlength="32" value="Rug Jetpack"></div>
+              <div class="field"><label for="fTicker">Ticker</label><input id="fTicker" maxlength="10" value="JETPK"></div>
+            </div>
+            <div class="field"><label for="fBuy">Dev buy (optional)</label><input id="fBuy" inputmode="decimal" placeholder="0.5"><span class="hint">In SOL. Leave empty to skip.</span></div></div>
+          <p class="err" id="formErr" hidden></p>
+          <div class="wz-nav"><button class="btn btn-ghost" type="button" id="wzBack" hidden>Back</button><button class="btn btn-primary" type="button" id="wzNext">Next</button><button class="btn btn-primary" type="submit" id="wzLaunch" hidden>Launch mod coin</button></div>
+          <p class="toast" id="toast" hidden></p>
+        </form>
+        <div class="panel preview">
+          <div class="pv-meta"><div><div class="eyebrow">Mod preview</div><h3 id="pvName" style="margin-top:10px">Rug Jetpack</h3></div><span class="tk" id="pvTicker">$JETPK</span></div>
+          <div class="art locked pv-art" id="pvArt" style="--h:160"><svg viewBox="0 0 64 64" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="pvSvg"></svg><span class="art-game" id="pvGame">Minecraft</span><div class="lockmsg">Builds at $10K market cap</div></div>
+          <ul class="pv-steps">
+            <li class="on" id="pv1"><span>Coin launches</span><span>Ready</span></li>
+            <li id="pv2"><span>Mod builds at $10K MC</span><span>Tier 1</span></li>
+            <li><span>Mod pack at $25K MC</span><span>Tier 2</span></li>
+            <li><span>Overhaul at $50K MC</span><span>Tier 3</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="sec-head" data-reveal><div><div class="eyebrow">FAQ</div><h2>Questions</h2></div></div>
+      <div data-stagger class="faq">
+        <details><summary>Is this real?</summary><p>Yes. The studio on this page is a demo that shows sample mods. Live mods are built with each game's official modding tools once their coin hits the goal, and every mod is tested before anyone can download it.</p></details>
+        <details><summary>Does it work for any game?</summary><p>It works with games that allow mods, like Minecraft, Skyrim, GTA V story mode, Stardew Valley, Terraria, many Unity games and your own Roblox games. If a game doesn't allow mods, Render can't mod it.</p></details>
+        <details><summary>Will it make cheats or aimbots?</summary><p>No. Render only builds single-player mods, co-op mods for friends and private-server content. Cheats for online games break those games' rules and get accounts banned, so Render refuses those prompts.</p></details>
+        <details><summary>How do I install a mod?</summary><p>Check the <a href="#install">install guide</a> above. It's three steps for every game, and each mod comes with its own short guide too.</p></details>
+        <details><summary>Are the mods free?</summary><p>Yes. Mods are free to download. The creator earns from the mod coin's trading fees, not from selling the mod.</p></details>
+        <details><summary>What happens if my coin never hits the goal?</summary><p>The coin still trades normally. The mod stays locked until the coin reaches a $10K market cap, with no deadline.</p></details>
+        <details><summary>How does the $RENDER burn work?</summary><p>30% of creator fees from every mod coin go to a public buyback wallet. It market-buys $RENDER and sends it to the burn address. Every burn is public on-chain.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="cta-band" data-reveal><div class="cta-mark" aria-hidden="true"><svg class="mark" viewBox="236 218 568 568" aria-hidden="true"><g fill="var(--accent)"><rect x="262" y="322" width="440" height="440" rx="60"/><circle cx="482" cy="322" r="80"/><circle cx="702" cy="542" r="80"/></g><path d="M362 452 L462 542 L362 632" fill="none" stroke="var(--bg)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/><rect class="mark-caret" x="502" y="598" width="124" height="56" rx="14" fill="var(--bg)"/></svg></div>
+      <div class="cta-copy"><h2>Your idea.<br>Any game. <em>Rendered.</em></h2>
+      <div class="ctas"><a class="btn btn-primary" href="#launch">Launch a mod coin</a><a class="btn btn-ghost" href="#top">Try the studio</a></div></div>
+    </div>
+  </div>
+</main>
+
+<div class="mbar" id="mbar"><a class="btn btn-ghost" href="#try">Try it</a><a class="btn btn-primary" id="mbarBuy" href="https://pump.fun" target="_blank" rel="noopener">Buy $RENDER</a></div>
+<footer><div class="wrap"><span>Render · the AI mod scripter · <a id="xFoot" href="#" target="_blank" rel="noopener">X / Twitter</a> · <a id="pumpFoot" href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a></span><span>Not affiliated with any game publisher. $RENDER is a memecoin with no promise of value.</span></div></footer>
+<script>
+(function(){
+'use strict';
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+
+/* ---------- mod templates (real loader APIs) ---------- */
+const G={
+mc:{name:'Minecraft',loader:'Fabric 1.21.1',lang:'Java',cmt:'//',file:'RugJetpack.java',proj:'rug-jetpack',
+ tree:['src/main/java/rug/RugJetpack.java','src/main/resources/fabric.mod.json','src/main/resources/assets/rugjetpack/lang/en_us.json','build.gradle'],
+ out:'rug-jetpack-1.0.0.jar',size:'18 KB',prompt:'jetpack that launches you wherever you look',
+ build:['Resolving Fabric Loader 0.16 + Fabric API','Compiling 2 classes (Java 21)','Launching test client · item registered, launch works','Packaging rug-jetpack-1.0.0.jar'],
+ code:`package rug.jetpack;
+
+import net.fabricmc.api.ModInitializer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+
+public class RugJetpack implements ModInitializer {
+    public static final Item JETPACK = Registry.register(
+        Registries.ITEM, Identifier.of("rugjetpack", "jetpack"),
+        new JetpackItem(new Item.Settings().maxCount(1)));
+
+    @Override
+    public void onInitialize() {
+        System.out.println("[RugJetpack] fueled up");
+    }
+}
+
+class JetpackItem extends Item {
+    JetpackItem(Settings settings) { super(settings); }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        Vec3d look = user.getRotationVector();
+        user.addVelocity(look.x * 1.2, 0.9, look.z * 1.2);
+        user.velocityModified = true;
+        user.getItemCooldownManager().set(this, 20);
+        world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH,
+            user.getSoundCategory(), 1.0f, 1.0f);
+        return TypedActionResult.success(user.getStackInHand(hand));
+    }
+}`},
+sky:{name:'Skyrim',loader:'Papyrus + SKSE',lang:'Papyrus',cmt:';',file:'RugGoldRainEffect.psc',proj:'rug-gold-rain',
+ tree:['Scripts/Source/RugGoldRainEffect.psc','RugGoldRain.esp','fomod/info.xml'],
+ out:'RugGoldRain.zip',size:'42 KB',prompt:'spell that makes gold rain from the sky',
+ build:['Compiling RugGoldRainEffect.psc','Creating spell, magic effect and spell tome records','Packing RugGoldRain.esp','Test cast · 40 coins dropped around player'],
+ code:`Scriptname RugGoldRainEffect extends ActiveMagicEffect
+
+MiscObject Property Gold001 Auto
+Sound Property CoinSound Auto
+Int Property CoinCount = 40 Auto
+
+Event OnEffectStart(Actor akTarget, Actor akCaster)
+    Int i = 0
+    While i < CoinCount
+        ObjectReference coin = akCaster.PlaceAtMe(Gold001, 1)
+        Float dx = Utility.RandomFloat(-200.0, 200.0)
+        Float dy = Utility.RandomFloat(-200.0, 200.0)
+        coin.MoveTo(akCaster, dx, dy, 300.0)
+        i += 1
+    EndWhile
+    CoinSound.Play(akCaster)
+    Debug.Notification("It's raining gold. The dev wallet is empty.")
+EndEvent`},
+gta:{name:'GTA V',loader:'ScriptHookVDotNet 3',lang:'C#',cmt:'//',file:'GetawayCar.cs',proj:'heist-getaway',
+ tree:['scripts/GetawayCar.cs','scripts/GetawayCar.ini','README.txt'],
+ out:'GetawayCar.dll',size:'9 KB',prompt:'press F7 to spawn a gold getaway supercar',
+ build:['Referencing ScriptHookVDotNet3.dll','Compiling GetawayCar.cs (.NET Framework 4.8)','Story mode check passed · no online hooks','Packaging GetawayCar.dll for /scripts'],
+ code:`using System.Drawing;
+using System.Windows.Forms;
+using GTA;
+using GTA.UI;
+
+public class GetawayCar : Script
+{
+    public GetawayCar()
+    {
+        KeyDown += OnKeyDown;
+    }
+
+    private void OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode != Keys.F7) return;
+
+        Ped player = Game.Player.Character;
+        Vehicle car = World.CreateVehicle(VehicleHash.Adder,
+            player.Position + player.ForwardVector * 6f, player.Heading);
+
+        car.Mods.CustomPrimaryColor = Color.Gold;
+        car.Mods.CustomSecondaryColor = Color.Black;
+        car.PlaceOnGround();
+        player.SetIntoVehicle(car, VehicleSeat.Driver);
+
+        Notification.Show("~y~$HEIST~w~ getaway car delivered");
+    }
+}`},
+rbx:{name:'Roblox',loader:'Roblox Studio',lang:'Luau',cmt:'--',file:'SpeedPad.server.lua',proj:'speed-pad',
+ tree:['ServerScriptService/SpeedPad.server.lua','Workspace/PumpPad'],
+ out:'SpeedPad.rbxm',size:'6 KB',prompt:'speed pad that boosts players for 8 seconds',
+ build:['Type-checking with Luau','Placing script in ServerScriptService','Play test · 4 players boosted and reset','Exporting SpeedPad.rbxm'],
+ code:`local Players = game:GetService("Players")
+local pad = workspace:WaitForChild("PumpPad")
+
+local BOOST_SPEED = 48
+local BOOST_TIME = 8
+local boosted = {}
+
+pad.Touched:Connect(function(hit)
+    local character = hit.Parent
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local player = Players:GetPlayerFromCharacter(character)
+    if not humanoid or not player or boosted[player] then return end
+
+    boosted[player] = true
+    humanoid.WalkSpeed = BOOST_SPEED
+    pad.Color = Color3.fromRGB(63, 224, 192)
+
+    task.delay(BOOST_TIME, function()
+        if humanoid.Parent then humanoid.WalkSpeed = 16 end
+        boosted[player] = nil
+        pad.Color = Color3.fromRGB(40, 40, 40)
+    end)
+end)`},
+sdv:{name:'Stardew Valley',loader:'SMAPI 4',lang:'C#',cmt:'//',file:'ModEntry.cs',proj:'paper-hands-farm',
+ tree:['ModEntry.cs','manifest.json','PaperHandsFarm.csproj'],
+ out:'PaperHandsFarm.zip',size:'11 KB',prompt:'every crop grows to harvest overnight',
+ build:['Resolving SMAPI 4 + ModBuildConfig','Compiling ModEntry.cs','Writing manifest.json','Test day · 212 crops ready at 6:00am'],
+ code:`using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewValley;
+using StardewValley.TerrainFeatures;
+
+namespace PaperHandsFarm
+{
+    public class ModEntry : Mod
+    {
+        public override void Entry(IModHelper helper)
+        {
+            helper.Events.GameLoop.DayStarted += OnDayStarted;
+        }
+
+        private void OnDayStarted(object? sender, DayStartedEventArgs e)
+        {
+            int grown = 0;
+            foreach (GameLocation location in Game1.locations)
+            {
+                foreach (TerrainFeature feature in location.terrainFeatures.Values)
+                {
+                    if (feature is HoeDirt dirt && dirt.crop != null)
+                    {
+                        dirt.crop.growCompletely();
+                        grown++;
+                    }
+                }
+            }
+            Monitor.Log("Pumped " + grown + " crops to harvest overnight.", LogLevel.Info);
+        }
+    }
+}`},
+ter:{name:'Terraria',loader:'tModLoader 1.4.4',lang:'C#',cmt:'//',file:'PumpBlade.cs',proj:'pump-blade',
+ tree:['Items/PumpBlade.cs','Items/PumpBlade.png','build.txt','description.txt'],
+ out:'PumpBlade.tmod',size:'24 KB',prompt:'gold sword that shoots green lasers',
+ build:['Loading tModLoader 1.4.4 references','Compiling PumpBlade.cs','Generating 40×40 item sprite','Building PumpBlade.tmod'],
+ code:`using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace PumpBladeMod.Items
+{
+    public class PumpBlade : ModItem
+    {
+        public override void SetDefaults()
+        {
+            Item.damage = 82;
+            Item.DamageType = DamageClass.Melee;
+            Item.width = 40;
+            Item.height = 40;
+            Item.useTime = 18;
+            Item.useAnimation = 18;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 6f;
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = SoundID.Item1;
+            Item.autoReuse = true;
+            Item.shoot = ProjectileID.GreenLaser;
+            Item.shootSpeed = 12f;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ItemID.GoldBar, 12)
+                .AddIngredient(ItemID.FallenStar, 5)
+                .AddTile(TileID.Anvils)
+                .Register();
+        }
+    }
+}`}
+};
+const ORDER=['mc','sky','gta','rbx','sdv','ter'];
+
+/* ---------- syntax highlighter ---------- */
+const KW=new Set(('package import public private protected static final class extends implements new return if else for foreach while in is not and or local function end then do void override using namespace var true false null nil this super '+
+ 'Scriptname Event EndEvent Property Auto While EndWhile If EndIf Function EndFunction int float bool string object').split(' '));
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function hl(src,cmt){
+  const c=cmt===';'?';[^\\n]*':cmt==='--'?'--[^\\n]*':'\\/\\/[^\\n]*';
+  const re=new RegExp('('+c+')|("(?:[^"\\\\\\n]|\\\\.)*"?)|(@[A-Za-z]+)|(\\b\\d+(?:\\.\\d+)?f?\\b)|([A-Za-z_][A-Za-z0-9_]*)|([\\s\\S])','g');
+  let out='',m;
+  while((m=re.exec(src))){
+    if(m[1]) out+='<span class="c">'+esc(m[1])+'</span>';
+    else if(m[2]) out+='<span class="s">'+esc(m[2])+'</span>';
+    else if(m[3]) out+='<span class="an">'+esc(m[3])+'</span>';
+    else if(m[4]) out+='<span class="n">'+m[4]+'</span>';
+    else if(m[5]){ const w=m[5]; out+=KW.has(w)?'<span class="k">'+w+'</span>':/^[A-Z][a-z]/.test(w)?'<span class="ty">'+w+'</span>':w; }
+    else out+=esc(m[6]);
+  }
+  return out;
+}
+const header=(g,p)=>g.cmt+' Prompt: "'+p.replace(/"/g,"'")+'"\n'+g.cmt+' Generated by Render · '+g.loader+'\n';
+
+
+/* ---------- hero story: autoplay explainer ---------- */
+(function story(){
+  const stage=$('stage'); if(!stage) return;
+  const scenes=[...stage.querySelectorAll('.scene')], pills=[...stage.querySelectorAll('.sb')];
+  const STORIES=[
+    {g:'mc',game:'Minecraft',idea:'give me a jetpack in Minecraft',file:'jetpack-mod.jar',folder:'Minecraft › mods',play:'jet',done:'You can fly now!'},
+    {g:'ter',game:'Terraria',idea:'a gold sword that shoots lasers',file:'laser-sword.tmod',folder:'Terraria › Mods',play:'sword',done:'Your sword shoots lasers!'},
+    {g:'sky',game:'Skyrim',idea:'a spell that makes it rain gold',file:'gold-rain.zip',folder:'Skyrim › Data',play:'rain',done:'It’s raining gold!'}
+  ];
+  const SC=[{cap:'You type the mod you want',dur:3400},{cap:'The AI writes the code',dur:3200},{cap:'Your mod is ready to download',dur:3400},{cap:'Now play it in your game',dur:5000}];
+  let si=0, vi=0, t0=performance.now(), last=0, visible=true, st=null;
+  const cv=$('playCv'), g=cv.getContext('2d'); let W=0,H=0;
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+
+  function size(){ const r=cv.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=Math.max(1,Math.round(W*dpr)); cv.height=Math.max(1,Math.round(H*dpr)); g.setTransform(dpr,0,0,dpr,0,0); }
+  function setStory(){ const s=STORIES[vi]; $('stGame').textContent=s.game; $('fileName').textContent=s.file; $('folderName').textContent=s.folder; $('playDone').textContent=s.done;
+    $('miniCode').innerHTML=hl(G[s.g].code,G[s.g].cmt); $('typeTxt').textContent=''; }
+  function show(i){
+    si=i; t0=performance.now();
+    scenes.forEach((el,k)=>{ el.classList.remove('on'); el.style.setProperty('--dur',SC[k].dur+'ms'); });
+    pills.forEach((p,k)=>{ p.classList.remove('on'); p.classList.toggle('done',k<i); p.style.setProperty('--dur',SC[k].dur+'ms'); });
+    void stage.offsetWidth;
+    scenes[i].classList.add('on'); pills[i].classList.add('on');
+    $('stCap').innerHTML='<span class="num">'+(i+1)+'.</span>'+SC[i].cap;
+    if(i===0) $('typeTxt').textContent=reduce?STORIES[vi].idea:'';
+    if(i===1){ $('buildFill').style.width=reduce?'100%':'0%'; $('buildPct').textContent=reduce?'100%':'0%'; }
+    if(i===3){ size(); st={t:0,parts:[],lasers:[],slimes:[],coins:[],landed:[],gold:0,lastSwing:0};
+      if(reduce){ for(let n=0;n<110;n++) update(STORIES[vi].play,1/60); draw(STORIES[vi].play); } }
+  }
+  pills.forEach((p,k)=>p.addEventListener('click',()=>show(k)));
+  new IntersectionObserver(es=>{ visible=es[0].isIntersecting; },{threshold:.15}).observe(stage);
+  addEventListener('resize',()=>{ if(si===3) size(); });
+
+  /* ---- tiny game scenes ---- */
+  function person(x,y,u,o){ o=o||{};
+    g.fillStyle='#2b2f3a'; g.fillRect(x-2*u,y-6*u,1.8*u,6*u); g.fillRect(x+.2*u,y-6*u,1.8*u,6*u);
+    if(o.jet){ g.fillStyle='#8b96a8'; g.fillRect(x-4.4*u,y-12.4*u,2.2*u,5.4*u); g.fillStyle='#c9d2de'; g.fillRect(x-4.2*u,y-12*u,1.8*u,1.2*u); }
+    g.fillStyle='#ff9a4a'; g.fillRect(x-2.4*u,y-12.6*u,4.8*u,6.8*u); g.fillStyle='#e07a2e'; g.fillRect(x-2.4*u,y-7*u,4.8*u,1.2*u);
+    g.fillStyle='#ff9a4a'; g.fillRect(x-3.9*u,y-12.2*u,1.5*u,5*u);
+    g.save(); g.translate(x+3.2*u,y-12*u); g.rotate(o.swing||0);
+    g.fillStyle='#ff9a4a'; g.fillRect(-.75*u,0,1.5*u,5*u); g.fillStyle='#f0c08a'; g.fillRect(-.75*u,5*u,1.5*u,1.2*u);
+    if(o.sword){ g.fillStyle='#7a5a2a'; g.fillRect(-1.6*u,5.4*u,3.2*u,.8*u); g.fillStyle='#ffcf4a'; g.fillRect(-.55*u,6.2*u,1.1*u,7.5*u); g.fillStyle='#fff3c0'; g.fillRect(-.2*u,6.4*u,.35*u,6.8*u); }
+    g.restore();
+    if(o.armsUp){ g.fillStyle='#ff9a4a'; g.fillRect(x-3.9*u,y-17*u,1.5*u,5*u); }
+    g.fillStyle='#f0c08a'; g.fillRect(x-2.6*u,y-18.2*u,5.2*u,5.2*u);
+    g.fillStyle='#3fe0c0'; g.fillRect(x-2.8*u,y-18.8*u,5.6*u,1.9*u); g.fillRect(x+1.4*u,y-17.4*u,2.6*u,.7*u);
+    g.fillStyle='#1a1a1a'; g.fillRect(x-1.2*u,y-15.6*u,.8*u,.9*u); g.fillRect(x+1*u,y-15.6*u,.8*u,.9*u);
+  }
+  function sky(a,b){ const gr=g.createLinearGradient(0,0,0,H); gr.addColorStop(0,a); gr.addColorStop(1,b); g.fillStyle=gr; g.fillRect(0,0,W,H); }
+  const stars=Array.from({length:46},(_,i)=>[((i*97)%100)/100,((i*53)%60)/100,(i%3)+1]);
+
+  function update(kind,dt){
+    st.t+=dt; const t=st.t;
+    if(kind==='jet'){
+      const bs=Math.round(H/12), u=bs/8, lift=Math.min(1,t/1.4), hx=W*.38, hy=H-4*bs-lift*H*.28+Math.sin(t*3)*5;
+      st.hx=hx; st.hy=hy; st.u=u;
+      if(lift>.05) for(let k=0;k<3;k++) st.parts.push({x:hx-3.3*u+rnd(-u,u),y:hy-7*u,vx:rnd(-20,20)-60,vy:rnd(120,220),life:rnd(.25,.5),max:.5});
+    }
+    if(kind==='sword'){
+      const gy=H*.8, u=H/80, hx=W*.2; st.gy=gy; st.u=u; st.hx=hx;
+      while(st.slimes.length<3) st.slimes.push({x:W+rnd(40,260)+st.slimes.length*140,ph:rnd(0,6),r:H*.06});
+      const p=(t%.8)/.8; st.swing=p<.35?-.2-1.4*Math.sin(p/.35*Math.PI/2):-1.6+1.4*((p-.35)/.65);
+      if(t-st.lastSwing>.8||st.lastSwing===0){ st.lastSwing=t; st.lasers.push({x:hx+12*u,y:gy-11*u}); }
+      st.lasers.forEach(l=>l.x+=560*dt);
+      st.slimes.forEach(s=>{ s.x-=55*dt; s.y=gy-s.r-Math.abs(Math.sin(t*4+s.ph))*H*.05; if(s.x<hx+30){ s.x=W+rnd(60,240); } });
+      st.lasers=st.lasers.filter(l=>{ for(const s of st.slimes){ if(Math.abs(l.x-s.x)<s.r&&Math.abs(l.y-s.y)<s.r*1.4){ for(let k=0;k<14;k++) st.parts.push({x:s.x,y:s.y,vx:rnd(-160,160),vy:rnd(-220,40),life:rnd(.3,.6),max:.6,c:'#7fe3ff'}); s.x=W+rnd(80,260); return false; } } return l.x<W+20; });
+    }
+    if(kind==='rain'){
+      const gy=H*.82; st.gy=gy;
+      const n=Math.random()<dt*16?1:0; for(let k=0;k<n+ (Math.random()<dt*8?1:0);k++) st.coins.push({x:rnd(10,W-10),y:-12,vy:rnd(40,120),r:rnd(6,9),rot:rnd(0,6)});
+      st.coins.forEach(c=>{ c.vy+=520*dt; c.y+=c.vy*dt; c.rot+=dt*8; });
+      st.coins=st.coins.filter(c=>{ if(c.y>=gy-c.r*.5){ st.landed.push({x:c.x,y:gy-rnd(0,8),r:c.r}); if(st.landed.length>180) st.landed.shift(); st.gold+=Math.round(rnd(5,25)); return false; } return true; });
+    }
+    st.parts.forEach(p=>{ p.life-=dt; p.x+=p.vx*dt; p.y+=p.vy*dt; if(p.c) p.vy+=500*dt; }); st.parts=st.parts.filter(p=>p.life>0);
+  }
+  function draw(kind){
+    const t=st.t;
+    if(kind==='jet'){
+      sky('#5fb8f5','#d6f1ff'); g.fillStyle='#fff3b0'; g.beginPath(); g.arc(W*.82,H*.2,26,0,7); g.fill();
+      g.fillStyle='rgba(255,255,255,.9)'; for(let i=0;i<4;i++){ const cx=((i*230-t*22)%(W+240)+W+240)%(W+240)-120, cy=H*(.12+.08*(i%2)); g.fillRect(cx,cy,90,18); g.fillRect(cx+18,cy-12,54,14); }
+      const bs=Math.round(H/12), off=(t*70)%bs, base=Math.floor(t*70/bs);
+      for(let i=-1;i<W/bs+2;i++){ const col=i+base, hh=Math.max(1,Math.round(2.4+1.4*Math.sin(col*.45)+Math.sin(col*.17))), x=i*bs-off;
+        for(let j=0;j<hh+1;j++){ const y=H-(j+1)*bs; g.fillStyle=j===hh?'#5dbb46':'#8a5a34'; g.fillRect(x,y,bs,bs); if(j===hh){ g.fillStyle='#79d65e'; g.fillRect(x,y,bs,bs*.28); } g.strokeStyle='rgba(0,0,0,.14)'; g.strokeRect(x+.5,y+.5,bs-1,bs-1); } }
+      st.parts.forEach(p=>{ const k=p.life/p.max; g.fillStyle=k>.6?'#fff2a8':k>.3?'#ffb347':'#ff6a3d'; const s=6*k+2; g.fillRect(p.x-s/2,p.y-s/2,s,s); });
+      person(st.hx,st.hy,st.u,{jet:true});
+    }
+    if(kind==='sword'){
+      sky('#1b1440','#43307a'); stars.forEach(s=>{ g.fillStyle='rgba(255,255,255,.8)'; g.fillRect(s[0]*W,s[1]*H,s[2],s[2]); });
+      g.fillStyle='#f4f1d0'; g.beginPath(); g.arc(W*.8,H*.2,22,0,7); g.fill();
+      g.fillStyle='#2a1f55'; g.beginPath(); g.moveTo(0,st.gy); for(let x=0;x<=W;x+=40) g.lineTo(x,st.gy-40-Math.abs(Math.sin(x*.013))*70); g.lineTo(W,st.gy); g.fill();
+      g.fillStyle='#5a3a28'; g.fillRect(0,st.gy,W,H-st.gy); g.fillStyle='#3fa34d'; g.fillRect(0,st.gy,W,8);
+      st.slimes.forEach(s=>{ g.fillStyle='#4cc7ff'; g.beginPath(); g.ellipse(s.x,s.y,s.r,s.r*.8,0,0,7); g.fill(); g.fillStyle='rgba(255,255,255,.5)'; g.beginPath(); g.ellipse(s.x-s.r*.35,s.y-s.r*.3,s.r*.25,s.r*.15,0,0,7); g.fill(); g.fillStyle='#10213a'; g.fillRect(s.x-s.r*.4,s.y-s.r*.1,4,5); g.fillRect(s.x+s.r*.1,s.y-s.r*.1,4,5); });
+      g.save(); g.shadowColor='#5dff8a'; g.shadowBlur=14; g.strokeStyle='#8dffad'; g.lineWidth=4; st.lasers.forEach(l=>{ g.beginPath(); g.moveTo(l.x-34,l.y); g.lineTo(l.x,l.y); g.stroke(); }); g.restore();
+      st.parts.forEach(p=>{ g.fillStyle=p.c||'#fff'; g.globalAlpha=Math.max(0,p.life/p.max); g.fillRect(p.x,p.y,5,5); }); g.globalAlpha=1;
+      person(st.hx,st.gy,st.u,{sword:true,swing:st.swing});
+    }
+    if(kind==='rain'){
+      sky('#33426a','#e6b98a');
+      g.fillStyle='#8d9bb8'; g.beginPath(); g.moveTo(0,st.gy); [[.1,.42],[.25,.6],[.42,.36],[.6,.58],[.78,.4],[.95,.55],[1,.5]].forEach(p=>g.lineTo(p[0]*W,p[1]*H)); g.lineTo(W,st.gy); g.fill();
+      g.fillStyle='#eef3f7'; [[.1,.42],[.42,.36],[.78,.4]].forEach(p=>{ g.beginPath(); g.moveTo(p[0]*W,p[1]*H); g.lineTo(p[0]*W-30,p[1]*H+40); g.lineTo(p[0]*W+30,p[1]*H+40); g.fill(); });
+      g.fillStyle='#eef3f7'; g.fillRect(0,st.gy,W,H-st.gy); g.fillStyle='#d3dce6'; g.fillRect(0,st.gy,W,4);
+      g.fillStyle='#2f5a3c'; [.12,.2,.86].forEach(x=>{ g.beginPath(); g.moveTo(x*W,st.gy-70); g.lineTo(x*W-22,st.gy); g.lineTo(x*W+22,st.gy); g.fill(); });
+      st.landed.forEach(c=>{ g.fillStyle='#c9921f'; g.beginPath(); g.ellipse(c.x,c.y+1.5,c.r,c.r*.4,0,0,7); g.fill(); g.fillStyle='#ffcf4a'; g.beginPath(); g.ellipse(c.x,c.y,c.r,c.r*.4,0,0,7); g.fill(); });
+      person(W*.5,st.gy+2,H/80,{armsUp:true});
+      st.coins.forEach(c=>{ const w=Math.max(1.5,Math.abs(Math.cos(c.rot))*c.r); g.fillStyle='#c9921f'; g.beginPath(); g.ellipse(c.x+1,c.y+1,w,c.r,0,0,7); g.fill(); g.fillStyle='#ffd54f'; g.beginPath(); g.ellipse(c.x,c.y,w,c.r,0,0,7); g.fill(); g.fillStyle='rgba(255,255,255,.6)'; g.fillRect(c.x-w*.3,c.y-c.r*.5,Math.max(1,w*.3),c.r*.5); });
+      g.fillStyle='rgba(0,0,0,.4)'; g.fillRect(14,H-92,150,38); g.fillStyle='#ffd54f'; g.font='600 18px "Familjen Grotesk", system-ui, sans-serif'; g.fillText('Gold: '+st.gold.toLocaleString(),24,H-66);
+    }
+  }
+
+  function frame(now){
+    requestAnimationFrame(frame);
+    const dt=Math.min(.05,(now-(last||now))/1000); last=now;
+    if(!visible||document.hidden){ t0+=dt*1000; return; }
+    const e=now-t0, s=STORIES[vi], d=SC[si].dur*(reduce?1.6:1), k=Math.min(1,e/d);
+    if(!reduce){
+      if(si===0){ const n=Math.floor(Math.min(1,e/(SC[0].dur*.55))*s.idea.length), tt=$('typeTxt'); if(tt.textContent.length!==n) tt.textContent=s.idea.slice(0,n); }
+      else if(si===1){ const p=Math.min(100,Math.round(Math.pow(k,.85)*100)); $('buildFill').style.width=p+'%'; $('buildPct').textContent=p+'%'; $('buildStep').textContent=p<40?'Writing code':p<75?'Building the mod':p<100?'Testing it in the game':'Done!'; }
+      else if(si===3&&st){ update(s.play,dt); draw(s.play); }
+    }
+    if(e>=d){ const ni=(si+1)%4; if(ni===0){ vi=(vi+1)%STORIES.length; setStory(); } show(ni); }
+  }
+  setStory(); show(0); requestAnimationFrame(frame);
+})();
+
+/* ---------- studio ---------- */
+let cur='mc', job=0, currentCode='';
+const chips=$('gameChips');
+ORDER.forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.dataset.g=k; b.textContent=G[k].name; b.setAttribute('aria-pressed',k===cur?'true':'false');
+  b.addEventListener('click',()=>{ cur=k; chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false')); $('prompt').value=G[k].prompt; run(); }); chips.appendChild(b); });
+$('prompt').value=G[cur].prompt;
+$('genForm').addEventListener('submit',e=>{ e.preventDefault(); if(!$('prompt').value.trim()) $('prompt').value=G[cur].prompt; run(); });
+
+
+const PLAIN=g=>['Building the mod file','Checking it works with '+g.name,'Testing it in the game','Packing it up for download'];
+function simReset(g){ $('simTitle').textContent='The AI is writing your mod…'; $('simSub').textContent=g.name+' mod'; $('simSteps').innerHTML='<li class="on">Writing the code</li>'; $('simDone').hidden=true; $('simFill').style.width='0%'; }
+function simStep(g,i){ const ul=$('simSteps'), lastLi=ul.lastElementChild; if(lastLi){ lastLi.classList.remove('on'); lastLi.classList.add('ok'); }
+  const li=document.createElement('li'); li.className='on'; li.textContent=PLAIN(g)[i]||'Working'; ul.appendChild(li);
+  $('simFill').style.width=(50+50*(i+1)/g.build.length)+'%'; $('simTitle').textContent='Building and testing…'; }
+function simFinish(g){ $('simSteps').querySelectorAll('li').forEach(l=>{ l.classList.remove('on'); l.classList.add('ok'); });
+  $('simTitle').textContent='✓ Your mod is ready!'; $('simFile').textContent=g.out; $('simMeta').textContent=g.size+' · works with '+g.name; $('simDone').hidden=false; $('simFill').style.width='100%'; }
+$('codeToggle').addEventListener('click',()=>{ const ide=document.querySelector('.ide'), on=ide.classList.toggle('show-code'); $('codeToggle').textContent=on?'Hide code':'Show code'; $('codeToggle').setAttribute('aria-expanded',on); });
+const IDEAS=[['mc','Jetpack'],['ter','Laser sword'],['gta','Getaway car'],['rbx','Speed pad'],['sky','Gold rain spell'],['sdv','Crops grow overnight']];
+IDEAS.forEach(([k,label])=>{ const b=document.createElement('button'); b.type='button'; b.className='idea-chip'; b.textContent=label;
+  b.addEventListener('click',()=>{ cur=k; chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.g===k?'true':'false')); $('prompt').value=G[k].prompt; run(); }); $('ideas').appendChild(b); });
+function setStatus(txt,ok){ $('statTxt').textContent=txt; $('statDot').classList.toggle('ok',!!ok); }
+function run(){
+  const id=++job, g=G[cur], p=$('prompt').value.trim()||g.prompt;
+  currentCode=header(g,p)+g.code;
+  $('projName').textContent='render studio · '+g.proj; $('tabFile').textContent=g.file; $('tabLang').textContent=g.lang;
+  $('tree').innerHTML=g.tree.map((f,i)=>'<div class="f'+(i===0?' on':'')+'">'+esc(f)+'</div>').join('');
+  $('console').innerHTML='<div class="hd">$ render build --game "'+esc(g.name)+'" --loader "'+esc(g.loader)+'"</div>';
+  $('artifact').textContent='Writing '+g.file+'…'; $('copyBtn').disabled=true; $('genBtn').disabled=true;
+  simReset(g); setStatus('Writing',false); const ideEl=document.querySelector('.ide'); ideEl.classList.remove('passed'); ideEl.classList.add('building');
+  $('code').classList.add('swap'); setTimeout(()=>$('code').classList.remove('swap'),180);
+  const codeEl=$('code'), linesEl=$('lines'), wrap=$('codeWrap');
+  const total=currentCode.length, dur=reduce?0:2600; let start=null;
+  function paint(n){ const s=currentCode.slice(0,n); codeEl.innerHTML=hl(s,g.cmt)+(n<total?'<span class="caret"></span>':'');
+    const lc=s.split('\n').length; let ln=''; for(let i=1;i<=lc;i++) ln+=i+'\n'; linesEl.textContent=ln; }
+  function step(t){ if(id!==job) return; if(start===null) start=t; const k=dur?Math.min(1,(t-start)/dur):1; const n=Math.floor(k*total);
+    paint(n); $('simFill').style.width=(k*50)+'%'; if(dur) wrap.scrollTop=wrap.scrollHeight; if(k<1) requestAnimationFrame(step); else { wrap.scrollTop=0; build(id,g); } }
+  requestAnimationFrame(step);
+}
+function build(id,g){
+  setStatus('Building',false); $('artifact').textContent='Building…';
+  const con=$('console'); let i=0;
+  const next=()=>{ if(id!==job) return;
+    if(i<g.build.length){ const d=document.createElement('div'); d.textContent='› '+g.build[i]; con.appendChild(d); con.scrollTop=con.scrollHeight; simStep(g,i); i++; setTimeout(next,reduce?0:520); }
+    else { const d=document.createElement('div'); d.className='ok'; d.textContent='✓ Build passed · '+g.out+' ('+g.size+')'; con.appendChild(d); con.scrollTop=con.scrollHeight;
+      setStatus('Build passed',true); const ie=document.querySelector('.ide'); ie.classList.remove('building'); ie.classList.add('passed'); $('artifact').innerHTML=esc(g.out)+' <span>· '+g.size+' · '+esc(g.loader)+'</span>'; $('copyBtn').disabled=false; $('genBtn').disabled=false; simFinish(g); } };
+  setTimeout(next,reduce?0:300);
+}
+$('copyBtn').addEventListener('click',()=>{ const b=$('copyBtn');
+  const done=()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy code'; },1600); };
+  try{ navigator.clipboard.writeText(currentCode).then(done,()=>selectCode()); }catch(e){ selectCode(); } });
+function selectCode(){ const r=document.createRange(); r.selectNodeContents($('code')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); $('copyBtn').textContent='Code selected'; }
+run();
+
+/* ---------- supported games ---------- */
+const SUP=[
+ ['Minecraft',['Fabric','Forge','Java'],'Items, mobs, blocks, commands, world generation.'],
+ ['Skyrim & Fallout',['SKSE','Papyrus','.esp'],'Spells, quests, NPC behavior, perks.'],
+ ['GTA V story mode',['ScriptHookV','C#'],'Vehicles, missions, hotkeys, world events.'],
+ ['Roblox',['Studio','Luau'],'Scripts for your own experiences: pads, tools, game modes.'],
+ ['Stardew Valley',['SMAPI','C#'],'Farming, items, NPC events, quality-of-life tweaks.'],
+ ['Terraria',['tModLoader','C#'],'Weapons, bosses, biomes, accessories.'],
+ ['Unity games',['BepInEx','Harmony','C#'],'Valheim, Lethal Company and other Unity titles.'],
+];
+if($('support'))$('support').innerHTML=SUP.map(s=>'<div class="sg"><h3>'+s[0]+'</h3><div class="tags">'+s[1].map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><p>'+s[2]+'</p></div>').join('')
+ +'<div class="sg more"><h3>+ 31 more</h3><div class="tags"><span class="tag">Unreal (UE4SS)</span><span class="tag">Source</span></div><p>Any game with a public modding toolchain.</p></div>';
+
+/* ---------- feed ---------- */
+const coins=[
+ {name:'Rug Jetpack',tk:'JETPK',g:'mc',idea:'Jetpack that launches you wherever you look',vol:68400,chg:12.6,st:'live',dl:'41.2K'},
+ {name:'Dev Wallet Heist',tk:'HEIST',g:'gta',idea:'F7 spawns a gold getaway supercar',vol:31200,chg:38.2,st:'live',dl:'18.4K'},
+ {name:'Pump Blade',tk:'BLADE',g:'ter',idea:'Gold sword that shoots green lasers',vol:14800,chg:-6.3,st:'live',dl:'7.9K'},
+ {name:'Paper Hands Farm',tk:'FARM',g:'sdv',idea:'Every crop grows to harvest overnight',vol:10600,chg:91.4,st:'building',dl:'—'},
+ {name:'Gold Rain',tk:'RAIN',g:'sky',idea:'Spell that makes gold rain from the sky',vol:8700,chg:22.9,st:'locked',dl:'—'},
+ {name:'Speed Pad',tk:'SPEED',g:'rbx',idea:'Pad that boosts players for 8 seconds',vol:7400,chg:14.1,st:'locked',dl:'—'}
+];
+const fmt=n=>n>=1e6?'$'+(n/1e6).toFixed(2)+'M':'$'+(n/1e3).toFixed(1)+'K';
+const tierGoal=v=>v<10000?10000:v<25000?25000:50000;
+const snippet=(k,n)=>hl(G[k].code.split('\n').filter(l=>l.trim()&&!/^(import|using|package)/.test(l.trim())).slice(0,n||7).join('\n'),G[k].cmt);
+
+const ART={
+ JETPK:[160,'<rect x="18" y="14" width="12" height="26" rx="4"/><rect x="34" y="14" width="12" height="26" rx="4"/><path d="M24 44l-3 9M24 44l3 9M40 44l-3 9M40 44l3 9"/>'],
+ HEIST:[45,'<path d="M10 40l6-12h30l8 12"/><rect x="6" y="40" width="52" height="10" rx="4"/><circle cx="18" cy="52" r="5"/><circle cx="46" cy="52" r="5"/><path d="M28 28v12"/>'],
+ BLADE:[120,'<path d="M42 8h14v14L30 48 16 34z"/><path d="M12 38l14 14M8 56l9-9"/>'],
+ FARM:[90,'<path d="M32 56V30"/><path d="M32 34c-12 0-18-8-18-18 10 0 18 6 18 18z"/><path d="M32 30c0-10 6-18 18-18 0 12-8 18-18 18z"/><path d="M14 56h36"/>'],
+ RAIN:[40,'<ellipse cx="32" cy="46" rx="16" ry="6"/><path d="M16 46v-7c0 3 7 6 16 6s16-3 16-6v7"/><ellipse cx="32" cy="39" rx="16" ry="6"/><circle cx="18" cy="14" r="4"/><circle cx="34" cy="8" r="4"/><circle cx="48" cy="18" r="4"/>'],
+ SPEED:[190,'<path d="M36 6L14 36h16l-4 22 22-30H32z"/>']};
+function renderFeed(f){
+  $('feed').innerHTML=coins.filter(c=>f==='all'||c.st===f).map(c=>{ const g=G[c.g], goal=c.st==='live'?tierGoal(c.vol):10000, pct=Math.min(100,c.vol/goal*100);
+    const badge='<span class="badge '+c.st+'">'+(c.st==='live'?'Live':c.st==='building'?'Building':'Locked')+'</span>';
+    const lbl=c.st==='live'?(c.vol>=50000?'Tier 3 reached':'Next tier'):'Unlock';
+    const a=ART[c.tk]||[160,''];
+    return '<article class="card"><div class="art'+(c.st==='locked'?' locked':'')+'" style="--h:'+a[0]+'"><svg viewBox="0 0 64 64" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+a[1]+'</svg>'+badge+'<span class="art-game">'+g.name+'</span>'+(c.st==='locked'?'<div class="lockmsg">Unlocks at $10K MC</div>':'')+'</div>'
+     +'<div class="card-body"><div class="card-top"><div><h3>'+c.name+'</h3><div class="tick">$'+c.tk+'</div></div><span class="chg '+(c.chg>=0?'up':'dn')+'">'+(c.chg>=0?'+':'')+c.chg.toFixed(1)+'%</span></div>'
+     +'<p class="idea">"'+c.idea+'"</p><div><div class="bar"><i style="width:0" data-w="'+pct+'"></i></div><div class="bar-meta"><span>'+fmt(c.vol)+' mc</span><span>'+lbl+' '+fmt(goal)+'</span></div></div>'
+     +'<div class="card-foot">'+(c.st==='live'?'<a class="btn btn-primary" href="#mods">Download · '+c.dl+'</a>':'<a class="btn btn-primary" href="#launch">Buy $'+c.tk+'</a>')+'<a class="btn btn-ghost" href="#mods">Chart</a></div></div></article>'; }).join('');
+}
+renderFeed('all');
+document.querySelectorAll('.filters .chip').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('.filters .chip').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); renderFeed(b.dataset.f); if(feedSeen) requestAnimationFrame(()=>requestAnimationFrame(fillBars)); }));
+
+/* ---------- ticker + burn log ---------- */
+const tk=[['<b>$JETPK</b> hit Tier 3','up','overhaul building'],['<b>$HEIST</b> mod','up','18.4K downloads'],['Buyback burned','w','412,880 $RENDER'],['<b>$FARM</b> crossed $10K MC','w','mod building now'],['<b>$BLADE</b> creator paid','up','+18.6 SOL'],['<b>$RAIN</b> at','w','88% to unlock'],['New mod coin','up','$TAME · Minecraft']];
+const items=tk.map(t=>'<span class="ticker-item">'+t[0]+' <span class="'+t[1]+'">'+t[2]+'</span></span>').join(''); if($('ticker')) $('ticker').innerHTML=items+items;
+const logEl=$('log')||document.createElement('div'); let total=38402117; const burnFrom=['$JETPK','$HEIST','$BLADE'];
+const row=(m,g,a,isNew)=>{ const d=document.createElement('div'); d.className='log-row'+(isNew?' new':''); d.innerHTML='<span class="t">'+(m===0?'now':m+'m ago')+'</span><span class="w">Buyback from '+g+' creator fees</span><span class="a">−'+a.toLocaleString()+'</span>'; return d; };
+[[2,'$JETPK',184220],[6,'$HEIST',96410],[11,'$BLADE',41880],[19,'$JETPK',220016],[27,'$HEIST',73540]].forEach(r=>logEl.appendChild(row(r[0],r[1],r[2])));
+if(!reduce&&$('log')) setInterval(()=>{ const a=20000+Math.floor(Math.random()*180000); total+=a; $('burnTotal').textContent=total.toLocaleString(); logEl.prepend(row(0,burnFrom[(Math.random()*3)|0],a,true)); while(logEl.children.length>5) logEl.lastElementChild.remove(); },6000);
+
+/* ---------- launch form ---------- */
+let lg='mc'; const lgWrap=$('launchGames');
+ORDER.forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.setAttribute('role','radio'); b.dataset.g=k; b.textContent=G[k].name;
+  const on=k===lg; b.setAttribute('aria-checked',on); b.setAttribute('aria-pressed',on);
+  b.addEventListener('click',()=>{ lg=k; lgWrap.querySelectorAll('.chip').forEach(x=>{ const o=x===b; x.setAttribute('aria-checked',o); x.setAttribute('aria-pressed',o); }); preview(); }); lgWrap.appendChild(b); });
+function preview(){
+  const g=G[lg], name=$('fName').value.trim()||'Your mod', t=($('fTicker').value.trim()||'TICKER').toUpperCase().replace(/[^A-Z0-9]/g,''), idea=$('fIdea').value.trim()||'your mod idea';
+  $('pvName').textContent=name; $('pvTicker').textContent='$'+t; const art=ART[{mc:'JETPK',gta:'HEIST',ter:'BLADE',sdv:'FARM',sky:'RAIN',rbx:'SPEED'}[lg]]; $('pvSvg').innerHTML=art[1]; $('pvArt').style.setProperty('--h',art[0]); $('pvGame').textContent=g.name; $('ideaCount').textContent=$('fIdea').value.length;
+}
+['fName','fTicker','fIdea'].forEach(id=>$(id).addEventListener('input',()=>{ $('formErr').hidden=true; preview(); }));
+$('fTicker').addEventListener('blur',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+preview();
+let wz=0; const wzSteps=[...document.querySelectorAll('.wz-step')], wzDots=[...document.querySelectorAll('.wz-dots li')];
+function wzShow(i){ wz=i; wzSteps.forEach((st,k)=>{ st.hidden=k!==i; }); wzDots.forEach((d,k)=>{ d.classList.toggle('on',k===i); d.classList.toggle('done',k<i); });
+  $('wzBack').hidden=i===0; $('wzNext').hidden=i===2; $('wzLaunch').hidden=i!==2; $('formErr').hidden=true; }
+$('wzNext').addEventListener('click',()=>{ if(wz===1&&$('fIdea').value.trim().length<8){ $('formErr').textContent='Describe the mod in a few more words so Render knows what to build.'; $('formErr').hidden=false; $('fIdea').focus(); return; } wzShow(wz+1); });
+$('wzBack').addEventListener('click',()=>wzShow(wz-1));
+$('launchForm').addEventListener('submit',e=>{ e.preventDefault(); const err=$('formErr'); err.hidden=true; $('toast').hidden=true;
+  const fail=(m,id)=>{ const st=$(id).closest('.wz-step'); if(st) wzShow(+st.dataset.s); err.textContent=m; err.hidden=false; $(id).focus(); };
+  if(!$('fName').value.trim()) return fail('Add a coin name to launch.','fName');
+  if(!$('fTicker').value.trim()) return fail('Add a ticker, like JETPK.','fTicker');
+  if($('fIdea').value.trim().length<8) return fail('Describe the mod in a few more words so Render knows what to build.','fIdea');
+  const b=$('fBuy').value.trim(); if(b&&!(Number(b)>=0)) return fail('Enter the dev buy as a number of SOL, like 0.5.','fBuy');
+  $('toast').textContent='Preview only: $'+$('fTicker').value.toUpperCase()+' is ready to launch. Its '+G[lg].name+' mod builds at a $10K market cap.'; $('toast').hidden=false; $('pv2').classList.add('on'); });
+/* ---------- your links: paste them here ---------- */
+const CONFIG={
+  twitter:'',  // your X / Twitter link, e.g. 'https://x.com/rendermods'
+  ca:''        // your coin's contract address from pump.fun
+};
+(function links(){
+  const short=a=>a.length>14?a.slice(0,6)+'…'+a.slice(-6):a;
+  const xs=['xNav','xHero','xFoot'].map($);
+  if(CONFIG.twitter){ xs.forEach(a=>a.href=CONFIG.twitter); } else { xs.forEach(a=>{ a.removeAttribute('href'); a.removeAttribute('target'); a.classList.add('x-soon'); a.title='X link coming soon'; }); $('xHero').querySelector('span').textContent='X coming soon'; $('xFoot').textContent='X coming soon'; }
+  if(CONFIG.ca){ const url='https://pump.fun/coin/'+CONFIG.ca; $('caText').textContent=CONFIG.ca; $('caText').title=CONFIG.ca; $('pumpLink').href=url; $('pumpFoot').href=url; $('caBtn').textContent='CA: '+short(CONFIG.ca); }
+  else { $('caCopy').hidden=true; $('pumpLink').textContent='pump.fun'; }
+  function copy(btn,label){ if(!CONFIG.ca){ btn.textContent='CA drops at launch'; setTimeout(()=>btn.textContent=label,1800); return; }
+    const done=()=>{ btn.textContent='Copied'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent=label; btn.classList.remove('copied'); },1600); };
+    const sel=()=>{ const r=document.createRange(); r.selectNodeContents($('caText')); const g=getSelection(); g.removeAllRanges(); g.addRange(r); btn.textContent='Selected'; setTimeout(()=>btn.textContent=label,1600); };
+    try{ navigator.clipboard.writeText(CONFIG.ca).then(done,sel); }catch(e){ sel(); } }
+  $('caCopy').addEventListener('click',()=>copy($('caCopy'),'Copy'));
+  $('caBtn').addEventListener('click',()=>copy($('caBtn'),$('caBtn').textContent));
+})();
+
+
+/* ---------- install guide ---------- */
+const INSTALL={
+ mc:[['Get Fabric','Install the free Fabric Loader from <code>fabricmc.net</code>. It lets Minecraft run mods.'],['Drop in the mod','Put the <code>.jar</code> file into your <code>.minecraft/mods</code> folder.'],['Play','Open Minecraft, pick the Fabric profile and press Play.']],
+ sky:[['Get a mod manager','Install a free mod manager like Vortex or Mod Organizer 2.'],['Add the mod','Drag the <code>.zip</code> into the mod manager and switch it on.'],['Play','Start Skyrim from the mod manager.']],
+ gta:[['Get ScriptHookV','Install ScriptHookV and ScriptHookVDotNet (both free). Story mode only.'],['Drop in the mod','Put the <code>.dll</code> into the <code>scripts</code> folder inside your GTA V folder.'],['Play','Start story mode and press the mod’s key, like F7.']],
+ rbx:[['Open Studio','Open your own game in Roblox Studio.'],['Add the mod','Drag the <code>.rbxm</code> file into the Explorer.'],['Test it','Press Play to test, then publish your game.']],
+ sdv:[['Get SMAPI','Install SMAPI, the free Stardew mod loader.'],['Drop in the mod','Unzip the mod into your <code>Stardew Valley/Mods</code> folder.'],['Play','Start the game through SMAPI.']],
+ ter:[['Get tModLoader','Install tModLoader (free on Steam).'],['Drop in the mod','Put the <code>.tmod</code> file in your tModLoader <code>Mods</code> folder.'],['Play','Turn it on in the Mods menu, reload, and play.']]};
+let inst='mc';
+function renderInstall(){ $('instSteps').innerHTML=INSTALL[inst].map((st,i)=>'<div class="ist"><span class="n">'+(i+1)+'</span><h3>'+st[0]+'</h3><p>'+st[1]+'</p></div>').join(''); }
+ORDER.forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.setAttribute('role','tab'); b.textContent=G[k].name; b.setAttribute('aria-pressed',k===inst?'true':'false'); b.setAttribute('aria-selected',k===inst);
+  b.addEventListener('click',()=>{ inst=k; $('instTabs').querySelectorAll('.chip').forEach(x=>{ const o=x===b; x.setAttribute('aria-pressed',o); x.setAttribute('aria-selected',o); }); renderInstall(); }); $('instTabs').appendChild(b); });
+renderInstall();
+
+/* ---------- plain-English word explainer ---------- */
+const TERMS={mc:'Market cap = what all of a coin is worth right now. The more people buy, the higher it goes.',
+ ca:'CA = contract address. It’s the coin’s unique ID. Paste it into pump.fun to find the exact right coin.',
+ burn:'Burning = sending coins to a wallet nobody can open. They’re gone forever, so there are fewer left.',
+ fees:'Every time someone buys or sells the coin, a tiny cut goes to fees.'};
+const tip=document.createElement('div'); tip.className='tip'; tip.setAttribute('role','tooltip'); tip.hidden=true; document.body.appendChild(tip);
+let tipFor=null;
+function showTip(el){ tipFor=el; tip.textContent=TERMS[el.dataset.term]||''; tip.hidden=false;
+  const r=el.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+  let x=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2)), y=r.top-h-10; if(y<70) y=r.bottom+10;
+  tip.style.left=x+'px'; tip.style.top=y+'px'; }
+function hideTip(){ tip.hidden=true; tipFor=null; }
+document.querySelectorAll('.term').forEach(el=>{
+  el.addEventListener('mouseenter',()=>showTip(el)); el.addEventListener('mouseleave',hideTip);
+  el.addEventListener('focus',()=>showTip(el)); el.addEventListener('blur',hideTip);
+  el.addEventListener('click',e=>{ e.stopPropagation(); tipFor===el&&!tip.hidden?hideTip():showTip(el); }); });
+document.addEventListener('click',hideTip); addEventListener('scroll',hideTip,{passive:true});
+
+/* ---------- sticky phone bar ---------- */
+(function(){ const bar=$('mbar'); const tog=()=>bar.classList.toggle('show',scrollY>560); addEventListener('scroll',tog,{passive:true}); tog();
+  if(CONFIG.ca) $('mbarBuy').href='https://pump.fun/coin/'+CONFIG.ca; })();
+
+/* ---------- coming soon games ---------- */
+const SOON=[['Fallout 4','New weapons, quests, settlements',412],['Cyberpunk 2077','New cars, outfits, powers',388],['Baldur’s Gate 3','New spells, classes, items',351],['The Sims 4','New outfits, furniture, careers',530],
+ ['Valheim','Bigger builds, new boss drops',264],['Lethal Company','New monsters, moons, tools',497],['RimWorld','New colonists, events, gear',203],['Garry’s Mod','New tools, props, game modes',318],
+ ['Cities: Skylines','New buildings, roads, traffic tools',187],['Hollow Knight','New charms, bosses, areas',176],['Satisfactory','New machines, faster belts',149],['Palworld','New Pals, gear, bases',441]];
+$('soonGrid').innerHTML=SOON.map((g,i)=>'<button class="sn" type="button" style="--d:'+(i*0.25)+'s" data-v="'+g[2]+'"><span class="sn-top"><b>'+g[0]+'</b><span class="sn-badge">Soon</span></span><span class="k">'+g[1]+'</span><span class="sn-vote">▲ '+g[2]+' want this</span></button>').join('');
+$('soonGrid').querySelectorAll('.sn').forEach(b=>b.addEventListener('click',()=>{ const on=b.classList.toggle('voted'), v=+b.dataset.v+(on?1:0);
+  b.querySelector('.sn-vote').textContent=(on?'✓ ':'▲ ')+v+' want this'; b.setAttribute('aria-pressed',on); }));
+
+/* ---------- motion: scroll progress, nav, reveal, counters, bars ---------- */
+let feedSeen=false;
+function fillBars(){ document.querySelectorAll('#feed .bar i[data-w]').forEach(b=>{ b.style.width=b.dataset.w+'%'; }); }
+const navEl=$('nav'), prog=$('progress');
+function onScroll(){ const h=document.documentElement; const max=h.scrollHeight-innerHeight; prog.style.transform='scaleX('+(max>0?h.scrollTop/max:0)+')'; navEl.classList.toggle('scrolled',h.scrollTop>8); }
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+function countUp(el){ const end=parseFloat(el.dataset.count), dec=+(el.dataset.dec||0), suf=el.dataset.suffix||'';
+  if(reduce){ return; } const t0=performance.now(), dur=1400;
+  const tick=t=>{ const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3), v=end*e; el.textContent=(dec?v.toFixed(dec):Math.round(v).toLocaleString())+suf; if(k<1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick); }
+const targets=[];
+document.querySelectorAll('[data-reveal]').forEach(el=>targets.push(el));
+document.querySelectorAll('[data-stagger]').forEach(g=>Array.from(g.children).forEach((c,i)=>{ c.style.setProperty('--d',(i*0.07)+'s'); targets.push(c); }));
+const feedEl=$('feed'), splitEl=$('split');
+const below=el=>el.getBoundingClientRect().top>innerHeight*0.9;
+if(reduce||!('IntersectionObserver' in window)){ fillBars(); feedSeen=true; }
+else {
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) return; const el=e.target; io.unobserve(el);
+    if(el===feedEl){ feedSeen=true; fillBars(); return; }
+    if(el===splitEl){ splitEl.classList.remove('pre-split'); return; }
+    if(el.hasAttribute('data-count')){ countUp(el); return; }
+    el.classList.add('reveal-in'); requestAnimationFrame(()=>el.classList.remove('pre')); }),{rootMargin:'0px 0px -6% 0px',threshold:.06});
+  targets.forEach(el=>{ if(below(el)){ el.classList.add('pre'); io.observe(el); } });
+  if(below(splitEl)){ splitEl.classList.add('pre-split'); io.observe(splitEl); }
+  if(below(feedEl)) io.observe(feedEl); else { feedSeen=true; setTimeout(fillBars,300); }
+  document.querySelectorAll('[data-count]').forEach(el=>{ if(below(el)) io.observe(el); else setTimeout(()=>countUp(el),500); });
+}
+})();
+</script>
+
+</body>
+</html>

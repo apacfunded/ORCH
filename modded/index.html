@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Modded</title>
+<meta name="description" content="Modded is the AI that builds game mods. Describe a mod, launch its coin, play it. $MODDED">
+<meta name="theme-color" content="#0b0b0e">
+<meta property="og:title" content="Modded · Describe a mod. Play it.">
+<meta property="og:description" content="The AI that builds game mods. Every mod is funded by its own coin. $MODDED">
+<meta property="og:image" content="https://orch.lol/modded/banner.png">
+<meta property="og:url" content="https://orch.lol/modded/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://orch.lol/modded/banner.png">
+<link rel="icon" type="image/png" href="/modded/pfp.png">
+<link rel="apple-touch-icon" href="/modded/pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Figtree:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: product landing — split hero with a live build console, then calm full-width sections on a graphite ground */
+:root{
+  color-scheme:dark;
+  --bg:#0b0b0e; --surface:#131317; --surface-2:#1a1a20; --line:#24242c; --line-2:#30303a;
+  --text:#f4f2ee; --muted:#9b99a5; --faint:#6c6a76;
+  --accent:#ff6a2b; --accent-2:#ff8a3d; --ok:#34d399; --warn:#fbbf24;
+  --display:"Sora",system-ui,sans-serif; --body:"Figtree",system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:400 16px/1.6 var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit;color:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:24px}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.08;text-wrap:balance}
+h2{font-size:clamp(28px,3.6vw,40px)}
+h3{font-size:18px;letter-spacing:-.01em}
+.kicker{font:500 13px/1 var(--mono);color:var(--accent);letter-spacing:.04em;display:block}
+.lead{color:var(--muted);font-size:18px;max-width:600px}
+section{padding-block:96px;border-top:1px solid var(--line)}
+.head{margin-bottom:40px;display:grid;gap:12px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.mono{font-family:var(--mono)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;font:500 15px/1 var(--body);border:1px solid transparent;cursor:pointer;transition:background .15s ease,border-color .15s ease;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#120804}
+.btn-primary:hover{background:var(--accent-2)}
+.btn-light{background:var(--text);color:var(--bg)}
+.btn-light:hover{background:#fff}
+.btn-quiet{background:var(--surface);border-color:var(--line-2)}
+.btn-quiet:hover{border-color:var(--faint)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(11,11,14,.92);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:28px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font:600 18px/1 var(--display);letter-spacing:-.02em}
+.brand svg{width:28px;height:28px;border-radius:7px}
+.links{display:flex;gap:2px}
+.links a{padding:10px 12px;color:var(--muted);font-size:15px;border-radius:8px}
+.links a:hover{color:var(--text)}
+.nav-r{margin-left:auto;display:flex;gap:10px;align-items:center}
+.nav-ca{font:400 13px/1 var(--mono);color:var(--faint)}
+@media (max-width:920px){.links,.nav-ca{display:none}}
+
+/* hero */
+.hero{border-top:0;padding-block:72px 80px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-200px -100px auto auto;width:720px;height:720px;background:radial-gradient(closest-side,rgba(255,106,43,.16),transparent);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center;position:relative}
+.hero-grid>div{min-width:0}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border:1px solid var(--line-2);border-radius:999px;font-size:14px;color:var(--muted);background:var(--surface)}
+.badge b{font:500 12px/1 var(--mono);background:var(--accent);color:#120804;padding:4px 7px;border-radius:999px}
+.hero h1{font-size:clamp(42px,5.6vw,68px);margin:22px 0 20px}
+.hero h1 span{color:var(--muted)}
+.hero .lead{font-size:19px}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin:32px 0 28px}
+.hero-ctas .btn{min-height:48px;padding:0 22px;font-size:16px}
+.ca{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:6px 6px 6px 14px;background:var(--surface);max-width:100%}
+.ca small{font:500 12px/1 var(--mono);color:var(--faint);letter-spacing:.06em}
+.ca code{font:400 14px/1 var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ca button{min-height:34px;padding:0 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface-2);font-size:13px;cursor:pointer}
+.ca button[disabled]{opacity:.45;cursor:not-allowed}
+
+/* studio console */
+.studio{background:var(--surface);border:1px solid var(--line-2);border-radius:16px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6);overflow:hidden}
+.st-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.st-bar .dots{display:flex;gap:6px}.st-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--line-2)}
+.st-bar .crumb{font-family:var(--mono)}
+.st-bar .live{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:var(--mono);color:var(--ok)}
+.st-bar .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(52,211,153,.18)}
+.st-body{padding:18px;display:grid;gap:14px}
+.gtabs{display:flex;gap:6px;flex-wrap:wrap}
+.gtabs span{font-size:13px;padding:6px 10px;border-radius:7px;color:var(--faint);border:1px solid transparent}
+.gtabs span.on{color:var(--text);background:var(--surface-2);border-color:var(--line-2)}
+.prompt{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line-2);border-radius:10px;padding:0 6px 0 14px;min-height:50px}
+.prompt .t{flex:1;font-size:15px;min-width:0;white-space:nowrap;overflow:hidden}
+.prompt .caret{display:inline-block;width:1.5px;height:17px;background:var(--accent);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.prompt .go{min-height:38px;padding:0 12px;border-radius:8px;background:var(--accent);color:#120804;font-size:14px;font-weight:500;display:grid;place-items:center}
+.log{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;font:400 13px/1.75 var(--mono);color:var(--muted);height:188px;overflow:hidden}
+.log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log .ok{color:var(--ok)}.log .acc{color:var(--accent-2)}.log .dim{color:var(--faint)}
+.progress{display:flex;align-items:center;gap:12px;font:400 13px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.progress #demoStage{min-width:104px}
+.track{flex:1;height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--accent);border-radius:4px;transition:width .25s linear}
+.out{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 10px 10px 12px;opacity:.35;transition:opacity .3s}
+.out.on{opacity:1;border-color:rgba(52,211,153,.4)}
+.out .file{width:40px;height:36px;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;font:500 12px/1 var(--mono);color:var(--muted);flex:none}
+.out .fn{min-width:0;flex:1}
+.out .fn b{display:block;font:500 14px/1.3 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.out .fn span{font-size:13px;color:var(--muted)}
+.out .btn{min-height:36px;padding:0 12px;font-size:14px}
+.st-foot{padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--faint)}
+
+/* games strip */
+.games-strip{padding-block:28px;border-top:1px solid var(--line)}
+.games-strip .wrap{display:flex;align-items:center;gap:10px 32px;flex-wrap:wrap}
+.games-strip .lbl{font:500 13px/1 var(--mono);color:var(--faint)}
+.games-strip .g{font:600 16px/1 var(--display);color:var(--muted);letter-spacing:-.01em}
+.games-strip a.g{color:var(--accent)}
+
+/* features */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.feat>div{padding:28px;border-right:1px solid var(--line);display:grid;gap:8px;align-content:start}
+.feat>div:last-child{border-right:0}
+.feat .ic{width:36px;height:36px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line-2);display:grid;place-items:center;margin-bottom:10px}
+.feat .ic svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linejoin:round}
+.feat p{color:var(--muted)}
+
+/* start */
+.two{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start}
+.two>*{min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
+.flabel{display:flex;align-items:center;gap:10px;font:500 15px/1 var(--body);margin-bottom:12px}
+.flabel b{font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line-2);border-radius:6px;padding:4px 6px}
+.gpick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.gbtn{min-height:46px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);cursor:pointer;font-size:15px;padding:0 8px;transition:border-color .15s}
+.gbtn:hover{border-color:var(--faint)}
+.gbtn[aria-pressed="true"]{border-color:var(--accent);background:rgba(255,106,43,.08)}
+label.f,p.f{display:block;font-size:14px;color:var(--muted);margin-bottom:8px}
+textarea,input[type=text],input[type=number]{width:100%;background:var(--bg);border:1px solid var(--line-2);border-radius:10px;padding:12px 14px;font-size:16px;min-height:46px}
+textarea{min-height:100px;resize:vertical}
+textarea:focus,input:focus{outline:none;border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.chips .hint{font-size:13px;color:var(--faint)}
+.chip{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line-2);background:transparent;cursor:pointer;font-size:14px;color:var(--muted)}
+.chip:hover{color:var(--text)}
+.note{font-size:13px;color:var(--faint);margin-top:14px}
+.card .btn.full{width:100%;margin-top:20px;min-height:48px}
+.flow li{list-style:none;display:grid;grid-template-columns:28px 1fr;gap:14px;padding-bottom:22px;position:relative}
+.flow li:last-child{padding-bottom:0}
+.flow li::before{content:"";position:absolute;left:13px;top:28px;bottom:0;width:1px;background:var(--line-2)}
+.flow li:last-child::before{display:none}
+.flow .n{width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font:500 12px/1 var(--mono);color:var(--muted);background:var(--surface)}
+.flow strong{display:block;font-weight:500}
+.flow span{color:var(--muted);font-size:14px}
+
+/* segmented tabs */
+.seg{display:inline-flex;gap:2px;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--surface);flex-wrap:wrap;margin-bottom:20px;max-width:100%}
+.seg button{min-height:38px;padding:0 14px;border-radius:8px;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:14px}
+.seg button[aria-selected="true"]{background:var(--surface-2);color:var(--text);box-shadow:0 0 0 1px var(--line-2) inset}
+.inst{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.inst .card{display:grid;gap:8px}
+.inst .card .mono{font-size:12px;color:var(--accent)}
+.inst .card p{color:var(--muted)}
+.warn{margin-top:18px;font-size:14px;color:var(--faint)}
+
+/* roadmap */
+.soon{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.vote{display:flex;justify-content:space-between;align-items:center;min-height:52px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;transition:border-color .15s}
+.vote:hover{border-color:var(--line-2)}
+.vote>span{font-size:15px}
+.vote em{font:400 13px/1 var(--mono);font-style:normal;color:var(--faint);display:flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.vote em::before{content:"▲";font-size:10px}
+.vote[aria-pressed="true"]{border-color:var(--accent)}
+.vote[aria-pressed="true"] em{color:var(--accent)}
+.vote .next{font:500 12px/1 var(--mono);color:var(--accent);margin-left:8px}
+
+/* coin */
+.steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.steps4 .card{display:grid;gap:8px;align-content:start}
+.steps4 .mono{font-size:12px;color:var(--faint)}
+.steps4 p{color:var(--muted);font-size:15px}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.tier{border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:4px}
+.tier .mc{font:600 32px/1.1 var(--display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tier .mc small{font:400 14px/1 var(--mono);color:var(--faint);margin-left:6px;letter-spacing:0}
+.tier strong{font-weight:500;margin-top:6px}
+.tier span{color:var(--muted);font-size:14px}
+.tier.mid{border-color:rgba(255,106,43,.45);background:linear-gradient(180deg,rgba(255,106,43,.06),transparent)}
+.fees{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-top:64px}
+.fees h3{font-size:22px;margin-bottom:10px}
+.fees>div>p{color:var(--muted);margin-bottom:22px}
+.bar3{display:flex;gap:4px;height:12px}
+.bar3 i{border-radius:3px}
+.bar3 .a{flex:50;background:var(--text)}.bar3 .b{flex:30;background:var(--accent)}.bar3 .c{flex:20;background:var(--faint)}
+.bar3-l{display:flex;gap:4px;margin-top:10px;font:400 13px/1 var(--mono);color:var(--muted)}
+.bar3-l span:nth-child(1){flex:50}.bar3-l span:nth-child(2){flex:30}.bar3-l span:nth-child(3){flex:20}
+.legend{display:grid;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.legend>div{display:grid;grid-template-columns:56px 1fr;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);align-items:baseline}
+.legend>div:last-child{border-bottom:0}
+.legend b{font:600 20px/1 var(--display);font-variant-numeric:tabular-nums}
+.legend strong{display:block;font-weight:500}
+.legend span{color:var(--muted);font-size:14px}
+
+/* mods */
+.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.toolbar .seg{margin:0}
+.toolbar .ex{margin-left:auto;font:400 13px/1 var(--mono);color:var(--faint)}
+.mods{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
+.mod:hover{border-color:var(--line-2)}
+.thumb{aspect-ratio:16/9;max-width:100%;position:relative;display:grid;place-items:center;border-bottom:1px solid var(--line);overflow:hidden}
+.thumb .gl{position:absolute;left:12px;top:10px;font:500 12px/1 var(--mono);color:rgba(244,242,238,.75)}
+.thumb .ini{font:600 30px/1 var(--display);letter-spacing:-.04em;color:rgba(244,242,238,.92)}
+.mod .body{padding:14px 16px 16px;display:grid;gap:10px;flex:1}
+.mod .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mod h3{font-size:16px}
+.tk{font:400 13px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.st{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--mono);white-space:nowrap}
+.st::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.st.live{color:var(--ok)}.st.building{color:var(--warn)}.st.fueling{color:var(--muted)}
+.mtrack{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.mtrack i{display:block;height:100%;background:var(--accent)}
+.mod .foot{font:400 12px/1 var(--mono);color:var(--faint)}
+
+/* launch */
+.wiz{display:flex;gap:6px;margin-bottom:24px;list-style:none}
+.wiz li{flex:1;display:grid;gap:8px;font-size:14px;color:var(--faint)}
+.wiz li::before{content:"";height:3px;border-radius:3px;background:var(--line-2)}
+.wiz li.on{color:var(--text)}.wiz li.on::before{background:var(--accent)}
+.wiz li.done::before{background:var(--text)}
+.wiz li b{font:500 12px/1 var(--mono);margin-right:6px;color:var(--faint)}
+.pane{display:none}.pane.on{display:block}
+.sizes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.size{min-height:64px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);cursor:pointer;text-align:left;padding:10px 12px;display:grid;gap:2px}
+.size strong{font-weight:500;font-size:15px}
+.size span{font:400 12px/1.3 var(--mono);color:var(--faint)}
+.size[aria-pressed="true"]{border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:14px}
+.hint2{font-size:13px;color:var(--faint);margin-top:6px}
+.err{font-size:13px;color:var(--accent-2);margin-top:6px;min-height:18px}
+.wnav{display:flex;gap:10px;margin-top:8px}
+.wnav .btn{flex:1;min-height:48px}
+.pv{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:sticky;top:88px}
+.pv .top{padding:22px;display:flex;gap:14px;align-items:center;border-bottom:1px solid var(--line)}
+.pv .coin{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#2a2a33,#15151a);border:1px solid var(--line-2);display:grid;place-items:center;flex:none}
+.pv .coin svg{width:30px;height:30px}
+.pv .top div{min-width:0}
+.pv small{font:400 12px/1 var(--mono);color:var(--faint)}
+.pv h3{font-size:20px;margin:6px 0 4px;overflow-wrap:anywhere}
+.pv .sub{font-size:14px;color:var(--muted)}
+.pv .sub b{font-family:var(--mono);font-weight:500;color:var(--text)}
+.tl{list-style:none;padding:12px 22px 18px}
+.tl li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.tl li:last-child{border-bottom:0}
+.tl li em{font:400 12px/1.6 var(--mono);font-style:normal;color:var(--faint)}
+.tl li:first-child em{color:var(--ok)}
+
+/* faq */
+.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+.faq-grid>*{min-width:0}
+.faq{border-top:1px solid var(--line)}
+details{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:20px 0;min-height:56px;display:flex;justify-content:space-between;align-items:center;gap:16px;font:500 17px/1.35 var(--body)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";flex:none;width:9px;height:9px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translateY(-3px);transition:transform .2s}
+details[open] summary::after{transform:rotate(-135deg)}
+details p{padding:0 0 20px;color:var(--muted);max-width:640px}
+details p a{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+
+/* end */
+.end{text-align:center;padding-block:120px;position:relative;overflow:hidden}
+.end::before{content:"";position:absolute;left:50%;top:100%;width:900px;height:500px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,106,43,.14),transparent);pointer-events:none}
+.end .wrap{position:relative}
+.end svg{width:56px;height:56px;border-radius:14px;margin:0 auto 28px;display:block}
+.end h2{font-size:clamp(34px,5vw,56px)}
+.end p{color:var(--muted);margin-top:14px;font-size:18px}
+.end .ctas{display:flex;gap:10px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.end .btn{min-height:48px;padding:0 22px;font-size:16px}
+footer{border-top:1px solid var(--line);padding-block:32px calc(32px + env(safe-area-inset-bottom,0px));color:var(--faint);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+
+@media (max-width:980px){
+  .hero-grid,.two,.fees,.faq-grid{grid-template-columns:1fr}
+  .steps4,.mods,.soon{grid-template-columns:repeat(2,1fr)}
+  .pv{position:static}
+  .hero-grid{gap:44px}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:16px}
+  section{padding-block:72px}
+  .hero{padding-block:44px 56px}
+  .feat,.inst,.tiers,.row2,.sizes{grid-template-columns:1fr}
+  .feat>div{border-right:0;border-bottom:1px solid var(--line)}
+  .feat>div:last-child{border-bottom:0}
+  .gpick{grid-template-columns:repeat(2,1fr)}
+  .steps4,.mods,.soon{grid-template-columns:1fr}
+  .toolbar .ex{margin-left:0;width:100%}
+  .hero-ctas .btn{flex:1}
+  .nav .btn-quiet{display:none}
+  .log{height:170px;font-size:12px}
+  .progress #demoStage{min-width:88px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body id="top">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="mAcc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff5a1f"/></linearGradient>
+    <symbol id="mark" viewBox="0 0 512 512">
+      <rect width="512" height="512" fill="#16161b"/>
+      <polygon points="124,366 124,146 184,146 248,222 248,304 184,228 184,366" fill="#f4f2ee"/>
+      <polygon points="388,366 388,146 328,146 264,222 264,304 328,228 328,366" fill="url(#mAcc)"/>
+    </symbol>
+    <symbol id="markBare" viewBox="110 130 292 250">
+      <polygon points="124,366 124,146 184,146 248,222 248,304 184,228 184,366" fill="#f4f2ee"/>
+      <polygon points="388,366 388,146 328,146 264,222 264,304 328,228 328,366" fill="url(#mAcc)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Modded home"><svg aria-hidden="true"><use href="#mark"/></svg>Modded</a>
+    <nav class="links" aria-label="Main">
+      <a href="#start">Start a mod</a><a href="#install">Install</a><a href="#mods">Mods</a><a href="#how">Coin</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-r">
+      <span class="nav-ca">CA · at launch</span>
+      <a class="btn btn-quiet" href="https://pump.fun" target="_blank" rel="noopener">Buy $MODDED</a>
+      <a class="btn btn-primary" href="#launch">Launch a mod</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="badge"><b>NEW</b>AI mod builder for moddable games</span>
+      <h1>Describe a mod.<br><span>Play it tonight.</span></h1>
+      <p class="lead">Modded writes, builds and tests game mods from one sentence. Every mod is funded by its own coin, so nobody pays up front and nobody needs to code.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-light" href="#start">Start a mod</a>
+        <a class="btn btn-quiet" href="#how">How it works</a>
+      </div>
+      <div class="ca"><small>$MODDED</small><code id="caText">Drops at launch</code><button id="copyCa" disabled>Copy</button></div>
+    </div>
+
+    <div class="studio" aria-label="Example of a mod being built">
+      <div class="st-bar"><span class="dots"><i></i><i></i><i></i></span><span class="crumb">modded / studio</span><span class="live">building</span></div>
+      <div class="st-body">
+        <div class="gtabs" id="demoTabs"><span>Minecraft</span><span>Terraria</span><span>Stardew Valley</span><span>Skyrim</span></div>
+        <div class="prompt"><span class="t"><span id="demoTyped"></span><span class="caret"></span></span><span class="go">Build</span></div>
+        <div class="log" id="demoLog"></div>
+        <div class="progress"><span id="demoStage">queued</span><span class="track"><i id="demoBar"></i></span><span id="demoPct">0%</span></div>
+        <div class="out" id="demoOut"><span class="file" id="demoExt">.jar</span><span class="fn"><b id="demoFile">coal-jetpack.jar</b><span id="demoMeta">Waiting for build</span></span><span class="btn btn-quiet">Download</span></div>
+      </div>
+      <div class="st-foot">Example build. Real builds start when a mod's coin hits its goal.</div>
+    </div>
+  </div>
+</section>
+
+<div class="games-strip">
+  <div class="wrap">
+    <span class="lbl">Works with</span>
+    <span class="g">Minecraft</span><span class="g">Skyrim</span><span class="g">GTA V</span><span class="g">Roblox</span><span class="g">Stardew Valley</span><span class="g">Terraria</span>
+    <a class="g" href="#soon">+12 next</a>
+  </div>
+</div>
+
+<section id="what">
+  <div class="wrap">
+    <div class="head"><span class="kicker">What's a mod</span><h2>Add anything to a game you already own.</h2>
+      <p class="lead">A mod adds new items, powers or ways to play. Normally it takes a programmer and a weekend. With Modded it takes one sentence.</p></div>
+    <div class="feat">
+      <div><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span><h3>New items</h3><p>A coal-powered jetpack, a backpack with no limit, a grappling hook.</p></div>
+      <div><span class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><h3>New powers</h3><p>A spell that rains gold, a shout that calls a storm, double jump.</p></div>
+      <div><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 4l13 8-13 8z"/></svg></span><h3>New ways to play</h3><p>Boss rush, a lava-rising round, a drift race in story mode.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Start a mod</span><h2>Start your mod</h2>
+      <p class="lead">Pick a game and describe the mod. Next you launch its coin, and that coin's creator fees pay for the build.</p></div>
+    <div class="two">
+      <div class="card">
+        <p class="flabel"><b>1</b>Pick a game</p>
+        <div class="gpick" id="startGames" role="group" aria-label="Game"></div>
+        <p class="flabel"><b>2</b>Describe your mod</p>
+        <label class="f" for="startIdea">What should it do?</label>
+        <textarea id="startIdea" placeholder="A jetpack that runs on coal"></textarea>
+        <div class="chips" id="startChips"></div>
+        <p class="note">Single-player, co-op and private-server mods only. Modded never builds online cheats.</p>
+        <button class="btn btn-primary full" id="startNext">Continue to coin launch</button>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:6px">What happens next</h3>
+        <p style="color:var(--muted);font-size:15px;margin-bottom:22px">Every mod is tied to a coin. No coin, no build.</p>
+        <ol class="flow">
+          <li><span class="n">1</span><div><strong>Launch the mod's coin</strong><span>Name, ticker, launch on pump.fun.</span></div></li>
+          <li><span class="n">2</span><div><strong>Hit the market cap goal</strong><span>$10K MC for small mods, $25K and up for bigger ones.</span></div></li>
+          <li><span class="n">3</span><div><strong>The AI builds and tests it</strong><span>Creator fees pay for every AI token used.</span></div></li>
+          <li><span class="n">4</span><div><strong>The mod ships free</strong><span>Anyone can download and install it.</span></div></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Install</span><h2>Install in three steps</h2>
+      <p class="lead">Same three steps for every game. Each mod also ships with its own short guide.</p></div>
+    <div class="seg" role="tablist" id="instTabs"></div>
+    <div class="inst" id="instSteps"></div>
+    <p class="warn">Only download modding tools from their official sites.</p>
+  </div>
+</section>
+
+<section id="soon">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Roadmap</span><h2>Games coming next</h2>
+      <p class="lead">Each of these has an active modding scene. Vote for the ones you want first.</p></div>
+    <div class="soon" id="soonList"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="head"><span class="kicker">The coin</span><h2>Every mod is funded by its own coin</h2>
+      <p class="lead">Creator fees pay for the AI that builds the mod. Once it ships, part of every fee burns $MODDED.</p></div>
+    <div class="steps4">
+      <div class="card"><span class="mono">Step 1</span><h3>Launch a coin</h3><p>Pick a game, describe the mod, launch its coin. $JETPK for a Minecraft jetpack.</p></div>
+      <div class="card"><span class="mono">Step 2</span><h3>People trade it</h3><p>Every buy and sell pays a small creator fee.</p></div>
+      <div class="card"><span class="mono">Step 3</span><h3>Goal reached</h3><p>At its market cap goal, the AI writes, builds and tests the mod.</p></div>
+      <div class="card"><span class="mono">Step 4</span><h3>Mod ships free</h3><p>Fees then pay the creator and burn $MODDED.</p></div>
+    </div>
+    <div class="tiers">
+      <div class="tier"><div class="mc">$10K<small>MC</small></div><strong>Small mod</strong><span>One feature, like a jetpack or a new weapon.</span></div>
+      <div class="tier mid"><div class="mc">$25K<small>MC</small></div><strong>Medium mod</strong><span>A pack of items with custom art.</span></div>
+      <div class="tier"><div class="mc">$50K+<small>MC</small></div><strong>Large mod</strong><span>An overhaul or a whole new game mode.</span></div>
+    </div>
+    <div class="fees">
+      <div>
+        <h3>Where creator fees go</h3>
+        <p>Before a mod ships, 100% of its fees pay for the build. After it ships, they split three ways.</p>
+        <div class="bar3" role="img" aria-label="50% creator, 30% burn, 20% updates"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+        <div class="bar3-l"><span>Creator</span><span>Burn</span><span>Updates</span></div>
+      </div>
+      <div class="legend">
+        <div><b>50%</b><p><strong>To the creator</strong><span>Paid in SOL to whoever launched the mod's coin.</span></p></div>
+        <div><b style="color:var(--accent)">30%</b><p><strong>Buys and burns $MODDED</strong><span>Automatic, and every burn is public on-chain.</span></p></div>
+        <div><b style="color:var(--muted)">20%</b><p><strong>Funds updates</strong><span>Keeps the mod working after game patches.</span></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="mods">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Mods</span><h2>Built on Modded</h2>
+      <p class="lead">Live mods are ready to download. The rest build as soon as their coin hits its goal.</p></div>
+    <div class="toolbar">
+      <div class="seg" role="tablist" id="modFilters">
+        <button role="tab" aria-selected="true" data-f="all">All</button>
+        <button role="tab" aria-selected="false" data-f="live">Live</button>
+        <button role="tab" aria-selected="false" data-f="building">Building</button>
+        <button role="tab" aria-selected="false" data-f="fueling">Under goal</button>
+      </div>
+      <span class="ex">Example data until launch</span>
+    </div>
+    <div class="mods" id="modGrid"></div>
+  </div>
+</section>
+
+<section id="launch">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Launch</span><h2>Launch a mod coin</h2>
+      <p class="lead">Three steps. The coin's creator fees pay for your mod's build.</p></div>
+    <div class="two">
+      <div class="card">
+        <ol class="wiz" id="wizSteps"><li class="on"><span><b>01</b>Game</span></li><li><span><b>02</b>Mod</span></li><li><span><b>03</b>Coin</span></li></ol>
+        <div class="pane on" data-p="0">
+          <p class="flabel">Which game is it for?</p>
+          <div class="gpick" id="wizGames" role="group" aria-label="Game"></div>
+        </div>
+        <div class="pane" data-p="1">
+          <div class="field"><label class="f" for="wizIdea">What should the mod do?</label>
+            <textarea id="wizIdea" placeholder="A jetpack that runs on coal"></textarea><div class="err" id="ideaErr"></div></div>
+          <p class="f">Mod size</p>
+          <div class="sizes" id="wizSizes">
+            <button class="size" aria-pressed="true" data-mc="$10K"><strong>Small</strong><span>Goal $10K MC</span></button>
+            <button class="size" aria-pressed="false" data-mc="$25K"><strong>Medium</strong><span>Goal $25K MC</span></button>
+            <button class="size" aria-pressed="false" data-mc="$50K"><strong>Large</strong><span>Goal $50K+ MC</span></button>
+          </div>
+        </div>
+        <div class="pane" data-p="2">
+          <div class="row2">
+            <div class="field"><label class="f" for="wizName">Coin name</label><input type="text" id="wizName" maxlength="32" placeholder="Coal Jetpack"><div class="err" id="nameErr"></div></div>
+            <div class="field"><label class="f" for="wizTicker">Ticker</label><input type="text" id="wizTicker" maxlength="10" placeholder="JETPK"><div class="err" id="tickErr"></div></div>
+          </div>
+          <div class="field"><label class="f" for="wizBuy">Dev buy (optional)</label><input type="number" id="wizBuy" min="0" step="0.1" placeholder="0.5"><p class="hint2">In SOL. Leave empty to skip.</p></div>
+        </div>
+        <div class="wnav">
+          <button class="btn btn-quiet" id="wizBack" hidden>Back</button>
+          <button class="btn btn-primary" id="wizNext">Continue</button>
+          <a class="btn btn-primary" id="wizGo" href="https://pump.fun/create" target="_blank" rel="noopener" hidden>Launch on pump.fun</a>
+        </div>
+      </div>
+      <aside class="pv" aria-live="polite">
+        <div class="top">
+          <span class="coin"><svg aria-hidden="true"><use href="#markBare"/></svg></span>
+          <div><small>Preview</small><h3 id="pvName">Coal Jetpack</h3><p class="sub"><b id="pvTick">$JETPK</b> · <span id="pvGame">Minecraft</span></p></div>
+        </div>
+        <ul class="tl">
+          <li>Coin launches<em>ready</em></li>
+          <li>Reaches <span id="pvMc">$10K</span> MC<em>goal</em></li>
+          <li>AI builds and tests the mod<em>auto</em></li>
+          <li>Mod ships free<em>then</em></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap faq-grid">
+    <div class="head"><span class="kicker">FAQ</span><h2>Questions</h2><p class="lead">Anything else, ask on X.</p></div>
+    <div class="faq">
+      <details><summary>Is this real?</summary><p>Yes. The build console up top and the mod cards are examples until launch. Real mods are built with each game's own modding tools once their coin hits its goal, and every mod is tested before it can be downloaded.</p></details>
+      <details><summary>Which games does it support?</summary><p>Games that allow mods: Minecraft, Skyrim, GTA V story mode, Stardew Valley, Terraria and your own Roblox games. Black Ops 2, Black Ops 1, Modern Warfare and Skate are next. If a game doesn't allow mods, Modded can't mod it.</p></details>
+      <details><summary>Will it build cheats or aimbots?</summary><p>No. Modded only builds single-player mods, co-op mods for friends and private-server content. Online cheats break games' rules and get accounts banned, so Modded refuses those prompts.</p></details>
+      <details><summary>How do I install a mod?</summary><p>See the <a href="#install">install guide</a>. It's three steps for every game, and each mod ships with its own guide.</p></details>
+      <details><summary>Do I need to launch a coin?</summary><p>Yes. Every mod starts as a coin, and its creator fees pay for the build, so nobody pays for the mod up front.</p></details>
+      <details><summary>Are mods free?</summary><p>Yes. Every mod is free to download.</p></details>
+      <details><summary>What if my coin doesn't hit its goal?</summary><p>The coin keeps trading. The mod builds the moment it hits its market cap goal, with no deadline.</p></details>
+      <details><summary>How does the $MODDED burn work?</summary><p>After a mod ships, 30% of its coin's creator fees go to a public buyback wallet that market-buys $MODDED and sends it to the burn address. Every burn is public on-chain.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <svg aria-hidden="true"><use href="#mark"/></svg>
+    <h2>Your idea. Any game. Modded.</h2>
+    <p>Describe it once. The coin pays for the rest.</p>
+    <div class="ctas"><a class="btn btn-primary" href="#launch">Launch a mod</a><a class="btn btn-quiet" href="https://pump.fun" target="_blank" rel="noopener">Buy $MODDED</a></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Modded · <a href="#">X</a> · <a href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a></span>
+    <span>Not affiliated with any game publisher. $MODDED is a memecoin with no promise of value.</span>
+  </div>
+</footer>
+
+<script>
+const GAMES=["Minecraft","Skyrim","GTA V","Roblox","Stardew Valley","Terraria"];
+const IDEAS={
+  "Minecraft":["Jetpack that runs on coal","Rideable pet dragon","Speed pads"],
+  "Skyrim":["Shout that calls a storm","Bottomless backpack","Flying horse"],
+  "GTA V":["Car that drives on walls","Slow-mo jump","Story-mode drift race"],
+  "Roblox":["Lava-rising round","Double jump boots","Pet that follows you"],
+  "Stardew Valley":["Spell that rains gold","Auto-water hat","Giant crops"],
+  "Terraria":["Laser sword","Grappling hook upgrade","Boss rush mode"]
+};
+const INSTALL={
+  "Minecraft":[["Install Fabric","Get the free Fabric loader for your Minecraft version."],["Add the mod","Put the mod's .jar file in your mods folder."],["Play","Open the launcher and pick the Fabric profile."]],
+  "Skyrim":[["Install a mod manager","Vortex or Mod Organizer 2 both work."],["Add the mod","Drag the mod's .zip into the manager."],["Play","Enable it and launch Skyrim from the manager."]],
+  "GTA V":[["Install Script Hook V","Copy it into your GTA V folder."],["Add the mod","Drop the mod files into the same folder."],["Play story mode","Mods only run in story mode, never online."]],
+  "Roblox":[["Open Studio","Open your own game in Roblox Studio."],["Insert the model","Insert the mod's .rbxm file into your place."],["Publish","Publish the update and play."]],
+  "Stardew Valley":[["Install SMAPI","Get the free SMAPI mod loader."],["Add the mod","Unzip it into the Mods folder."],["Play","Launch the game through SMAPI."]],
+  "Terraria":[["Install tModLoader","Free on Steam."],["Add the mod","Put the .tmod file in your Mods folder."],["Play","Enable it under Workshop › Manage Mods."]]
+};
+const SOON=[["Black Ops 2",412,1],["Black Ops 1",288,1],["Modern Warfare",251,1],["Skate",233,1],["Fallout 4",190],["Elden Ring",176],["The Sims 4",158],["Cyberpunk 2077",141],["Baldur's Gate 3",120],["Valheim",96],["RimWorld",84],["Hollow Knight",61]];
+const MODS=[
+  {n:"Coal Jetpack",t:"JETPK",g:"Minecraft",s:"live",p:100,mc:"$61.2K",h:24},
+  {n:"Laser Sword",t:"ZAPZ",g:"Terraria",s:"live",p:100,mc:"$38.9K",h:330},
+  {n:"Gold Rain",t:"RAIN",g:"Stardew Valley",s:"building",p:100,mc:"$27.4K",h:150},
+  {n:"Wall Rider",t:"WALL",g:"GTA V",s:"building",p:100,mc:"$52.0K",h:210},
+  {n:"Storm Shout",t:"STORM",g:"Skyrim",s:"fueling",p:64,mc:"$16.0K",h:265},
+  {n:"Lava Rising",t:"LAVA",g:"Roblox",s:"fueling",p:41,mc:"$4.1K",h:15},
+  {n:"Dragon Pet",t:"DRGN",g:"Minecraft",s:"fueling",p:22,mc:"$5.5K",h:290},
+  {n:"Boss Rush",t:"RUSH",g:"Terraria",s:"live",p:100,mc:"$74.8K",h:350}
+];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+const state={game:"Minecraft",mc:"$10K",step:0};
+function gameButtons(el){
+  el.innerHTML=GAMES.map(g=>`<button class="gbtn" aria-pressed="${g===state.game}" data-g="${g}">${g}</button>`).join("");
+  el.addEventListener("click",e=>{const b=e.target.closest(".gbtn");if(!b)return;state.game=b.dataset.g;$$(".gbtn").forEach(x=>x.setAttribute("aria-pressed",x.dataset.g===state.game));renderChips();updatePreview();});
+}
+function renderChips(){$("#startChips").innerHTML='<span class="hint">Try:</span>'+IDEAS[state.game].map(i=>`<button class="chip">${i}</button>`).join("");}
+gameButtons($("#startGames"));gameButtons($("#wizGames"));renderChips();
+$("#startChips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(c)$("#startIdea").value=c.textContent;});
+$("#startNext").addEventListener("click",()=>{const v=$("#startIdea").value.trim();if(v)$("#wizIdea").value=v;goStep(v?2:1);$("#launch").scrollIntoView();});
+
+function renderInstall(g){
+  $("#instTabs").innerHTML=GAMES.map(x=>`<button role="tab" aria-selected="${x===g}" data-g="${x}">${x}</button>`).join("");
+  $("#instSteps").innerHTML=INSTALL[g].map((s,i)=>`<div class="card"><span class="mono">Step ${i+1}</span><h3>${s[0]}</h3><p>${s[1]}</p></div>`).join("");
+}
+renderInstall("Minecraft");
+$("#instTabs").addEventListener("click",e=>{const t=e.target.closest("button");if(t)renderInstall(t.dataset.g);});
+
+$("#soonList").innerHTML=SOON.map(([n,v,h])=>`<button class="vote" aria-pressed="false" data-v="${v}"><span>${n}${h?'<span class="next">NEXT</span>':''}</span><em>${v}</em></button>`).join("");
+$("#soonList").addEventListener("click",e=>{const b=e.target.closest(".vote");if(!b)return;const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("em").textContent=+b.dataset.v+(on?1:0);});
+
+const LBL={live:"Live",building:"Building",fueling:"Under goal"};
+const ini=n=>n.split(" ").map(w=>w[0]).join("").slice(0,2);
+function renderMods(f){
+  $("#modGrid").innerHTML=MODS.filter(m=>f==="all"||m.s===f).map(m=>`
+  <article class="mod">
+    <div class="thumb" style="background:radial-gradient(120% 90% at 20% 0%,hsl(${m.h} 55% 30%),hsl(${m.h} 35% 12%) 70%)"><span class="gl">${m.g}</span><span class="ini">${ini(m.n)}</span></div>
+    <div class="body">
+      <div class="row"><h3>${m.n}</h3><span class="st ${m.s}">${LBL[m.s]}</span></div>
+      <div class="row"><span class="tk">$${m.t}</span><span class="tk">MC ${m.mc}</span></div>
+      <div class="mtrack"><i style="width:${m.p}%"></i></div>
+      <span class="foot">${m.s==="fueling"?m.p+"% to goal":m.s==="live"?"Ready to download":"AI is building"}</span>
+    </div>
+  </article>`).join("");
+}
+renderMods("all");
+$("#modFilters").addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;$$("#modFilters button").forEach(x=>x.setAttribute("aria-selected",x===t));renderMods(t.dataset.f);});
+
+function goStep(n){
+  state.step=n;
+  $$(".pane").forEach(p=>p.classList.toggle("on",+p.dataset.p===n));
+  $$("#wizSteps li").forEach((li,i)=>{li.classList.toggle("on",i===n);li.classList.toggle("done",i<n);});
+  $("#wizBack").hidden=n===0;$("#wizNext").hidden=n===2;$("#wizGo").hidden=n!==2;
+}
+$("#wizSizes").addEventListener("click",e=>{const b=e.target.closest(".size");if(!b)return;$$(".size").forEach(x=>x.setAttribute("aria-pressed",x===b));state.mc=b.dataset.mc;updatePreview();});
+$("#wizBack").addEventListener("click",()=>goStep(state.step-1));
+$("#wizNext").addEventListener("click",()=>{
+  if(state.step===1&&!$("#wizIdea").value.trim()){$("#ideaErr").textContent="Describe the mod in a sentence so the AI knows what to build.";$("#wizIdea").focus();return;}
+  goStep(state.step+1);
+});
+$("#wizGo").addEventListener("click",e=>{
+  let ok=true;
+  if(!$("#wizName").value.trim()){$("#nameErr").textContent="Add a coin name.";ok=false;}
+  if(!/^[A-Za-z0-9]{2,10}$/.test($("#wizTicker").value.trim())){$("#tickErr").textContent="Use 2–10 letters or numbers.";ok=false;}
+  if(!ok)e.preventDefault();
+});
+const ERR={"#wizIdea":"#ideaErr","#wizName":"#nameErr","#wizTicker":"#tickErr"};
+Object.keys(ERR).forEach(id=>$(id).addEventListener("input",e=>{$(ERR[id]).textContent="";if(id==="#wizTicker")e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"");updatePreview();}));
+function updatePreview(){
+  $("#pvName").textContent=$("#wizName").value.trim()||"Coal Jetpack";
+  $("#pvTick").textContent="$"+($("#wizTicker").value.trim()||"JETPK");
+  $("#pvGame").textContent=state.game;$("#pvMc").textContent=state.mc;
+}
+
+const DEMOS=[
+  {g:"Minecraft",idea:"a jetpack that runs on coal",file:"coal-jetpack.jar",ext:".jar",size:"212 KB",
+   log:[["acc","› coin $JETPK live on pump.fun"],["","› market cap $10.4K · goal reached"],["dim","› creator fees routed to build"],["","› writing JetpackItem.java, FuelHandler.java"],["","› compiling with Fabric 0.16"],["ok","✓ 14 of 14 tests passed"]]},
+  {g:"Terraria",idea:"a laser sword that glows",file:"laser-sword.tmod",ext:".tmod",size:"86 KB",
+   log:[["acc","› coin $ZAPZ live on pump.fun"],["","› market cap $10.1K · goal reached"],["dim","› creator fees routed to build"],["","› writing LaserSword.cs, sprite 32×32"],["","› building with tModLoader"],["ok","✓ 9 of 9 tests passed"]]},
+  {g:"Stardew Valley",idea:"a spell that rains gold",file:"gold-rain.zip",ext:".zip",size:"140 KB",
+   log:[["acc","› coin $RAIN live on pump.fun"],["","› market cap $25.3K · goal reached"],["dim","› creator fees routed to build"],["","› writing GoldRain.cs, manifest.json"],["","› building for SMAPI 4.1"],["ok","✓ 11 of 11 tests passed"]]}
+];
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+const STAGES=["launched","goal reached","routing fees","writing code","compiling","tested"];
+async function runDemo(i){
+  const d=DEMOS[i%DEMOS.length];
+  $$("#demoTabs span").forEach(s=>s.classList.toggle("on",s.textContent===d.g));
+  $("#demoTyped").textContent="";$("#demoLog").innerHTML="";$("#demoBar").style.width="0";$("#demoPct").textContent="0%";
+  $("#demoStage").textContent="queued";$("#demoOut").classList.remove("on");
+  $("#demoFile").textContent=d.file;$("#demoExt").textContent=d.ext;$("#demoMeta").textContent="Waiting for build";
+  for(const ch of d.idea){$("#demoTyped").textContent+=ch;await sleep(40);}
+  await sleep(300);
+  for(let k=0;k<d.log.length;k++){
+    const [c,t]=d.log[k];const el=document.createElement("div");if(c)el.className=c;el.textContent=t;$("#demoLog").appendChild(el);
+    const pct=Math.round((k+1)/d.log.length*100);$("#demoBar").style.width=pct+"%";$("#demoPct").textContent=pct+"%";
+    $("#demoStage").textContent=STAGES[k];
+    await sleep(650);
+  }
+  $("#demoOut").classList.add("on");$("#demoMeta").textContent=d.size+" · tested · ready";
+  if(reduce)return;
+  await sleep(4000);runDemo(i+1);
+}
+runDemo(0);
+</script>
+</body>
+</html>

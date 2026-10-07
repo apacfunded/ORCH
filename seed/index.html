@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eef3f8">
+<meta name="description" content="Describe the Minecraft world you want and the $SEED AI finds matching seeds with coordinates.">
+<link rel="icon" type="image/png" href="/seed/pfp.png">
+<link rel="apple-touch-icon" href="/seed/pfp.png">
+<meta property="og:title" content="$SEED · Describe your world, get the seed">
+<meta property="og:description" content="AI seed finder for Java and Bedrock. Type the spawn you want, get the seed.">
+<meta property="og:image" content="https://orch.lol/seed/pfp.png">
+<meta name="twitter:card" content="summary">
+<title>SEED Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Product landing: sky hero with one floating 3D grass block, prompt bar as the product, results below. Single light look. */
+:root{
+  --sky:#eef3f8; --sky2:#d9e8f6; --card:#ffffff; --ink:#0c1626; --muted:#4a5a72;
+  --line:#d3dfec; --accent:#2563eb; --grass:#4f9a35; --grass-soft:#e7f3df; --dirt:#7a5232;
+  --display:"Sora",system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--sky);color:var(--ink);font-family:var(--display);font-size:16px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+a{color:var(--accent)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--sky) 92%,transparent);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.brand img{width:36px;height:36px;border-radius:10px;image-rendering:pixelated}
+.navlinks{display:flex;gap:6px;align-items:center}
+.navlinks a{font-size:14px;color:var(--muted);text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlinks a:hover{color:var(--ink);background:var(--card)}
+.navlinks a.btn{color:#fff;background:var(--accent)} .navlinks a.btn:hover{background:#1d4fd0;color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:12px;border:0;font:600 15px var(--display);cursor:pointer;text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#1d4fd0}
+.btn-ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.hero{padding-block:56px 32px;background:linear-gradient(var(--sky2),var(--sky))}
+.hero .wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
+.eyebrow{font:500 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grass)}
+h1{font-size:clamp(36px,6vw,60px);line-height:1.05;font-weight:600;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--grass)}
+.lede{font-size:18px;color:var(--muted);max-width:52ch;margin:0 0 24px}
+
+.prompt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;display:flex;gap:8px;box-shadow:0 10px 30px -18px rgba(12,22,38,.35)}
+.prompt label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prompt input{flex:1;min-width:0;border:0;font:400 16px var(--display);padding:0 10px;color:var(--ink);background:transparent}
+.prompt input:focus{outline:none}
+.prompt:focus-within{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font:400 13px var(--mono);background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:0 14px;min-height:36px;cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--grass)}
+.ver{display:flex;gap:10px;align-items:center;margin-top:16px;font:400 13px var(--mono);color:var(--muted);flex-wrap:wrap}
+.ver select{font:500 13px var(--mono);border:1px solid var(--line);border-radius:10px;background:var(--card);min-height:36px;padding:0 10px;color:var(--ink)}
+
+.stage{height:340px;display:grid;place-items:center;perspective:900px}
+.float{animation:bob 4s ease-in-out infinite}
+.cube{width:170px;height:170px;position:relative;transform-style:preserve-3d;transform:rotateX(-24deg) rotateY(-38deg);animation:spin 18s linear infinite}
+.face{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;border:3px solid #26331d}
+.f-top{transform:rotateX(90deg) translateZ(85px)}
+.f-front{transform:translateZ(85px)} .f-back{transform:rotateY(180deg) translateZ(85px)}
+.f-left{transform:rotateY(-90deg) translateZ(85px)} .f-right{transform:rotateY(90deg) translateZ(85px)}
+.f-bot{transform:rotateX(-90deg) translateZ(85px)}
+.sprout{position:absolute;left:50%;top:50%;width:84px;height:58px;transform:translate(-50%,-100%) translateY(-82px);image-rendering:pixelated}
+.shadow{width:180px;height:24px;margin:30px auto 0;background:radial-gradient(closest-side,rgba(12,22,38,.22),transparent);animation:shade 4s ease-in-out infinite}
+@keyframes spin{to{transform:rotateX(-24deg) rotateY(322deg)}}
+@keyframes bob{50%{transform:translateY(-14px)}}
+@keyframes shade{50%{transform:scale(.85);opacity:.7}}
+@media (prefers-reduced-motion:reduce){.cube,.float,.shadow{animation:none}}
+
+section{padding-block:48px}
+h2{font-size:28px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 24px}
+.results-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.tag{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--grass-soft);color:#2f6a1c;padding:6px 10px;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.seed{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.seed canvas{width:100%;aspect-ratio:16/9;display:block;image-rendering:pixelated}
+.seed .body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.seed h3{margin:0;font-size:17px;font-weight:600}
+.seed p{margin:0;color:var(--muted);font-size:14px}
+.match{font:500 12px var(--mono);color:var(--grass)}
+.feats{list-style:none;margin:0;padding:0;display:grid;gap:6px;font:400 13px var(--mono)}
+.feats li{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding-top:6px}
+.feats span:last-child{color:var(--muted);font-variant-numeric:tabular-nums}
+.seedrow{display:flex;gap:8px;margin-top:auto;align-items:center}
+.seedrow code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font:500 14px var(--mono);background:var(--sky);border:1px solid var(--line);border-radius:10px;padding:0 10px;min-height:44px;display:flex;align-items:center;font-variant-numeric:tabular-nums}
+.empty{grid-column:1/-1;background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:28px;text-align:center;color:var(--muted)}
+
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.step b{font:500 12px var(--mono);color:var(--accent);letter-spacing:.06em}
+.step h3{margin:8px 0 6px;font-size:17px;font-weight:600}
+.step p{margin:0;color:var(--muted);font-size:14px}
+
+.token{background:var(--ink);color:#e8eef6;border-radius:22px;padding:32px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+.token img{width:120px;height:120px;border-radius:24px;image-rendering:pixelated}
+.token h2{color:#fff}
+.token p{color:#b4c2d6;margin:0 0 16px;max-width:56ch}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.stats div{background:#16233a;border-radius:12px;padding:12px 14px}
+.stats small{display:block;font:400 12px var(--mono);color:#8fa3bf;letter-spacing:.04em;text-transform:uppercase}
+.stats strong{font-size:18px;font-weight:600}
+.ca{display:flex;gap:8px;flex-wrap:wrap}
+.ca code{font:500 14px var(--mono);background:#16233a;border-radius:10px;padding:0 14px;min-height:44px;display:flex;align-items:center;color:#cfe3ff}
+
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600;min-height:52px;display:flex;align-items:center}
+details p{margin:0 0 16px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-block:24px;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px}
+
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr}
+  .stage{height:240px;order:-1}
+  .cube{width:130px;height:130px}
+  .f-top{transform:rotateX(90deg) translateZ(65px)} .f-front{transform:translateZ(65px)} .f-back{transform:rotateY(180deg) translateZ(65px)}
+  .f-left{transform:rotateY(-90deg) translateZ(65px)} .f-right{transform:rotateY(90deg) translateZ(65px)} .f-bot{transform:rotateX(-90deg) translateZ(65px)}
+  .sprout{transform:translate(-50%,-100%) translateY(-62px);width:64px;height:44px}
+  .grid,.steps{grid-template-columns:1fr 1fr}
+  .navlinks a.hide-sm{display:none}
+}
+@media (max-width:560px){
+  .grid,.steps,.stats{grid-template-columns:1fr}
+  .token{grid-template-columns:1fr;padding:22px}
+  .token img{width:84px;height:84px}
+  .prompt{flex-direction:column}
+  .prompt input{min-height:44px}
+  .hero{padding-block:28px 20px}
+}
+
+/* ---- motion ---- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{transform:translate(-50%,-50%) scale(.6);opacity:.9}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+@keyframes scan{from{transform:translateY(-100%)}to{transform:translateY(100%)}}
+@keyframes drift{from{background-position:0 0}to{background-position:-200px 0}}
+.hero .eyebrow,.hero h1,.hero .lede,.prompt,.chips,.ver{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.hero h1{animation-delay:.08s}.hero .lede{animation-delay:.16s}.prompt{animation-delay:.24s}.chips{animation-delay:.32s}.ver{animation-delay:.4s}
+.stage{animation:rise .9s .2s cubic-bezier(.2,.7,.2,1) both}
+.hero{position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:1}
+#sky{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.chip{transition:transform .18s,border-color .18s,color .18s,background .18s}
+.chip:hover{transform:translateY(-2px);background:var(--grass-soft)}
+.btn{transition:background .18s,transform .12s}
+.btn:active{transform:scale(.97)}
+.seed{transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s}
+.seed:hover{transform:translateY(-5px);box-shadow:0 18px 36px -22px rgba(12,22,38,.45)}
+.seed.in{animation:pop .55s cubic-bezier(.2,.7,.2,1) both}
+.map{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:#2f6fbf}
+.map canvas{border-bottom:0;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.seed:hover .map canvas{transform:scale(1.06)}
+.pin{position:absolute;width:12px;height:12px;border-radius:3px;background:#fff;border:2px solid var(--ink);transform:translate(-50%,-50%);z-index:2}
+.pin::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;border:2px solid #fff;animation:pulse 1.8s ease-out infinite;animation-delay:var(--d,0s)}
+.pin.spawn{background:#ffd23f;border-radius:50%}
+.pin span{position:absolute;left:14px;top:-6px;white-space:nowrap;font:500 11px var(--mono);color:#fff;background:rgba(12,22,38,.78);padding:2px 6px;border-radius:6px;opacity:0;transform:translateX(-4px);transition:.2s}
+.seed:hover .pin span{opacity:1;transform:none}
+.scanning{position:relative;min-height:260px;border-radius:16px;background:var(--card);border:1px solid var(--line);overflow:hidden;grid-column:1/-1;display:grid;place-items:center;color:var(--muted);font:500 14px var(--mono)}
+.scanning::before{content:"";position:absolute;inset:0;background:linear-gradient(transparent,rgba(79,154,53,.18),transparent);animation:scan 1s linear infinite}
+.scanning::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:24px 24px;opacity:.6}
+.scanning span{position:relative;z-index:1}
+.step,.token,details{transition:transform .25s,box-shadow .25s}
+.step:hover{transform:translateY(-4px);box-shadow:0 14px 30px -22px rgba(12,22,38,.4)}
+@supports (animation-timeline:view()){
+  .step,.token,details,.results-head{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 40%}
+}
+.token img{animation:bob 4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><img id="logo" alt=""><span>$SEED</span></a>
+  <div class="navlinks">
+    <a class="hide-sm" href="#how">How it works</a>
+    <a class="hide-sm" href="#token">Token</a>
+    <a class="hide-sm" href="#faq">FAQ</a>
+    <a class="btn btn-primary" href="#token">Buy $SEED</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top"><canvas id="sky" aria-hidden="true"></canvas><div class="wrap">
+  <div>
+    <div class="eyebrow">AI seed finder · Java &amp; Bedrock</div>
+    <h1>Describe your world.<br>Get the <em>seed</em>.</h1>
+    <p class="lede">Type the spawn you want in plain words. The $SEED AI searches millions of Minecraft seeds and hands back the best matches with coordinates.</p>
+    <form class="prompt" id="form">
+      <label for="q">Describe the world you want</label>
+      <input id="q" autocomplete="off" placeholder="Village next to a cherry grove with a shipwreck">
+      <button class="btn btn-primary" type="submit">Find seeds</button>
+    </form>
+    <div class="chips" id="chips">
+      <button class="chip" type="button">Mushroom island spawn</button>
+      <button class="chip" type="button">Ancient city near spawn</button>
+      <button class="chip" type="button">Village in a cherry grove</button>
+      <button class="chip" type="button">Speedrun: fortress + bastion</button>
+    </div>
+    <div class="ver">
+      <label for="edition">Edition</label>
+      <select id="edition"><option>Java 1.21</option><option>Bedrock 1.21</option></select>
+    </div>
+  </div>
+  <div>
+    <div class="stage"><div class="float"><div class="cube" id="cube">
+      <div class="face f-top"></div><div class="face f-front"></div><div class="face f-back"></div>
+      <div class="face f-left"></div><div class="face f-right"></div><div class="face f-bot"></div>
+    </div><div class="shadow"></div></div></div>
+  </div>
+</div></header>
+
+<section id="results"><div class="wrap">
+  <div class="results-head">
+    <div><h2 id="rtitle">Top seeds right now</h2><p class="sub" id="rsub">Seeds people are loading this week.</p></div>
+    <span class="tag">Example data until launch</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="sub">Three steps from an idea to a world you can load.</p>
+  <div class="steps">
+    <div class="step"><b>STEP 1</b><h3>Describe it</h3><p>Write what you want near spawn: biomes, villages, structures, even "flat land for a base".</p></div>
+    <div class="step"><b>STEP 2</b><h3>AI searches</h3><p>The AI turns your words into structure and biome checks, then scans seeds until it finds the closest matches.</p></div>
+    <div class="step"><b>STEP 3</b><h3>Copy and play</h3><p>Copy the seed, paste it into world creation, and use the listed coordinates to go straight to each spot.</p></div>
+  </div>
+</div></section>
+
+<section id="token"><div class="wrap">
+  <div class="token">
+    <img id="logo2" alt="$SEED logo">
+    <div>
+      <h2>$SEED</h2>
+      <p>Creator fees pay for the search servers. Holders get unlimited searches, early access to the weekly "Seed of the Week", and a vote on which seeds get featured.</p>
+      <div class="stats">
+        <div><small>Chain</small><strong>Solana</strong></div>
+        <div><small>Launch</small><strong>pump.fun</strong></div>
+        <div><small>Free searches</small><strong>3 / day</strong></div>
+      </div>
+      <div class="ca"><code id="ca">CA posted at launch</code><button class="btn btn-ghost" id="copyca" type="button">Copy CA</button></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>FAQ</h2>
+  <p class="sub">Quick answers before you search.</p>
+  <details><summary>Do seeds work on both Java and Bedrock?</summary><p>Most seeds since 1.18 share terrain on both, but structures can sit in different places. Pick your edition before you search and results are checked for it.</p></details>
+  <details><summary>How accurate are the coordinates?</summary><p>Coordinates point to the structure's center chunk. Fly or walk there and it will be within a few blocks.</p></details>
+  <details><summary>What do I get for holding $SEED?</summary><p>Unlimited searches, Seed of the Week drops before anyone else, and votes on featured seeds.</p></details>
+  <details><summary>Is this made by Mojang?</summary><p>No. $SEED is an independent community project and is not affiliated with Mojang or Microsoft.</p></details>
+</div></section>
+
+<footer><div class="wrap">
+  <span>$SEED · AI seed finder</span>
+  <span>Not affiliated with Mojang or Microsoft. Not financial advice.</span>
+</div></footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ---------- pixel textures ----------
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function tex(kind,seed){
+  const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');const r=rng(seed);
+  const g=['#5eaa3e','#6cba46','#54a038','#78c450'],d=['#86603c','#785234','#926642','#6c4a2e'];
+  for(let j=0;j<8;j++)for(let i=0;i<8;i++){
+    let col;
+    if(kind==='top')col=g[r()*4|0];
+    else if(kind==='bot')col=d[r()*4|0];
+    else col=(j<2||(j===2&&r()<.45))?g[r()*4|0]:d[r()*4|0];
+    x.fillStyle=col;x.fillRect(i,j,1,1);
+  }
+  return c.toDataURL();
+}
+document.querySelectorAll('.face').forEach((f,k)=>{
+  const kind=f.classList.contains('f-top')?'top':f.classList.contains('f-bot')?'bot':'side';
+  f.style.backgroundImage=`url(${tex(kind,k+3)})`;
+  if(kind==='side'){const shade=['f-left','f-back'].some(c=>f.classList.contains(c))?.82:.92;f.style.filter=`brightness(${shade})`}
+});
+// sprout
+(function(){
+  const art=[".LLL...RRR.","LLLLL.RRRRR","LLLLLSRRRRR",".LLLLSRRRR.","..LL.S.RR..",".....S.....",".....S....."];
+  const col={L:'#96e060',R:'#6ec448',S:'#56a03a'};
+  const c=document.createElement('canvas');c.width=13;c.height=9;const x=c.getContext('2d');
+  const on=(r,q)=>art[r]&&art[r][q]&&art[r][q]!=='.';
+  for(let r=-1;r<=7;r++)for(let q=-1;q<=11;q++){
+    if(!on(r,q)&&[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,1],[-1,1],[1,-1]].some(([a,b])=>on(r+a,q+b))&&r<7){x.fillStyle='#26331d';x.fillRect(q+1,r+1,1,1)}
+  }
+  art.forEach((row,r)=>[...row].forEach((k,q)=>{if(k!=='.'){x.fillStyle=col[k];x.fillRect(q+1,r+1,1,1)}}));
+  const img=document.createElement('img');img.className='sprout';img.alt='';img.src=c.toDataURL();
+  document.getElementById('cube').appendChild(img);
+})();
+// logo (small block icon)
+(function(){
+  const c=document.createElement('canvas');c.width=c.height=16;const x=c.getContext('2d');
+  x.fillStyle='#bfe1f7';x.fillRect(0,0,16,16);
+  const t=new Image();t.onload=()=>{x.imageSmoothingEnabled=false;x.drawImage(t,3,5,10,10);
+    x.fillStyle='#26331d';[[6,2],[7,2],[9,2],[10,2],[5,3],[11,3],[8,3],[8,4]].forEach(([a,b])=>x.fillRect(a,b,1,1));
+    x.fillStyle='#96e060';x.fillRect(6,3,2,1);x.fillStyle='#6ec448';x.fillRect(9,3,2,1);
+    const u=c.toDataURL();document.getElementById('logo').src=u;document.getElementById('logo2').src=u;};
+  t.src=tex('side',11);
+})();
+
+// ---------- example seeds ----------
+const SEEDS=[
+ {seed:"-4172144997902289642",name:"Cherry grove village",tags:["village","cherry","grove"],biome:"cherry",desc:"Plains village on the edge of a pink cherry grove, two blocks from spawn.",f:[["Village","120 ~ -64"],["Cherry grove","40 ~ 0"],["Ruined portal","-210 ~ 180"]]},
+ {seed:"8091867987493326313",name:"Mushroom island spawn",tags:["mushroom","island","ocean"],biome:"mushroom",desc:"Spawn right on a mushroom island. No hostile mobs, ocean in every direction.",f:[["Mushroom fields","0 ~ 0"],["Shipwreck","88 ~ 140"],["Ocean monument","-320 ~ 256"]]},
+ {seed:"6017884410258283432",name:"Ancient city under spawn",tags:["ancient","city","deep","dark","warden"],biome:"deep",desc:"Deep dark and an ancient city almost straight down from spawn.",f:[["Ancient city","-8 ~ -51 ~ 24"],["Mineshaft","60 ~ 30"],["Village","-180 ~ 96"]]},
+ {seed:"-1813174980244839513",name:"Speedrun starter",tags:["speedrun","fortress","bastion","portal","nether"],biome:"plains",desc:"Lava-pool ruined portal at spawn, fortress and bastion close together in the Nether.",f:[["Ruined portal","14 ~ -9"],["Fortress (Nether)","-120 ~ 72"],["Bastion (Nether)","-60 ~ 140"]]},
+ {seed:"3227028068011494696",name:"Shipwreck coast",tags:["shipwreck","beach","coast","treasure","village"],biome:"beach",desc:"Sandy coast with two shipwrecks and buried treasure near a fishing village.",f:[["Shipwreck","62 ~ 18"],["Buried treasure","71 ~ 25"],["Village","-40 ~ 110"]]},
+ {seed:"-5584399987456711265",name:"Mountain peak spawn",tags:["mountain","peak","snow","jagged","pillager"],biome:"snow",desc:"Spawn under jagged peaks with a pillager outpost on the slope.",f:[["Jagged peaks","0 ~ 0"],["Pillager outpost","-150 ~ 90"],["Igloo","230 ~ -60"]]},
+ {seed:"1145141919810",name:"Flat build land",tags:["flat","plains","build","base","sunflower"],biome:"plains",desc:"Wide sunflower plains with almost no hills. Easy base building.",f:[["Sunflower plains","0 ~ 0"],["Village","-96 ~ -32"],["Mineshaft","40 ~ 200"]]},
+ {seed:"-7429103552138860214",name:"Jungle temple trail",tags:["jungle","temple","bamboo","panda"],biome:"jungle",desc:"Bamboo jungle with a jungle temple and pandas close to spawn.",f:[["Jungle temple","110 ~ -40"],["Bamboo jungle","20 ~ 10"],["Trail ruins","-130 ~ 76"]]},
+ {seed:"492307815573049",name:"Desert pyramid duo",tags:["desert","pyramid","temple","village"],biome:"desert",desc:"Two desert pyramids and a desert village inside 300 blocks.",f:[["Desert pyramid","-60 ~ 44"],["Desert pyramid","180 ~ -120"],["Village","32 ~ 96"]]},
+];
+
+// value-noise terrain
+function noise2(seed){
+  const r=rng(seed),P=new Uint8Array(512),G=[];for(let i=0;i<256;i++){P[i]=i;G[i]=r()}
+  for(let i=255;i>0;i--){const j=r()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
+  const sm=t=>t*t*(3-2*t);
+  const v=(x,y)=>{const xi=Math.floor(x)&255,yi=Math.floor(y)&255,xf=x-Math.floor(x),yf=y-Math.floor(y);
+    const a=G[P[P[xi]+yi]],b=G[P[P[xi+1]+yi]],c=G[P[P[xi]+yi+1]],d=G[P[P[xi+1]+yi+1]];const u=sm(xf),w=sm(yf);
+    return a+(b-a)*u+(c-a)*w+(a-b-c+d)*u*w};
+  return (x,y,o=5)=>{let t=0,f=1,amp=1,n=0;for(let i=0;i<o;i++){t+=v(x*f,y*f)*amp;n+=amp;f*=2;amp*=.5}return t/n};
+}
+const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const BIOME={
+ cherry:{land:['#7fbf52','#6aae45','#f3b4d0','#8cc45a'],sea:.36,trees:'#d97aa8',mode:'plain'},
+ mushroom:{land:['#a587ad','#b496bb','#8e7298','#b8a1be'],sea:.58,trees:'#c0473f',mode:'island'},
+ deep:{land:['#3d5a4c','#2f4a3e','#4f6d5a','#2a3b33'],sea:.22,trees:'#1e3a2c',mode:'plain',dark:true},
+ plains:{land:['#8cc45a','#9ccf62','#7db84f','#a6d46b'],sea:.34,trees:'#3e7d2c',mode:'plain'},
+ beach:{land:['#e8d79a','#8cc45a','#7db84f','#efdfa6'],sea:.5,trees:'#3e7d2c',mode:'coast'},
+ snow:{land:['#f2f6f8','#dfe7ec','#b9c6ce','#6d8a5f'],sea:.3,trees:'#2f5a3c',mode:'plain',peaks:true},
+ jungle:{land:['#3f8f2e','#4fa236','#2e7a22','#5cad3e'],sea:.36,trees:'#1f5a16',mode:'plain'},
+ desert:{land:['#e8d396','#dcc283','#f0dca6','#cfb06e'],sea:.25,trees:'#6fa04a',mode:'plain'}
+};
+const W=320,H=180;
+function drawMap(cv,s,biome){
+  cv.width=W;cv.height=H;const x=cv.getContext('2d');let h=7;for(const ch of s)h=(h*31+ch.charCodeAt(0))|0;
+  const n=noise2(h),n2=noise2(h^0x5bd1e995),r=rng(h^99);const B=BIOME[biome]||BIOME.plains;const L=B.land.map(hex);
+  const img=x.createImageData(W,H),D=img.data,HM=new Float32Array(W*H);
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){
+    let e=n(i/70,j/70,6);
+    const dx=(i-W/2)/W,dy=(j-H/2)/H,dist=Math.hypot(dx,dy*1.4);
+    if(B.mode==='island')e=e*.55+.62-dist*1.5;
+    else if(B.mode==='coast')e=e*.7+.55-(i/W)*.55;
+    else e=e*.8+.2+(.12-dist*.25);
+    HM[j*W+i]=e;
+  }
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){
+    const k=j*W+i,e=HM[k];let c;
+    if(e<B.sea){const t=Math.max(0,Math.min(1,(B.sea-e)/.18));c=[60-t*30,140-t*55,214-t*50]}
+    else if(e<B.sea+.025&&biome!=='deep'){c=[232,214,154]}
+    else{
+      const m=n2(i/40,j/40,4),idx=Math.min(3,Math.floor(m*4.4));c=L[Math.max(0,idx)].slice();
+      if(B.peaks&&e>.62)c=[244,248,250];
+      const sh=(HM[k]-(HM[k-W-1]??HM[k]))*900; // hillshade
+      const f=Math.max(.72,Math.min(1.22,1+sh*.012+(e-.5)*.35));c=c.map(v=>v*f);
+    }
+    D[k*4]=c[0];D[k*4+1]=c[1];D[k*4+2]=c[2];D[k*4+3]=255;
+  }
+  x.putImageData(img,0,0);
+  // trees / detail dots
+  x.fillStyle=B.trees;for(let t=0;t<380;t++){const i=r()*W|0,j=r()*H|0;if(HM[j*W+i]>B.sea+.05&&n2(i/25,j/25,2)>.5){x.globalAlpha=.55+r()*.4;x.fillRect(i,j,2,2)}}
+  x.globalAlpha=1;
+  // chunk grid
+  x.strokeStyle='rgba(255,255,255,.08)';x.lineWidth=1;for(let i=0;i<W;i+=16){x.beginPath();x.moveTo(i+.5,0);x.lineTo(i+.5,H);x.stroke()}for(let j=0;j<H;j+=16){x.beginPath();x.moveTo(0,j+.5);x.lineTo(W,j+.5);x.stroke()}
+  if(B.dark){x.fillStyle='rgba(8,14,18,.25)';x.fillRect(0,0,W,H)}
+}
+function coordToPct(c){const p=c.split('~').map(v=>parseFloat(v));const X=p[0],Z=p[p.length-1];
+  return [Math.max(8,Math.min(92,50+X/400*50)),Math.max(10,Math.min(90,50+Z/400*50))]}
+const grid=document.getElementById('grid');
+function render(list,q){
+  grid.innerHTML='';
+  if(!list.length){grid.innerHTML='<div class="empty">No example seed matches that yet. Try a biome or structure, like "village", "jungle" or "ancient city". Full search opens at launch.</div>';return}
+  list.forEach((s,i)=>{
+    const el=document.createElement('article');el.className='seed';
+    el.className='seed in';el.style.animationDelay=(i*80)+'ms';
+    el.innerHTML=`<div class="map"><canvas aria-label="Map preview for ${s.name}"></canvas><i class="pin spawn" style="left:50%;top:50%"><span>Spawn</span></i>${s.f.map(([a,b],k)=>{const[l,t]=coordToPct(b);return `<i class="pin" style="left:${l}%;top:${t}%;--d:${k*.4}s"><span>${a}</span></i>`}).join('')}</div><div class="body">
+      ${q?`<div class="match">${Math.max(72,98-i*7)}% match</div>`:''}
+      <h3>${s.name}</h3><p>${s.desc}</p>
+      <ul class="feats">${s.f.map(([a,b])=>`<li><span>${a}</span><span>${b}</span></li>`).join('')}</ul>
+      <div class="seedrow"><code>${s.seed}</code><button class="btn btn-ghost" type="button">Copy</button></div></div>`;
+    drawMap(el.querySelector('canvas'),s.seed,s.biome);
+    el.querySelector('button').onclick=()=>copy(s.seed,'Seed copied');
+    grid.appendChild(el);
+  });
+}
+function search(q){
+  const words=q.toLowerCase().split(/[^a-z]+/).filter(w=>w.length>2);
+  const scored=SEEDS.map(s=>({s,n:words.filter(w=>s.tags.some(t=>t.startsWith(w)||w.startsWith(t))).length})).filter(o=>o.n>0).sort((a,b)=>b.n-a.n);
+  document.getElementById('rtitle').textContent='Results';
+  document.getElementById('rsub').textContent=`Best matches for "${q}" on ${document.getElementById('edition').value}.`;
+  grid.innerHTML='<div class="scanning"><span>Searching seeds…</span></div>';
+  setTimeout(()=>render(scored.map(o=>o.s).slice(0,6),q),reduce?0:900);
+  document.getElementById('results').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();const q=document.getElementById('q').value.trim();if(q)search(q);else document.getElementById('q').focus()});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.getElementById('q').value=c.textContent;search(c.textContent)});
+document.getElementById('copyca').onclick=()=>toast('CA goes live with the coin');
+
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,1800)}
+function copy(v,m){try{navigator.clipboard.writeText(v).then(()=>toast(m),()=>toast('Select the seed to copy it'))}catch(e){toast('Select the seed to copy it')}}
+render(SEEDS.slice(0,6));
+(function(){
+  const cv=document.getElementById('sky'),x=cv.getContext('2d');let w,h,dpr=Math.min(2,devicePixelRatio||1);
+  function size(){w=cv.clientWidth;h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;x.setTransform(dpr,0,0,dpr,0,0)}
+  size();addEventListener('resize',size);
+  const clouds=Array.from({length:6},(_,i)=>({x:Math.random()*1400,y:20+Math.random()*220,s:.15+Math.random()*.25,w:6+Math.random()*6|0}));
+  const bits=Array.from({length:22},()=>({x:Math.random()*1400,y:Math.random()*600,vy:.25+Math.random()*.45,ph:Math.random()*6,c:Math.random()<.5?'#f3b4d0':'#8cc45a'}));
+  function cloud(c){x.fillStyle='rgba(255,255,255,.75)';const u=10;
+    for(let i=0;i<c.w;i++)x.fillRect(c.x+i*u,c.y,u,u*2);for(let i=1;i<c.w-2;i++)x.fillRect(c.x+i*u,c.y-u,u,u)}
+  function frame(t){
+    x.clearRect(0,0,w,h);
+    clouds.forEach(c=>{c.x-=c.s;if(c.x<-120)c.x=w+20;cloud(c)});
+    bits.forEach(b=>{b.y+=b.vy;b.x+=Math.sin(t/900+b.ph)*.4;if(b.y>h+10){b.y=-10;b.x=Math.random()*w}x.fillStyle=b.c;x.globalAlpha=.8;x.fillRect(b.x|0,b.y|0,5,5);x.globalAlpha=1});
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

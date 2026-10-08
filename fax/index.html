@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#e9ece4">
-<meta name="description" content="Coinfax ($FAX): free risk reports for any Solana or pump.fun coin. Scored out of 100 with bundlers, snipers, dev wallet, holders and crashes.">
+<meta name="description" content="Coinfax ($FAX): free risk reports for any Solana or pump.fun coin. Scored out of 100 with bundlers, snipers, dev wallet, holders and crashes. $FAX creator fees buy back and burn.">
 <link rel="icon" type="image/png" href="/fax/pfp.png">
 <link rel="apple-touch-icon" href="/fax/pfp.png">
 <meta property="og:title" content="Coinfax · Show me the Coinfax">
@@ -420,10 +420,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
       <div>
         <span class="demo-tag">Example data until launch</span>
         <h2>$FAX</h2>
-        <p>Coinfax is free for everyone. $FAX launches fair on pump.fun, and creator fees pay for faster scans and more coins scored automatically. Holders get watchlist alerts when a coin they hold gets a new red flag.</p>
+        <p>Coinfax is free for everyone. $FAX launches fair on pump.fun, and every creator fee is used to buy back $FAX and burn it, so the supply only goes down.</p>
         <div class="facts">
           <div><small>Launch</small><strong>pump.fun</strong></div>
-          <div><small>Ticker</small><strong>$FAX</strong></div>
+          <div><small>Creator fees</small><strong>Buyback &amp; burn</strong></div>
           <div><small>Reports</small><strong>Free</strong></div>
         </div>
         <div class="ca"><code id="ca">Contract address drops at launch</code><button class="btn btn-ghost" id="copyCa" type="button">Copy CA</button><a class="btn btn-primary" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a></div>
@@ -436,6 +436,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
   <div class="wrap">
     <div class="sec-head"><div><h2>Questions</h2></div></div>
     <div class="faq">
+      <details><summary>What happens to creator fees?</summary><p>All $FAX creator fees buy back $FAX on the market and send it to a burn address. The tokens are gone for good, so every trade shrinks the supply.</p></details>
       <details><summary>Is Coinfax free?</summary><p>Yes. Every report is free with no sign-up. Paste a contract address and the report prints.</p></details>
       <details><summary>How do you find bundlers?</summary><p>We check bundle data from trench.bot first. If that is not available, we read the coin's launch trades and count different wallets that bought in the same block as the launch, plus the share of supply they took. Launch trades can only be read for coins under a day old with normal activity.</p></details>
       <details><summary>Where does the rest of the data come from?</summary><p>On-chain checks come from RugCheck, market data from DexScreener, and new pairs and launch trades from GeckoTerminal. Everything is pulled live when you open a report.</p></details>

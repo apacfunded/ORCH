@@ -70,6 +70,9 @@ export function getDb(): Promise<Db> {
   if (!g.__receiptsDb) {
     g.__receiptsDb = (async () => {
       const c = config();
+      if (!c.databaseUrl && c.onVercel) {
+        throw new Error("No database: add Postgres to this Vercel project (Storage → Neon) or set DATABASE_URL.");
+      }
       const db = c.databaseUrl ? await createPostgres(c.databaseUrl) : await createPglite(c.pgliteDir);
       await migrate(db);
       return db;

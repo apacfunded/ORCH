@@ -44,15 +44,24 @@ Start the watcher a few days **before** the coin goes live. Launch day then open
 
 ## Deploying
 
-The app is two processes that share one Postgres:
+The app needs the web app, Postgres, and something that runs the worker on a schedule.
 
-- **Web:** `npm run build && npm start` (Next.js).
-- **Worker:** `npm run worker` (polls X, scores calls, writes receipts).
+### Vercel (recommended: no servers to manage)
 
-Two easy setups:
+1. **Import** the GitHub repo in Vercel (framework: Next.js, defaults are fine).
+2. **Database:** in the project, open **Storage → Create → Neon (Postgres)** and connect it. That sets `DATABASE_URL` / `POSTGRES_URL` for you. Tables are created on first request.
+3. **Environment variables:** set `SESSION_SECRET`, `CRON_SECRET`, `SITE_URL` (your production URL) and `ADMIN_WALLETS`, then redeploy.
+4. **Worker schedule:** in the GitHub repo, add the Actions secrets `SITE_URL` and `CRON_SECRET` (same value as on Vercel). `.github/workflows/worker.yml` then calls `/api/cron/worker` every 5 minutes. Run it once by hand from the Actions tab to start right away.
 
-- **One always-on server** (Railway, Render, Fly, a VPS): run only the web process with `RUN_WORKER_INLINE=1`. The worker runs inside it.
-- **Vercel + a worker host:** deploy the web app to Vercel with `DATABASE_URL` set, and run `npm run worker` on Railway/Render/Fly against the same database. Serverless functions can't host the long-running worker.
+Each tick does up to ~45 seconds of work and then stops, so it fits Vercel's function limits. On an empty database in demo mode, the first several ticks replay 36 hours of the simulated world. The site fills in over ~30 minutes, then switches to live cycles. A lock row stops overlapping ticks from double-processing.
+
+On a Vercel Pro plan you can use Vercel Cron instead: add `{"crons":[{"path":"/api/cron/worker","schedule":"*/5 * * * *"}]}` to `vercel.json`. Vercel sends the `CRON_SECRET` header automatically. Don't add a sub-daily cron on the Hobby plan, because the deploy will fail.
+
+GitHub pauses scheduled workflows in repos with no activity for 60 days; any push re-enables them.
+
+### One always-on server (Railway, Render, Fly, a VPS)
+
+Run `npm run build && npm start` with `DATABASE_URL` and `RUN_WORKER_INLINE=1`, and the worker runs inside the web process. Or run `npm run worker` as a second process against the same database.
 
 ## How it works
 
@@ -81,13 +90,14 @@ src/
     api/feed           gated feed (live vs delayed)
     api/auth/*         nonce → signature verify → session
     api/receipt/[id]   PNG receipt cards
+    api/cron/worker    one worker tick (scheduled; CRON_SECRET)
     receipt/[id]       receipt page + link preview image
     caller/[handle]    per-caller scorecard
     leaderboard, about, admin
   components/          ReceiptCard, FeedClient, WalletButton
   lib/                 pure logic: extraction, trackers, gate, auth, formatting
   sources/             TwitterSource / PriceSource adapters: X API, DexScreener, mock world
-  worker/              jobs, runner, seed, inline worker
+  worker/              jobs, runner, seed, serverless tick, inline worker
   db/                  tiny SQL interface (Postgres or PGlite) + migrations
 tests/                 unit tests (node:test) + Postgres integration scripts
 ```
@@ -98,7 +108,7 @@ tests/                 unit tests (node:test) + Postgres integration scripts
 npm test          # 30 unit tests: extraction, all four trackers, gate, signatures, sessions, mock world
 ```
 
-`tests/integration/simulate.mts` replays the mock world through the real worker jobs against a real Postgres. Point it at any database with `PG_HOST`, `PG_PORT` and `PG_DB`. `tests/integration/queries.mts` then runs the page queries against the result.
+`tests/integration/simulate.mts` replays the mock world through the real worker jobs against a real Postgres. Point it at any database with `PG_HOST`, `PG_PORT` and `PG_DB`. `tests/integration/queries.mts` then runs the page queries against the result, and `tests/integration/tick.mts` checks the serverless tick (resumable seeding and the overlap lock).
 
 ## Ground rules baked in
 

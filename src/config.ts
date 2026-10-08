@@ -34,13 +34,18 @@ export function loadConfig() {
 
   const priceSource = (str("PRICE_SOURCE", dataSource === "mock" ? "mock" : "dexscreener") as PriceSourceName);
 
-  const databaseUrl = str("DATABASE_URL");
+  // Vercel's Postgres integrations (Neon) set one of these.
+  const databaseUrl = str("DATABASE_URL", str("POSTGRES_URL"));
+  const onVercel = process.env.VERCEL === "1";
 
   return {
     databaseUrl,
+    onVercel,
     pgliteDir: str("PGLITE_DIR", "./.data/pglite"),
     // Without a real Postgres, the web app and worker must share one process (PGlite is single-process).
-    runWorkerInline: str("RUN_WORKER_INLINE", databaseUrl ? "0" : "1") === "1",
+    // Serverless hosts never run it inline: the scheduled /api/cron/worker endpoint does the work.
+    runWorkerInline: str("RUN_WORKER_INLINE", databaseUrl || onVercel ? "0" : "1") === "1",
+    cronSecret: str("CRON_SECRET"),
 
     dataSource,
     xBearerToken: xToken,

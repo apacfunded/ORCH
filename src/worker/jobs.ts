@@ -188,6 +188,9 @@ export async function recheckTweets(ctx: JobContext): Promise<{ checked: number;
 
   let deleted = 0;
   let edited = 0;
+  // Tweets that are simply still there unchanged only need their check time bumped: one bulk UPDATE
+  // instead of one query per tweet keeps each pass to a handful of queries.
+  const untouched: string[] = [];
   for (const r of rows) {
     let outcome: TweetLookup = lookups.get(r.id) ?? { kind: "error" };
     if (outcome.kind === "missing" && outage.has(r.account_id)) outcome = { kind: "error" };
@@ -208,12 +211,17 @@ export async function recheckTweets(ctx: JobContext): Promise<{ checked: number;
       await insertAlert(db, { type: "edited", accountId: r.account_id, tweetId: r.id, payload, createdAt: now });
     }
 
+    const prevState = { status: r.status, failCount: r.fail_count, firstFailedAt: r.first_failed_at };
     const { state, event } = nextDeletionState(
-      { status: r.status, failCount: r.fail_count, firstFailedAt: r.first_failed_at },
+      prevState,
       outcome,
       now,
       { confirmFails: thresholds.deleteConfirmFails, confirmGapMinutes: thresholds.deleteConfirmGapMinutes },
     );
+    if (state === prevState && event === null) {
+      untouched.push(r.id);
+      continue;
+    }
     await db.query(
       `UPDATE tweets SET status = $2, fail_count = $3, first_failed_at = $4, last_checked_at = $5,
               deleted_at = CASE WHEN $2 = 'deleted' AND deleted_at IS NULL THEN $5 ELSE deleted_at END
@@ -243,6 +251,9 @@ export async function recheckTweets(ctx: JobContext): Promise<{ checked: number;
     } else if (event === "restored") {
       log("info", "tweet reappeared after being marked deleted", { tweetId: r.id });
     }
+  }
+  if (untouched.length) {
+    await db.query(`UPDATE tweets SET last_checked_at = $1 WHERE id = ANY($2::text[])`, [now, untouched]);
   }
   return { checked: rows.length, deleted, edited };
 }

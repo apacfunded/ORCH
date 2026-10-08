@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coinfax PFP</title>
+<style>
+:root{--bg:#e9ece4;--ink:#0e1510;--muted:#525e56;color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px 16px;text-align:center}
+img{width:min(100%,420px);height:auto;border-radius:12px;box-shadow:0 8px 24px -12px rgba(0,0,0,.3);-webkit-touch-callout:default}
+p{margin:0;color:var(--muted);font-size:16px;max-width:40ch}
+</style>
+</head>
+<body>
+<img id="out" alt="Coinfax $FAX PFP">
+<p id="msg">Making the PNG…</p>
+<script>
+const img = new Image();
+img.onload = () => {
+  const c = document.createElement('canvas'); c.width = c.height = 1000;
+  c.getContext('2d').drawImage(img, 0, 0, 1000, 1000);
+  document.getElementById('out').src = c.toDataURL('image/png');
+  document.getElementById('msg').textContent = 'Press and hold the picture, then tap "Save to Photos" (iPhone) or "Download image" (Android).';
+};
+img.onerror = () => { document.getElementById('msg').textContent = "Couldn't load the PFP. Refresh to try again."; };
+img.src = '/fax/pfp.svg';
+</script>
+</body>
+</html>

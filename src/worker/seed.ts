@@ -1,3 +1,4 @@
+import { config } from "../config";
 import { one, type Db } from "../db";
 import { createSources } from "../server/context";
 import { DEMO_ACCOUNTS } from "../sources/mock";
@@ -73,10 +74,19 @@ export async function advanceSeed(db: Db, opts: { hours?: number; budgetMs?: num
   }
 
   const runner = new Runner(db, sources);
-  while (Date.now() - simNow > STEP_MS && Date.now() - started < budgetMs) {
-    await runner.cycle();
-    simNow += STEP_MS;
-    await writeSeed(db, { simNow, done: false });
+  // While replaying, re-check each tweet once per simulated hour instead of every 10 minutes: the replay
+  // takes ~6x fewer queries and deletions still confirm (two misses an hour apart).
+  const worker = config().worker;
+  const liveRecheck = worker.recheckEveryMinutes;
+  worker.recheckEveryMinutes = Math.max(liveRecheck, 60);
+  try {
+    while (Date.now() - simNow > STEP_MS && Date.now() - started < budgetMs) {
+      await runner.cycle();
+      simNow += STEP_MS;
+      await writeSeed(db, { simNow, done: false });
+    }
+  } finally {
+    worker.recheckEveryMinutes = liveRecheck;
   }
 
   const done = Date.now() - simNow <= STEP_MS;

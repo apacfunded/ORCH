@@ -89,6 +89,9 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px
 .results button:hover{border-color:var(--ink)}
 .results img,.av{width:32px;height:32px;border-radius:8px;object-fit:cover;flex:none;background:var(--green-soft)}
 .av{display:grid;place-items:center;font-weight:600;color:var(--green-ink);font-size:14px}
+.avw{display:inline-flex;flex:none;line-height:0}
+.av.gen{color:#fff;letter-spacing:.02em;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.avw img{object-fit:cover;background:var(--line-2)}
 .err{color:var(--bad);font-size:14px;margin:0}
 .stat-num{font-size:30px;font-weight:600;line-height:1.1}
 .stat-lbl{font-size:14px;color:var(--muted)}
@@ -485,9 +488,55 @@ async function getJSON(url, opts = {}, ms = 12000){
 // GeckoTerminal allows ~30 calls a minute, so every call waits its turn.
 let gtChain = Promise.resolve();
 function gt(path){ const p = gtChain.then(() => getJSON(GT + path, { headers:{ accept:'application/json' } }, 12000)); gtChain = p.catch(() => {}).then(() => new Promise(r => setTimeout(r, 2200))); return p; }
-function avatar(pair){
-  const img = pair?.info?.imageUrl; const sym = (pair?.baseToken?.symbol || '?').replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase() || '?';
-  return img ? `<img src="${esc(img)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;av&quot;>${sym}</span>'">` : `<span class="av">${sym}</span>`;
+/* coin pictures: try every known image source, then fall back to a generated avatar */
+const imgMap = new Map(); // mint -> [urls]
+function fixImg(u){
+  if(!u || typeof u !== 'string') return null;
+  u = u.trim();
+  if(u.startsWith('ipfs://')) u = 'https://ipfs.io/ipfs/' + u.slice(7).replace(/^ipfs\//,'');
+  if(!/^https?:\/\//.test(u) || /missing|placeholder/i.test(u)) return null;
+  return u;
+}
+function addImg(mint, url, front){
+  url = fixImg(url); if(!mint || !url) return false;
+  const list = imgMap.get(mint) || [];
+  if(list.includes(url)) return false;
+  front ? list.unshift(url) : list.push(url); imgMap.set(mint, list); return true;
+}
+function dsIcon(icon){ if(!icon) return null; return /^https?:/.test(icon) ? icon : `https://cdn.dexscreener.com/cms/images/${icon}?width=128&height=128&fit=crop&quality=95&format=auto`; }
+function candidates(mint, pair){
+  if(pair?.info?.imageUrl) addImg(mint, pair.info.imageUrl, true);
+  const list = (imgMap.get(mint) || []).slice();
+  list.push(`https://dd.dexscreener.com/ds-data/tokens/solana/${mint}.png?size=lg`);
+  return [...new Set(list)];
+}
+function hueOf(str){ let h = 0; for(const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 360; }
+function genAv(mint, sym){
+  const h = hueOf(mint || sym || '?'), h2 = (h + 50) % 360;
+  return `<span class="av gen" style="background:linear-gradient(135deg,hsl(${h} 62% 42%),hsl(${h2} 70% 30%))">${sym}</span>`;
+}
+function symOf(pair){ return (pair?.baseToken?.symbol || '?').replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase() || '?'; }
+function avInner(mint, pair){
+  const c = candidates(mint, pair), sym = symOf(pair);
+  if(!c.length) return genAv(mint, sym);
+  return `<img src="${esc(c[0])}" alt="" loading="lazy" referrerpolicy="no-referrer" data-i="0" onerror="cfAvErr(this)">`;
+}
+function avatar(pair, mintArg){
+  const mint = mintArg || pair?.baseToken?.address || '';
+  return `<span class="avw" data-av="${esc(mint)}" data-sym="${esc(symOf(pair))}">${avInner(mint, pair)}</span>`;
+}
+window.cfAvErr = img => {
+  const w = img.closest('[data-av]'); if(!w) return;
+  const mint = w.dataset.av, c = candidates(mint, pairCache.get(mint));
+  const i = Number(img.dataset.i) + 1;
+  if(i < c.length){ img.dataset.i = i; img.src = c[i]; }
+  else w.innerHTML = genAv(mint, w.dataset.sym);
+};
+// When a new image source turns up (e.g. the coin's on-chain metadata), retry avatars still showing the fallback
+function refreshAvatars(mint){
+  document.querySelectorAll(`[data-av="${CSS.escape(mint)}"]`).forEach(w => {
+    if(w.querySelector('.gen')) w.innerHTML = avInner(mint, pairCache.get(mint));
+  });
 }
 const RISK = { clean:'LOW RISK', risky:'RISKY', high:'HIGH RISK', none:'NO DATA' };
 const STAMP = { clean:'CLEAN TITLE', risky:'RISKY', high:'TOTALED', none:'NO RECORD' };
@@ -513,7 +562,7 @@ async function loadPairs(mints){
 }
 function getRC(mint){
   if(rcCache.has(mint)) return rcCache.get(mint);
-  const p = getJSON(`${RC}/tokens/${mint}/report`, {}, 15000).catch(() => { setTimeout(() => rcCache.delete(mint), 30000); return null; });
+  const p = getJSON(`${RC}/tokens/${mint}/report`, {}, 15000).then(r => { if(r && addImg(mint, r.fileMeta?.image)) refreshAvatars(mint); return r; }).catch(() => { setTimeout(() => rcCache.delete(mint), 30000); return null; });
   rcCache.set(mint, p); return p;
 }
 async function getMintInfo(mint){
@@ -765,7 +814,7 @@ function renderReport(a, quiet){
   $('#reportBody').innerHTML = `
   <article class="paper" style="${quiet ? 'animation:none' : ''}">
     <div class="p-head">
-      ${avatar(p)}
+      ${avatar(p, a.mint)}
       <div style="min-width:0">
         <h3>${esc(name)} <span class="mono" style="font-size:.6em;color:var(--muted)">$${esc(sym)}</span></h3>
         <div class="p-meta"><code>${esc(a.mint)}</code><span>Pulled ${new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</span></div>
@@ -909,7 +958,7 @@ function renderBoard(){
     const a = r.a, p = r.pair || {};
     return `<tr data-run="${esc(a.mint)}" tabindex="0">
       <td class="rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
-      <td><div class="coin-cell">${avatar(p)}<span><strong>${esc(p.baseToken?.name || short(a.mint))}</strong> <span class="mono" style="color:var(--muted);font-size:13px">$${esc(p.baseToken?.symbol || '')}</span></span></div></td>
+      <td><div class="coin-cell">${avatar(p, a.mint)}<span><strong>${esc(p.baseToken?.name || short(a.mint))}</strong> <span class="mono" style="color:var(--muted);font-size:13px">$${esc(p.baseToken?.symbol || '')}</span></span></div></td>
       <td><span class="bar"><i style="width:${a.score}%;background:${col(a.grade)}"></i></span><strong class="tab">${a.score}</strong></td>
       <td><span class="chip ${a.grade}">${RISK[a.grade]}</span></td>
       <td class="num">${a.bundledPct == null ? '–' : a.bundledPct.toFixed(1) + '%'}</td>
@@ -986,6 +1035,7 @@ async function loadLot(){
     getJSON(`${DS}/token-boosts/latest/v1`).catch(() => []),
     getJSON(`${DS}/token-profiles/latest/v1`).catch(() => [])
   ]);
+  for(const x of [...(top || []), ...(latestBoost || []), ...(profiles || [])]) if(x.chainId === 'solana') addImg(x.tokenAddress, dsIcon(x.icon));
   const popMints = [...new Set([...sol(top), ...sol(latestBoost)])].slice(0, 30);
   const freshMints = [...new Set(sol(profiles))].filter(m => !popMints.includes(m)).slice(0, 30);
   const [pop, fresh] = await Promise.all([loadPairs(popMints), loadPairs(freshMints)]);

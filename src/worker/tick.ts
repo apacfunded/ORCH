@@ -13,7 +13,8 @@ import { advanceSeed } from "./seed";
  */
 export async function runTick(db: Db, budgetMs = 45_000): Promise<Record<string, unknown>> {
   const owner = randomUUID();
-  const leaseMs = budgetMs + 30_000;
+  // Generous lease: a single slow cycle can run past the budget, and two overlapping ticks would double-process.
+  const leaseMs = budgetMs + 5 * 60_000;
   const got = await one<{ key: string }>(
     db,
     `INSERT INTO worker_state (key, value, updated_at)

@@ -35,7 +35,9 @@ async function readSeed(db: Db): Promise<SeedState | null> {
 async function writeSeed(db: Db, s: SeedState): Promise<void> {
   await db.query(
     `INSERT INTO worker_state (key, value, updated_at) VALUES ('seed', $1::jsonb, now())
-     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`,
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
+       WHERE (worker_state.value->>'done')::boolean IS NOT TRUE
+         AND (worker_state.value->>'simNow')::bigint <= (EXCLUDED.value->>'simNow')::bigint`,
     [JSON.stringify(s)],
   );
 }

@@ -263,6 +263,9 @@ details[open] summary::after{transform:rotate(45deg)}
 details p{margin:0 0 16px;color:var(--muted)}
 footer{padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+.x-link svg{flex:none}
+.x-link.soon{opacity:.6;cursor:default}
+@media (max-width:420px){.hide-xs{display:none}}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -295,6 +298,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
       <a href="#lot" class="hide-sm">Coins</a>
       <a href="#rankings" class="hide-sm">Rankings</a>
       <a href="#how" class="hide-sm">How scoring works</a>
+      <a class="btn btn-ghost x-link" href="#token" target="_blank" rel="noopener" aria-label="Coinfax on X"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.3-8.3L1 2h6.3l4.3 5.7L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg><span class="x-label hide-xs">Follow</span></a>
       <a class="btn btn-primary" href="#token">Get $FAX</a>
     </div>
   </div>
@@ -426,7 +430,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
           <div><small>Creator fees</small><strong>Buyback &amp; burn</strong></div>
           <div><small>Reports</small><strong>Free</strong></div>
         </div>
-        <div class="ca"><code id="ca">Contract address drops at launch</code><button class="btn btn-ghost" id="copyCa" type="button">Copy CA</button><a class="btn btn-primary" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a></div>
+        <div class="ca"><code id="ca">Contract address drops at launch</code><button class="btn btn-ghost" id="copyCa" type="button">Copy CA</button><a class="btn btn-primary" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a><a class="btn btn-ghost x-link" href="#token" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.3-8.3L1 2h6.3l4.3 5.7L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg><span class="x-label">Follow on X</span></a></div>
       </div>
     </div>
   </div>
@@ -446,12 +450,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
   </div>
 </section>
 
-<footer><div class="wrap"><span>Coinfax ($FAX) · Not financial advice · Data from RugCheck, DexScreener, GeckoTerminal, trench.bot and Solana RPC</span><a href="/">orch.lol</a></div></footer>
+<footer><div class="wrap"><span>Coinfax ($FAX) · Not financial advice · Data from RugCheck, DexScreener, GeckoTerminal, trench.bot and Solana RPC</span><span style="display:flex;gap:16px"><a class="x-link" href="#token" target="_blank" rel="noopener"><span class="x-label">Follow on X</span></a><a href="/">orch.lol</a></span></div></footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (() => {
+/* Put the Coinfax X (Twitter) link here and every X button on the page uses it */
+const X_URL = '';
+
 const DS = 'https://api.dexscreener.com';
 const RC = 'https://api.rugcheck.xyz/v1';
 const GT = 'https://api.geckoterminal.com/api/v2';
@@ -1054,6 +1061,12 @@ async function loadLot(){
 }
 
 /* ---------- boot ---------- */
+document.querySelectorAll('.x-link').forEach(a => {
+  if(X_URL){ a.href = X_URL; return; }
+  a.classList.add('soon'); a.removeAttribute('target'); a.href = '#token';
+  const l = a.querySelector('.x-label'); if(l && !l.classList.contains('hide-xs')) l.textContent = 'X coming soon';
+  a.addEventListener('click', e => { e.preventDefault(); toast('Our X account goes live at launch'); });
+});
 $('#copyCa').onclick = () => { const t = $('#ca').textContent.trim(); if(BASE58.test(t)) copy(t); else toast('The contract address drops at launch'); };
 loadLot();
 const h = decodeURIComponent(location.hash.slice(1));

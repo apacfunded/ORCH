@@ -187,7 +187,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     <a class="hide-sm" href="#how">How it works</a>
     <a class="hide-sm" href="#token">Token</a>
     <a class="hide-sm" href="#faq">FAQ</a>
-    <a class="btn btn-primary" href="#token">Buy $SEED</a>
+    <a class="btn btn-primary" href="https://pump.fun/coin/2qqNwwHgXMX35ARznfqeXwmpjpxfNBV2LWN5ZYQnpump" target="_blank" rel="noopener">Buy $SEED</a>
   </div>
 </div></nav>
 
@@ -249,7 +249,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
         <div><small>Launch</small><strong>pump.fun</strong></div>
         <div><small>Free searches</small><strong>3 / day</strong></div>
       </div>
-      <div class="ca"><code id="ca">CA posted at launch</code><button class="btn btn-ghost" id="copyca" type="button">Copy CA</button></div>
+      <div class="ca"><code id="ca">2qqNwwHgXMX35ARznfqeXwmpjpxfNBV2LWN5ZYQnpump</code><button class="btn btn-ghost" id="copyca" type="button">Copy CA</button><a class="btn btn-primary" href="https://pump.fun/coin/2qqNwwHgXMX35ARznfqeXwmpjpxfNBV2LWN5ZYQnpump" target="_blank" rel="noopener">Buy on pump.fun</a></div>
     </div>
   </div>
 </div></section>
@@ -411,7 +411,7 @@ function search(q){
 }
 document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();const q=document.getElementById('q').value.trim();if(q)search(q);else document.getElementById('q').focus()});
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.getElementById('q').value=c.textContent;search(c.textContent)});
-document.getElementById('copyca').onclick=()=>toast('CA goes live with the coin');
+document.getElementById('copyca').onclick=async()=>{try{await navigator.clipboard.writeText(document.getElementById('ca').textContent);toast('CA copied')}catch{toast('Select the CA to copy it')}};
 
 const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,1800)}

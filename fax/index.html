@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#e9ece4">
-<meta name="description" content="Coinfax ($FAX): paste any Solana or pump.fun coin and get a free history report. Dev wallet, holders, crashes and red flags in one page.">
+<meta name="description" content="Coinfax ($FAX): free risk reports for any Solana or pump.fun coin. Scored out of 100 with bundlers, snipers, dev wallet, holders and crashes.">
 <link rel="icon" type="image/png" href="/fax/pfp.png">
 <link rel="apple-touch-icon" href="/fax/pfp.png">
 <meta property="og:title" content="Coinfax · Show me the Coinfax">
-<meta property="og:description" content="Free history reports for any Solana coin. Pull the Coinfax before you ape.">
+<meta property="og:description" content="Every coin scored out of 100. Bundlers, snipers, dev wallet and crashes in one free report.">
 <meta property="og:image" content="https://orch.lol/fax/pfp.png">
 <meta name="twitter:card" content="summary">
 <title>Coinfax</title>
@@ -16,11 +16,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Bento board: hero bento (search tile + fax machine tile + live stat tiles), then the printed report, then live coin lots. Single light "thermal paper" look. */
+/* Bento board: hero bento (search + fax machine + live stat tiles), printed report, coin lots with score rings, ranked leaderboard. Single light "thermal paper" look. */
 :root{
-  --bg:#e9ece4; --surface:#fbfcf8; --sheet:#ffffff; --ink:#0e1510; --muted:#525e56; --line:#d3d9cc;
+  --bg:#e9ece4; --surface:#fbfcf8; --sheet:#ffffff; --ink:#0e1510; --muted:#525e56; --line:#d3d9cc; --line-2:#e3e8dc;
   --green:#12a150; --green-ink:#0b7a3b; --green-hi:#5dff9a; --green-soft:#ddf3e4;
-  --ok:#0b7a3b; --ok-soft:#ddf3e4; --warn:#9a5c00; --warn-soft:#fbecd2; --bad:#c22626; --bad-soft:#fadcdc;
+  --ok:#0b7a3b; --ok-soft:#ddf3e4; --warn:#9a5c00; --warn-ring:#e0a020; --warn-soft:#fbecd2; --bad:#c22626; --bad-soft:#fadcdc;
   --machine:#1a221c; --machine-2:#2a352d;
   --display:"Familjen Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -34,48 +34,44 @@ img{max-width:100%}
 [hidden]{display:none!important}
 a{color:var(--green-ink)}
 button{font:inherit;color:inherit}
-.wrap{max-width:1120px;margin:0 auto;padding-inline:16px}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:16px}
 .mono{font-family:var(--mono)}
 .tab{font-variant-numeric:tabular-nums}
 h1,h2,h3{font-weight:600;text-wrap:balance;margin:0;letter-spacing:-.01em}
 :focus-visible{outline:3px solid var(--green);outline-offset:2px;border-radius:6px}
 
-/* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;transition:transform .15s ease,background .15s ease,border-color .15s ease}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;transition:transform .15s ease,background .15s ease,border-color .15s ease;white-space:nowrap}
 .btn:active{transform:translateY(1px)}
 .btn-primary{background:var(--ink);color:#fff}
 .btn-primary:hover{background:var(--green-ink)}
 .btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
 .btn-ghost:hover{border-color:var(--ink)}
-.btn[disabled]{opacity:.55;cursor:not-allowed}
 
-/* nav */
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.2);border-bottom:1px solid var(--line)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 94%,transparent);border-bottom:1px solid var(--line)}
 nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-weight:600;font-size:19px}
 .brand img{width:34px;height:34px;border-radius:9px}
 .brand small{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:400}
-.nav-links{display:flex;gap:4px;align-items:center}
+.nav-links{display:flex;gap:2px;align-items:center}
 .nav-links a{color:var(--ink);text-decoration:none;font-size:15px;padding:10px 12px;border-radius:8px}
 .nav-links a:hover{background:var(--surface)}
-@media (max-width:760px){.nav-links a.hide-sm{display:none}}
+@media (max-width:820px){.nav-links a.hide-sm{display:none}}
 
-/* ticker */
-.ticker{background:var(--ink);color:#e8efe9;overflow:hidden;border-bottom:1px solid #000}
-.ticker-track{display:flex;gap:28px;white-space:nowrap;padding:8px 0;font-family:var(--mono);font-size:13px;width:max-content;animation:tick 60s linear infinite}
+.ticker{background:var(--ink);color:#e8efe9;overflow:hidden}
+.ticker-track{display:flex;gap:28px;white-space:nowrap;padding:8px 0;font-family:var(--mono);font-size:13px;width:max-content;animation:tick 70s linear infinite}
 .ticker:hover .ticker-track{animation-play-state:paused}
 .ticker button{background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit}
 .ticker button:hover{color:var(--green-hi)}
+.ticker .sc{display:inline-block;min-width:26px;text-align:center;border-radius:5px;padding:0 4px;margin-left:6px;color:#0e1510}
 .up{color:var(--ok)} .down{color:var(--bad)}
 .ticker .up{color:var(--green-hi)} .ticker .down{color:#ff8a8a}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* hero bento */
 .hero{padding-block:24px 8px}
 .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
 .t-search{grid-column:span 7;grid-row:span 2;display:flex;flex-direction:column;gap:16px;padding:28px}
-.t-fax{grid-column:span 5;grid-row:span 2;background:linear-gradient(180deg,#dfe5d8,#d2dacb);display:flex;align-items:flex-end;justify-content:center;padding:16px 16px 0;overflow:hidden;position:relative}
+.t-fax{grid-column:span 5;grid-row:span 2;background:linear-gradient(180deg,#dfe5d8,#d2dacb);display:flex;align-items:flex-end;justify-content:center;padding:16px 16px 0;overflow:hidden}
 .t-stat{grid-column:span 3;display:flex;flex-direction:column;gap:2px}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hero h1{font-size:clamp(34px,5.4vw,58px);line-height:1.02}
@@ -84,7 +80,7 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px
 .search{display:flex;gap:8px;flex-wrap:wrap}
 .search label{width:100%;font-size:14px;font-weight:600}
 .search input{flex:1 1 260px;min-width:0;min-height:52px;border:1.5px solid var(--ink);border-radius:10px;padding:0 14px;font-family:var(--mono);font-size:15px;background:var(--sheet);color:var(--ink)}
-.search input::placeholder{color:#8a948c}
+.search input::placeholder{color:#7c877f}
 .search .btn{min-height:52px;padding:0 22px}
 .hint{font-size:14px;color:var(--muted);margin:0}
 .hint button{background:none;border:0;padding:0;color:var(--green-ink);text-decoration:underline;cursor:pointer;font-size:14px}
@@ -103,7 +99,7 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px
 .sheet{position:absolute;inset:0;background:var(--sheet);border-radius:4px 4px 0 0;box-shadow:0 0 0 1px #cfd5c8;padding:14px 14px 0;transform:translateY(100%);animation:print 7s steps(28,end) infinite}
 .sheet b{display:block;font-size:14px;font-weight:600;letter-spacing:.04em}
 .sheet .mini{font-family:var(--mono);font-size:12px;color:#3d4840;display:flex;justify-content:space-between;border-bottom:1px dotted #b9c1b3;padding:3px 0}
-.mini-stamp{position:absolute;right:10px;bottom:16px;border:3px solid var(--green-ink);color:var(--green-ink);font-weight:600;font-size:14px;padding:2px 8px;border-radius:6px;transform:rotate(-12deg) scale(2.4);opacity:0;animation:stampLoop 7s ease-out infinite;background:rgba(255,255,255,.85)}
+.mini-stamp{position:absolute;right:10px;bottom:16px;border:3px solid var(--green-ink);color:var(--green-ink);font-weight:600;font-size:14px;padding:2px 8px;border-radius:6px;transform:rotate(-12deg) scale(2.4);opacity:0;animation:stampLoop 7s ease-out infinite;background:rgba(255,255,255,.88)}
 .machine{position:absolute;left:0;right:0;bottom:0;height:132px;background:linear-gradient(180deg,var(--machine-2),var(--machine));border-radius:18px 18px 0 0;box-shadow:inset 0 2px 0 rgba(255,255,255,.08)}
 .slot{position:absolute;left:12%;right:12%;top:10px;height:10px;border-radius:6px;background:#050806;box-shadow:inset 0 2px 3px #000}
 .panel{position:absolute;left:16px;right:16px;top:32px;bottom:14px;display:grid;grid-template-columns:1.3fr 1fr;gap:12px;align-items:center}
@@ -111,19 +107,22 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px
 .lcd .led{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:middle}
 .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .keys i{display:block;height:12px;border-radius:3px;background:#3c4a40;box-shadow:0 2px 0 #0b100c}
-.fax.busy .sheet{animation-duration:2.2s}
-.fax.busy .mini-stamp{animation-duration:2.2s}
+.fax.busy .sheet,.fax.busy .mini-stamp{animation-duration:2.2s}
 .fax.busy .lcd .led{animation:blink .4s steps(2) infinite;background:#ffcf3d}
 @keyframes print{0%{transform:translateY(100%)}55%{transform:translateY(0)}92%{transform:translateY(0);opacity:1}100%{transform:translateY(0);opacity:0}}
 @keyframes stampLoop{0%,58%{opacity:0;transform:rotate(-12deg) scale(2.4)}64%{opacity:1;transform:rotate(-12deg) scale(1)}92%{opacity:1;transform:rotate(-12deg) scale(1)}100%{opacity:0}}
 @keyframes blink{50%{opacity:.2}}
 
-/* sections */
 section{padding-block:36px}
 .sec-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .sec-head h2{font-size:clamp(26px,3.4vw,36px)}
-.sec-head p{margin:4px 0 0;color:var(--muted);max-width:60ch}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.sec-head p{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;flex-wrap:wrap}
+.seg button{border:0;background:none;min-height:40px;padding:0 14px;border-radius:9px;font-weight:600;font-size:15px;cursor:pointer;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--ink);color:#fff}
+.seg button .count{font-family:var(--mono);font-size:12px;font-weight:400;opacity:.8;margin-left:4px}
+.refresh{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
 /* report paper */
 #report{scroll-margin-top:72px}
@@ -137,72 +136,109 @@ section{padding-block:36px}
 .p-meta code{overflow-wrap:anywhere}
 .stamp{justify-self:end;border:4px solid currentColor;border-radius:10px;padding:6px 14px;font-weight:600;font-size:20px;letter-spacing:.04em;text-align:center;line-height:1.1;transform:rotate(-8deg);animation:slam .5s cubic-bezier(.3,1.6,.5,1) both;animation-delay:1.1s}
 .stamp small{display:block;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:0}
-.g-clean{color:var(--ok)} .g-salvage{color:var(--warn)} .g-totaled{color:var(--bad)} .g-none{color:var(--muted)}
+.g-clean{color:var(--ok)} .g-risky{color:var(--warn)} .g-high{color:var(--bad)} .g-none{color:var(--muted)}
 @keyframes slam{0%{opacity:0;transform:rotate(-8deg) scale(2.6)}100%{opacity:1;transform:rotate(-8deg) scale(1)}}
-.p-score{display:flex;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.meter{flex:1 1 220px;height:12px;border-radius:99px;background:linear-gradient(90deg,var(--bad),#e0a020 50%,var(--green));position:relative}
-.meter i{position:absolute;top:50%;width:20px;height:20px;border-radius:50%;background:var(--sheet);border:3px solid var(--ink);transform:translate(-50%,-50%);left:0;transition:left 1.2s cubic-bezier(.2,.8,.2,1) .6s}
-.p-score strong{font-size:28px}
-.p-note{font-size:14px;color:var(--muted);padding:10px 24px;border-bottom:1px solid var(--line);margin:0;background:var(--warn-soft)}
+.p-score{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.p-score .bigring{width:108px;height:108px}
+.p-score .bigring span{font-size:34px}
+.p-score h4{margin:0 0 4px;font-size:20px;font-weight:600}
+.p-score p{margin:0 0 10px;color:var(--muted);font-size:15px;max-width:60ch}
+.meter{height:10px;border-radius:99px;background:linear-gradient(90deg,var(--bad),var(--warn-ring) 50%,var(--green));position:relative;max-width:520px}
+.meter i{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--sheet);border:3px solid var(--ink);transform:translate(-50%,-50%);left:0;transition:left 1.2s cubic-bezier(.2,.8,.2,1) .6s}
+.meter-scale{display:flex;justify-content:space-between;max-width:520px;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px}
+.p-note{font-size:14px;color:var(--ink);padding:10px 24px;border-bottom:1px solid var(--line);margin:0;background:var(--warn-soft)}
 .p-grid{display:grid;grid-template-columns:1fr 1fr}
 .p-sec{padding:20px 24px;border-bottom:1px solid var(--line);min-width:0}
 .p-sec:nth-child(odd){border-right:1px solid var(--line)}
-.p-sec h4{margin:0 0 10px;font-size:14px;font-family:var(--mono);font-weight:500;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.p-sec h4{margin:0 0 10px;font-size:13px;font-family:var(--mono);font-weight:500;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.p-sec.wide{grid-column:1/-1;border-right:0}
 .row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:7px 0;font-size:15px;opacity:0;animation:rowIn .35s ease-out forwards}
 .row .lead{border-bottom:1.5px dotted #b7bfb1;transform:translateY(-4px)}
 .row .val{font-family:var(--mono);font-size:14px;text-align:right;overflow-wrap:anywhere}
 .row .val.ok{color:var(--ok)} .row .val.warn{color:var(--warn)} .row .val.bad{color:var(--bad)} .row .val.na{color:var(--muted)}
-.row .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle;background:var(--muted)}
-.dot.ok{background:var(--ok)} .dot.warn{background:#e0a020} .dot.bad{background:var(--bad)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle;background:#9aa49c}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn-ring)} .dot.bad{background:var(--bad)}
 .row small{grid-column:1/-1;color:var(--muted);font-size:13px;margin-top:-4px}
 @keyframes rowIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.breakdown{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px}
+.breakdown div{display:flex;justify-content:space-between;gap:10px;font-size:15px;border-bottom:1px dotted #c7cec1;padding:6px 0;opacity:0;animation:rowIn .35s ease-out forwards}
+.breakdown b{font-family:var(--mono);font-weight:500;color:var(--bad);white-space:nowrap}
 .p-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:16px 24px}
 .p-foot p{margin:0;font-size:13px;color:var(--muted);max-width:60ch}
 .p-actions{display:flex;flex-wrap:wrap;gap:8px}
 .loading-paper{padding:40px 24px;text-align:center;color:var(--muted);font-family:var(--mono)}
-@media (max-width:720px){.p-grid{grid-template-columns:1fr}.p-sec:nth-child(odd){border-right:0}.p-head{grid-template-columns:auto 1fr}.stamp{grid-column:1/-1;justify-self:start;margin-top:6px}}
+@media (max-width:720px){.p-grid{grid-template-columns:1fr}.p-sec:nth-child(odd){border-right:0}.p-head{grid-template-columns:auto 1fr}.stamp{grid-column:1/-1;justify-self:start;margin-top:6px}.p-score{grid-template-columns:1fr}}
+
+/* score ring */
+@property --v{syntax:'<number>';inherits:false;initial-value:0}
+.ring{--v:0;--c:var(--line);position:relative;width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--v) * 1%),var(--line-2) 0);display:grid;place-items:center;flex:none;transition:--v .8s}
+.ring::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--sheet)}
+.ring span{position:relative;font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;line-height:1}
+.ring.clean{--c:var(--green)} .ring.risky{--c:var(--warn-ring)} .ring.high{--c:var(--bad)}
+.ring.pending{background:conic-gradient(var(--muted) 25%,var(--line-2) 0);animation:spin 1s linear infinite}
+.ring.pending span{animation:spin 1s linear infinite reverse;font-size:14px;color:var(--muted)}
+.ring.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
 
 /* coin cards */
-.lot{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.car{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:12px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;animation:cardIn .4s ease-out both;min-width:0}
+.lot{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.car{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:12px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;animation:cardIn .4s ease-out both;min-width:0;position:relative}
 .car:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#b9c2b2}
-@keyframes cardIn{from{opacity:.0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.car.is-high{border-color:#e9b5b5}
+.car.fresh-in{animation:freshIn 1.2s ease-out both}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes freshIn{0%{opacity:0;transform:translateY(-10px);box-shadow:0 0 0 3px var(--green)}60%{box-shadow:0 0 0 3px var(--green)}100%{opacity:1;transform:none;box-shadow:none}}
 .car-top{display:flex;gap:10px;align-items:center;min-width:0}
 .car-top img,.car-top .av{width:44px;height:44px;border-radius:10px}
 .car-name{min-width:0;flex:1}
 .car-name strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
 .car-name span{font-family:var(--mono);font-size:12px;color:var(--muted)}
-.badge{font-family:var(--mono);font-size:12px;font-weight:500;padding:4px 8px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
-.badge.pending{background:var(--bg);color:var(--muted)}
-.badge.pending::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted);margin-right:6px;animation:blink .8s steps(2) infinite}
-.badge.clean{background:var(--ok-soft);color:var(--ok)}
-.badge.salvage{background:var(--warn-soft);color:var(--warn)}
-.badge.totaled{background:var(--bad-soft);color:var(--bad)}
-.badge.none{background:var(--bg);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;font-weight:500;padding:4px 8px;border-radius:99px;white-space:nowrap;background:var(--bg);color:var(--muted)}
+.chip.clean,.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.risky,.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.high,.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.new{background:var(--ink);color:var(--green-hi)}
 .car dl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0}
 .car dl div{background:var(--bg);border-radius:8px;padding:6px 8px;min-width:0}
 .car dt{font-size:12px;color:var(--muted)}
 .car dd{margin:0;font-family:var(--mono);font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .car .btn{width:100%}
-.skel{height:180px;border-radius:var(--r);background:linear-gradient(90deg,var(--surface),#f1f3ec,var(--surface));background-size:200% 100%;animation:sh 1.2s linear infinite;border:1px solid var(--line)}
+.skel{height:220px;border-radius:var(--r);background:linear-gradient(90deg,var(--surface),#f1f3ec,var(--surface));background-size:200% 100%;animation:sh 1.2s linear infinite;border:1px solid var(--line)}
 @keyframes sh{to{background-position:-200% 0}}
-.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;color:var(--muted)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;color:var(--muted);grid-column:1/-1}
 .empty strong{display:block;color:var(--ink);font-size:18px;margin-bottom:4px}
 .live{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--ok)}
-.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(18,161,80,.5);animation:pulse 1.6s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(18,161,80,0)}100%{box-shadow:0 0 0 0 rgba(18,161,80,0)}}
+.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(18,161,80,.5)}70%{box-shadow:0 0 0 8px rgba(18,161,80,0)}100%{box-shadow:0 0 0 0 rgba(18,161,80,0)}}
 
-/* how it works */
+/* rankings */
+.board{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.board-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-2);font-size:15px;white-space:nowrap}
+th{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:#f1f4ec}
+tbody tr{animation:rowIn .3s ease-out both}
+.rank{font-family:var(--mono);font-weight:500;color:var(--muted);width:44px}
+.rank.top{color:var(--ink)}
+.coin-cell{display:flex;align-items:center;gap:10px}
+.coin-cell img,.coin-cell .av{width:28px;height:28px;border-radius:7px;font-size:12px}
+.bar{width:120px;height:8px;border-radius:99px;background:var(--line-2);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .8s}
+
+/* how / token / faq */
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .how .tile h3{font-size:19px;margin-bottom:6px}
 .how .tile p{margin:0;color:var(--muted);font-size:15px}
 .how .tile .eyebrow{display:block;margin-bottom:8px}
-.how .wide{grid-column:span 2}
-.grades{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.grades div{display:flex;gap:10px;align-items:baseline;font-size:15px}
-.grades .badge{flex:none}
-
-/* token */
+.how .wide{grid-column:span 3}
+.grades{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.grades div{display:flex;flex-direction:column;gap:6px;font-size:15px;color:var(--muted)}
+.grades .chip{align-self:flex-start;font-size:13px}
 .token{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;background:var(--machine);color:#e8efe9;border-radius:20px;padding:28px}
 .token img{width:160px;height:160px;border-radius:24px}
 .token h2{font-size:clamp(28px,4vw,40px)}
@@ -215,8 +251,6 @@ section{padding-block:36px}
 .ca code{background:#0b100c;border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:14px;color:var(--green-hi);flex:1 1 240px;min-width:0;overflow-wrap:anywhere}
 .ca .btn-ghost{background:#243028;border-color:#3a4a3f;color:#e8efe9}
 .demo-tag{display:inline-block;font-family:var(--mono);font-size:12px;background:#3a2f12;color:#ffd77a;border-radius:6px;padding:3px 8px;margin-bottom:10px}
-
-/* faq */
 .faq{display:grid;gap:8px;max-width:820px}
 details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 18px}
 summary{cursor:pointer;font-weight:600;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}
@@ -226,7 +260,6 @@ details[open] summary::after{transform:rotate(45deg)}
 details p{margin:0 0 16px;color:var(--muted)}
 footer{padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
-
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -235,12 +268,13 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
   .t-fax{grid-column:span 12;grid-row:auto;min-height:320px}
   .t-stat{grid-column:span 6}
   .how{grid-template-columns:1fr}.how .wide{grid-column:auto}
+  .grades{grid-template-columns:1fr}
 }
 @media (max-width:560px){
   .t-search{padding:20px}
   .token{grid-template-columns:1fr;padding:20px}.token img{width:110px;height:110px}
-  .token .facts{grid-template-columns:1fr 1fr 1fr}
   .stat-num{font-size:24px}
+  .seg{width:100%}.seg button{flex:1;padding:0 8px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -253,30 +287,30 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Coinfax home"><img src="/fax/pfp.svg" alt="" width="34" height="34">Coinfax <small>$FAX</small></a>
+    <a class="brand" href="#top" aria-label="Coinfax home"><img src="/fax/pfp.png" alt="" width="34" height="34">Coinfax <small>$FAX</small></a>
     <div class="nav-links">
-      <a href="#lot" class="hide-sm">The lot</a>
-      <a href="#lemons" class="hide-sm">Lemon Lot</a>
-      <a href="#how" class="hide-sm">How it works</a>
+      <a href="#lot" class="hide-sm">Coins</a>
+      <a href="#rankings" class="hide-sm">Rankings</a>
+      <a href="#how" class="hide-sm">How scoring works</a>
       <a class="btn btn-primary" href="#token">Get $FAX</a>
     </div>
   </div>
 </nav>
 
-<div class="ticker" aria-label="Popular coins right now">
+<div class="ticker" aria-label="Popular coins and their scores">
   <div class="ticker-track" id="ticker"><span>Loading the lot…</span></div>
 </div>
 
 <header class="hero" id="top">
   <div class="wrap bento">
     <div class="tile t-search">
-      <span class="eyebrow">History reports for Solana coins · Free</span>
+      <span class="eyebrow">Risk reports for Solana coins · Free</span>
       <h1>Pull the Coinfax <em>before you ape.</em></h1>
-      <p class="lede">Paste a contract address or search a name. You get one page with the dev wallet, holders, crashes and red flags, graded like a used car.</p>
+      <p class="lede">Every coin gets a score out of 100. See bundlers, snipers, the dev wallet, top holders and every crash on one page.</p>
       <form class="search" id="searchForm" autocomplete="off">
         <label for="q">Contract address or coin name</label>
-        <input id="q" name="q" type="text" inputmode="text" placeholder="Paste a CA, e.g. …pump" spellcheck="false">
-        <button class="btn btn-primary" type="submit" id="runBtn">Run Coinfax</button>
+        <input id="q" name="q" type="text" placeholder="Paste a CA, e.g. …pump" spellcheck="false">
+        <button class="btn btn-primary" type="submit">Run Coinfax</button>
       </form>
       <p class="err" id="searchErr" hidden></p>
       <div class="results" id="results" hidden></div>
@@ -288,11 +322,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
         <div class="sheet-wrap">
           <div class="sheet">
             <b>COIN REPORT</b>
-            <div class="mini"><span>DEV RUGS</span><span>0</span></div>
-            <div class="mini"><span>BUNDLES</span><span>LOW</span></div>
-            <div class="mini"><span>MINT</span><span>REVOKED</span></div>
+            <div class="mini"><span>SCORE</span><span>84/100</span></div>
+            <div class="mini"><span>BUNDLED</span><span>0%</span></div>
+            <div class="mini"><span>SNIPERS</span><span>2</span></div>
             <div class="mini"><span>TOP 10</span><span>14%</span></div>
-            <div class="mini"><span>CRASHES</span><span>NONE</span></div>
+            <div class="mini"><span>MINT</span><span>REVOKED</span></div>
             <div class="mini-stamp" id="miniStamp">CLEAN TITLE</div>
           </div>
         </div>
@@ -306,10 +340,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
       </div>
     </div>
 
-    <div class="tile t-stat"><span class="stat-num tab" id="sLot">–</span><span class="stat-lbl">Coins on the lot</span></div>
-    <div class="tile t-stat"><span class="stat-num tab" id="sClean" style="color:var(--ok)">–</span><span class="stat-lbl">Clean titles</span></div>
-    <div class="tile t-stat"><span class="stat-num tab" id="sLemon" style="color:var(--bad)">–</span><span class="stat-lbl">Lemons spotted</span></div>
-    <div class="tile t-stat"><span class="stat-num tab" id="sMine">0</span><span class="stat-lbl">Reports you pulled</span></div>
+    <div class="tile t-stat"><span class="stat-num tab" id="sScored">0</span><span class="stat-lbl">Coins scored</span></div>
+    <div class="tile t-stat"><span class="stat-num tab" id="sClean" style="color:var(--ok)">0</span><span class="stat-lbl">Low risk</span></div>
+    <div class="tile t-stat"><span class="stat-num tab" id="sHigh" style="color:var(--bad)">0</span><span class="stat-lbl">High risk</span></div>
+    <div class="tile t-stat"><span class="stat-num tab" id="sBundled" style="color:var(--warn)">0</span><span class="stat-lbl">Bundled launches</span></div>
   </div>
 </header>
 
@@ -323,37 +357,53 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 <section id="lot">
   <div class="wrap">
     <div class="sec-head">
-      <div><span class="live">Live from DexScreener</span><h2>The lot</h2><p>Coins people are looking at right now. Each one gets faxed automatically. Tap any coin for its full report.</p></div>
-      <div class="tabs" role="tablist">
-        <button class="btn btn-primary" role="tab" aria-selected="true" data-tab="popular" id="tabPopular">Popular</button>
-        <button class="btn btn-ghost" role="tab" aria-selected="false" data-tab="fresh" id="tabFresh">Fresh &amp; random</button>
+      <div><span class="live" id="liveLbl">Live</span><h2>Coins on the lot</h2><p>Every coin here is scored automatically as it loads. Tap one for the full report.</p></div>
+      <div class="tabs">
+        <div class="seg" role="tablist" aria-label="Coin lists">
+          <button role="tab" aria-selected="true" data-tab="new" id="tab-new">New pairs<span class="count" id="cNew"></span></button>
+          <button role="tab" aria-selected="false" data-tab="popular" id="tab-popular">Popular<span class="count" id="cPop"></span></button>
+          <button role="tab" aria-selected="false" data-tab="fresh" id="tab-fresh">Random<span class="count" id="cFresh"></span></button>
+        </div>
         <button class="btn btn-ghost" type="button" id="shuffleBtn" hidden>Shuffle</button>
       </div>
     </div>
+    <p class="refresh" id="refreshLbl"></p>
     <div class="lot" id="lotGrid"></div>
   </div>
 </section>
 
-<section id="lemons">
+<section id="rankings">
   <div class="wrap">
-    <div class="sec-head"><div><h2>The Lemon Lot</h2><p>Coins on the lot that came back TOTALED or crashed more than 60% in a day. Check here before you buy the dip.</p></div></div>
-    <div class="lot" id="lemonGrid"><div class="empty"><strong>No lemons yet</strong>Reports are still coming in. Totaled coins land here as soon as they are faxed.</div></div>
+    <div class="sec-head">
+      <div><h2>Rankings</h2><p>Every coin Coinfax has scored this visit, ranked out of 100. Updates live as new reports come in.</p></div>
+      <div class="seg" role="tablist" aria-label="Ranking order">
+        <button role="tab" aria-selected="true" data-rank="safe">Safest first</button>
+        <button role="tab" aria-selected="false" data-rank="risky">Riskiest first</button>
+        <button role="tab" aria-selected="false" data-rank="bundled">Most bundled</button>
+      </div>
+    </div>
+    <div class="board"><div class="board-scroll"><table>
+      <thead><tr><th>#</th><th>Coin</th><th>Score</th><th>Risk</th><th class="num">Bundled</th><th class="num">Top 10</th><th class="num">Mkt cap</th><th class="num">Age</th></tr></thead>
+      <tbody id="rankBody"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">Scores appear here as coins are faxed.</td></tr></tbody>
+    </table></div></div>
   </div>
 </section>
 
 <section id="how">
   <div class="wrap">
-    <div class="sec-head"><div><h2>What's on a Coinfax</h2><p>Same idea as a used car history report. Every line is pulled live the moment you ask.</p></div></div>
+    <div class="sec-head"><div><h2>How the score works</h2><p>Every coin starts at 100. Each red flag takes points off, and the report shows exactly where every point went.</p></div></div>
     <div class="how">
-      <div class="tile"><span class="eyebrow">Title status</span><h3>Can the dev still touch it?</h3><p>Mint and freeze authority, editable metadata, and whether liquidity is locked or still on the pump.fun curve.</p></div>
-      <div class="tile"><span class="eyebrow">Ownership</span><h3>Who really holds it</h3><p>Top 10 share with pools removed, the biggest single wallet, flagged insider wallets, and how much the dev still holds.</p></div>
-      <div class="tile"><span class="eyebrow">Accident history</span><h3>Every crash, by window</h3><p>Price moves over 5 minutes, 1 hour, 6 hours and 24 hours, with big dumps marked as accidents.</p></div>
-      <div class="tile"><span class="eyebrow">Odometer</span><h3>Is the volume real?</h3><p>Age, liquidity, buys against sells, and volume compared to liquidity, which shows when a chart might be washed.</p></div>
-      <div class="tile wide"><span class="eyebrow">The grade</span><h3>One stamp at the top</h3>
+      <div class="tile"><span class="eyebrow">Bundles &amp; snipers</span><h3>Who bought at launch</h3><p>Wallets that bought in the same block as the launch, how much of the supply they took, whether they still hold it, and snipers in the first 10 seconds. Up to −40.</p></div>
+      <div class="tile"><span class="eyebrow">Title status</span><h3>Can the dev still touch it?</h3><p>Mint and freeze authority, editable metadata, and whether liquidity is locked or still on the pump.fun curve. Up to −60.</p></div>
+      <div class="tile"><span class="eyebrow">Ownership</span><h3>Who really holds it</h3><p>Top 10 share with pools removed, the biggest wallet, flagged insiders, and how much the dev still holds. Up to −55.</p></div>
+      <div class="tile"><span class="eyebrow">Accident history</span><h3>Every crash, by window</h3><p>Price moves over 5 minutes, 1 hour, 6 hours and 24 hours. Big dumps count as accidents. Up to −50.</p></div>
+      <div class="tile"><span class="eyebrow">Odometer</span><h3>Is the volume real?</h3><p>Liquidity, buys against sells, and volume compared to liquidity, which shows when a chart may be washed. Up to −27.</p></div>
+      <div class="tile"><span class="eyebrow">Recorded issues</span><h3>Everything else</h3><p>Other on-chain warnings like a dev with past rugs. Up to −48.</p></div>
+      <div class="tile wide"><span class="eyebrow">The risk tag</span>
         <div class="grades">
-          <div><span class="badge clean">CLEAN TITLE</span><span>Score 72 or higher. No major red flags found.</span></div>
-          <div><span class="badge salvage">SALVAGE</span><span>Score 40 to 71. Real warning signs, so read the report.</span></div>
-          <div><span class="badge totaled">TOTALED</span><span>Under 40 or marked rugged. Serious problems found.</span></div>
+          <div><span class="chip clean">72–100 · LOW RISK</span><span>Stamped CLEAN TITLE. No major red flags found.</span></div>
+          <div><span class="chip risky">40–71 · RISKY</span><span>Real warning signs. Read the report before you buy.</span></div>
+          <div><span class="chip high">0–39 · HIGH RISK</span><span>Stamped TOTALED. Serious problems or a rug.</span></div>
         </div>
       </div>
     </div>
@@ -367,7 +417,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
       <div>
         <span class="demo-tag">Example data until launch</span>
         <h2>$FAX</h2>
-        <p>Coinfax is free for everyone. $FAX launches fair on pump.fun, and creator fees pay for faster scans and more coins faxed automatically. Holders get watchlist alerts when a coin they hold has a new accident.</p>
+        <p>Coinfax is free for everyone. $FAX launches fair on pump.fun, and creator fees pay for faster scans and more coins scored automatically. Holders get watchlist alerts when a coin they hold gets a new red flag.</p>
         <div class="facts">
           <div><small>Launch</small><strong>pump.fun</strong></div>
           <div><small>Ticker</small><strong>$FAX</strong></div>
@@ -383,16 +433,16 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
   <div class="wrap">
     <div class="sec-head"><div><h2>Questions</h2></div></div>
     <div class="faq">
-      <details><summary>Is Coinfax free?</summary><p>Yes. Every report is free and there is no sign-up. Paste a contract address and the report prints.</p></details>
-      <details><summary>Where does the data come from?</summary><p>On-chain checks come from RugCheck and market data comes from DexScreener. Both are pulled live when you run the report, so the numbers can change minute to minute.</p></details>
-      <details><summary>Does CLEAN TITLE mean a coin is safe?</summary><p>No. A clean report means none of our checks found a major red flag. Coins can still dump, and devs can still sell. Treat the grade as one input and never as financial advice.</p></details>
-      <details><summary>Which coins can I fax?</summary><p>Any Solana token, including pump.fun coins still on the bonding curve and coins that already migrated.</p></details>
-      <details><summary>Why does a report say "partial"?</summary><p>If the on-chain scanner is busy or rate-limited, we still print the market side of the report and check mint and freeze authority straight from Solana. Run it again in a minute for the full scan.</p></details>
+      <details><summary>Is Coinfax free?</summary><p>Yes. Every report is free with no sign-up. Paste a contract address and the report prints.</p></details>
+      <details><summary>How do you find bundlers?</summary><p>We check bundle data from trench.bot first. If that is not available, we read the coin's launch trades and count different wallets that bought in the same block as the launch, plus the share of supply they took. Launch trades can only be read for coins under a day old with normal activity.</p></details>
+      <details><summary>Where does the rest of the data come from?</summary><p>On-chain checks come from RugCheck, market data from DexScreener, and new pairs and launch trades from GeckoTerminal. Everything is pulled live when you open a report.</p></details>
+      <details><summary>Does LOW RISK mean a coin is safe?</summary><p>No. It means none of our checks found a major red flag. Coins can still dump and devs can still sell. Use the score as one input, never as financial advice.</p></details>
+      <details><summary>Why does a report say "partial"?</summary><p>If a data source is busy, we still print what we have and check mint and freeze straight from Solana. Run it again in a minute for the full scan.</p></details>
     </div>
   </div>
 </section>
 
-<footer><div class="wrap"><span>Coinfax ($FAX) · Not financial advice · Data from RugCheck, DexScreener and Solana RPC</span><a href="/">orch.lol</a></div></footer>
+<footer><div class="wrap"><span>Coinfax ($FAX) · Not financial advice · Data from RugCheck, DexScreener, GeckoTerminal, trench.bot and Solana RPC</span><a href="/">orch.lol</a></div></footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -400,23 +450,28 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 (() => {
 const DS = 'https://api.dexscreener.com';
 const RC = 'https://api.rugcheck.xyz/v1';
+const GT = 'https://api.geckoterminal.com/api/v2';
+const TB = 'https://trench.bot/api/bundle/bundle_advanced/';
 const RPC = 'https://api.mainnet-beta.solana.com';
+const WSOL = 'So11111111111111111111111111111111111111112';
 const $ = s => document.querySelector(s);
 const BASE58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const DAY = 864e5;
 
-const pairCache = new Map();   // mint -> pair|null
+const pairCache = new Map();   // mint -> pair
 const rcCache = new Map();     // mint -> Promise<report|null>
-const gradeCache = new Map();  // mint -> analysis
-const lists = { popular: [], fresh: [], freshPool: [] };
-let activeTab = 'popular';
+const bundleCache = new Map(); // mint -> Promise<bundle|null>
+const scored = new Map();      // mint -> { a, pair }
+const lists = { new: [], popular: [], fresh: [], freshPool: [] };
+let activeTab = 'new', rankMode = 'safe', trenchOk = true, lastNewAt = 0;
 
 /* ---------- helpers ---------- */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function usd(n){ n = Number(n); if(!isFinite(n)) return '–'; const a = Math.abs(n);
+function usd(n){ n = Number(n); if(!isFinite(n) || n === 0) return '–'; const a = Math.abs(n);
   if(a >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B'; if(a >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
   if(a >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K'; return '$' + n.toFixed(0); }
 function pct(n, d=1){ n = Number(n); if(!isFinite(n)) return '–'; return (n > 0 ? '+' : '') + n.toFixed(d) + '%'; }
-function age(ms){ if(!ms) return '–'; const m = (Date.now() - ms) / 60000; if(m < 60) return Math.max(1, Math.round(m)) + 'm'; const h = m / 60; if(h < 48) return Math.round(h) + 'h'; const d = h / 24; if(d < 60) return Math.round(d) + 'd'; return Math.round(d/30) + 'mo'; }
+function age(ms){ if(!ms) return '–'; const m = (Date.now() - ms) / 60000; if(m < 1) return 'now'; if(m < 60) return Math.round(m) + 'm'; const h = m / 60; if(h < 48) return Math.round(h) + 'h'; const d = h / 24; if(d < 60) return Math.round(d) + 'd'; return Math.round(d/30) + 'mo'; }
 function short(a){ return a ? a.slice(0,4) + '…' + a.slice(-4) : ''; }
 function shuffle(a){ a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200); }
@@ -427,12 +482,18 @@ async function getJSON(url, opts = {}, ms = 12000){
   try { const r = await fetch(url, { ...opts, signal: c.signal }); if(!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); }
   finally { clearTimeout(t); }
 }
-function avatar(pair, cls=''){
+// GeckoTerminal allows ~30 calls a minute, so every call waits its turn.
+let gtChain = Promise.resolve();
+function gt(path){ const p = gtChain.then(() => getJSON(GT + path, { headers:{ accept:'application/json' } }, 12000)); gtChain = p.catch(() => {}).then(() => new Promise(r => setTimeout(r, 2200))); return p; }
+function avatar(pair){
   const img = pair?.info?.imageUrl; const sym = (pair?.baseToken?.symbol || '?').replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase() || '?';
-  return img ? `<img class="${cls}" src="${esc(img)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;av ${cls}&quot;>${esc(sym)}</span>'">` : `<span class="av ${cls}">${esc(sym)}</span>`;
+  return img ? `<img src="${esc(img)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;av&quot;>${sym}</span>'">` : `<span class="av">${sym}</span>`;
 }
+const RISK = { clean:'LOW RISK', risky:'RISKY', high:'HIGH RISK', none:'NO DATA' };
+const STAMP = { clean:'CLEAN TITLE', risky:'RISKY', high:'TOTALED', none:'NO RECORD' };
+const riskOf = s => s >= 72 ? 'clean' : s >= 40 ? 'risky' : 'high';
 
-/* ---------- data ---------- */
+/* ---------- data sources ---------- */
 function bestPair(pairs, mint){
   pairs = (pairs || []).filter(p => p.chainId === 'solana' && (!mint || p.baseToken?.address === mint));
   if(!pairs.length) return null;
@@ -445,14 +506,14 @@ async function loadPairs(mints){
     try {
       const arr = await getJSON(`${DS}/tokens/v1/solana/${chunk.join(',')}`);
       const by = {}; for(const p of (arr || [])){ const a = p.baseToken?.address; if(a) (by[a] = by[a] || []).push(p); }
-      for(const m of chunk) pairCache.set(m, bestPair(by[m], m));
-    } catch(e){ /* leave uncached so a later call can retry */ }
+      for(const m of chunk){ const b = bestPair(by[m], m); if(b) pairCache.set(m, b); }
+    } catch(e){}
   }
   return mints.map(m => pairCache.get(m)).filter(Boolean);
 }
 function getRC(mint){
   if(rcCache.has(mint)) return rcCache.get(mint);
-  const p = getJSON(`${RC}/tokens/${mint}/report`, {}, 15000).catch(() => { rcCache.delete(mint); return null; });
+  const p = getJSON(`${RC}/tokens/${mint}/report`, {}, 15000).catch(() => { setTimeout(() => rcCache.delete(mint), 30000); return null; });
   rcCache.set(mint, p); return p;
 }
 async function getMintInfo(mint){
@@ -463,17 +524,104 @@ async function getMintInfo(mint){
     return info ? { mintAuthority: info.mintAuthority ?? null, freezeAuthority: info.freezeAuthority ?? null, supply: info.supply, decimals: info.decimals } : null;
   } catch(e){ return null; }
 }
+function gtToPair(pool, tokens){
+  const at = pool.attributes || {}, rel = pool.relationships || {};
+  const mint = (rel.base_token?.data?.id || '').replace(/^solana_/, '');
+  if(!mint || mint === WSOL) return null;
+  const tok = tokens[rel.base_token.data.id]?.attributes || {};
+  const dex = rel.dex?.data?.id || '';
+  const pc = at.price_change_percentage || {}, tx = at.transactions?.h24 || {};
+  const name = tok.name || (at.name || '').split(' / ')[0] || 'Unknown';
+  return {
+    chainId:'solana', dexId: dex === 'pump-fun' ? 'pumpfun' : dex, pairAddress: at.address, _gt:true,
+    url:`https://dexscreener.com/solana/${mint}`,
+    baseToken:{ address:mint, name, symbol: tok.symbol || name.slice(0,8) },
+    info:{ imageUrl: tok.image_url && !/missing/.test(tok.image_url) ? tok.image_url : null },
+    priceChange:{ m5:+pc.m5, h1:+pc.h1, h6:+pc.h6, h24:+pc.h24 },
+    txns:{ h24:{ buys: tx.buys || 0, sells: tx.sells || 0 } },
+    volume:{ h24: +(at.volume_usd?.h24 || 0) }, liquidity:{ usd: +(at.reserve_in_usd || 0) },
+    marketCap: +(at.market_cap_usd || 0) || +(at.fdv_usd || 0), fdv: +(at.fdv_usd || 0),
+    pairCreatedAt: Date.parse(at.pool_created_at) || null
+  };
+}
 
-/* ---------- grading ---------- */
-function analyze(mint, rc, pair, mi){
-  const f = { title:[], owners:[], accidents:[], odo:[], issues:[] };
+/* ---------- bundle check ---------- */
+function getBundle(mint, pair, supplyHint){
+  if(bundleCache.has(mint)) return bundleCache.get(mint);
+  const p = (async () => {
+    if(trenchOk){
+      try {
+        const t = await getJSON(TB + mint, {}, 8000);
+        if(t && (t.total_bundles != null || t.total_percentage_bundled != null))
+          return { src:'trench.bot', bundles: Number(t.total_bundles) || 0, pct: Number(t.total_percentage_bundled) || 0, holding: Number(t.total_holding_percentage) || 0, sol: Number(t.total_sol_spent) || 0 };
+      } catch(e){ if(e.name === 'TypeError') trenchOk = false; }
+    }
+    const created = pair?.pairCreatedAt;
+    if(!pair?.pairAddress || !created || Date.now() - created > DAY) return { src:'none', tooOld: true };
+    try {
+      const r = await gt(`/networks/solana/pools/${pair.pairAddress}/trades`);
+      const tr = (r?.data || []).map(x => x.attributes).filter(t => t && t.block_number != null);
+      if(!tr.length) return { src:'trades', wallets:0, pct:0, snipers:0, trades:0 };
+      tr.sort((a,b) => a.block_number - b.block_number);
+      const first = tr[0].block_number, t0 = Date.parse(tr[0].block_timestamp);
+      if(t0 - created > 180000) return { src:'trades', outOfRange:true };
+      const buys = tr.filter(t => t.kind === 'buy');
+      const launch = buys.filter(t => t.block_number <= first + 1);
+      const wallets = new Set(launch.map(t => t.tx_from_address));
+      const tokens = launch.reduce((s,t) => s + (Number(t.to_token_amount) || 0), 0);
+      const supply = pair.dexId === 'pumpfun' || /pump$/.test(mint) ? 1e9 : supplyHint;
+      const snipers = new Set(buys.filter(t => t.block_number > first + 1 && Date.parse(t.block_timestamp) - t0 <= 10000).map(t => t.tx_from_address));
+      wallets.forEach(w => snipers.delete(w));
+      return { src:'trades', wallets: wallets.size, pct: supply ? tokens / supply * 100 : null, snipers: snipers.size, trades: tr.length };
+    } catch(e){ return null; }
+  })();
+  bundleCache.set(mint, p);
+  p.then(v => { if(v === null) setTimeout(() => bundleCache.delete(mint), 60000); });
+  return p;
+}
+
+/* ---------- scoring ---------- */
+function analyze(mint, rc, pair, mi, b){
+  const f = { bundles:[], title:[], owners:[], accidents:[], odo:[], issues:[] };
+  const pens = [];
   let s = 100;
-  const add = (sec, lvl, label, value, pen = 0, note = '') => { f[sec].push({ lvl, label, value, note }); s -= pen; };
+  const add = (sec, lvl, label, value, pen = 0, note = '') => { f[sec].push({ lvl, label, value, note }); if(pen){ s -= pen; pens.push([label, pen]); } };
   const tok = rc?.token || mi || null;
   const onCurve = pair?.dexId === 'pumpfun';
+  let bundledPct = null;
+
+  // Bundles & snipers
+  if(b === undefined) add('bundles','na','Bundle scan','Scanning…');
+  else if(!b || b.src === 'none'){ add('bundles','na','Bundle scan', b?.tooOld ? 'Launch too old to read' : 'Not available'); }
+  else if(b.src === 'trench.bot'){
+    bundledPct = b.pct;
+    b.pct > 25 ? add('bundles','bad','Bundled at launch', b.pct.toFixed(1) + '%', 25, `${b.bundles} bundles bought a big share of supply.`) :
+    b.pct > 8 ? add('bundles','warn','Bundled at launch', b.pct.toFixed(1) + '%', 12, `${b.bundles} bundles found.`) :
+    add('bundles','ok','Bundled at launch', b.pct.toFixed(1) + '%');
+    b.holding > 10 ? add('bundles','bad','Bundles still holding', b.holding.toFixed(1) + '%', 15, 'They can dump on buyers.') :
+    b.holding > 3 ? add('bundles','warn','Bundles still holding', b.holding.toFixed(1) + '%', 6) :
+    add('bundles','ok','Bundles still holding', b.holding.toFixed(1) + '%');
+    add('bundles','na','Bundle count', String(b.bundles));
+  } else if(b.outOfRange){ add('bundles','na','Launch block','Too busy to read'); }
+  else {
+    const extra = Math.max(0, b.wallets - 1);
+    if(b.pct != null) bundledPct = extra ? b.pct : 0;
+    if(extra){
+      const v = b.pct != null ? b.pct.toFixed(1) + '% of supply' : b.wallets + ' wallets';
+      (b.pct ?? 0) > 25 ? add('bundles','bad','Bundled at launch', v, 25, `${b.wallets} wallets bought in the launch block.`) :
+      (b.pct ?? 0) > 8 ? add('bundles','warn','Bundled at launch', v, 12, `${b.wallets} wallets bought in the launch block.`) :
+      add('bundles','warn','Bundled at launch', v, 5, `${b.wallets} wallets bought in the launch block.`);
+    } else add('bundles','ok','Bundled at launch','No bundle');
+    b.snipers >= 10 ? add('bundles','bad','Snipers in first 10s', String(b.snipers), 10) :
+    b.snipers >= 4 ? add('bundles','warn','Snipers in first 10s', String(b.snipers), 5) :
+    add('bundles','ok','Snipers in first 10s', String(b.snipers));
+  }
+  const graph = Number(rc?.graphInsidersDetected) || 0;
+  if(graph >= 10) add('bundles','bad','Linked wallet cluster', graph + ' wallets', 15, 'Many holders were funded from the same source.');
+  else if(graph > 0) add('bundles','warn','Linked wallet cluster', graph + ' wallets', 5);
 
   // Title status
-  if(rc?.rugged) add('title', 'bad', 'Status', 'Marked rugged', 100);
+  if(rc?.rugged) add('title','bad','Status','Marked rugged',100);
   if(tok){
     tok.mintAuthority ? add('title','bad','Mint authority','Dev can mint more',35) : add('title','ok','Mint authority','Revoked');
     tok.freezeAuthority ? add('title','bad','Freeze authority','Dev can freeze wallets',25) : add('title','ok','Freeze authority','Revoked');
@@ -491,8 +639,9 @@ function analyze(mint, rc, pair, mi){
   const pools = new Set();
   for(const m of (rc?.markets || [])) [m.pubkey, m.liquidityA, m.liquidityB, m.liquidityAAccount?.owner, m.liquidityBAccount?.owner].forEach(x => x && pools.add(x));
   const holders = (rc?.topHolders || []).filter(h => !pools.has(h.address) && !pools.has(h.owner));
+  let top10 = null;
   if(holders.length){
-    const top10 = holders.slice(0,10).reduce((a,h) => a + (Number(h.pct) || 0), 0);
+    top10 = holders.slice(0,10).reduce((a,h) => a + (Number(h.pct) || 0), 0);
     const top1 = Number(holders[0].pct) || 0;
     top10 > 50 ? add('owners','bad','Top 10 wallets', top10.toFixed(1) + '%', 20) :
     top10 > 30 ? add('owners','warn','Top 10 wallets', top10.toFixed(1) + '%', 10) : add('owners','ok','Top 10 wallets', top10.toFixed(1) + '%');
@@ -513,9 +662,9 @@ function analyze(mint, rc, pair, mi){
     const pc = pair.priceChange || {};
     const rules = [['m5','Last 5 min',-20,-35,0,5],['h1','Last hour',-25,-40,5,15],['h6','Last 6 hours',-30,-50,5,10],['h24','Last 24 hours',-35,-60,8,20]];
     let crashes = 0;
-    for(const [k,label,w,b,pw,pb] of rules){
-      const v = Number(pc[k]); if(!isFinite(v)) continue;
-      if(v <= b){ add('accidents','bad',label,pct(v),pb,'Accident: major dump.'); crashes++; }
+    for(const [k,label,w,bd,pw,pb] of rules){
+      const v = Number(pc[k]); if(!isFinite(v) || pc[k] == null) continue;
+      if(v <= bd){ add('accidents','bad',label,pct(v),pb,'Accident: major dump.'); crashes++; }
       else if(v <= w){ add('accidents','warn',label,pct(v),pw); crashes++; }
       else add('accidents','ok',label,pct(v));
     }
@@ -527,8 +676,8 @@ function analyze(mint, rc, pair, mi){
   if(pair){
     const liq = Number(pair.liquidity?.usd) || 0, vol = Number(pair.volume?.h24) || 0;
     const buys = pair.txns?.h24?.buys || 0, sells = pair.txns?.h24?.sells || 0;
-    const ageMs = pair.pairCreatedAt;
-    add('odo', ageMs && Date.now() - ageMs < 3600e3 ? 'warn' : 'na', 'Age', age(ageMs) + (ageMs && Date.now() - ageMs < 3600e3 ? ' (brand new)' : ''));
+    const fresh = pair.pairCreatedAt && Date.now() - pair.pairCreatedAt < 3600e3;
+    add('odo', fresh ? 'warn' : 'na', 'Age', age(pair.pairCreatedAt) + (fresh ? ' (brand new)' : ''));
     add('odo','na','Market cap', usd(pair.marketCap || pair.fdv));
     if(!onCurve){
       liq < 5000 ? add('odo','bad','Liquidity', usd(liq), 15, 'Very thin. Easy to move or drain.') :
@@ -539,8 +688,8 @@ function analyze(mint, rc, pair, mi){
     if(!onCurve && liq > 0){ const r = vol / liq; r > 40 ? add('odo','warn','Volume vs liquidity', r.toFixed(0) + 'x', 6, 'Very high. Volume may be washed.') : add('odo','ok','Volume vs liquidity', r.toFixed(1) + 'x'); }
   } else add('odo','na','Trading','No trading pair found');
 
-  // Recorded issues (skip ones already graded above)
-  const skip = /mint|freeze|top 10|holder|mutable|metadata|\blp\b|liquidity/i;
+  // Recorded issues (skip what is already scored above)
+  const skip = /mint|freeze|top 10|holder|mutable|metadata|\blp\b|liquidity|insider/i;
   let dPen = 0, wPen = 0;
   for(const r of (rc?.risks || [])){
     if(skip.test(r.name || '')) continue;
@@ -551,85 +700,100 @@ function analyze(mint, rc, pair, mi){
   if(!rc) add('issues','na','On-chain scan','Scanner busy, partial report');
 
   s = Math.max(0, Math.min(100, Math.round(s)));
-  let grade = s >= 72 ? 'clean' : s >= 40 ? 'salvage' : 'totaled';
-  if(rc?.rugged) grade = 'totaled';
+  let grade = riskOf(s);
+  if(rc?.rugged) grade = 'high';
   if(!rc && !pair && !mi) grade = 'none';
-  return { mint, score: s, grade, f, partial: !rc, pair, rc };
+  return { mint, score: s, grade, f, pens: pens.sort((x,y) => y[1] - x[1]), partial: !rc, pair, rc, bundledPct, top10, bundle: b };
 }
-const GRADE = { clean:'CLEAN TITLE', salvage:'SALVAGE', totaled:'TOTALED', none:'NO RECORD' };
 
 /* ---------- fax machine ---------- */
-function faxBusy(on, text){
-  $('#fax').classList.toggle('busy', on);
-  $('#lcd').textContent = text || (on ? 'PRINTING…' : 'READY');
-}
+function faxBusy(on, text){ $('#fax').classList.toggle('busy', on); $('#lcd').textContent = text || (on ? 'PRINTING…' : 'READY'); }
 function setMiniStamp(grade){
-  const el = $('#miniStamp'); el.textContent = GRADE[grade] || 'CLEAN TITLE';
-  const c = grade === 'totaled' ? 'var(--bad)' : grade === 'salvage' ? 'var(--warn)' : 'var(--green-ink)';
+  const el = $('#miniStamp'); el.textContent = STAMP[grade] || 'CLEAN TITLE';
+  const c = grade === 'high' ? 'var(--bad)' : grade === 'risky' ? 'var(--warn)' : 'var(--green-ink)';
   el.style.color = c; el.style.borderColor = c;
 }
 
 /* ---------- report ---------- */
+let reportMint = null;
 async function runReport(mint, opts = {}){
   mint = mint.trim();
   if(!BASE58.test(mint)){ showErr("That doesn't look like a Solana contract address. Check for missing characters, or search by name."); return; }
-  hideErr(); $('#results').hidden = true;
+  hideErr(); $('#results').hidden = true; reportMint = mint;
   const sec = $('#report'); sec.hidden = false;
   $('#reportTitle').textContent = 'Printing report…';
-  $('#reportBody').innerHTML = `<div class="paper"><div class="loading-paper">Faxing ${esc(short(mint))}… pulling holders, dev wallet and price history</div></div>`;
+  $('#reportBody').innerHTML = `<div class="paper"><div class="loading-paper">Faxing ${esc(short(mint))}… checking bundlers, holders, dev wallet and price history</div></div>`;
   if(!opts.noScroll) sec.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start' });
   faxBusy(true, 'SCANNING ' + short(mint));
   try { history.replaceState(null, '', '#' + mint); } catch(e){}
 
   const [pairs, rc] = await Promise.all([loadPairs([mint]), getRC(mint)]);
-  const pair = pairs[0] || null;
+  const pair = pairs[0] || pairCache.get(mint) || null;
   const mi = rc ? null : await getMintInfo(mint);
-  const a = analyze(mint, rc, pair, mi);
-  gradeCache.set(mint, a); updateBadge(mint, a);
-  faxBusy(false, GRADE[a.grade]); setMiniStamp(a.grade);
+  const supplyHint = rc?.token ? Number(rc.token.supply) / Math.pow(10, rc.token.decimals || 0) : null;
+  const bP = getBundle(mint, pair, supplyHint);
+  const b = await Promise.race([bP, new Promise(r => setTimeout(() => r(undefined), 6000))]);
+  if(reportMint !== mint) return;
+  const a = analyze(mint, rc, pair, mi, b);
+  record(mint, a, pair);
+  faxBusy(false, STAMP[a.grade]); setMiniStamp(a.grade);
   renderReport(a);
-  const n = (Number(store('fax_count')) || 0) + 1; store('fax_count', String(n)); $('#sMine').textContent = n;
+  const n = (Number(store('fax_count')) || 0) + 1; store('fax_count', String(n));
+  if(b === undefined) bP.then(b2 => { if(reportMint !== mint) return; const a2 = analyze(mint, rc, pair, mi, b2); record(mint, a2, pair); renderReport(a2, true); });
 }
 
-function renderReport(a){
+function ringHTML(a, cls=''){ return `<div class="ring ${a.grade} ${cls}" style="--v:${a.score}"><span>${a.grade === 'none' ? '–' : a.score}</span></div>`; }
+
+function renderReport(a, quiet){
   const p = a.pair, rc = a.rc;
   const name = p?.baseToken?.name || rc?.tokenMeta?.name || 'Unknown coin';
   const sym = p?.baseToken?.symbol || rc?.tokenMeta?.symbol || '???';
   $('#reportTitle').textContent = `${name} ($${sym})`;
-  const secs = [['title','Title status'],['owners','Ownership'],['accidents','Accident history'],['odo','Odometer'],['issues','Recorded issues']];
+  const secs = [['bundles','Bundles & snipers'],['title','Title status'],['owners','Ownership'],['accidents','Accident history'],['odo','Odometer'],['issues','Recorded issues']];
   let i = 0;
-  const rows = list => list.map(r => `<div class="row" style="animation-delay:${(0.35 + (i++) * 0.06).toFixed(2)}s"><span><span class="dot ${r.lvl}"></span>${esc(r.label)}</span><span class="lead"></span><span class="val ${r.lvl}">${esc(r.value)}</span>${r.note ? `<small>${esc(r.note)}</small>` : ''}</div>`).join('');
+  const d = () => quiet ? 0 : (0.35 + (i++) * 0.05);
+  const rows = list => list.map(r => `<div class="row" style="animation-delay:${d().toFixed(2)}s"><span><span class="dot ${r.lvl}"></span>${esc(r.label)}</span><span class="lead"></span><span class="val ${r.lvl}">${esc(r.value)}</span>${r.note ? `<small>${esc(r.note)}</small>` : ''}</div>`).join('');
   const flags = sec => a.f[sec].filter(r => r.lvl === 'bad' || r.lvl === 'warn').length;
+  const verdict = { clean:'No major red flags found. Still do your own research.', risky:'Real warning signs found. Read the flags below before you buy.', high:'Serious problems found. Most buyers should stay away.', none:'No data found for this address yet.' }[a.grade];
   const links = [
     `<a class="btn btn-ghost" href="https://pump.fun/coin/${a.mint}" target="_blank" rel="noopener">pump.fun</a>`,
     p?.url ? `<a class="btn btn-ghost" href="${esc(p.url)}" target="_blank" rel="noopener">Chart</a>` : '',
     `<a class="btn btn-ghost" href="https://solscan.io/token/${a.mint}" target="_blank" rel="noopener">Solscan</a>`,
+    `<a class="btn btn-ghost" href="https://trench.bot/bundles/${a.mint}" target="_blank" rel="noopener">Bundles</a>`,
     rc?.creator ? `<a class="btn btn-ghost" href="https://solscan.io/account/${esc(rc.creator)}" target="_blank" rel="noopener">Dev wallet</a>` : ''
   ].join('');
   $('#reportBody').innerHTML = `
-  <article class="paper">
+  <article class="paper" style="${quiet ? 'animation:none' : ''}">
     <div class="p-head">
       ${avatar(p)}
       <div style="min-width:0">
         <h3>${esc(name)} <span class="mono" style="font-size:.6em;color:var(--muted)">$${esc(sym)}</span></h3>
         <div class="p-meta"><code>${esc(a.mint)}</code><span>Pulled ${new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</span></div>
       </div>
-      <div class="stamp g-${a.grade}">${GRADE[a.grade]}<small>${a.grade === 'none' ? 'No data found' : 'Score ' + a.score + ' / 100'}</small></div>
+      <div class="stamp g-${a.grade}" style="${quiet ? 'animation:none' : ''}">${STAMP[a.grade]}<small>${RISK[a.grade]}</small></div>
     </div>
-    <div class="p-score"><span class="eyebrow">Coinfax score</span><div class="meter" role="img" aria-label="Score ${a.score} out of 100"><i id="needle"></i></div><strong class="tab">${a.score}</strong></div>
+    <div class="p-score">
+      ${ringHTML(a, 'bigring')}
+      <div><h4 class="g-${a.grade}">${a.grade === 'none' ? 'No score' : a.score + ' / 100 · ' + RISK[a.grade]}</h4><p>${verdict}</p>
+      <div class="meter" role="img" aria-label="Score ${a.score} out of 100"><i id="needle" style="${quiet ? 'left:' + a.score + '%' : ''}"></i></div>
+      <div class="meter-scale"><span>0 High risk</span><span>40</span><span>72</span><span>100 Low risk</span></div></div>
+    </div>
     ${a.partial ? '<p class="p-note">Partial report: the on-chain scanner did not answer, so holder and dev checks are missing. Mint and freeze were checked directly on Solana. Run it again in a minute for the full scan.</p>' : ''}
     <div class="p-grid">
       ${secs.map(([k,t]) => `<div class="p-sec"><h4>${t}<span style="color:${flags(k) ? 'var(--warn)' : 'var(--ok)'}">${flags(k) ? flags(k) + ' flag' + (flags(k) > 1 ? 's' : '') : 'Clear'}</span></h4>${rows(a.f[k])}</div>`).join('')}
-      <div class="p-sec"><h4>Open in</h4><div class="p-actions">${links}</div></div>
+      <div class="p-sec wide"><h4>Where the points went<span>${100 - a.score} points off</span></h4>
+        ${a.pens.length ? `<div class="breakdown">${a.pens.map(([l,v]) => `<div style="animation-delay:${d().toFixed(2)}s"><span>${esc(l)}</span><b>−${v}</b></div>`).join('')}</div>` : '<p style="margin:0;color:var(--muted)">Nothing. This coin kept all 100 points.</p>'}
+      </div>
+      <div class="p-sec wide"><h4>Open in</h4><div class="p-actions">${links}</div></div>
     </div>
     <div class="p-foot">
-      <p>Pulled live from RugCheck and DexScreener. A clean title lowers risk but does not remove it. Not financial advice.</p>
+      <p>Pulled live from RugCheck, DexScreener, GeckoTerminal and trench.bot. A low risk score lowers risk but does not remove it. Not financial advice.</p>
       <div class="p-actions"><button class="btn btn-ghost" type="button" id="copyMint">Copy CA</button><button class="btn btn-primary" type="button" id="shareBtn">Copy report link</button></div>
     </div>
   </article>`;
-  requestAnimationFrame(() => requestAnimationFrame(() => { const n = $('#needle'); if(n) n.style.left = a.score + '%'; }));
+  if(!quiet) requestAnimationFrame(() => requestAnimationFrame(() => { const n = $('#needle'); if(n) n.style.left = a.score + '%'; }));
   $('#copyMint').onclick = () => copy(a.mint);
-  $('#shareBtn').onclick = () => copy(`Coinfax on $${sym}: ${GRADE[a.grade]} (${a.score}/100)\n${location.origin}${location.pathname}#${a.mint}`);
+  $('#shareBtn').onclick = () => copy(`Coinfax on $${sym}: ${a.score}/100 · ${RISK[a.grade]}${a.bundledPct ? ` · ${a.bundledPct.toFixed(1)}% bundled` : ''}\n${location.origin}${location.pathname}#${a.mint}`);
 }
 
 /* ---------- search ---------- */
@@ -642,94 +806,177 @@ async function search(q){
   try {
     const r = await getJSON(`${DS}/latest/dex/search?q=${encodeURIComponent(q)}`);
     const seen = new Set(); const out = [];
-    for(const p of (r.pairs || [])){ if(p.chainId !== 'solana') continue; const m = p.baseToken?.address; if(!m || seen.has(m)) continue; seen.add(m); pairCache.set(m, pairCache.get(m) || p); out.push(p); if(out.length >= 6) break; }
+    for(const p of (r.pairs || [])){ if(p.chainId !== 'solana') continue; const m = p.baseToken?.address; if(!m || seen.has(m)) continue; seen.add(m); if(!pairCache.has(m)) pairCache.set(m, p); out.push(p); if(out.length >= 6) break; }
     if(!out.length){ box.innerHTML = ''; box.hidden = true; showErr(`No Solana coins found for "${q}". Try the contract address instead.`); return; }
-    box.innerHTML = out.map(p => `<button type="button" data-mint="${esc(p.baseToken.address)}">${avatar(p)}<span style="min-width:0;flex:1"><strong>${esc(p.baseToken.name)}</strong> <span class="mono" style="color:var(--muted);font-size:13px">$${esc(p.baseToken.symbol)} · ${usd(p.marketCap || p.fdv)} · ${short(p.baseToken.address)}</span></span><span class="mono" style="font-size:13px">Fax →</span></button>`).join('');
+    box.innerHTML = out.map(p => `<button type="button" data-run="${esc(p.baseToken.address)}">${avatar(p)}<span style="min-width:0;flex:1"><strong>${esc(p.baseToken.name)}</strong> <span class="mono" style="color:var(--muted);font-size:13px">$${esc(p.baseToken.symbol)} · ${usd(p.marketCap || p.fdv)} · ${short(p.baseToken.address)}</span></span><span class="mono" style="font-size:13px">Fax →</span></button>`).join('');
   } catch(e){ box.hidden = true; showErr('Search is not answering right now. Paste the contract address instead.'); }
 }
 $('#searchForm').addEventListener('submit', e => { e.preventDefault(); search($('#q').value); });
-$('#results').addEventListener('click', e => { const b = e.target.closest('[data-mint]'); if(b) runReport(b.dataset.mint); });
-$('#closeReport').onclick = () => { $('#report').hidden = true; try { history.replaceState(null, '', location.pathname); } catch(e){} };
-$('#luckyBtn').onclick = () => { const pool = [...lists.popular, ...lists.fresh, ...lists.freshPool].map(p => p.baseToken.address); if(!pool.length){ toast('The lot is still loading'); return; } const m = pool[Math.floor(Math.random()*pool.length)]; $('#q').value = m; runReport(m); };
+$('#closeReport').onclick = () => { $('#report').hidden = true; reportMint = null; try { history.replaceState(null, '', location.pathname); } catch(e){} };
+$('#luckyBtn').onclick = () => { const pool = [...lists.new, ...lists.popular, ...lists.freshPool].map(p => p.baseToken.address); if(!pool.length){ toast('The lot is still loading'); return; } const m = pool[Math.floor(Math.random()*pool.length)]; $('#q').value = m; runReport(m); };
+document.addEventListener('click', e => { const b = e.target.closest('[data-run]'); if(b){ e.preventDefault(); $('#q').value = b.dataset.run; runReport(b.dataset.run); } });
 
-/* ---------- the lot ---------- */
-function card(p){
+/* ---------- cards ---------- */
+function bundleChip(a){
+  if(!a || a.bundle === undefined) return '<span class="chip">Bundle check…</span>';
+  if(a.bundledPct == null){ return a.f.bundles.some(r => r.label === 'Linked wallet cluster') ? '<span class="chip warn">Linked wallets</span>' : '<span class="chip">Bundle n/a</span>'; }
+  if(a.bundledPct === 0) return '<span class="chip ok">No bundle</span>';
+  const lvl = a.bundledPct > 25 ? 'bad' : a.bundledPct > 8 ? 'warn' : 'warn';
+  return `<span class="chip ${lvl}">Bundled ${a.bundledPct.toFixed(1)}%</span>`;
+}
+function card(p, fresh){
   const m = p.baseToken.address, h = Number(p.priceChange?.h24);
-  return `<article class="car" data-mint="${esc(m)}">
-    <div class="car-top">${avatar(p)}<div class="car-name"><strong>${esc(p.baseToken.name)}</strong><span>$${esc(p.baseToken.symbol)} · ${age(p.pairCreatedAt)} old</span></div><span class="badge pending" data-badge="${esc(m)}">Faxing</span></div>
-    <dl><div><dt>Mkt cap</dt><dd>${usd(p.marketCap || p.fdv)}</dd></div><div><dt>24h</dt><dd class="${h >= 0 ? 'up' : 'down'}">${pct(h,0)}</dd></div><div><dt>Liquidity</dt><dd>${p.dexId === 'pumpfun' ? 'Curve' : usd(p.liquidity?.usd)}</dd></div></dl>
-    <button class="btn btn-ghost" type="button" data-run="${esc(m)}">Pull Coinfax</button>
+  const isNew = p.pairCreatedAt && Date.now() - p.pairCreatedAt < 3600e3;
+  return `<article class="car${fresh ? ' fresh-in' : ''}" data-mint="${esc(m)}">
+    <div class="car-top">${avatar(p)}<div class="car-name"><strong>${esc(p.baseToken.name)}</strong><span>$${esc(p.baseToken.symbol)} · ${age(p.pairCreatedAt)} old</span></div><div class="ring pending" data-ring="${esc(m)}"><span>…</span></div></div>
+    <div class="chips" data-chips="${esc(m)}">${isNew ? '<span class="chip new">NEW</span>' : ''}<span class="chip">Scoring…</span></div>
+    <dl><div><dt>Mkt cap</dt><dd>${usd(p.marketCap || p.fdv)}</dd></div><div><dt>24h</dt><dd class="${h >= 0 ? 'up' : 'down'}">${isFinite(h) ? pct(h,0) : '–'}</dd></div><div><dt>Liquidity</dt><dd>${p.dexId === 'pumpfun' ? 'Curve' : usd(p.liquidity?.usd)}</dd></div></dl>
+    <button class="btn btn-ghost" type="button" data-run="${esc(m)}">Pull full Coinfax</button>
   </article>`;
 }
-function updateBadge(mint, a){
-  document.querySelectorAll(`[data-badge="${CSS.escape(mint)}"]`).forEach(b => {
-    b.className = 'badge ' + a.grade; b.textContent = a.grade === 'none' ? 'NO RECORD' : `${GRADE[a.grade]} · ${a.score}`;
+function paintCard(mint){
+  const rec = scored.get(mint); if(!rec) return;
+  const a = rec.a, p = rec.pair;
+  const isNew = p?.pairCreatedAt && Date.now() - p.pairCreatedAt < 3600e3;
+  document.querySelectorAll(`[data-ring="${CSS.escape(mint)}"]`).forEach(r => {
+    const was = r.classList.contains('pending');
+    r.className = `ring ${a.grade}${was ? ' pop' : ''}`; r.style.setProperty('--v', a.score);
+    r.innerHTML = `<span>${a.grade === 'none' ? '–' : a.score}</span>`;
+    r.closest('.car')?.classList.toggle('is-high', a.grade === 'high');
   });
-  scheduleLemons();
+  document.querySelectorAll(`[data-chips="${CSS.escape(mint)}"]`).forEach(c => {
+    c.innerHTML = (isNew ? '<span class="chip new">NEW</span>' : '') +
+      (a.grade === 'none' ? '<span class="chip">No data yet</span>' : `<span class="chip ${a.grade}">${RISK[a.grade]}</span>`) +
+      bundleChip(a) + (a.top10 != null ? `<span class="chip ${a.top10 > 50 ? 'bad' : a.top10 > 30 ? 'warn' : ''}">Top 10 ${a.top10.toFixed(0)}%</span>` : '');
+  });
 }
+function record(mint, a, pair){ scored.set(mint, { a, pair: pair || scored.get(mint)?.pair }); paintCard(mint); scheduleBoard(); }
+
+function currentList(){ return activeTab === 'new' ? lists.new : activeTab === 'popular' ? lists.popular : lists.fresh; }
 function renderLot(){
-  const list = activeTab === 'popular' ? lists.popular : lists.fresh;
-  const grid = $('#lotGrid');
-  if(!list.length){ grid.innerHTML = `<div class="empty"><strong>The lot is empty right now</strong>DexScreener did not send any coins. Refresh in a minute, or paste a contract address above.</div>`; return; }
-  grid.innerHTML = list.map(card).join('');
-  list.forEach(p => { const a = gradeCache.get(p.baseToken.address); if(a) updateBadge(p.baseToken.address, a); });
-  queueGrades(list.map(p => p.baseToken.address));
+  const list = currentList(), grid = $('#lotGrid');
+  if(!list.length){
+    grid.innerHTML = activeTab === 'new'
+      ? '<div class="empty"><strong>No new pairs yet</strong>New Solana pairs show up here within a minute of launch. This list refreshes on its own.</div>'
+      : '<div class="empty"><strong>Nothing on the lot right now</strong>The coin feed did not answer. Refresh in a minute, or paste a contract address above.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(p => card(p)).join('');
+  list.forEach(p => paintCard(p.baseToken.address));
+  queueScores(list);
 }
-$('#lotGrid').addEventListener('click', e => { const b = e.target.closest('[data-run]'); if(b){ $('#q').value = b.dataset.run; runReport(b.dataset.run); } });
-$('#lemonGrid').addEventListener('click', e => { const b = e.target.closest('[data-run]'); if(b){ $('#q').value = b.dataset.run; runReport(b.dataset.run); } });
 document.querySelectorAll('[data-tab]').forEach(t => t.addEventListener('click', () => {
   activeTab = t.dataset.tab;
-  document.querySelectorAll('[data-tab]').forEach(x => { const on = x === t; x.className = 'btn ' + (on ? 'btn-primary' : 'btn-ghost'); x.setAttribute('aria-selected', on); });
+  document.querySelectorAll('[data-tab]').forEach(x => x.setAttribute('aria-selected', x === t));
   $('#shuffleBtn').hidden = activeTab !== 'fresh';
-  renderLot();
+  updateRefreshLbl(); renderLot();
 }));
 $('#shuffleBtn').onclick = () => { lists.fresh = shuffle(lists.freshPool).slice(0, 12); renderLot(); };
 
-/* auto-fax queue: grades every coin on the lot, two at a time */
-const queue = []; const queued = new Set(); let running = 0;
-function queueGrades(mints){ for(const m of mints){ if(!gradeCache.has(m) && !queued.has(m)){ queued.add(m); queue.push(m); } } pump(); }
+/* scoring queue: RugCheck two at a time, bundle checks on their own lane */
+const queue = []; const queued = new Set(); const retries = new Map(); let running = 0;
+function queueScores(pairs){
+  for(const p of pairs){ const m = p.baseToken.address; const done = scored.get(m)?.a && !scored.get(m).a.partial; if(!done && !queued.has(m)){ queued.add(m); queue.push(p); } }
+  pump();
+}
 function pump(){
   while(running < 2 && queue.length){
-    const m = queue.shift(); running++;
+    const p = queue.shift(), m = p.baseToken.address; running++;
     getRC(m).then(rc => {
-      const a = analyze(m, rc, pairCache.get(m) || null, null);
-      if(rc) gradeCache.set(m, a); else queued.delete(m);
-      updateBadge(m, rc ? a : { grade:'none', score:0 });
-      if(!rc) document.querySelectorAll(`[data-badge="${CSS.escape(m)}"]`).forEach(b => b.textContent = 'Tap to fax');
-      updateStats();
-    }).finally(() => { running--; setTimeout(pump, 350); });
+      const pair = pairCache.get(m) || p;
+      record(m, analyze(m, rc, pair, null, undefined), pair);
+      const supplyHint = rc?.token ? Number(rc.token.supply) / Math.pow(10, rc.token.decimals || 0) : null;
+      getBundle(m, pair, supplyHint).then(b => record(m, analyze(m, rc, pair, null, b), pair));
+      if(!rc && (retries.get(m) || 0) < 2){ retries.set(m, (retries.get(m) || 0) + 1); setTimeout(() => { queued.delete(m); queueScores([p]); }, 30000); }
+    }).finally(() => { running--; setTimeout(pump, 300); });
   }
 }
-function updateStats(){
-  const all = [...gradeCache.values()];
-  $('#sClean').textContent = all.filter(a => a.grade === 'clean').length;
-  $('#sLemon').textContent = lemons().length;
+
+/* ---------- rankings ---------- */
+let boardT;
+function scheduleBoard(){ clearTimeout(boardT); boardT = setTimeout(renderBoard, 350); }
+function renderBoard(){
+  const all = [...scored.values()].filter(r => r.a.grade !== 'none');
+  $('#sScored').textContent = all.length;
+  $('#sClean').textContent = all.filter(r => r.a.grade === 'clean').length;
+  $('#sHigh').textContent = all.filter(r => r.a.grade === 'high').length;
+  $('#sBundled').textContent = all.filter(r => (r.a.bundledPct || 0) > 0).length;
+  renderTicker();
+  if(!all.length) return;
+  const sorted = all.slice().sort(rankMode === 'safe' ? (x,y) => y.a.score - x.a.score : rankMode === 'risky' ? (x,y) => x.a.score - y.a.score : (x,y) => (y.a.bundledPct ?? -1) - (x.a.bundledPct ?? -1));
+  const col = g => g === 'clean' ? 'var(--green)' : g === 'risky' ? 'var(--warn-ring)' : 'var(--bad)';
+  $('#rankBody').innerHTML = sorted.slice(0, 50).map((r, i) => {
+    const a = r.a, p = r.pair || {};
+    return `<tr data-run="${esc(a.mint)}" tabindex="0">
+      <td class="rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
+      <td><div class="coin-cell">${avatar(p)}<span><strong>${esc(p.baseToken?.name || short(a.mint))}</strong> <span class="mono" style="color:var(--muted);font-size:13px">$${esc(p.baseToken?.symbol || '')}</span></span></div></td>
+      <td><span class="bar"><i style="width:${a.score}%;background:${col(a.grade)}"></i></span><strong class="tab">${a.score}</strong></td>
+      <td><span class="chip ${a.grade}">${RISK[a.grade]}</span></td>
+      <td class="num">${a.bundledPct == null ? '–' : a.bundledPct.toFixed(1) + '%'}</td>
+      <td class="num">${a.top10 == null ? '–' : a.top10.toFixed(0) + '%'}</td>
+      <td class="num">${usd(p.marketCap || p.fdv)}</td>
+      <td class="num">${age(p.pairCreatedAt)}</td>
+    </tr>`;
+  }).join('');
 }
-function lemons(){
-  const seen = new Set(); const out = [];
-  for(const p of [...lists.popular, ...lists.freshPool]){
-    const m = p.baseToken.address; if(seen.has(m)) continue; seen.add(m);
-    const a = gradeCache.get(m);
-    if((a && a.grade === 'totaled') || Number(p.priceChange?.h24) <= -60) out.push(p);
-  }
-  return out;
-}
-let lemonT;
-function scheduleLemons(){ clearTimeout(lemonT); lemonT = setTimeout(() => {
-  const l = lemons(); const grid = $('#lemonGrid');
-  if(!l.length){ grid.innerHTML = `<div class="empty"><strong>No lemons on the lot right now</strong>Totaled coins and coins down 60% in a day show up here as soon as they are faxed.</div>`; return; }
-  grid.innerHTML = l.slice(0, 12).map(card).join('');
-  l.forEach(p => { const a = gradeCache.get(p.baseToken.address); if(a) updateBadge0(p.baseToken.address, a); });
-  updateStats();
-}, 400); }
-function updateBadge0(mint, a){ document.querySelectorAll(`#lemonGrid [data-badge="${CSS.escape(mint)}"]`).forEach(b => { b.className = 'badge ' + a.grade; b.textContent = `${GRADE[a.grade]} · ${a.score}`; }); }
+document.querySelectorAll('[data-rank]').forEach(t => t.addEventListener('click', () => {
+  rankMode = t.dataset.rank;
+  document.querySelectorAll('[data-rank]').forEach(x => x.setAttribute('aria-selected', x === t));
+  renderBoard();
+}));
+$('#rankBody').addEventListener('keydown', e => { if(e.key === 'Enter'){ const r = e.target.closest('[data-run]'); if(r) r.click(); } });
 
 function renderTicker(){
-  const items = lists.popular.slice(0, 16); if(!items.length){ $('#ticker').innerHTML = '<span>Live coins load here</span>'; return; }
-  const one = items.map(p => { const h = Number(p.priceChange?.h24); return `<button type="button" data-run="${esc(p.baseToken.address)}">$${esc(p.baseToken.symbol)} <span class="${h >= 0 ? 'up' : 'down'}">${pct(h,0)}</span></button>`; }).join('');
+  const items = lists.popular.slice(0, 16); if(!items.length) return;
+  const col = g => g === 'clean' ? '#5dff9a' : g === 'risky' ? '#ffcf3d' : '#ff8a8a';
+  const one = items.map(p => { const m = p.baseToken.address, h = Number(p.priceChange?.h24), a = scored.get(m)?.a;
+    return `<button type="button" data-run="${esc(m)}">$${esc(p.baseToken.symbol)} <span class="${h >= 0 ? 'up' : 'down'}">${pct(h,0)}</span>${a && a.grade !== 'none' ? `<span class="sc" style="background:${col(a.grade)}">${a.score}</span>` : ''}</button>`; }).join('');
   $('#ticker').innerHTML = one + one;
 }
-$('#ticker').addEventListener('click', e => { const b = e.target.closest('[data-run]'); if(b){ $('#q').value = b.dataset.run; runReport(b.dataset.run); } });
+
+/* ---------- loading the lot ---------- */
+async function loadNewPairs(initial){
+  let fresh = [];
+  try {
+    const r = await gt('/networks/solana/new_pools?include=base_token');
+    const tokens = {}; for(const t of (r.included || [])) tokens[t.id] = t;
+    fresh = (r.data || []).map(x => gtToPair(x, tokens)).filter(Boolean);
+  } catch(e){}
+  if(!fresh.length && initial){
+    // Fallback: newest coins with DexScreener profiles
+    fresh = lists.freshPool.filter(p => p.pairCreatedAt && Date.now() - p.pairCreatedAt < DAY).sort((a,b) => b.pairCreatedAt - a.pairCreatedAt);
+  }
+  if(!fresh.length) return;
+  // Prefer DexScreener data when it already has the coin
+  const ds = await loadPairs(fresh.filter(p => p._gt).map(p => p.baseToken.address));
+  const byMint = new Map(ds.map(p => [p.baseToken.address, p]));
+  fresh = fresh.map(p => byMint.get(p.baseToken.address) || p);
+  fresh.forEach(p => { if(!pairCache.has(p.baseToken.address)) pairCache.set(p.baseToken.address, p); });
+  const known = new Set(lists.new.map(p => p.baseToken.address));
+  const added = fresh.filter(p => !known.has(p.baseToken.address));
+  const seen = new Set();
+  lists.new = [...added, ...lists.new].filter(p => { const m = p.baseToken.address; if(seen.has(m)) return false; seen.add(m); return true; })
+    .sort((a,b) => (b.pairCreatedAt || 0) - (a.pairCreatedAt || 0)).slice(0, 24);
+  lastNewAt = Date.now();
+  $('#cNew').textContent = lists.new.length;
+  if(activeTab === 'new'){
+    if(initial || !$('#lotGrid .car')) renderLot();
+    else if(added.length){
+      const grid = $('#lotGrid');
+      added.slice().reverse().forEach(p => { grid.insertAdjacentHTML('afterbegin', card(p, true)); paintCard(p.baseToken.address); });
+      [...grid.querySelectorAll('.car')].slice(24).forEach(el => el.remove());
+      queueScores(added);
+      toast(`${added.length} new pair${added.length > 1 ? 's' : ''} added`);
+    }
+  } else queueScores(added);
+  updateRefreshLbl();
+}
+function updateRefreshLbl(){
+  const lbl = $('#refreshLbl');
+  if(activeTab !== 'new' || !lastNewAt){ lbl.textContent = ''; return; }
+  const s = Math.round((Date.now() - lastNewAt) / 1000);
+  lbl.textContent = `New pairs refresh every 45 seconds · updated ${s < 5 ? 'just now' : s + 's ago'}`;
+}
 
 async function loadLot(){
   $('#lotGrid').innerHTML = Array.from({length:8}, () => '<div class="skel"></div>').join('');
@@ -745,18 +992,22 @@ async function loadLot(){
   lists.popular = pop.sort((a,b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0)).slice(0, 16);
   lists.freshPool = fresh;
   lists.fresh = shuffle(fresh).slice(0, 12);
-  $('#sLot').textContent = new Set([...pop, ...fresh].map(p => p.baseToken.address)).size;
-  renderTicker(); renderLot();
-  queueGrades([...lists.popular, ...lists.fresh].map(p => p.baseToken.address));
+  $('#cPop').textContent = lists.popular.length; $('#cFresh').textContent = lists.freshPool.length;
+  renderTicker();
+  await loadNewPairs(true);
+  if(!lists.new.length && activeTab === 'new') renderLot();
+  // Score everything in the background so rankings fill up
+  queueScores([...lists.new, ...lists.popular, ...lists.fresh]);
+  setInterval(() => { if(!document.hidden) loadNewPairs(false); }, 45000);
+  setInterval(updateRefreshLbl, 1000);
 }
 
 /* ---------- boot ---------- */
-$('#sMine').textContent = Number(store('fax_count')) || 0;
 $('#copyCa').onclick = () => { const t = $('#ca').textContent.trim(); if(BASE58.test(t)) copy(t); else toast('The contract address drops at launch'); };
 loadLot();
 const h = decodeURIComponent(location.hash.slice(1));
-if(BASE58.test(h)){ $('#q').value = h; runReport(h, { noScroll:false }); }
-window.addEventListener('hashchange', () => { const x = decodeURIComponent(location.hash.slice(1)); if(BASE58.test(x)) runReport(x); });
+if(BASE58.test(h)){ $('#q').value = h; runReport(h); }
+window.addEventListener('hashchange', () => { const x = decodeURIComponent(location.hash.slice(1)); if(BASE58.test(x) && x !== reportMint) runReport(x); });
 })();
 </script>
 </body>

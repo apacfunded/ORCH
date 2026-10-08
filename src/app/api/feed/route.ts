@@ -4,12 +4,15 @@ import { getDb } from "@/db";
 import { FEED_FILTERS } from "@/lib/alerts";
 import { feedCutoff } from "@/lib/gate";
 import { countLocked, getFeed } from "@/server/queries";
+import { kickWorker } from "@/server/kick";
 import { getViewer } from "@/server/viewer";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 /** The gated feed. Delayed vs live filtering happens here, on the server, per request. */
 export async function GET(req: NextRequest) {
+  kickWorker();
   const viewer = await getViewer();
   const filter = req.nextUrl.searchParams.get("filter") ?? "all";
   const types = FEED_FILTERS[filter] ?? null;

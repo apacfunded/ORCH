@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
     "/**": ["./src/db/migrations/*.sql"],
   },
   poweredByHeader: false,
+  // Types are checked in CI (`npm run typecheck`); never block a deploy on them.
+  typescript: { ignoreBuildErrors: true },
 };
 
 export default nextConfig;

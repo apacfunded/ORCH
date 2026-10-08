@@ -6,14 +6,18 @@ import "@fontsource/familjen-grotesk/600.css";
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
+import { ComingSoon } from "@/components/ComingSoon";
 import { CopyButton } from "@/components/CopyButton";
 import { WalletButton } from "@/components/WalletButton";
 import { config } from "@/config";
 import { shortCa } from "@/lib/format";
+import { kickWorker } from "@/server/kick";
 import { getViewer } from "@/server/viewer";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const c = config();
@@ -28,13 +32,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = { themeColor: "#0b0b0b", colorScheme: "dark" };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const c = config();
-  const viewer = await getViewer();
+  const ready = Boolean(c.databaseUrl) || !c.onVercel;
+  const viewer = ready ? await getViewer() : { wallet: null, tier: "public" as const, isAdmin: false };
+  if (ready) kickWorker();
   return (
     <html lang="en">
       <body>
-        {c.dataSource === "mock" ? (
+        {ready && c.dataSource === "mock" ? (
           <div className="demo-strip">Example data until launch: every handle, coin and price here is simulated.</div>
         ) : null}
         <header className="top">
@@ -58,7 +64,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
           </div>
         </header>
-        <main>{children}</main>
+        <main>{ready ? children : <ComingSoon />}</main>
         <footer className="foot">
           <div className="wrap foot__in">
             <p style={{ margin: 0, maxWidth: "62ch" }}>

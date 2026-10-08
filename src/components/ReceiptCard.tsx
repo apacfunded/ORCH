@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 export type { ReceiptDTO } from "@/lib/dto";
 import {
   ALERT_LABELS,
@@ -13,7 +14,7 @@ import {
 import type { ReceiptDTO } from "@/lib/dto";
 import { change, fmtCount, fmtDuration, fmtPct, fmtTime, fmtUsd, receiptNo, shortCa } from "@/lib/format";
 
-function Row({ k, v, tone }: { k: string; v: React.ReactNode; tone?: "up" | "down" | null }) {
+function Row({ k, v, tone }: { k: string; v: ReactNode; tone?: "up" | "down" | null }) {
   return (
     <div className="r-row">
       <span className="r-k">{k}</span>

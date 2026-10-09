@@ -57,7 +57,9 @@ b{font-weight:600}
 .tk strong{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:14px}
 .tk-note{padding:8px 20px;font-family:var(--mono);font-size:12px;color:var(--mute);text-align:center}
 
-.av{border-radius:50%;overflow:hidden;display:block;flex:none}
+.av{border-radius:50%;overflow:hidden;display:block;flex:none;background:var(--line)}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.fb{display:flex;align-items:center;justify-content:center;color:var(--accent);font-family:var(--mono);font-weight:500;font-size:14px}
 
 /* hero */
 .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center;padding-block:56px 72px;position:relative}
@@ -255,28 +257,6 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
         <path d="M146 322 L124 334"/><path d="M142 346 L116 352"/><path d="M160 304 L142 288"/>
       </g>
     </symbol>
-    <symbol id="av-goblin" viewBox="0 0 64 64">
-      <rect width="64" height="64" fill="#16331f"/>
-      <polygon points="14,36 2,22 20,26" fill="#6cc25a"/><polygon points="50,36 62,22 44,26" fill="#6cc25a"/>
-      <circle cx="32" cy="36" r="19" fill="#86d972"/>
-      <circle cx="25" cy="33" r="5" fill="#fff"/><circle cx="39" cy="33" r="5" fill="#fff"/>
-      <circle cx="26" cy="34" r="2.4" fill="#12261a"/><circle cx="40" cy="34" r="2.4" fill="#12261a"/>
-      <path d="M24 45 Q32 51 40 45" stroke="#12261a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    </symbol>
-    <symbol id="av-mooncat" viewBox="0 0 64 64">
-      <rect width="64" height="64" fill="#1b1f45"/>
-      <circle cx="50" cy="14" r="2" fill="#f2e7b8"/><circle cx="12" cy="12" r="1.5" fill="#f2e7b8"/><circle cx="54" cy="46" r="1.5" fill="#f2e7b8"/>
-      <polygon points="16,30 18,10 31,22" fill="#f2e7b8"/><polygon points="48,30 46,10 33,22" fill="#f2e7b8"/>
-      <circle cx="32" cy="38" r="18" fill="#f2e7b8"/>
-      <ellipse cx="25" cy="36" rx="2.6" ry="3.6" fill="#1b1f45"/><ellipse cx="39" cy="36" rx="2.6" ry="3.6" fill="#1b1f45"/>
-      <path d="M30 43 L34 43 L32 46 Z" fill="#e58a9a"/>
-    </symbol>
-    <symbol id="av-pepito" viewBox="0 0 64 64">
-      <rect width="64" height="64" fill="#3a1717"/>
-      <path d="M20 20 C32 16 52 24 50 44 C48 54 38 58 30 52 C22 46 12 38 20 20 Z" fill="#ff5a4a"/>
-      <path d="M26 27 C34 25 43 31 43 41" stroke="#ff9a8c" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
-      <path d="M20 20 C16 14 20 8 28 8" stroke="#6fcf55" stroke-width="5" fill="none" stroke-linecap="round"/>
-    </symbol>
   </defs>
 </svg>
 
@@ -295,13 +275,13 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
 
 <div class="marq" aria-label="Example settled sheets">
   <div class="track" id="track">
-    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><b>$GOBLIN</b><em>sold 1,200 SOL</em><strong>saved 62.8</strong></div>
-    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-pepito"/></svg><b>$PEPITO</b><em>bought 640 SOL</em><strong>saved 20.6</strong></div>
-    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-mooncat"/></svg><b>$MOONCAT</b><em>sold 2,350 SOL</em><strong>saved 166.9</strong></div>
-    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><b>$GOBLIN</b><em>bought 310 SOL</em><strong>saved 5.0</strong></div>
+    <div class="tk"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/c3788335fe7010d9c32ede4f211118f4a703e0b47fee61cd503c33cc9cde242a?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="W"></span><b>$WIF</b><em>sold 1,200 SOL</em><strong>saved 62.8</strong></div>
+    <div class="tk"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/778498984ea5b6eb7c9d74e1e81a2547c88a41ae80f6c840c94a7c3b7829bcd5?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="P"></span><b>$PNUT</b><em>bought 640 SOL</em><strong>saved 20.6</strong></div>
+    <div class="tk"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/8e02e1e7dec93a4ef4b2404976232940a1d80595e774cf3c5f2d6f23026867a9?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="M"></span><b>$MOODENG</b><em>sold 2,350 SOL</em><strong>saved 166.9</strong></div>
+    <div class="tk"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/ba03c0370670d176dc33bbd212eb023337a460ad7edfa053ca96ae22f31c3dcf?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="B"></span><b>$BONK</b><em>bought 310 SOL</em><strong>saved 5.0</strong></div>
   </div>
 </div>
-<div class="tk-note">Example coins and numbers until launch</div>
+<div class="tk-note">Illustrative sheets on popular coins. Not real trades.</div>
 
 <div class="wrap">
   <main id="top">
@@ -332,7 +312,7 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
             <div class="step">1 Post</div><div class="step">2 Offers</div><div class="step">3 Reveal</div><div class="step">4 Done</div>
           </div>
           <div class="facts4">
-            <div class="cell"><div class="label">Coin</div><div class="v"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg>$GOBLIN</div></div>
+            <div class="cell"><div class="label">Coin</div><div class="v"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/c3788335fe7010d9c32ede4f211118f4a703e0b47fee61cd503c33cc9cde242a?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="W"></span>$WIF</div></div>
             <div class="cell"><div class="label">You want to</div><div class="v">SELL</div></div>
             <div class="cell"><div class="label">Amount</div><div class="v">1,200 SOL</div></div>
             <div class="cell"><div class="label">Time left</div><div class="v" id="win">03:55</div></div>
@@ -384,7 +364,7 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
     <section id="compare">
       <div class="label rv">Pool vs sheet</div>
       <h2 class="rv">Same trade. Very different bill.</h2>
-      <p class="sub rv">Selling 1,200 SOL worth of the example coin $GOBLIN. In a pool, every slice of your order fills at a worse price than the last. On a sheet, desks price the whole block once.</p>
+      <p class="sub rv">Selling 1,200 SOL worth of $WIF. In a pool, every slice of your order fills at a worse price than the last. On a sheet, desks price the whole block once.</p>
       <div class="arm" id="cmp">
         <div class="cmp-grid">
           <div class="cmp pool rv">
@@ -418,25 +398,25 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
     <section id="recent">
       <div class="label rv">Recent sheets</div>
       <h2 class="rv">What the last blocks cost.</h2>
-      <p class="sub rv">Each bar is the extra cost of the trade, so a shorter bar is better. Example data until launch.</p>
+      <p class="sub rv">Each bar is the extra cost of the trade, so a shorter bar is better. Modeled numbers on popular coins. No real trades yet.</p>
       <div class="rows arm">
         <div class="row rv">
-          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><div><b>$GOBLIN</b><span>Sold 1,200 SOL · Sheet 0004</span></div></div>
+          <div class="coin"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/c3788335fe7010d9c32ede4f211118f4a703e0b47fee61cd503c33cc9cde242a?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="W"></span><div><b>$WIF</b><span>Sold 1,200 SOL · Sheet 0004</span></div></div>
           <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:68%"></i></span><em>&minus;6.8%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:15.7%"></i></span><em>&minus;1.6%</em></div></div>
           <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="62.8" data-dec="1">62.8</b><small>SOL</small></div>
         </div>
         <div class="row rv">
-          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-pepito"/></svg><div><b>$PEPITO</b><span>Bought 640 SOL · Sheet 0003</span></div></div>
+          <div class="coin"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/778498984ea5b6eb7c9d74e1e81a2547c88a41ae80f6c840c94a7c3b7829bcd5?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="P"></span><div><b>$PNUT</b><span>Bought 640 SOL · Sheet 0003</span></div></div>
           <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:41%"></i></span><em>&minus;4.1%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:8.8%"></i></span><em>&minus;0.9%</em></div></div>
           <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="20.6" data-dec="1">20.6</b><small>SOL</small></div>
         </div>
         <div class="row rv">
-          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-mooncat"/></svg><div><b>$MOONCAT</b><span>Sold 2,350 SOL · Sheet 0002</span></div></div>
+          <div class="coin"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/8e02e1e7dec93a4ef4b2404976232940a1d80595e774cf3c5f2d6f23026867a9?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="M"></span><div><b>$MOODENG</b><span>Sold 2,350 SOL · Sheet 0002</span></div></div>
           <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:93%"></i></span><em>&minus;9.3%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:22%"></i></span><em>&minus;2.2%</em></div></div>
           <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="166.9" data-dec="1">166.9</b><small>SOL</small></div>
         </div>
         <div class="row rv">
-          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><div><b>$GOBLIN</b><span>Bought 310 SOL · Sheet 0001</span></div></div>
+          <div class="coin"><span class="av"><img src="https://cdn.dexscreener.com/cms/images/ba03c0370670d176dc33bbd212eb023337a460ad7edfa053ca96ae22f31c3dcf?width=160&amp;height=160&amp;quality=90&amp;format=auto" alt="" decoding="async" referrerpolicy="no-referrer" data-s="B"></span><div><b>$BONK</b><span>Bought 310 SOL · Sheet 0001</span></div></div>
           <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:22%"></i></span><em>&minus;2.2%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:6%"></i></span><em>&minus;0.6%</em></div></div>
           <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="5" data-dec="1">5.0</b><small>SOL</small></div>
         </div>
@@ -470,11 +450,11 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
       <details><summary>What is a sealed bid?</summary><p>An offer nobody else can see until the timer ends. Desks cannot copy or undercut each other, so the best honest price tends to win.</p></details>
       <details><summary>Why does it avoid the pool?</summary><p>The trade settles directly with the winning desk. It never walks up the pool curve, so your own order does not move the price against you.</p></details>
       <details><summary>What if nobody bids?</summary><p>The sheet expires and nothing moves. You can post it again with a longer timer or a smaller amount.</p></details>
-      <details><summary>Is this live yet?</summary><p>No. Every coin, desk and number on this page is example data until launch.</p></details>
+      <details><summary>Is this live yet?</summary><p>No. Every sheet, desk and number on this page is illustrative until launch. The coins shown are popular examples, not partners.</p></details>
     </section>
   </main>
 
-  <footer><span>GAVEL · Example data until launch.</span><span>Not financial advice. Memecoins can go to zero.</span></footer>
+  <footer><span>GAVEL · Numbers are illustrative until launch. Coin names and pictures belong to their projects; no affiliation.</span><span>Not financial advice. Memecoins can go to zero.</span></footer>
 </div>
 
 <script>
@@ -505,6 +485,13 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
     var orig=[].slice.call(track.children);
     for(var s=0;s<3;s++){orig.forEach(function(k){var c=k.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)})}
   }
+
+  // coin pictures load from the public image CDN; show an initial if one fails
+  function fb(im){var p=im.parentNode;if(!p)return;p.classList.add('fb');p.textContent=im.getAttribute('data-s')||'?'}
+  [].forEach.call(document.querySelectorAll('img[data-s]'),function(im){
+    im.addEventListener('error',function(){fb(im)});
+    if(im.complete&&im.naturalWidth===0)fb(im)
+  });
 
   // arm groups (draw lines, bars, counters) and play when scrolled into view
   var groups=[].slice.call(document.querySelectorAll('.arm'));

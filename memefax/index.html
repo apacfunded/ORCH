@@ -74,6 +74,17 @@ form.lookup label{font-weight:600;font-size:14px}
 .pill:hover{border-color:var(--accent);transform:translateY(-1px)}
 .pill .av{width:32px;height:32px}
 
+.ca{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;margin-top:6px;border-radius:12px;border:1.5px dashed var(--text);background:transparent;color:var(--text);font:600 14px var(--mono);cursor:pointer;transition:background .2s,color .2s;max-width:100%}
+.ca:hover{background:var(--text);color:var(--surface)}
+.ca b{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.ca:hover b{color:#ffb27d}
+.ca span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.foot .ca{margin:0;font-size:13px}
+.hero>div,form.lookup{min-width:0}
+form.lookup{grid-template-columns:minmax(0,1fr)}
+.ca{justify-self:start}
+.foot>*{min-width:0;max-width:100%}
+
 /* fax machine */
 .machine{position:relative;max-width:420px;margin:0 auto;width:100%;animation:bob 5s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-6px)}}
@@ -238,7 +249,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0 40px;colo
 .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 @media (max-width:900px){
-  .hero{grid-template-columns:1fr;padding-top:28px}
+  .hero{grid-template-columns:minmax(0,1fr);padding-top:28px}
   .t-score,.t-bund,.t-risk,.t-break{grid-column:span 12;grid-row:auto}
   .steps{grid-template-columns:1fr}
   .pop{grid-template-columns:repeat(2,1fr);gap:12px}
@@ -274,7 +285,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0 40px;colo
       <a class="l" href="#new" data-sec="new">New pairs</a>
       <a class="l" href="#how" data-sec="how">How it works</a>
       <a class="l" href="#faq" data-sec="faq">FAQ</a>
-      <a class="btn" href="#" id="buy">Buy $FAX</a>
+      <a class="btn" href="https://pump.fun/coin/5TeA3U2Fvz9CWx6nNHiM2CCrwpjAwX7aYFFfxBRLpump" target="_blank" rel="noopener" id="buy">Buy $FAX</a>
     </nav>
   </div>
 </header>
@@ -302,6 +313,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0 40px;colo
           </div>
           <span class="hint">Example data until launch. Leave it empty to fax a random coin.</span>
           <div class="try" id="try"><span>Or try one:</span></div>
+          <button class="ca" type="button" data-copy="5TeA3U2Fvz9CWx6nNHiM2CCrwpjAwX7aYFFfxBRLpump" aria-label="Copy the $FAX contract address"><b>CA</b><span>5TeA3U2Fvz9CWx6nNHiM2CCrwpjAwX7aYFFfxBRLpump</span><b data-state>Copy</b></button>
         </form>
       </div>
       <div class="machine fu a3" id="machine" aria-hidden="true">
@@ -456,7 +468,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0 40px;colo
 <footer>
   <div class="wrap foot">
     <span>Memefax. Not financial advice. Coin names and logos belong to their projects; Memefax is not affiliated.</span>
-    <span>Contract address: coming at launch</span>
+    <button class="ca" type="button" data-copy="5TeA3U2Fvz9CWx6nNHiM2CCrwpjAwX7aYFFfxBRLpump" aria-label="Copy the $FAX contract address"><b>CA</b><span>5TeA3U2Fvz9CWx6nNHiM2CCrwpjAwX7aYFFfxBRLpump</span><b data-state>Copy</b></button>
   </div>
 </footer>
 
@@ -661,7 +673,14 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0 40px;colo
     if(!v){var q=feed[Math.floor(Math.random()*feed.length)];openReport(build(q.addr,q.name,ageMin(q)),false);return}
     openReport(build(v,"$"+v.slice(0,4).toUpperCase(),null),false);
   });
-  $("buy").addEventListener("click",function(e){e.preventDefault();$("lcd").textContent="LAUNCHING SOON"});
+  document.querySelectorAll("[data-copy]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var v=b.dataset.copy,st=b.querySelector("[data-state]");
+      function done(){if(st){st.textContent="Copied";setTimeout(function(){st.textContent="Copy"},1500)}}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(done,function(){fallback()})}else fallback();
+      function fallback(){var t=document.createElement("textarea");t.value=v;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(t);done()}
+    });
+  });
 
   /* ---------- scroll reveal + scrollspy ---------- */
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.12});

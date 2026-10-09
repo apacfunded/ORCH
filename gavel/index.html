@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="pfp.svg" type="image/svg+xml">
+<meta name="theme-color" content="#071615">
+<meta name="description" content="Gavel ($GAVEL): post a big coin trade on a sheet, desks bid in secret, the best price wins in one transaction.">
+<title>Gavel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Terminal template, made friendlier. Top bar + ticker, hero (plain headline | live sheet), glossary, steps, animated pool-vs-sheet comparison, recent sheets, coin, FAQ.
+   Palette: Sea glass. Type: Familjen Grotesk (text) + IBM Plex Mono (numbers and labels only). */
+:root{
+  --bg:#071615;
+  --surface:#0e2423;
+  --line:#1f3f3c;
+  --fg:#e9f8f4;
+  --mute:#a5c4be;
+  --accent:#3fe0c0;
+  --accent-ink:#04201b;
+  --bad:#ff7a66;
+  --display:"Familjen Grotesk",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--display);font-size:17px;line-height:1.6;padding-inline:20px;padding-block:0 56px;margin:0;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+b{font-weight:600}
+
+/* top bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:14px}
+.logo{font-weight:600;font-size:22px;letter-spacing:.03em;display:flex;align-items:center;gap:12px;text-decoration:none;min-height:44px}
+.logo svg{width:36px;height:36px;border-radius:9px;display:block}
+.nav{display:flex;gap:6px 22px;align-items:center;flex-wrap:wrap}
+.nav a:not(.btn){font-size:16px;color:var(--mute);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.nav a:not(.btn):hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-weight:600;font-size:17px;border:0;border-radius:8px;text-decoration:none;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);filter:none}
+
+/* ticker */
+.marq{border-block:1px solid var(--line);overflow:hidden;background:var(--surface);margin-inline:-20px}
+.track{display:flex;width:max-content;animation:marq 48s linear infinite}
+.marq:hover .track{animation-play-state:paused}
+.tk{display:flex;align-items:center;gap:10px;padding:10px 28px;font-size:15px;white-space:nowrap;border-right:1px solid var(--line)}
+.tk .av{width:28px;height:28px}
+.tk em{font-style:normal;color:var(--mute)}
+.tk strong{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:14px}
+.tk-note{padding:8px 20px;font-family:var(--mono);font-size:12px;color:var(--mute);text-align:center}
+
+.av{border-radius:50%;overflow:hidden;display:block;flex:none}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center;padding-block:56px 72px;position:relative}
+.rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+h1{font-weight:600;font-size:clamp(40px,6vw,70px);line-height:1.02;letter-spacing:-.025em;margin:14px 0 22px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:20px;color:var(--mute);max-width:44ch;margin:0 0 30px;line-height:1.5}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.points{list-style:none;padding:0;margin:32px 0 0;display:grid;gap:10px}
+.points li{display:flex;gap:12px;align-items:center;font-size:17px}
+.points svg{width:22px;height:22px;flex:none}
+
+/* sheet */
+.glow{position:absolute;right:-60px;top:50%;width:520px;height:520px;max-width:90vw;transform:translateY(-50%);background:radial-gradient(closest-side,rgba(63,224,192,.18),transparent);animation:breathe 6s ease-in-out infinite;pointer-events:none}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;min-width:0;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.live{display:inline-flex;align-items:center;gap:8px}
+.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);animation:blink 1.4s ease-in-out infinite}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.step{padding:11px 4px;text-align:center;font-size:14px;color:var(--mute);border-right:1px solid var(--line);transition:background .3s ease,color .3s ease}
+.step:last-child{border-right:0}
+.step.on{color:var(--accent-ink);background:var(--accent);font-weight:600}
+.step.done{color:var(--accent)}
+.facts4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.cell{background:var(--surface);padding:14px 18px}
+.cell .v{font-family:var(--mono);font-size:20px;font-weight:500;margin-top:2px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:10px}
+.cell .v .av{width:26px;height:26px}
+.bids{padding:6px 18px}
+.bid{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:13px 0;border-bottom:1px dashed var(--line);min-height:56px;position:relative}
+.bid:last-child{border-bottom:0}
+.who{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:16px;min-width:0}
+.ini{width:32px;height:32px;border-radius:50%;background:var(--line);display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-style:normal;font-size:12px;color:var(--fg);flex:none}
+.amt{font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.seal{display:inline-block;width:96px;height:14px;border-radius:3px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 9px)}
+.bid.wait .seal{opacity:.35}
+.bid.got .seal{background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 9px);animation:pop .35s ease}
+.num{display:inline-block;animation:flipIn .45s ease both}
+.best{display:none;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent);padding:2px 8px;border-radius:4px}
+.bid.win{background:rgba(63,224,192,.1);margin-inline:-18px;padding-inline:18px;animation:flash 1.4s ease}
+.bid.win .amt{color:var(--accent)}
+.bid.win .best{display:inline-block}
+.foot{padding:16px 18px;border-top:1px solid var(--line);font-size:16px;color:var(--mute);min-height:152px;line-height:1.5}
+.foot b{color:var(--fg)}
+.stamp{position:absolute;right:20px;top:112px;border:3px solid var(--accent);color:var(--accent);padding:4px 14px;font-family:var(--mono);font-weight:500;font-size:22px;letter-spacing:.14em;border-radius:4px;pointer-events:none;background:rgba(7,22,21,.85);opacity:0;transform:rotate(-9deg) scale(1.8);transition:opacity .2s ease,transform .25s cubic-bezier(.3,1.6,.5,1)}
+.stamp.show{opacity:1;transform:rotate(-9deg) scale(1)}
+.note{font-family:var(--mono);font-size:12px;color:var(--mute);margin:12px 2px 0;position:relative}
+
+/* sections */
+section{padding-block:72px;border-top:1px solid var(--line)}
+h2{font-weight:600;font-size:clamp(30px,4.4vw,46px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 14px;text-wrap:balance;max-width:22ch}
+.sub{color:var(--mute);font-size:19px;max-width:54ch;margin:0 0 36px;line-height:1.55}
+
+.rv{transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.rv.pre{opacity:0;transform:translateY(20px)}
+
+/* glossary */
+.gl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.gl div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px}
+.gl h3{margin:0 0 8px;font-size:24px;font-weight:600;color:var(--accent)}
+.gl p{margin:0;color:var(--mute);font-size:17px}
+
+/* steps */
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;counter-reset:s}
+.how div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:26px;min-width:0}
+.how svg{width:56px;height:56px;display:block;margin-bottom:16px}
+.how h3{margin:6px 0 8px;font-size:24px;font-weight:600}
+.how p{margin:0;color:var(--mute)}
+.ic{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* draw animation (visible by default, hidden only while armed) */
+.draw{stroke-dasharray:1;stroke-dashoffset:0}
+.armed .draw{stroke-dashoffset:1}
+.go .draw{animation:draw 1.6s cubic-bezier(.4,0,.2,1) forwards;animation-delay:var(--dl,0s)}
+.dot{opacity:1}
+.armed .dot{opacity:0}
+.go .dot{animation:fadeIn .4s ease 1.5s forwards}
+
+/* compare */
+.cmp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.cmp{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:26px;min-width:0}
+.cmp h3{margin:0 0 4px;font-size:24px;font-weight:600}
+.cmp.pool h3{color:var(--bad)}
+.cmp.sheetc h3{color:var(--accent)}
+.cmp p{margin:0 0 14px;color:var(--mute)}
+.cmp svg{width:100%;height:auto;display:block;margin-bottom:12px}
+.gl-l{stroke:var(--line);stroke-width:1}
+.cmp.pool .ln{stroke:var(--bad)}
+.cmp.sheetc .ln{stroke:var(--accent)}
+.ln{fill:none;stroke-width:4;stroke-linecap:round}
+.cmp.pool .dot{fill:var(--bad)}
+.cmp.sheetc .dot{fill:var(--accent)}
+.get{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--line)}
+.get b{font-family:var(--mono);font-weight:500;font-size:32px;font-variant-numeric:tabular-nums}
+.lost{margin-top:6px;font-size:16px;color:var(--mute)}
+.cmp.pool .lost b{color:var(--bad)}
+.delta{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:22px;border:1px solid var(--accent);border-radius:12px;background:rgba(63,224,192,.08);font-size:20px;text-align:center}
+.delta b{font-family:var(--mono);font-size:34px;font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums}
+.replay{margin-top:16px}
+
+/* recent sheets */
+.rows{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,.7fr);gap:28px;align-items:center;padding:20px 24px;border:1px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .2s ease,transform .2s ease}
+.row:hover{border-color:var(--accent);transform:translateY(-2px)}
+.coin{display:flex;gap:14px;align-items:center;min-width:0}
+.coin .av{width:52px;height:52px}
+.coin b{display:block;font-size:20px;line-height:1.2}
+.coin span{color:var(--mute);font-size:15px}
+.bars{display:grid;gap:10px}
+.br{display:grid;grid-template-columns:54px minmax(0,1fr) 62px;gap:12px;align-items:center;font-size:15px}
+.br span{color:var(--mute)}
+.br em{font-style:normal;font-family:var(--mono);font-size:14px;text-align:right}
+.trk{height:12px;background:var(--line);border-radius:6px;overflow:hidden;display:block}
+.fill{display:block;height:100%;width:var(--w);border-radius:6px;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.fill.p{background:var(--bad)}
+.fill.s{background:var(--accent)}
+.armed .fill{width:0}
+.go .fill{width:var(--w)}
+.saved{text-align:right}
+.saved .label{display:block}
+.saved b{font-family:var(--mono);font-weight:500;font-size:28px;color:var(--accent);font-variant-numeric:tabular-nums}
+.saved small{font-family:var(--mono);font-size:13px;color:var(--mute);margin-left:4px}
+
+/* coin */
+.token{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:center}
+.pfp{position:relative;width:min(100%,340px);aspect-ratio:1;margin-inline:auto}
+.pfp svg{position:absolute;inset:9%;width:82%;height:82%;border-radius:50%;box-shadow:0 18px 50px rgba(0,0,0,.4)}
+.ring{position:absolute;inset:0;border:2px dashed var(--accent);border-radius:50%;opacity:.55;animation:spin 28s linear infinite}
+.ca{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 14px}
+.ca code{flex:1 1 240px;min-width:0;font-family:var(--mono);font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0 16px;min-height:48px;display:flex;align-items:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mute)}
+.buy{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.buy li{display:flex;gap:14px;align-items:center;font-size:18px}
+.buy i{font-style:normal;font-family:var(--mono);width:32px;height:32px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+
+/* faq */
+details{border-bottom:1px solid var(--line)}
+details:first-of-type{border-top:1px solid var(--line)}
+summary{cursor:pointer;min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:20px;font-weight:500;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);color:var(--accent);font-size:26px;transition:transform .25s ease}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 22px;color:var(--mute);max-width:62ch;font-size:18px}
+
+footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--mute)}
+
+/* motion */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes marq{to{transform:translateX(-25%)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes pop{0%{transform:scaleX(.5)}60%{transform:scaleX(1.1)}100%{transform:none}}
+@keyframes flipIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes flash{0%{background:rgba(63,224,192,.4)}100%{background:rgba(63,224,192,.1)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:40px;padding-block:36px 56px}
+  .gl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .how,.cmp-grid{grid-template-columns:minmax(0,1fr)}
+  .row{grid-template-columns:minmax(0,1fr);gap:16px}
+  .saved{text-align:left}
+  .token{grid-template-columns:minmax(0,1fr);gap:32px}
+  .nav a.hide-s{display:none}
+  section{padding-block:56px}
+}
+@media (max-width:520px){
+  .gl{grid-template-columns:minmax(0,1fr)}
+  .lede{font-size:18px}
+  .stamp{top:104px;font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv.pre{opacity:1;transform:none}
+}
+</style>
+
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="pfp" viewBox="0 0 512 512">
+      <rect width="512" height="512" fill="#071615"/>
+      <circle cx="256" cy="256" r="196" fill="#0e2423" stroke="#3fe0c0" stroke-width="6"/>
+      <circle cx="256" cy="256" r="174" fill="none" stroke="#1f3f3c" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="round"/>
+      <rect x="150" y="338" width="212" height="40" rx="10" fill="#1f3f3c"/>
+      <rect x="150" y="338" width="212" height="8" rx="4" fill="#2c5a55"/>
+      <g transform="translate(256 248) rotate(-35)">
+        <rect x="-14" y="-165" width="28" height="125" rx="14" fill="#e3f6f2"/>
+        <rect x="-102" y="-46" width="204" height="92" rx="20" fill="#3fe0c0"/>
+        <rect x="-66" y="-46" width="14" height="92" fill="#04201b" opacity="0.28"/>
+        <rect x="52" y="-46" width="14" height="92" fill="#04201b" opacity="0.28"/>
+      </g>
+      <g stroke="#3fe0c0" stroke-width="6" stroke-linecap="round" fill="none">
+        <path d="M146 322 L124 334"/><path d="M142 346 L116 352"/><path d="M160 304 L142 288"/>
+      </g>
+    </symbol>
+    <symbol id="av-goblin" viewBox="0 0 64 64">
+      <rect width="64" height="64" fill="#16331f"/>
+      <polygon points="14,36 2,22 20,26" fill="#6cc25a"/><polygon points="50,36 62,22 44,26" fill="#6cc25a"/>
+      <circle cx="32" cy="36" r="19" fill="#86d972"/>
+      <circle cx="25" cy="33" r="5" fill="#fff"/><circle cx="39" cy="33" r="5" fill="#fff"/>
+      <circle cx="26" cy="34" r="2.4" fill="#12261a"/><circle cx="40" cy="34" r="2.4" fill="#12261a"/>
+      <path d="M24 45 Q32 51 40 45" stroke="#12261a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="av-mooncat" viewBox="0 0 64 64">
+      <rect width="64" height="64" fill="#1b1f45"/>
+      <circle cx="50" cy="14" r="2" fill="#f2e7b8"/><circle cx="12" cy="12" r="1.5" fill="#f2e7b8"/><circle cx="54" cy="46" r="1.5" fill="#f2e7b8"/>
+      <polygon points="16,30 18,10 31,22" fill="#f2e7b8"/><polygon points="48,30 46,10 33,22" fill="#f2e7b8"/>
+      <circle cx="32" cy="38" r="18" fill="#f2e7b8"/>
+      <ellipse cx="25" cy="36" rx="2.6" ry="3.6" fill="#1b1f45"/><ellipse cx="39" cy="36" rx="2.6" ry="3.6" fill="#1b1f45"/>
+      <path d="M30 43 L34 43 L32 46 Z" fill="#e58a9a"/>
+    </symbol>
+    <symbol id="av-pepito" viewBox="0 0 64 64">
+      <rect width="64" height="64" fill="#3a1717"/>
+      <path d="M20 20 C32 16 52 24 50 44 C48 54 38 58 30 52 C22 46 12 38 20 20 Z" fill="#ff5a4a"/>
+      <path d="M26 27 C34 25 43 31 43 41" stroke="#ff9a8c" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M20 20 C16 14 20 8 28 8" stroke="#6fcf55" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="bar">
+    <a class="logo" href="#top"><svg viewBox="0 0 512 512" aria-hidden="true"><use href="#pfp"/></svg>GAVEL</a>
+    <nav class="nav">
+      <a class="hide-s" href="#how">How it works</a>
+      <a class="hide-s" href="#compare">Pool vs sheet</a>
+      <a class="hide-s" href="#recent">Recent sheets</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn" href="#token">Buy $GAVEL</a>
+    </nav>
+  </header>
+</div>
+
+<div class="marq" aria-label="Example settled sheets">
+  <div class="track" id="track">
+    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><b>$GOBLIN</b><em>sold 1,200 SOL</em><strong>saved 62.8</strong></div>
+    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-pepito"/></svg><b>$PEPITO</b><em>bought 640 SOL</em><strong>saved 20.6</strong></div>
+    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-mooncat"/></svg><b>$MOONCAT</b><em>sold 2,350 SOL</em><strong>saved 166.9</strong></div>
+    <div class="tk"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><b>$GOBLIN</b><em>bought 310 SOL</em><strong>saved 5.0</strong></div>
+  </div>
+</div>
+<div class="tk-note">Example coins and numbers until launch</div>
+
+<div class="wrap">
+  <main id="top">
+    <div class="hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div style="position:relative">
+        <div class="label rise">A private price desk for big coin trades</div>
+        <h1 class="rise" style="--d:.08s">Sell a huge bag <em>without crashing the chart.</em></h1>
+        <p class="lede rise" style="--d:.16s">Post your trade on a sheet. Trading desks send in secret offers. The best offer wins, and the whole trade settles at one price, outside the pool.</p>
+        <div class="cta-row rise" style="--d:.24s">
+          <a class="btn" href="#compare">See the difference</a>
+          <a class="btn ghost" href="#token">Buy $GAVEL</a>
+        </div>
+        <ul class="points rise" style="--d:.32s">
+          <li><svg viewBox="0 0 24 24"><circle class="ic" cx="12" cy="12" r="10"/><path class="ic" d="M7 12.5l3.2 3.2L17 9"/></svg>Nobody sees your price while the sheet is open</li>
+          <li><svg viewBox="0 0 24 24"><circle class="ic" cx="12" cy="12" r="10"/><path class="ic" d="M7 12.5l3.2 3.2L17 9"/></svg>Offers stay hidden until the timer ends</li>
+          <li><svg viewBox="0 0 24 24"><circle class="ic" cx="12" cy="12" r="10"/><path class="ic" d="M7 12.5l3.2 3.2L17 9"/></svg>One transaction, one price for the whole trade</li>
+        </ul>
+      </div>
+
+      <div style="position:relative;min-width:0" class="rise" >
+        <div class="sheet" role="group" aria-label="Live example of a sealed block sheet">
+          <div class="sheet-head">
+            <span class="label live">Live example · Sheet 0004</span>
+            <span class="label">Example data</span>
+          </div>
+          <div class="steps" id="steps">
+            <div class="step">1 Post</div><div class="step">2 Offers</div><div class="step">3 Reveal</div><div class="step">4 Done</div>
+          </div>
+          <div class="facts4">
+            <div class="cell"><div class="label">Coin</div><div class="v"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg>$GOBLIN</div></div>
+            <div class="cell"><div class="label">You want to</div><div class="v">SELL</div></div>
+            <div class="cell"><div class="label">Amount</div><div class="v">1,200 SOL</div></div>
+            <div class="cell"><div class="label">Time left</div><div class="v" id="win">03:55</div></div>
+          </div>
+          <div class="bids" id="bids">
+            <div class="bid wait" data-amt="1,176.8"><span class="who"><i class="ini">3f</i>Desk 0x3f…a1</span><span class="amt"><span class="seal"></span></span></div>
+            <div class="bid wait" data-amt="1,181.2"><span class="who"><i class="ini">81</i>Desk 0x81…c4</span><span class="amt"><span class="best">Best</span><span class="seal"></span></span></div>
+            <div class="bid wait" data-amt="1,169.4"><span class="who"><i class="ini">d2</i>Desk 0xd2…77</span><span class="amt"><span class="seal"></span></span></div>
+          </div>
+          <div class="foot" id="foot"><b>Sheet posted.</b> It shows the coin, the amount and the time limit. No price.</div>
+          <div class="stamp" id="stamp">SOLD</div>
+        </div>
+        <p class="note">This loops every 14 seconds so you can watch a full sheet.</p>
+      </div>
+    </div>
+
+    <section id="words">
+      <div class="label rv">In plain words</div>
+      <h2 class="rv">Four words, and you get it.</h2>
+      <p class="sub rv">That is all the jargon there is.</p>
+      <div class="gl">
+        <div class="rv"><h3>Block</h3><p>A trade big enough to move the price on its own.</p></div>
+        <div class="rv"><h3>Maker</h3><p>A trading desk that offers you a price for your block.</p></div>
+        <div class="rv"><h3>Sealed</h3><p>Hidden. Nobody sees any offer until the timer ends.</p></div>
+        <div class="rv"><h3>Slippage</h3><p>The extra cost you pay because your own trade pushes the price.</p></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="label rv">How it works</div>
+      <h2 class="rv">Three steps. No order book.</h2>
+      <p class="sub rv">A sheet is a short note with the coin, the amount, buy or sell, and a time limit. That is all the public sees.</p>
+      <div class="how arm">
+        <div class="rv">
+          <svg viewBox="0 0 46 46"><path class="ic draw" pathLength="1" d="M10 6H28L36 14V40H10Z"/><path class="ic draw" pathLength="1" style="--dl:.5s" d="M28 6V14H36"/><path class="ic draw" pathLength="1" style="--dl:.8s" d="M16 24H30M16 30H30M16 36H23"/></svg>
+          <div class="label">Step 1</div><h3>Post your sheet</h3><p>Pick the coin, the amount, and whether you are buying or selling. Choose how long desks get to respond. You never write a price.</p>
+        </div>
+        <div class="rv">
+          <svg viewBox="0 0 46 46"><path class="ic draw" pathLength="1" d="M10 21H36V40H10Z"/><path class="ic draw" pathLength="1" style="--dl:.5s" d="M15 21V15A8 8 0 0 1 31 15V21"/><path class="ic draw" pathLength="1" style="--dl:.9s" d="M23 29V33"/></svg>
+          <div class="label">Step 2</div><h3>Desks bid in secret</h3><p>Makers send an offer before the timer ends. Nobody can see anyone else&rsquo;s offer, so nobody can undercut by a hair.</p>
+        </div>
+        <div class="rv">
+          <svg viewBox="0 0 46 46"><circle class="ic draw" pathLength="1" cx="23" cy="23" r="17"/><path class="ic draw" pathLength="1" style="--dl:.6s" d="M14 24L21 31L33 16"/></svg>
+          <div class="label">Step 3</div><h3>Best offer wins</h3><p>Offers are revealed, the highest one is stamped, and your whole trade settles in a single transaction at that one price.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="compare">
+      <div class="label rv">Pool vs sheet</div>
+      <h2 class="rv">Same trade. Very different bill.</h2>
+      <p class="sub rv">Selling 1,200 SOL worth of the example coin $GOBLIN. In a pool, every slice of your order fills at a worse price than the last. On a sheet, desks price the whole block once.</p>
+      <div class="arm" id="cmp">
+        <div class="cmp-grid">
+          <div class="cmp pool rv">
+            <h3>Selling in the pool</h3>
+            <p>Your own order pushes the price down while it fills.</p>
+            <svg viewBox="0 0 300 150" role="img" aria-label="Price line falling steeply as the order fills">
+              <line class="gl-l" x1="10" x2="290" y1="30" y2="30"/><line class="gl-l" x1="10" x2="290" y1="80" y2="80"/><line class="gl-l" x1="10" x2="290" y1="130" y2="130"/>
+              <path class="ln draw" pathLength="1" d="M10 30C80 32 150 40 200 72S270 118 290 130"/>
+              <circle class="dot" cx="290" cy="130" r="6"/>
+            </svg>
+            <div class="get"><span class="label">You receive</span><span><b class="cnt" data-to="1118.4" data-dec="1">1,118.4</b> SOL</span></div>
+            <div class="lost">Lost to slippage: <b>81.6 SOL</b> (6.8%)</div>
+          </div>
+          <div class="cmp sheetc rv">
+            <h3>Selling on a sheet</h3>
+            <p>Desks quote the whole block at once. The price holds.</p>
+            <svg viewBox="0 0 300 150" role="img" aria-label="Price line staying almost flat">
+              <line class="gl-l" x1="10" x2="290" y1="30" y2="30"/><line class="gl-l" x1="10" x2="290" y1="80" y2="80"/><line class="gl-l" x1="10" x2="290" y1="130" y2="130"/>
+              <path class="ln draw" pathLength="1" d="M10 30C100 31 200 34 290 38"/>
+              <circle class="dot" cx="290" cy="38" r="6"/>
+            </svg>
+            <div class="get"><span class="label">You receive</span><span><b class="cnt" data-to="1181.2" data-dec="1">1,181.2</b> SOL</span></div>
+            <div class="lost">Lost to slippage: <b>18.8 SOL</b> (1.6%)</div>
+          </div>
+        </div>
+        <div class="delta rv"><span>The sheet puts</span><b class="cnt" data-to="62.8" data-dec="1">62.8</b><span>SOL more in your wallet.</span></div>
+      </div>
+      <button class="btn ghost replay" id="replay" type="button">Replay the animation</button>
+    </section>
+
+    <section id="recent">
+      <div class="label rv">Recent sheets</div>
+      <h2 class="rv">What the last blocks cost.</h2>
+      <p class="sub rv">Each bar is the extra cost of the trade, so a shorter bar is better. Example data until launch.</p>
+      <div class="rows arm">
+        <div class="row rv">
+          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><div><b>$GOBLIN</b><span>Sold 1,200 SOL · Sheet 0004</span></div></div>
+          <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:68%"></i></span><em>&minus;6.8%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:15.7%"></i></span><em>&minus;1.6%</em></div></div>
+          <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="62.8" data-dec="1">62.8</b><small>SOL</small></div>
+        </div>
+        <div class="row rv">
+          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-pepito"/></svg><div><b>$PEPITO</b><span>Bought 640 SOL · Sheet 0003</span></div></div>
+          <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:41%"></i></span><em>&minus;4.1%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:8.8%"></i></span><em>&minus;0.9%</em></div></div>
+          <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="20.6" data-dec="1">20.6</b><small>SOL</small></div>
+        </div>
+        <div class="row rv">
+          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-mooncat"/></svg><div><b>$MOONCAT</b><span>Sold 2,350 SOL · Sheet 0002</span></div></div>
+          <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:93%"></i></span><em>&minus;9.3%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:22%"></i></span><em>&minus;2.2%</em></div></div>
+          <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="166.9" data-dec="1">166.9</b><small>SOL</small></div>
+        </div>
+        <div class="row rv">
+          <div class="coin"><svg class="av" viewBox="0 0 64 64"><use href="#av-goblin"/></svg><div><b>$GOBLIN</b><span>Bought 310 SOL · Sheet 0001</span></div></div>
+          <div class="bars"><div class="br"><span>Pool</span><span class="trk"><i class="fill p" style="--w:22%"></i></span><em>&minus;2.2%</em></div><div class="br"><span>Sheet</span><span class="trk"><i class="fill s" style="--w:6%"></i></span><em>&minus;0.6%</em></div></div>
+          <div class="saved"><span class="label">You saved</span><b class="cnt" data-to="5" data-dec="1">5.0</b><small>SOL</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="token">
+      <div class="token">
+        <div class="pfp rv"><div class="ring"></div><svg viewBox="0 0 512 512" role="img" aria-label="Gavel coin picture"><use href="#pfp"/></svg></div>
+        <div class="rv">
+          <div class="label">The coin</div>
+          <h2>$GAVEL</h2>
+          <p class="sub" style="margin-bottom:0">The coin behind the desk, launching on pump.fun. Details on maker seats and fees will be posted here before launch.</p>
+          <div class="ca">
+            <code>Contract address: launching soon</code>
+            <button class="btn ghost" id="copy" type="button">Copy ticker</button>
+          </div>
+          <ol class="buy">
+            <li><i>1</i>Get SOL in your wallet</li>
+            <li><i>2</i>Open the $GAVEL page on pump.fun</li>
+            <li><i>3</i>Check the contract address, then buy</li>
+          </ol>
+          <div class="cta-row" style="margin-top:26px"><a class="btn" href="https://pump.fun" target="_blank" rel="noopener">Open pump.fun</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="label rv">FAQ</div>
+      <h2 class="rv">Quick answers.</h2>
+      <details><summary>What is a sealed bid?</summary><p>An offer nobody else can see until the timer ends. Desks cannot copy or undercut each other, so the best honest price tends to win.</p></details>
+      <details><summary>Why does it avoid the pool?</summary><p>The trade settles directly with the winning desk. It never walks up the pool curve, so your own order does not move the price against you.</p></details>
+      <details><summary>What if nobody bids?</summary><p>The sheet expires and nothing moves. You can post it again with a longer timer or a smaller amount.</p></details>
+      <details><summary>Is this live yet?</summary><p>No. Every coin, desk and number on this page is example data until launch.</p></details>
+    </section>
+  </main>
+
+  <footer><span>GAVEL · Example data until launch.</span><span>Not financial advice. Memecoins can go to zero.</span></footer>
+</div>
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasIO='IntersectionObserver' in window;
+  function fmt(v,dec){return v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec})}
+  function countTo(el,to,dur,dec,delay){
+    if(reduce){el.textContent=fmt(to,dec);return}
+    setTimeout(function(){
+      var t0=null;
+      function f(ts){
+        if(t0===null)t0=ts;
+        var p=Math.min(1,(ts-t0)/dur),e=1-Math.pow(1-p,3);
+        el.textContent=fmt(to*e,dec);
+        if(p<1)requestAnimationFrame(f)
+      }
+      requestAnimationFrame(f)
+    },delay||0)
+  }
+  function zero(g){[].forEach.call(g.querySelectorAll('.cnt'),function(el){el.textContent=fmt(0,parseInt(el.getAttribute('data-dec')||'0',10))})}
+  function runCounts(g){[].forEach.call(g.querySelectorAll('.cnt'),function(el){countTo(el,parseFloat(el.getAttribute('data-to')),1400,parseInt(el.getAttribute('data-dec')||'0',10),0)})}
+  function go(g){if(g.classList.contains('go'))return;g.classList.add('go');runCounts(g)}
+
+  // ticker: duplicate items for a seamless loop
+  var track=document.getElementById('track');
+  if(track&&!reduce){
+    var orig=[].slice.call(track.children);
+    for(var s=0;s<3;s++){orig.forEach(function(k){var c=k.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)})}
+  }
+
+  // arm groups (draw lines, bars, counters) and play when scrolled into view
+  var groups=[].slice.call(document.querySelectorAll('.arm'));
+  if(!reduce&&hasIO){
+    groups.forEach(function(g){g.classList.add('armed');zero(g)});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){go(e.target);io.unobserve(e.target)}})},{threshold:.25});
+    groups.forEach(function(g){io.observe(g)});
+    setTimeout(function(){groups.forEach(go)},12000);
+  }
+  var rb=document.getElementById('replay');
+  rb.addEventListener('click',function(){
+    var g=document.getElementById('cmp');
+    if(reduce)return;
+    g.classList.remove('go');g.classList.add('armed');zero(g);
+    void g.offsetWidth;
+    setTimeout(function(){go(g)},60)
+  });
+
+  // scroll reveal (content stays visible if anything fails)
+  var rv=[].slice.call(document.querySelectorAll('.rv'));
+  if(!reduce&&hasIO){
+    var vh=window.innerHeight||800,seen=new Map();
+    rv.forEach(function(el){
+      if(el.getBoundingClientRect().top>vh){
+        var p=el.parentNode,i=seen.get(p)||0;seen.set(p,i+1);
+        el.style.transitionDelay=(i%4*90)+'ms';
+        el.classList.add('pre')
+      }
+    });
+    var io2=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('pre');io2.unobserve(e.target)}})},{threshold:.12});
+    rv.forEach(function(el){if(el.classList.contains('pre'))io2.observe(el)});
+    setTimeout(function(){rv.forEach(function(el){el.classList.remove('pre')})},12000);
+  }
+
+  // copy ticker
+  var cb=document.getElementById('copy');
+  cb.addEventListener('click',function(){
+    var done=function(){cb.textContent='Copied';setTimeout(function(){cb.textContent='Copy ticker'},1400)};
+    try{navigator.clipboard.writeText('$GAVEL').then(done,function(){})}catch(e){}
+  });
+
+  // live sheet
+  var steps=[].slice.call(document.querySelectorAll('#steps .step'));
+  var bids=[].slice.call(document.querySelectorAll('#bids .bid'));
+  var win=document.getElementById('win'),foot=document.getElementById('foot'),stamp=document.getElementById('stamp');
+  var OFFER_AT=[2700,4300,5800],CYCLE=14000,cur=-1,curN=-1;
+  function pad(n){return n<10?'0'+n:''+n}
+  function setStep(i){steps.forEach(function(el,k){el.className='step'+(k===i?' on':(k<i?' done':''))})}
+  function onEnter(i){
+    setStep(i);
+    if(i===0){
+      curN=-1;
+      bids.forEach(function(b){b.className='bid wait';b.querySelector('.amt').innerHTML=(b===bids[1]?'<span class="best">Best</span>':'')+'<span class="seal"></span>'});
+      stamp.className='stamp';
+      foot.innerHTML='<b>Sheet posted.</b> It shows the coin, the amount and the time limit. No price.';
+    }
+    if(i===1){foot.innerHTML='<b>0 of 3</b> offers in. Every offer is hidden.'}
+    if(i===2){
+      bids.forEach(function(b,k){
+        b.classList.remove('wait');b.classList.add('got');
+        b.querySelector('.amt').innerHTML=(b===bids[1]?'<span class="best">Best</span>':'')+'<span class="num" style="animation-delay:'+(k*160)+'ms">'+b.getAttribute('data-amt')+' SOL</span>'
+      });
+      foot.innerHTML='<b>Time is up.</b> The offers are revealed.';
+    }
+    if(i===3){
+      bids[1].classList.add('win');
+      stamp.className='stamp show';
+      foot.innerHTML='<b>Best offer wins: 1,181.2 SOL.</b> One transaction, one price. The pool would have paid 1,118.4. You saved <b class="sv">0.0</b> SOL.';
+      countTo(foot.querySelector('.sv'),62.8,1100,1,300);
+    }
+  }
+  function render(t){
+    var i=t<2000?0:(t<8000?1:(t<9800?2:3));
+    if(i!==cur){cur=i;onEnter(i)}
+    if(i===1){
+      var n=0;OFFER_AT.forEach(function(a){if(t>a)n++});
+      if(n!==curN){
+        curN=n;
+        bids.forEach(function(b,k){if(k<n){b.classList.remove('wait');b.classList.add('got')}});
+        foot.innerHTML='<b>'+n+' of 3</b> offers in. Every offer is hidden.'
+      }
+      var sec=Math.max(0,Math.round(235*(1-(t-2000)/6000)));
+      win.textContent=pad(Math.floor(sec/60))+':'+pad(sec%60)
+    }else if(i===0){win.textContent='03:55'}
+    else{win.textContent='00:00'}
+  }
+  if(reduce){
+    onEnter(0);onEnter(2);onEnter(3);win.textContent='00:00';
+    foot.querySelector('.sv').textContent='62.8';
+  }else{
+    var t0=Date.now();render(0);
+    setInterval(function(){render((Date.now()-t0)%CYCLE)},120)
+  }
+})();
+</script>
+</body>
+</html>

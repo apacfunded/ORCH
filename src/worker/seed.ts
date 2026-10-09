@@ -57,6 +57,14 @@ export async function advanceSeed(db: Db, opts: { hours?: number; budgetMs?: num
 
   let state = await readSeed(db);
   if (state?.done) return { done: true, simNow: new Date(state.simNow) };
+  // SEED_STOP=1 ends an in-progress replay where it is; the live worker fills in from there.
+  if (state && process.env.SEED_STOP === "1") {
+    await db.query(
+      `UPDATE worker_state SET value = jsonb_set(value, '{done}', 'true'::jsonb), updated_at = now() WHERE key = 'seed'`,
+    );
+    log("info", "demo replay stopped early", { simNow: new Date(state.simNow).toISOString() });
+    return { done: true, simNow: new Date(state.simNow) };
+  }
 
   let simNow = state?.simNow ?? Date.now() - hours * 60 * 60_000;
   const clock: Clock = { now: () => new Date(simNow) };

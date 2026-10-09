@@ -39,8 +39,10 @@ export class Runner {
       if ((this.pausedUntil.get(job.name) ?? 0) > now) continue;
       if (now - (this.lastRun.get(job.name) ?? 0) < job.everyMs(cfg)) continue;
       this.lastRun.set(job.name, now);
+      const t0 = Date.now();
       try {
         results[job.name] = await job.run(ctx);
+        results[`${job.name}Ms`] = Date.now() - t0;
       } catch (err) {
         if (err instanceof RateLimitError) {
           this.pausedUntil.set(job.name, err.resetAt.getTime());

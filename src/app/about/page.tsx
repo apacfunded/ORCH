@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { config } from "@/config";
 import { getDb } from "@/db";
 import { getThresholds } from "@/server/context";
+import { getLaunch } from "@/server/launch";
 import { requestRemovalAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,8 @@ export const metadata: Metadata = { title: "How it works" };
 export default async function About({ searchParams }: { searchParams: Promise<{ sent?: string; err?: string }> }) {
   const { sent, err } = await searchParams;
   const c = config();
-  const t = await getThresholds(await getDb());
+  const db = await getDb();
+  const [t, launch] = await Promise.all([getThresholds(db), getLaunch(db)]);
   return (
     <div className="wrap page">
       <div className="page__head">
@@ -31,7 +33,7 @@ export default async function About({ searchParams }: { searchParams: Promise<{ 
         <p>
           Everyone sees every receipt, {c.publicDelayMinutes} minutes after it prints. Holders see them live. Connect a Solana wallet
           and sign a message (free, no transaction); the server reads your balance on chain and re-checks it every few minutes.
-          {c.mint ? "" : " Live access opens when $RECEIPTS launches."}
+          {launch.mint ? "" : " Live access opens when $RECEIPTS launches."}
         </p>
         <p>Creator fees pay for the data and the AI, so the watcher keeps running as long as the coin trades.</p>
 

@@ -102,6 +102,10 @@ img { display: block; }
 .hero h1 { font: 600 clamp(38px, 6vw, 68px)/1.02 var(--sans); letter-spacing: -0.02em; margin: 0 0 20px; }
 .hero h1 em { font-style: normal; text-decoration: line-through; text-decoration-color: var(--stamp); text-decoration-thickness: 0.08em; }
 .hero__sub { font-size: 18px; color: var(--muted); max-width: 52ch; margin: 0 0 28px; }
+.ca-box { border: 1px solid var(--line); border-left: 3px solid var(--stamp); border-radius: var(--r); padding: 14px 16px; margin: 0 0 24px; max-width: 560px; }
+.ca-box__k { display: block; font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ca-box__v { display: block; font: 500 15px/1.4 var(--mono); color: var(--text); overflow-wrap: anywhere; margin-bottom: 12px; }
+.ca-box__actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .stat { padding: 16px; border-right: 1px solid var(--line); }

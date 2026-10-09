@@ -3,6 +3,7 @@ import { config, sessionSecret } from "@/config";
 import { getDb, one } from "@/db";
 import { NONCE_TTL_MS, SESSION_COOKIE, SESSION_TTL_MS, signSession, verifySolanaSignature } from "@/lib/auth";
 import { resolveTier } from "@/lib/gate";
+import { getLaunch } from "@/server/launch";
 import { refreshBalance } from "@/server/viewer";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
   const c = config();
   const balance = await refreshBalance(db, wallet, true);
   const isAdmin = c.adminWallets.includes(wallet);
-  const tier = resolveTier({ mintConfigured: Boolean(c.mint), isAdmin, balance, minHold: c.minHold, whaleHold: c.whaleHold });
+  const tier = resolveTier({ mintConfigured: Boolean((await getLaunch(db)).mint), isAdmin, balance, minHold: c.minHold, whaleHold: c.whaleHold });
 
   const res = NextResponse.json({ wallet, tier, balance, isAdmin });
   res.cookies.set(SESSION_COOKIE, signSession({ wallet, exp: Date.now() + SESSION_TTL_MS }, sessionSecret()), {

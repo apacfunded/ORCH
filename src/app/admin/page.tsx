@@ -4,8 +4,9 @@ import { config } from "@/config";
 import { getDb, one } from "@/db";
 import { fmtAgo, fmtCount, fmtTime } from "@/lib/format";
 import { getThresholds } from "@/server/context";
+import { getLaunch } from "@/server/launch";
 import { getViewer } from "@/server/viewer";
-import { addAccountAction, resolveRemovalAction, saveThresholdsAction, setAccountAction } from "./actions";
+import { addAccountAction, clearLaunchAction, resolveRemovalAction, saveLaunchAction, saveThresholdsAction, setAccountAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Admin", robots: { index: false } };
@@ -32,7 +33,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   }
   const { ok, err } = await searchParams;
   const db = await getDb();
-  const [accounts, thresholds, removals, heartbeat] = await Promise.all([
+  const [accounts, thresholds, removals, heartbeat, launch] = await Promise.all([
     db.query<{ id: number; handle: string; followers: number; active: boolean; poll_minutes: number; last_polled_at: Date | null; tweets: number }>(
       `SELECT a.id, a.handle, a.followers, a.active, a.poll_minutes, a.last_polled_at,
               (SELECT count(*)::int FROM tweets t WHERE t.account_id = a.id) AS tweets
@@ -43,6 +44,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       `SELECT id, handle, contact, reason, created_at FROM removal_requests WHERE status = 'open' ORDER BY created_at`,
     ),
     one<{ updated_at: Date }>(db, `SELECT updated_at FROM worker_state WHERE key = 'heartbeat'`),
+    getLaunch(db),
   ]);
   const c = config();
 
@@ -58,6 +60,24 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </div>
       {ok ? <p className="flash flash--ok" role="status">{ok}</p> : null}
       {err ? <p className="flash flash--err" role="alert">{err}</p> : null}
+
+      <h2 className="section-title">Launch <small>{launch.mint ? "CA is live" : "no CA yet"}</small></h2>
+      <form action={saveLaunchAction} className="form">
+        <div className="field">
+          <label htmlFor="mint">$RECEIPTS contract address</label>
+          <input id="mint" name="mint" className="input mono" defaultValue={launch.mint} required minLength={32} maxLength={44} autoComplete="off" spellCheck={false} />
+          <span className="hint">Shows on every page and turns on holder access right away. Checked on chain before saving.</span>
+        </div>
+        <div className="field">
+          <label htmlFor="pumpUrl">Buy link <span className="dim">(optional)</span></label>
+          <input id="pumpUrl" name="pumpUrl" type="url" className="input" defaultValue={launch.mint && launch.pumpUrl !== `https://pump.fun/coin/${launch.mint}` ? launch.pumpUrl : ""} autoComplete="off" />
+          <span className="hint">Leave empty to link to the coin&apos;s pump.fun page.</span>
+        </div>
+        <div className="row-actions">
+          <button className="btn btn--primary" type="submit">{launch.mint ? "Update CA" : "Put CA on the site"}</button>
+          {launch.mint ? <button className="btn btn--danger" type="submit" formAction={clearLaunchAction} formNoValidate>Remove CA</button> : null}
+        </div>
+      </form>
 
       <h2 className="section-title">Add to watchlist <small>public accounts only</small></h2>
       <form action={addAccountAction} className="inline-form">

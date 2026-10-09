@@ -14,6 +14,8 @@ import { WalletButton } from "@/components/WalletButton";
 import { config } from "@/config";
 import { shortCa } from "@/lib/format";
 import { kickWorker } from "@/server/kick";
+import { getDb } from "@/db";
+import { getLaunch } from "@/server/launch";
 import { getViewer } from "@/server/viewer";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +38,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const c = config();
   const ready = Boolean(c.databaseUrl) || !c.onVercel;
   const viewer = ready ? await getViewer() : { wallet: null, tier: "public" as const, isAdmin: false };
+  const launch = await getLaunch(ready ? await getDb() : null);
   if (ready) kickWorker();
   return (
     <html lang="en">
@@ -55,9 +58,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <Link href="/about">How it works</Link>
             </nav>
             <div className="top__right">
-              {c.mint ? (
+              {launch.mint ? (
                 <span className="ca-chip">
-                  CA {shortCa(c.mint)} <CopyButton value={c.mint} label="Copy CA" />
+                  CA {shortCa(launch.mint)} <CopyButton value={launch.mint} label="Copy CA" />
                 </span>
               ) : null}
               <WalletButton wallet={viewer.wallet} tier={viewer.tier} isAdmin={viewer.isAdmin} />
@@ -73,7 +76,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             </p>
             <div className="foot__links">
               <a href={`https://x.com/${c.xHandle}`} target="_blank" rel="noreferrer">@{c.xHandle}</a>
-              {c.pumpUrl ? <a href={c.pumpUrl} target="_blank" rel="noreferrer">Buy on pump.fun</a> : null}
+              {launch.mint ? <a href={launch.pumpUrl} target="_blank" rel="noreferrer">Buy on pump.fun</a> : null}
+              {launch.mint ? <a href={launch.dexUrl} target="_blank" rel="noreferrer">Chart</a> : null}
               {c.partnerHandle ? (
                 <span>
                   Partnered with <a href={`https://x.com/${c.partnerHandle}`} target="_blank" rel="noreferrer">@{c.partnerHandle}</a>

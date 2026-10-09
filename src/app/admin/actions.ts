@@ -6,6 +6,10 @@ import type { Thresholds } from "@/config";
 import { getDb } from "@/db";
 import { createSources, getThresholds, saveThresholds } from "@/server/context";
 import { getViewer } from "@/server/viewer";
+import { config } from "@/config";
+import { isSolanaAddress } from "@/lib/base58";
+import { checkMint } from "@/lib/solana";
+import { clearLaunch, saveLaunch } from "@/server/launch";
 import { addAccount } from "@/worker/seed";
 
 async function requireAdmin() {
@@ -69,4 +73,29 @@ export async function resolveRemovalAction(form: FormData) {
   }
   revalidatePath("/admin");
   back({ ok: decision === "removed" ? `Stopped watching @${rows[0]?.handle ?? ""}.` : "Request dismissed." });
+}
+
+export async function saveLaunchAction(form: FormData) {
+  await requireAdmin();
+  const mint = String(form.get("mint") ?? "").trim();
+  const pumpUrl = String(form.get("pumpUrl") ?? "").trim();
+  if (!isSolanaAddress(mint)) back({ err: "That isn't a Solana address. Paste the full CA (32 to 44 characters)." });
+  if (pumpUrl && !/^https:\/\/[^\s]+$/.test(pumpUrl)) back({ err: "The buy link must start with https://" });
+  const onChain = await checkMint(config().solanaRpcUrl, mint);
+  if (onChain === "missing") back({ err: "No token exists at that address on Solana. Check the CA for a typo." });
+  await saveLaunch(await getDb(), mint, pumpUrl);
+  revalidatePath("/", "layout");
+  back({
+    ok:
+      onChain === "ok"
+        ? "CA is live on the site. Holders can now unlock the live feed."
+        : "CA saved and live. Solana didn't answer, so it couldn't be double-checked on chain.",
+  });
+}
+
+export async function clearLaunchAction() {
+  await requireAdmin();
+  await clearLaunch(await getDb());
+  revalidatePath("/", "layout");
+  back({ ok: "CA removed from the site." });
 }

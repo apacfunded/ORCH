@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyButton } from "@/components/CopyButton";
 import { FeedClient } from "@/components/FeedClient";
 import { ReceiptCard } from "@/components/ReceiptCard";
 import { getDb } from "@/db";
@@ -6,6 +7,7 @@ import { toDTO } from "@/lib/dto";
 import { fmtCount } from "@/lib/format";
 import { feedCutoff } from "@/lib/gate";
 import { countLocked, getFeed, getStats } from "@/server/queries";
+import { getLaunch } from "@/server/launch";
 import { getViewer } from "@/server/viewer";
 
 export const dynamic = "force-dynamic";
@@ -15,11 +17,12 @@ export default async function Home() {
   const db = await getDb();
   const now = new Date();
   const cutoff = feedCutoff(viewer.tier, now, viewer.delayMinutes);
-  const [items, locked, stats, [hero]] = await Promise.all([
+  const [items, locked, stats, [hero], launch] = await Promise.all([
     getFeed(db, { cutoff, limit: 30 }),
     countLocked(db, cutoff, now),
     getStats(db),
     getFeed(db, { cutoff, limit: 1, types: ["deleted"] }),
+    getLaunch(db),
   ]);
   const heroItem = hero ?? items[0];
 
@@ -35,8 +38,19 @@ export default async function Home() {
             Receipts watches CT callers around the clock. It logs every coin they shill, catches deleted tweets and quiet edits,
             flags coordinated pushes and scores every call.
           </p>
+          {launch.mint ? (
+            <div className="ca-box">
+              <span className="ca-box__k">$RECEIPTS CA</span>
+              <code className="ca-box__v">{launch.mint}</code>
+              <div className="ca-box__actions">
+                <CopyButton value={launch.mint} label="Copy CA" className="btn btn--primary btn--sm" />
+                <a href={launch.pumpUrl} className="btn btn--ghost btn--sm" target="_blank" rel="noreferrer">Buy on pump.fun</a>
+                <a href={launch.dexUrl} className="btn btn--ghost btn--sm" target="_blank" rel="noreferrer">Chart</a>
+              </div>
+            </div>
+          ) : null}
           <div className="hero__cta">
-            <Link href="/leaderboard" className="btn btn--primary">See the worst callers</Link>
+            <Link href="/leaderboard" className={launch.mint ? "btn btn--ghost" : "btn btn--primary"}>See the worst callers</Link>
             <Link href="/about" className="btn btn--ghost">How it works</Link>
           </div>
           <div className="stats" role="list">

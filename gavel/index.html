@@ -202,6 +202,7 @@ summary::after{content:"+";font-family:var(--mono);color:var(--accent);font-size
 details[open] summary::after{transform:rotate(45deg)}
 details p{margin:0 0 22px;color:var(--mute);max-width:62ch;font-size:18px}
 
+footer a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--mute)}
 
 /* motion */
@@ -268,6 +269,7 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
       <a class="hide-s" href="#compare">Pool vs sheet</a>
       <a class="hide-s" href="#recent">Recent sheets</a>
       <a href="#faq">FAQ</a>
+      <a class="hide-s" href="https://x.com/gravelsol" target="_blank" rel="noopener" aria-label="Gavel on X">X</a>
       <a class="btn" href="#token">Buy $GAVEL</a>
     </nav>
   </header>
@@ -431,7 +433,7 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
           <h2>$GAVEL</h2>
           <p class="sub" style="margin-bottom:0">The coin behind the desk, launching on pump.fun. Details on maker seats and fees will be posted here before launch.</p>
           <div class="ca">
-            <code>Contract address: launching soon</code>
+            <code id="ca">Contract address: launching soon</code>
             <button class="btn ghost" id="copy" type="button">Copy ticker</button>
           </div>
           <ol class="buy">
@@ -439,7 +441,7 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
             <li><i>2</i>Open the $GAVEL page on pump.fun</li>
             <li><i>3</i>Check the contract address, then buy</li>
           </ol>
-          <div class="cta-row" style="margin-top:26px"><a class="btn" href="https://pump.fun" target="_blank" rel="noopener">Open pump.fun</a></div>
+          <div class="cta-row" style="margin-top:26px"><a class="btn" id="pf" href="https://pump.fun" target="_blank" rel="noopener">Open pump.fun</a><a class="btn ghost" href="https://x.com/gravelsol" target="_blank" rel="noopener">Follow @gravelsol</a></div>
         </div>
       </div>
     </section>
@@ -454,7 +456,7 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
     </section>
   </main>
 
-  <footer><span>GAVEL · Numbers are illustrative until launch. Coin names and pictures belong to their projects; no affiliation.</span><span>Not financial advice. Memecoins can go to zero.</span></footer>
+  <footer><span>GAVEL · <a href="https://x.com/gravelsol" target="_blank" rel="noopener">@gravelsol</a> · Numbers are illustrative until launch. Coin names and pictures belong to their projects; no affiliation.</span><span>Not financial advice. Memecoins can go to zero.</span></footer>
 </div>
 
 <script>
@@ -526,11 +528,18 @@ footer{padding-top:32px;border-top:1px solid var(--line);display:flex;justify-co
     setTimeout(function(){rv.forEach(function(el){el.classList.remove('pre')})},12000);
   }
 
-  // copy ticker
-  var cb=document.getElementById('copy');
+  // contract address: paste it between the quotes at launch, everything else updates
+  var CA='';
+  var cb=document.getElementById('copy'),label=CA?'Copy CA':'Copy ticker',val=CA||'$GAVEL';
+  if(CA){
+    document.getElementById('ca').textContent=CA;
+    document.getElementById('ca').style.color='var(--fg)';
+    document.getElementById('pf').href='https://pump.fun/coin/'+CA;
+    cb.textContent=label;
+  }
   cb.addEventListener('click',function(){
-    var done=function(){cb.textContent='Copied';setTimeout(function(){cb.textContent='Copy ticker'},1400)};
-    try{navigator.clipboard.writeText('$GAVEL').then(done,function(){})}catch(e){}
+    var done=function(){cb.textContent='Copied';setTimeout(function(){cb.textContent=label},1400)};
+    try{navigator.clipboard.writeText(val).then(done,function(){})}catch(e){}
   });
 
   // live sheet

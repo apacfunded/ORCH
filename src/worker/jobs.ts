@@ -48,7 +48,7 @@ async function insertAlert(
   const row = await one<{ id: number }>(
     db,
     `INSERT INTO alerts (type, account_id, tweet_id, ca, payload, created_at)
-     VALUES ($1, $2, $3, $4, $5::jsonb, $6) RETURNING id`,
+     VALUES ($1, $2, $3, $4, $5::text::jsonb, $6) RETURNING id`,
     [a.type, a.accountId, a.tweetId ?? null, a.ca ?? null, JSON.stringify(a.payload), a.createdAt],
   );
   return row!.id;

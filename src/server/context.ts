@@ -32,7 +32,7 @@ export async function getThresholds(db: Db): Promise<Thresholds> {
 
 export async function saveThresholds(db: Db, t: Thresholds): Promise<void> {
   await db.query(
-    `INSERT INTO settings (key, value) VALUES ('thresholds', $1::jsonb)
+    `INSERT INTO settings (key, value) VALUES ('thresholds', $1::text::jsonb)
      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
     [JSON.stringify(t)],
   );

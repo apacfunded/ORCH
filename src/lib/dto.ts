@@ -26,7 +26,7 @@ export function toDTO(row: {
   return {
     id: row.id,
     type: row.type,
-    payload: row.payload,
+    payload: typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload,
     created_at: typeof row.created_at === "string" ? row.created_at : row.created_at.toISOString(),
     tweet_status: row.tweet_status,
     mcap_1h: row.mcap_1h,

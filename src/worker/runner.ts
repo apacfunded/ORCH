@@ -56,7 +56,7 @@ export class Runner {
 
     await this.db
       .query(
-        `INSERT INTO worker_state (key, value, updated_at) VALUES ('heartbeat', $1::jsonb, $2)
+        `INSERT INTO worker_state (key, value, updated_at) VALUES ('heartbeat', $1::text::jsonb, $2)
          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at`,
         [JSON.stringify({ at: new Date(now).toISOString(), results }), new Date(now)],
       )

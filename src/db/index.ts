@@ -99,7 +99,7 @@ export async function migrate(db: Db): Promise<string[]> {
     if (done.has(f)) continue;
     const sql = await readFile(path.join(dir, f), "utf8");
     await db.exec(sql);
-    await db.query(`INSERT INTO _migrations (name) VALUES ($1)`, [f]);
+    await db.query(`INSERT INTO _migrations (name) VALUES ($1) ON CONFLICT DO NOTHING`, [f]);
     applied.push(f);
   }
   return applied;

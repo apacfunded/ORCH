@@ -265,9 +265,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <path d="M30 0 C 60 25, 60 50, 30 75 S 0 125, 30 150 S 60 200, 30 225 S 0 275, 30 300 S 60 350, 30 375 S 0 425 30 450" fill="none" stroke="#3fd7f2" stroke-width="4"/>
         <path d="M30 0 C 0 25, 0 50, 30 75 S 60 125, 30 150 S 0 200, 30 225 S 60 275, 30 300 S 0 350, 30 375" fill="none" stroke="#ff3dd0" stroke-width="4"/>
       </svg>
-      <div class="gc gcA"><span style="color:var(--lime)">GAME A</span><svg id="heroA" viewBox="0 0 120 120"></svg><span>Block Survival</span></div>
-      <div class="gc gcB"><span style="color:var(--orange)">GAME B</span><svg id="heroB" viewBox="0 0 120 120"></svg><span>Hero Shooter</span></div>
-      <div class="merged"><small>SPLICED BUILD</small><svg id="heroM" viewBox="0 0 120 120"></svg><b>Block Survival × Hero Shooter</b></div>
+      <div class="gc gcA"><span style="color:var(--lime)">GAME A</span><svg id="heroA" viewBox="0 0 120 120"></svg><span>Minecraft</span></div>
+      <div class="gc gcB"><span style="color:var(--orange)">GAME B</span><svg id="heroB" viewBox="0 0 120 120"></svg><span>Overwatch 2</span></div>
+      <div class="merged"><small>SPLICED BUILD</small><svg id="heroM" viewBox="0 0 120 120"></svg><b>Minewatch</b></div>
       <div class="lbl">decompile → <em>translate</em> → splice</div>
     </div>
   </div>
@@ -392,7 +392,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </div>
 
-<footer><div class="wrap"><span>© 2026 Splice. $SPLICE is a memecoin with no promise of value.</span><span>orch.lol/splice</span></div></footer>
+<footer><div class="wrap"><span>© 2026 Splice. $SPLICE is a memecoin with no promise of value. Game names belong to their owners; Splice is not affiliated with or endorsed by them.</span><span>orch.lol/splice</span></div></footer>
 <div class="toast" id="toast">Copied</div>
 
 <script>
@@ -409,21 +409,26 @@ const ICON = {
  racing:`<rect width="120" height="120" fill="#0a1a33"/><g opacity=".9">${Array.from({length:6},(_,i)=>Array.from({length:6},(_,j)=>(i+j)%2?`<rect x="${12+i*16}" y="${12+j*10}" width="16" height="10" fill="#f2f0ff"/>`:'').join('')).join('')}</g><path d="M14 98 L60 74 L106 98" stroke="#ffd23f" stroke-width="6" fill="none"/><path d="M18 108 h84" stroke="#2563eb" stroke-width="6"/>`,
  farm:`<rect width="120" height="120" fill="#1f2a0c"/><path d="M0 84 Q60 64 120 84 V120 H0Z" fill="#4d7c0f"/><path d="M30 84 V52 L50 36 L70 52 V84Z" fill="#e0344a"/><rect x="42" y="64" width="16" height="20" fill="#fde68a"/><circle cx="92" cy="30" r="12" fill="#ffd23f"/><path d="M82 92 v-12 M90 94 v-14 M98 92 v-12" stroke="#b6f23a" stroke-width="4" stroke-linecap="round"/>`,
  fighter:`<rect width="120" height="120" fill="#2a0a2a"/><path d="M28 70 q0-26 22-26 h18 q14 0 14 14 v10 q0 18-18 18 h-22 q-14 0-14-16Z" fill="#ff3dd0"/><path d="M50 44 v26 M62 44 v26 M74 50 v20" stroke="#2a0a2a" stroke-width="4"/><path d="M90 30 l8-10 M96 44 l12-4 M84 22 l2-12" stroke="#ffd23f" stroke-width="5" stroke-linecap="round"/>`,
+ cod:`<rect width="120" height="120" fill="#1a1f12"/><path d="M44 22 h32 l8 10 v58 l-8 10 h-32 l-8-10 v-58z" fill="#9ca38a"/><circle cx="60" cy="32" r="4" fill="#1a1f12"/><path d="M46 52 h28 M46 62 h22 M46 72 h26" stroke="#1a1f12" stroke-width="4"/><path d="M60 28 Q40 10 24 20" stroke="#9ca38a" stroke-width="3" fill="none"/>`,
+ gta:`<rect width="120" height="120" fill="#0e2a1a"/><circle cx="94" cy="26" r="12" fill="#ff8a3d"/><path d="M0 78 h120 v42 H0z" fill="#333"/><path d="M8 98 h20 M48 98 h20 M88 98 h20" stroke="#ffd23f" stroke-width="4"/><path d="M16 78 v-40 h14 v40 M36 78 v-26 h12 v26 M54 78 v-50 h16 v50 M76 78 v-22 h12 v22" fill="#1f4a33"/><path d="M20 30 l6 -8 l6 8" fill="none"/><g fill="#ffd23f"><path d="M86 54 l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/><path d="M104 54 l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></g>`,
+ roblox:`<rect width="120" height="120" fill="#0b1a33"/><rect x="10" y="88" width="30" height="10" rx="2" fill="#3fd7f2"/><rect x="46" y="68" width="26" height="10" rx="2" fill="#ff3dd0"/><rect x="80" y="48" width="30" height="10" rx="2" fill="#b6f23a"/><rect x="88" y="24" width="14" height="14" fill="#ffd23f"/><rect x="86" y="38" width="18" height="10" fill="#ffd23f"/><path d="M24 88 q16 -30 36 -20" stroke="#f2f0ff" stroke-width="2" stroke-dasharray="4 4" fill="none"/>`,
  sports:`<rect width="120" height="120" fill="#0c2a12"/><rect x="10" y="20" width="100" height="80" rx="4" fill="none" stroke="#f2f0ff" stroke-width="3"/><path d="M60 20 v80" stroke="#f2f0ff" stroke-width="3"/><circle cx="60" cy="60" r="14" fill="none" stroke="#f2f0ff" stroke-width="3"/><circle cx="84" cy="54" r="9" fill="#f2f0ff"/><path d="M80 50 l8 8 M88 50 l-8 8" stroke="#0c2a12" stroke-width="2"/>`
 };
 const GAMES=[
- {id:'block',name:'Block Survival',g:'Sandbox · Java',lang:'Java',feats:['Mine & build anything','Day/night survival','Crafting tree']},
- {id:'shooter',name:'Hero Shooter',g:'Team FPS · C++',lang:'C++',feats:['Hero abilities','Ultimate charge','5v5 objectives']},
- {id:'royale',name:'Battle Royale',g:'Last one standing · C++',lang:'C++',feats:['Shrinking storm','Drop-in loot','Build walls on the fly']},
- {id:'web',name:'Web Swinger',g:'Open-world action · C++',lang:'C++',feats:['Swing between towers','Combo combat','City traversal']},
- {id:'space',name:'Space Platformer',g:'3D platformer · C++',lang:'C++',feats:['Planet gravity jumps','Star collecting','Spin attack']},
- {id:'kart',name:'Kart Racer',g:'Party racing · C++',lang:'C++',feats:['Drift boosts','Item boxes','Shortcuts']},
- {id:'monster',name:'Monster Catcher',g:'Creature RPG · C#',lang:'C#',feats:['Catch & train creatures','Turn-based battles','Evolutions']},
- {id:'horror',name:'Survival Horror',g:'Horror · C++',lang:'C++',feats:['Limited ammo','Stalker AI','Dark corridors']},
- {id:'racing',name:'Street Racer',g:'Arcade racing · C++',lang:'C++',feats:['Nitro','Police chases','Car tuning']},
- {id:'farm',name:'Cozy Farm',g:'Life sim · C#',lang:'C#',feats:['Grow crops','Seasons','Friend the town']},
- {id:'fighter',name:'Arena Fighter',g:'Fighting · C++',lang:'C++',feats:['Combos & supers','1v1 rounds','Frame data']},
- {id:'sports',name:'Pitch Legends',g:'Sports · C++',lang:'C++',feats:['Team tactics','Skill moves','Career mode']}
+ {id:'block',name:'Minecraft',g:'Sandbox · Java',lang:'Java',pre:'Mine',suf:'craft',feats:['Mine & build anything','Day/night survival','Crafting']},
+ {id:'shooter',name:'Overwatch 2',g:'Hero shooter · C++',lang:'C++',pre:'Over',suf:'watch',feats:['Hero abilities','Ultimate charge','5v5 objectives']},
+ {id:'royale',name:'Fortnite',g:'Battle royale · Unreal C++',lang:'C++',pre:'Fort',suf:'nite',feats:['Shrinking storm','Drop-in loot','Build walls on the fly']},
+ {id:'web',name:'Spider-Man',g:'Open-world action · C++',lang:'C++',pre:'Spider',suf:'swing',feats:['Web swinging','Combo combat','City traversal']},
+ {id:'space',name:'Super Mario Galaxy',g:'3D platformer · C++',lang:'C++',pre:'Star',suf:'galaxy',feats:['Planet gravity jumps','Star collecting','Spin attack']},
+ {id:'cod',name:'Call of Duty',g:'Military FPS · C++',lang:'C++',pre:'Duty',suf:'ops',feats:['Loadouts & killstreaks','Fast gunplay','Warzone drops']},
+ {id:'kart',name:'Mario Kart 8',g:'Party racing · C++',lang:'C++',pre:'Kart',suf:'kart',feats:['Drift boosts','Item boxes','Shortcuts']},
+ {id:'monster',name:'Pokémon',g:'Creature RPG · C++',lang:'C++',pre:'Poké',suf:'mon',feats:['Catch & train creatures','Turn-based battles','Evolutions']},
+ {id:'gta',name:'GTA V',g:'Open world · C++',lang:'C++',pre:'Auto',suf:'auto',feats:['Steal any car','Wanted stars','Heists']},
+ {id:'roblox',name:'Roblox',g:'Game platform · Luau',lang:'Luau',pre:'Blox',suf:'blox',feats:['Obbies','Avatar items','Player-made worlds']},
+ {id:'farm',name:'Stardew Valley',g:'Farming sim · C#',lang:'C#',pre:'Dew',suf:'valley',feats:['Grow crops','Seasons','Befriend the town']},
+ {id:'fighter',name:'Smash Bros.',g:'Platform fighter · C++',lang:'C++',pre:'Smash',suf:'smash',feats:['Knock-off stages','Smash attacks','4-player chaos']},
+ {id:'sports',name:'Rocket League',g:'Car soccer · Unreal C++',lang:'C++',pre:'Rocket',suf:'league',feats:['Rocket boost','Aerial goals','Car soccer']},
+ {id:'horror',name:'Resident Evil 4',g:'Survival horror · C++',lang:'C++',pre:'Resi',suf:'dread',feats:['Limited ammo','Infected villagers','Dark corridors']}
 ];
 const byId=Object.fromEntries(GAMES.map(g=>[g.id,g]));
 const svg=(id,cls='gi')=>`<svg class="${cls}" viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${ICON[id]}</svg>`;
@@ -459,8 +464,7 @@ lib.addEventListener('click',e=>{const t=e.target.closest('.gtile');if(!t||runni
   if(pick.includes(id))pick=pick.filter(x=>x!==id);else{pick.push(id);if(pick.length>2)pick.shift()}renderSlots()});
 document.getElementById('randBtn').onclick=()=>{if(running)return;const a=[...GAMES].sort(()=>Math.random()-.5);pick=[a[0].id,a[1].id];renderSlots()};
 
-const PRE=['Blockwatch','Stormcraft','Websurge','Gravforge','Kartstorm','Monsterfall','Nightbuild','Turbocraft','Harvest Royale','Combo Galaxy'];
-function mashName(a,b){const w1=a.name.split(' ')[0],w2=b.name.split(' ').slice(-1)[0];return `${w1} ${w2}`}
+function mashName(a,b){return a.pre+b.suf}
 let running=false;const con=document.getElementById('console');
 function log(t,c=''){const p=document.createElement('p');p.className=c;p.textContent=t;con.appendChild(p);while(con.children.length>11)con.removeChild(con.firstChild)}
 function bar(k,v){document.getElementById('f'+k).style.width=v+'%';document.getElementById('p'+k).textContent=Math.round(v)+'%'}
@@ -491,7 +495,7 @@ go.onclick=async()=>{
 };
 
 // ---------- vote board ----------
-const PAIRS=[['block','shooter',31],['royale','space',22],['web','kart',17],['monster','fighter',14],['horror','farm',9],['racing','sports',7]];
+const PAIRS=[['block','cod',31],['royale','web',22],['space','shooter',17],['roblox','gta',14],['monster','fighter',9],['farm','horror',7]];
 document.getElementById('votes').innerHTML=PAIRS.map((p,i)=>`<div class="vrow"><span class="rk">${i+1}</span><div class="pair">${svg(p[0])}${svg(p[1])}<span>${byId[p[0]].name} <em>×</em> ${byId[p[1]].name}</span></div><span class="vpct" data-v="${p[2]}">0%</span><div class="vbar"><i data-w="${p[2]}"></i></div></div>`).join('');
 const vio=new IntersectionObserver(es=>{if(es[0].isIntersecting){document.querySelectorAll('.vbar i').forEach(i=>i.style.width=(i.dataset.w/31*100)+'%');
   document.querySelectorAll('.vpct').forEach(el=>{const t=+el.dataset.v;let v=0;const iv=setInterval(()=>{v++;el.textContent=v+'%';if(v>=t)clearInterval(iv)},35)});vio.disconnect()}},{threshold:.3});
@@ -501,13 +505,13 @@ const wallets=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123
 function ev(){const p=PAIRS[Math.floor(Math.random()*PAIRS.length)];const fee=Math.random()<.35;
   const d=document.createElement('div');d.className='ev';
   d.innerHTML=fee?`<span style="color:var(--yellow)">●</span><span><b>${(Math.random()*0.8+0.05).toFixed(2)} SOL</b> fees to splice pool</span><span class="k">now</span>`
-   :`${svg(p[0])}<span><b>${wallets()}</b> voted ${byId[p[0]].name.split(' ')[0]} × ${byId[p[1]].name.split(' ')[0]}</span><span class="k">now</span>`;
+   :`${svg(p[0])}<span><b>${wallets()}</b> voted ${byId[p[0]].name} × ${byId[p[1]].name}</span><span class="k">now</span>`;
   d.querySelectorAll('svg').forEach(s=>{s.style.width='28px';s.style.height='28px';s.style.borderRadius='8px';s.style.flex='none'});
   live.prepend(d);while(live.children.length>7)live.lastChild.remove()}
 for(let i=0;i<5;i++)ev();setInterval(ev,2600);
 
 // ---------- gallery ----------
-const GAL=[['block','shooter','Queued · Round 1 leader','w'],['royale','space','Queued','w'],['web','kart','Queued','w'],['monster','fighter','Queued','w'],['horror','farm','Queued','w'],['racing','sports','Queued','w']];
+const GAL=[['block','cod','Queued · Round 1 leader','w'],['royale','web','Queued','w'],['space','shooter','Queued','w'],['roblox','gta','Queued','w'],['kart','sports','Queued','w'],['farm','horror','Queued','w']];
 document.getElementById('gal').innerHTML=GAL.map(([a,b,s,c])=>{const A=byId[a],B=byId[b];return `<div class="shot"><div class="cv"><div class="h">${svg(a,'')}</div><div class="h r">${svg(b,'')}</div></div><div class="bd"><b>${mashName(A,B)}</b><p>${A.feats[0]} meets ${B.feats[0].toLowerCase()}.</p><span class="chip ${c}">${s}</span></div></div>`}).join('');
 
 // ---------- copy CA ----------

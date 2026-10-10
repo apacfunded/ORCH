@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Splice ($SPLICE)</title>
+<meta name="description" content="Splice: two games go in, one comes out. Holders vote on a pair, creator fees pay AI to decompile both into one shared language and splice them into one playable build.">
+<meta property="og:title" content="$SPLICE: two games in, one game out">
+<meta property="og:description" content="Vote on a pair. AI decompiles both, translates them to one language and splices them into one build.">
+<meta property="og:image" content="https://orch.lol/splice/pfp.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b1e; --surface:#15153a; --surface2:#1c1c4a; --line:#2a2a62;
+  --text:#f2f0ff; --muted:#a8a5d6; --yellow:#ffd23f; --pink:#ff3dd0;
+  --lime:#b6f23a; --orange:#ff8a3d; --cyan:#3fd7f2;
+  --r:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Rubik,system-ui,sans-serif;font-size:16px;line-height:1.55;overflow-x:hidden}
+h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;line-height:1.05;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.grid-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.22;mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 75%)}
+/* nav */
+nav{position:sticky;top:0;z-index:50;background:rgba(11,11,30,.92);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:20px}
+.brand img{width:38px;height:38px;border-radius:10px}
+.navlinks{display:flex;gap:4px;margin-left:auto}
+.navlinks a{padding:10px 14px;border-radius:10px;color:var(--muted);font-weight:500}
+.navlinks a:hover{color:var(--text);background:var(--surface)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:12px;font-weight:600;transition:transform .15s ease,background .15s ease}
+.btn:active{transform:scale(.97)}
+.btn-y{background:var(--yellow);color:#14120a}
+.btn-y:hover{background:#ffdc66}
+.btn-o{border:1px solid var(--line);background:var(--surface)}
+.btn-o:hover{border-color:var(--muted)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:820px){.navlinks{display:none}nav .btn{margin-left:auto}}
+/* hero */
+.hero{padding:72px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.35}}
+.hero h1{font-size:clamp(42px,6.2vw,76px);margin:18px 0 18px}
+.hero h1 .a{color:var(--lime)} .hero h1 .b{color:var(--orange)}
+.hero p.lead{font-size:19px;color:var(--muted);max-width:520px}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.ca{margin-top:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ca code{font-family:"Chakra Petch",system-ui,sans-serif;background:var(--surface);border:1px solid var(--line);padding:8px 12px;border-radius:10px;color:var(--text)}
+/* hero stage */
+.stage{position:relative;height:460px;border-radius:24px;background:radial-gradient(circle at 50% 50%,#24245e,#11112c 70%);border:1px solid var(--line);overflow:hidden}
+.stage .gc{position:absolute;top:50%;width:150px;height:200px;border-radius:16px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow)}
+.stage .gc svg{width:100%;height:110px}
+.stage .gc span{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:15px}
+.gcA{left:8%;background:linear-gradient(160deg,#2c5e0f,#162e08);border:2px solid var(--lime);animation:inA 7s infinite cubic-bezier(.6,0,.3,1)}
+.gcB{right:8%;background:linear-gradient(160deg,#6e2a0c,#331206);border:2px solid var(--orange);animation:inB 7s infinite cubic-bezier(.6,0,.3,1)}
+@keyframes inA{0%,8%{transform:translate(0,-50%) rotate(-8deg);opacity:1}35%{transform:translate(0,-50%) rotate(-3deg);opacity:1}55%{transform:translate(95px,-50%) rotate(0) scale(.6);opacity:0}100%{opacity:0;transform:translate(95px,-50%) scale(.6)}}
+@keyframes inB{0%,8%{transform:translate(0,-50%) rotate(8deg);opacity:1}35%{transform:translate(0,-50%) rotate(3deg);opacity:1}55%{transform:translate(-95px,-50%) rotate(0) scale(.6);opacity:0}100%{opacity:0;transform:translate(-95px,-50%) scale(.6)}}
+.stream{position:absolute;top:0;bottom:0;width:120px;font-family:"Chakra Petch",system-ui,sans-serif;font-size:12px;line-height:1.5;overflow:hidden;opacity:0;animation:strm 7s infinite}
+.stream.l{left:34%;color:var(--lime)} .stream.r{right:34%;color:var(--orange);text-align:right}
+.stream div{animation:scrollc 2.4s linear infinite}
+@keyframes scrollc{to{transform:translateY(-50%)}}
+@keyframes strm{0%,15%{opacity:0}25%,48%{opacity:.85}56%,100%{opacity:0}}
+.helix{position:absolute;left:50%;top:6%;height:88%;transform:translateX(-50%)}
+.helix path{stroke-dasharray:8 10;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-36}}
+.merged{position:absolute;left:50%;top:50%;width:190px;height:240px;border-radius:18px;padding:16px;transform:translate(-50%,-50%) scale(.5);opacity:0;
+  background:linear-gradient(90deg,#24480c 0 50%,#5a210a 50% 100%);border:2px solid var(--yellow);box-shadow:0 0 40px rgba(255,210,63,.35);animation:merge 7s infinite;display:flex;flex-direction:column;justify-content:space-between}
+.merged svg{width:100%;height:130px}
+.merged b{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:17px}
+.merged small{color:var(--yellow);font-size:12px;font-weight:500;letter-spacing:.06em}
+@keyframes merge{0%,52%{opacity:0;transform:translate(-50%,-50%) scale(.5)}62%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}68%,92%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
+.stage .lbl{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-family:"Chakra Petch",system-ui,sans-serif;font-size:14px;color:var(--muted)}
+.stage .lbl em{font-style:normal;color:var(--yellow)}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}.stage{height:400px}.stage .gc{width:120px;height:170px}.stage .gc svg{height:85px}.stream{display:none}}
+/* sections */
+section{padding:72px 0}
+.kicker{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;color:var(--pink);font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+.sec-h{font-size:clamp(32px,4.5vw,48px);margin:10px 0 12px}
+.sec-p{color:var(--muted);max-width:620px;font-size:17px}
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;position:relative}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;position:relative;opacity:0;transform:translateY(24px);transition:all .6s ease}
+.step.in{opacity:1;transform:none}
+.step .n{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:14px;color:var(--bg);background:var(--yellow);width:32px;height:32px;border-radius:9px;display:grid;place-items:center}
+.step h3{font-size:21px;margin:16px 0 8px}
+.step p{color:var(--muted);font-size:15px}
+.step .ico{height:84px;margin-top:16px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;overflow:hidden}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+/* step mini animations */
+.vote-bars{display:flex;gap:8px;align-items:flex-end;height:56px}
+.vote-bars i{width:16px;border-radius:4px 4px 0 0;background:var(--pink);animation:vb 1.8s ease-in-out infinite alternate}
+.vote-bars i:nth-child(2){animation-delay:.3s;background:var(--yellow)}.vote-bars i:nth-child(3){animation-delay:.6s;background:var(--cyan)}.vote-bars i:nth-child(4){animation-delay:.9s;background:var(--lime)}
+@keyframes vb{from{height:12px}to{height:56px}}
+.coinflow{position:relative;width:180px;height:40px}
+.coinflow i{position:absolute;top:10px;width:20px;height:20px;border-radius:50%;background:var(--yellow);box-shadow:0 0 8px var(--yellow);animation:cf 2s linear infinite}
+.coinflow i:nth-child(2){animation-delay:.66s}.coinflow i:nth-child(3){animation-delay:1.33s}
+@keyframes cf{from{left:0;opacity:0}15%{opacity:1}85%{opacity:1}to{left:160px;opacity:0}}
+.decomp{font-family:"Chakra Petch",system-ui,sans-serif;font-size:12px;color:var(--lime);line-height:1.4;text-align:left;width:85%;height:70px;overflow:hidden}
+.decomp div{animation:scrollc 3s linear infinite}
+.mergeic{display:flex;align-items:center;gap:6px}
+.mergeic b{width:30px;height:30px;border-radius:8px}
+.mergeic b:first-child{background:var(--lime);animation:mL 2s ease-in-out infinite}
+.mergeic b:last-child{background:var(--orange);animation:mR 2s ease-in-out infinite}
+@keyframes mL{50%{transform:translateX(18px)}} @keyframes mR{50%{transform:translateX(-18px)}}
+/* lab */
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:28px;margin-top:36px}
+.lab-top{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+.slot{min-height:150px;border:2px dashed var(--line);border-radius:18px;display:flex;align-items:center;justify-content:center;gap:14px;padding:16px;color:var(--muted);text-align:center;transition:border-color .2s}
+.slot.filled{border-style:solid}
+.slot .gi{width:76px;height:76px;flex:none}
+.slot .meta{text-align:left}
+.slot .meta b{display:block;font-family:"Chakra Petch",system-ui,sans-serif;font-size:20px;color:var(--text)}
+.slot .meta span{font-size:14px}
+.plus{font-family:"Chakra Petch",system-ui,sans-serif;font-size:34px;color:var(--yellow)}
+.lib-h{display:flex;justify-content:space-between;align-items:center;margin:26px 0 12px;gap:12px;flex-wrap:wrap}
+.lib-h h3{font-size:20px}
+.lib-h p{color:var(--muted);font-size:14px}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+@media(max-width:560px){.lib{grid-template-columns:1fr 1fr;gap:10px}.gtile .gi{height:64px}}
+.gtile{background:var(--surface2);border:2px solid transparent;border-radius:16px;padding:14px 12px;text-align:left;transition:transform .15s,border-color .15s;min-height:44px}
+.gtile:hover{transform:translateY(-3px);border-color:var(--line)}
+.gtile.sel{border-color:var(--yellow)}
+.gtile .gi{width:100%;height:84px;border-radius:12px;display:block}
+.gtile b{display:block;font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:16px;margin-top:10px}
+.gtile span{font-size:13px;color:var(--muted)}
+.lab-go{display:flex;justify-content:center;margin-top:24px;gap:12px;flex-wrap:wrap}
+.run{display:none;margin-top:26px;display:none;grid-template-columns:1fr 1fr;gap:20px}
+.run.on{display:grid}
+.console{background:#07071a;border:1px solid var(--line);border-radius:16px;padding:16px;font-family:"Chakra Petch",system-ui,sans-serif;font-size:13px;height:250px;overflow:hidden;color:var(--muted)}
+.console p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.console .ok{color:var(--lime)} .console .hi{color:var(--yellow)} .console .pk{color:var(--pink)}
+.bars{display:flex;flex-direction:column;gap:14px;justify-content:center}
+.bar label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+.bar .t{height:12px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar .f{height:100%;width:0;border-radius:99px;transition:width .25s linear}
+.result{display:none;margin-top:22px;border-radius:20px;padding:22px;border:2px solid var(--yellow);background:linear-gradient(120deg,rgba(182,242,58,.10),rgba(255,138,61,.10));animation:pop .5s ease}
+.result.on{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+@keyframes pop{from{transform:scale(.94);opacity:0}}
+.result .cover{width:150px;height:150px;border-radius:16px;position:relative;overflow:hidden;border:2px solid var(--yellow)}
+.result .cover .h{position:absolute;top:0;bottom:0;left:0;width:50%;overflow:hidden}
+.result .cover .h svg{width:200%;height:100%}
+.result .cover .h.r{left:auto;right:0}.result .cover .h.r svg{margin-left:-100%}
+.result .cover::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.result h3{font-size:28px}
+.result .sub{color:var(--yellow);font-family:"Chakra Petch",system-ui,sans-serif;font-size:14px;margin:4px 0 12px}
+.result ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.result li{background:var(--surface2);border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-size:14px}
+.note{font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
+@media(max-width:760px){.lab{padding:18px}.lab-top{grid-template-columns:1fr}.plus{text-align:center}.run.on{grid-template-columns:1fr}.result.on{grid-template-columns:1fr}.result .cover{width:100%;height:160px}}
+/* vote board */
+.board{margin-top:34px;display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.card h3{font-size:20px;margin-bottom:4px}
+.card .cap{font-size:13px;color:var(--muted);margin-bottom:16px}
+.vrow{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.vrow:first-of-type{border-top:0}
+.vrow .rk{font-family:"Chakra Petch",system-ui,sans-serif;color:var(--muted)}
+.pair{display:flex;align-items:center;gap:8px;font-weight:500}
+.pair .gi{width:34px;height:34px;border-radius:9px;flex:none}
+.pair em{font-style:normal;color:var(--yellow);font-family:"Chakra Petch",system-ui,sans-serif}
+.vbar{grid-column:2/4;height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:-4px}
+.vbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--lime),var(--orange));width:0;transition:width 1.2s ease}
+.vpct{font-family:"Chakra Petch",system-ui,sans-serif;font-size:15px}
+.live{display:flex;flex-direction:column;gap:10px;max-height:330px;overflow:hidden}
+.live .ev{display:flex;gap:10px;align-items:center;font-size:14px;background:var(--surface2);border-radius:12px;padding:10px 12px;animation:slide .45s ease}
+@keyframes slide{from{transform:translateY(-12px);opacity:0}}
+.live .ev b{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600}
+.live .ev .k{margin-left:auto;color:var(--muted);font-size:13px;white-space:nowrap}
+@media(max-width:860px){.board{grid-template-columns:1fr}}
+/* fees */
+.flow{margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.fnode{text-align:center;padding:0 10px;position:relative;z-index:1}
+.fnode .ci{width:84px;height:84px;margin:0 auto 14px;border-radius:22px;background:var(--surface);border:2px solid var(--line);display:grid;place-items:center;font-family:"Chakra Petch",system-ui,sans-serif;font-size:28px;font-weight:600}
+.fnode h4{font-family:"Chakra Petch",system-ui,sans-serif;font-size:18px;font-weight:600}
+.fnode p{color:var(--muted);font-size:14px;margin-top:4px}
+.fnode .pct{color:var(--yellow);font-family:"Chakra Petch",system-ui,sans-serif;font-size:22px;margin-top:6px}
+.fline{position:absolute;top:42px;left:12%;right:12%;height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.fline i{position:absolute;top:0;width:60px;height:100%;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:fl 2.2s linear infinite}
+@keyframes fl{from{left:-60px}to{left:100%}}
+@media(max-width:760px){.flow{grid-template-columns:1fr 1fr;row-gap:28px}.fline{display:none}}
+/* gallery */
+.gal{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.shot{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .2s}
+.shot:hover{transform:translateY(-4px)}
+.shot .cv{height:170px;position:relative;overflow:hidden}
+.shot .cv .h{position:absolute;top:0;bottom:0;left:0;width:50%;overflow:hidden}
+.shot .cv .h svg{width:200%;height:100%}
+.shot .cv .h.r{left:auto;right:0}.shot .cv .h.r svg{margin-left:-100%}
+.shot .cv::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.shot .bd{padding:16px}
+.shot .bd b{font-family:"Chakra Petch",system-ui,sans-serif;font-size:18px;font-weight:600}
+.shot .bd p{font-size:14px;color:var(--muted);margin-top:4px}
+.chip{display:inline-block;margin-top:10px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px;background:rgba(182,242,58,.12);color:var(--lime)}
+.chip.w{background:rgba(255,210,63,.12);color:var(--yellow)}
+@media(max-width:860px){.gal{grid-template-columns:1fr 1fr}}@media(max-width:560px){.gal{grid-template-columns:1fr}}
+/* faq */
+.faq{margin-top:30px;display:flex;flex-direction:column;gap:10px;max-width:820px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+summary{list-style:none;cursor:pointer;padding:18px 20px;font-weight:500;display:flex;justify-content:space-between;gap:12px;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:"Chakra Petch",system-ui,sans-serif;color:var(--yellow);font-size:20px;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 20px 18px;color:var(--muted)}
+/* cta + footer */
+.big{text-align:center;padding:80px 20px;border-radius:28px;margin:20px 0 60px;background:radial-gradient(circle at 50% 0,#2b2b70,var(--surface) 70%);border:1px solid var(--line)}
+.big img{width:110px;height:110px;border-radius:24px;animation:float 4s ease-in-out infinite;box-shadow:var(--shadow)}
+@keyframes float{50%{transform:translateY(-10px) rotate(-3deg)}}
+.big h2{font-size:clamp(34px,5vw,56px);margin:22px 0 12px}
+.big p{color:var(--muted);margin-bottom:26px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,160%);opacity:0;background:var(--yellow);color:#14120a;font-weight:600;padding:12px 18px;border-radius:12px;transition:transform .3s,opacity .3s;z-index:99}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.example{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:3px 10px;margin-left:8px;vertical-align:middle;font-family:Rubik;font-weight:500}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.merged{opacity:1;transform:translate(-50%,-50%)}.gcA,.gcB{opacity:.25}.step{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="pfp.png" alt="">Splice</a>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#lab">Splice Lab</a>
+      <a href="#vote">Vote</a>
+      <a href="#fees">Fees</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn-y" href="#buy">Buy $SPLICE</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="tag"><span class="dot"></span> Launching on pump.fun</span>
+      <h1>Two games in.<br><span class="a">One</span> <span class="b">game</span> out.</h1>
+      <p class="lead">Splice uses AI to decompile two different games, translate both into one shared code language, and stitch them into a single playable build.</p>
+      <div class="ctas">
+        <a class="btn btn-y" href="#lab">Try a splice</a>
+        <a class="btn btn-o" href="#how">See how it works</a>
+      </div>
+      <div class="ca" id="buy">CA <code id="caText">Coming soon</code><button class="btn btn-o" id="copyCa" style="min-height:40px;padding:0 14px">Copy</button></div>
+    </div>
+
+    <div class="stage" aria-label="Animation: two game cards merge into one spliced game">
+      <div class="stream l"><div id="streamL"></div></div>
+      <div class="stream r"><div id="streamR"></div></div>
+      <svg class="helix" viewBox="0 0 60 400" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M30 0 C 60 25, 60 50, 30 75 S 0 125, 30 150 S 60 200, 30 225 S 0 275, 30 300 S 60 350, 30 375 S 0 425 30 450" fill="none" stroke="#3fd7f2" stroke-width="4"/>
+        <path d="M30 0 C 0 25, 0 50, 30 75 S 60 125, 30 150 S 0 200, 30 225 S 60 275, 30 300 S 0 350, 30 375" fill="none" stroke="#ff3dd0" stroke-width="4"/>
+      </svg>
+      <div class="gc gcA"><span style="color:var(--lime)">GAME A</span><svg id="heroA" viewBox="0 0 120 120"></svg><span>Block Survival</span></div>
+      <div class="gc gcB"><span style="color:var(--orange)">GAME B</span><svg id="heroB" viewBox="0 0 120 120"></svg><span>Hero Shooter</span></div>
+      <div class="merged"><small>SPLICED BUILD</small><svg id="heroM" viewBox="0 0 120 120"></svg><b>Block Survival × Hero Shooter</b></div>
+      <div class="lbl">decompile → <em>translate</em> → splice</div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <div class="kicker">How it works</div>
+    <h2 class="sec-h">Four steps. Fully on-chain funded.</h2>
+    <p class="sec-p">Every game is written in its own language and engine. Splice breaks both games down, rewrites them in one language, and merges the pieces into one build.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Holders vote</h3><p>Pick any two games. The more $SPLICE you hold, the more your vote counts.</p><div class="ico"><div class="vote-bars"><i></i><i></i><i></i><i></i></div></div></div>
+      <div class="step"><div class="n">2</div><h3>Fees pay the AI</h3><p>Creator fees from every trade fund the compute for the winning pair.</p><div class="ico"><div class="coinflow"><i></i><i></i><i></i></div></div></div>
+      <div class="step"><div class="n">3</div><h3>AI decompiles</h3><p>Both games get broken down and translated into one shared language, Splice-IR.</p><div class="ico"><div class="decomp"><div>mov eax, [ebp+8]<br>call Player::Jump<br>→ fn jump(p)<br>push 0x3F<br>→ world.spawn()<br>mov eax, [ebp+8]<br>call Player::Jump<br>→ fn jump(p)<br>push 0x3F<br>→ world.spawn()</div></div></div></div>
+      <div class="step"><div class="n">4</div><h3>Splice ships</h3><p>Systems from both games get merged into one build. Then the next vote opens.</p><div class="ico"><div class="mergeic"><b></b><b></b></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="wrap">
+    <div class="kicker">Splice Lab</div>
+    <h2 class="sec-h">Pick two. Hit splice.</h2>
+    <p class="sec-p">Choose any two games below and watch how a splice runs, step by step.</p>
+    <div class="lab">
+      <div class="lab-top">
+        <div class="slot" id="slotA">Pick game A</div>
+        <div class="plus">×</div>
+        <div class="slot" id="slotB">Pick game B</div>
+      </div>
+      <div class="lib-h"><h3>Game library</h3><p>Tap two games</p></div>
+      <div class="lib" id="lib"></div>
+      <div class="lab-go">
+        <button class="btn btn-y" id="goBtn" disabled style="opacity:.5">Splice them</button>
+        <button class="btn btn-o" id="randBtn">Random pair</button>
+      </div>
+      <div class="run" id="run">
+        <div class="console" id="console"></div>
+        <div class="bars">
+          <div class="bar"><label><span id="lA">Decompile A</span><span id="pA">0%</span></label><div class="t"><div class="f" id="fA" style="background:var(--lime)"></div></div></div>
+          <div class="bar"><label><span id="lB">Decompile B</span><span id="pB">0%</span></label><div class="t"><div class="f" id="fB" style="background:var(--orange)"></div></div></div>
+          <div class="bar"><label><span>Translate to Splice-IR</span><span id="pT">0%</span></label><div class="t"><div class="f" id="fT" style="background:var(--cyan)"></div></div></div>
+          <div class="bar"><label><span>Merge build</span><span id="pM">0%</span></label><div class="t"><div class="f" id="fM" style="background:var(--yellow)"></div></div></div>
+        </div>
+      </div>
+      <div class="result" id="result">
+        <div class="cover" id="rCover"></div>
+        <div>
+          <h3 id="rName"></h3>
+          <div class="sub" id="rSub"></div>
+          <ul id="rFeats"></ul>
+        </div>
+      </div>
+      <p class="note">Demo of how a splice runs. Real splices are voted on by holders and funded by fees.</p>
+    </div>
+  </div>
+</section>
+
+<section id="vote">
+  <div class="wrap">
+    <div class="kicker">Next splice</div>
+    <h2 class="sec-h">The vote is live.</h2>
+    <p class="sec-p">The top pair when the round closes gets spliced next.</p>
+    <div class="board">
+      <div class="card">
+        <h3>Round #1 standings <span class="example">Example data until launch</span></h3>
+        <p class="cap">Closes when the fee pool hits the compute target</p>
+        <div id="votes"></div>
+      </div>
+      <div class="card">
+        <h3>Live activity</h3>
+        <p class="cap">Votes and fee drops as they happen</p>
+        <div class="live" id="live"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fees">
+  <div class="wrap">
+    <div class="kicker">Where fees go</div>
+    <h2 class="sec-h">Every trade feeds the lab.</h2>
+    <p class="sec-p">Creator fees flow straight into the splice pool. When the pool fills, the AI starts on the winning pair.</p>
+    <div class="flow">
+      <div class="fline"><i></i></div>
+      <div class="fnode"><div class="ci" style="color:var(--yellow)">$</div><h4>Trades</h4><p>Buys and sells earn creator fees</p></div>
+      <div class="fnode"><div class="ci" style="color:var(--cyan)">⛁</div><h4>Splice pool</h4><p>Fees stack up for compute</p><div class="pct">70%</div></div>
+      <div class="fnode"><div class="ci" style="color:var(--lime)">⚙</div><h4>AI compute</h4><p>Decompile, translate, merge</p></div>
+      <div class="fnode"><div class="ci" style="color:var(--pink)">🔥</div><h4>Buyback</h4><p>The rest buys back $SPLICE</p><div class="pct">30%</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <div class="kicker">Splice vault</div>
+    <h2 class="sec-h">Splices in the queue <span class="example">Example data until launch</span></h2>
+    <div class="gal" id="gal"></div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="kicker">FAQ</div>
+    <h2 class="sec-h">Questions</h2>
+    <div class="faq">
+      <details><summary>What does "decompile" mean?</summary><p>Games ship as compiled machine code. Decompiling turns that back into readable code, so the AI can see how movement, combat, building and the rest actually work.</p></details>
+      <details><summary>Why one shared language?</summary><p>Different games run on different engines and languages, so they can't talk to each other. Splice translates both into Splice-IR, one common language, so systems from each game can run side by side in one build.</p></details>
+      <details><summary>How do I vote?</summary><p>Hold $SPLICE and connect your wallet when voting opens. Your vote weight matches your holdings at the snapshot.</p></details>
+      <details><summary>Who pays for the AI?</summary><p>Creator fees. 70% goes to the splice pool that funds compute, and 30% buys back $SPLICE.</p></details>
+      <details><summary>Is the Splice Lab demo real?</summary><p>The lab shows how a splice run works step by step. Real splices are picked by the holder vote and funded by the fee pool.</p></details>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="big">
+    <img src="pfp.png" alt="$SPLICE logo">
+    <h2>Splice the games you love.</h2>
+    <p>Hold $SPLICE, vote on the next pair, watch it get built.</p>
+    <a class="btn btn-y" href="#buy">Buy $SPLICE</a>
+  </div>
+</div>
+
+<footer><div class="wrap"><span>© 2026 Splice. $SPLICE is a memecoin with no promise of value.</span><span>orch.lol/splice</span></div></footer>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+// ---------- original game icons (generic genres, no real-game art) ----------
+const ICON = {
+ block:`<rect width="120" height="120" fill="#16300a"/><g transform="translate(60 64)"><path d="M0-40 L36-20 L0 0 L-36-20Z" fill="#a3e635"/><path d="M-36-20 L0 0 L0 40 L-36 20Z" fill="#4d7c0f"/><path d="M36-20 L0 0 L0 40 L36 20Z" fill="#65a30d"/><path d="M-24-20 L-12-26 L0-20 L-12-14Z" fill="#d9f99d"/><path d="M6-30 L18-24 L6-18 L-6-24Z" fill="#84cc16"/></g>`,
+ shooter:`<rect width="120" height="120" fill="#3a1206"/><circle cx="60" cy="60" r="34" fill="none" stroke="#ff8a3d" stroke-width="6"/><circle cx="60" cy="60" r="6" fill="#ffd23f"/><path d="M60 14v22M60 84v22M14 60h22M84 60h22" stroke="#ff8a3d" stroke-width="6" stroke-linecap="round"/>`,
+ royale:`<rect width="120" height="120" fill="#1b1442"/><circle cx="60" cy="66" r="40" fill="#5b3bd6" opacity=".5"/><circle cx="60" cy="66" r="24" fill="none" stroke="#ff3dd0" stroke-width="4" stroke-dasharray="6 6"/><path d="M60 18 L48 40 h24Z" fill="#ffd23f"/><path d="M60 40 v18" stroke="#ffd23f" stroke-width="3"/><circle cx="60" cy="62" r="5" fill="#fff"/>`,
+ web:`<rect width="120" height="120" fill="#2a0a14"/><g stroke="#f2f0ff" stroke-width="2.5" fill="none" opacity=".9"><path d="M60 10 V110 M10 60 H110 M24 24 L96 96 M96 24 L24 96"/><circle cx="60" cy="60" r="14"/><circle cx="60" cy="60" r="30"/><circle cx="60" cy="60" r="46"/></g><circle cx="60" cy="60" r="7" fill="#e0344a"/>`,
+ space:`<rect width="120" height="120" fill="#081232"/><circle cx="20" cy="22" r="2" fill="#fff"/><circle cx="98" cy="30" r="2" fill="#fff"/><circle cx="90" cy="96" r="2" fill="#fff"/><circle cx="56" cy="70" r="28" fill="#3fd7f2"/><path d="M38 60 q18 12 38 0" stroke="#0e7490" stroke-width="5" fill="none"/><ellipse cx="56" cy="72" rx="46" ry="10" fill="none" stroke="#ffd23f" stroke-width="4"/><path d="M92 22 l4 9 10 1-8 6 3 10-9-5-9 5 3-10-8-6 10-1z" fill="#ffd23f"/>`,
+ kart:`<rect width="120" height="120" fill="#33240a"/><path d="M0 92 Q60 70 120 92 V120 H0Z" fill="#555"/><path d="M10 104 h16 M40 98 h16 M72 98 h16 M100 104 h12" stroke="#fff" stroke-width="3"/><rect x="34" y="56" width="52" height="20" rx="8" fill="#e0344a"/><rect x="48" y="44" width="20" height="14" rx="6" fill="#ffd23f"/><circle cx="42" cy="80" r="9" fill="#111"/><circle cx="78" cy="80" r="9" fill="#111"/>`,
+ monster:`<rect width="120" height="120" fill="#0b2a26"/><circle cx="60" cy="60" r="36" fill="#f2f0ff"/><path d="M24 60 a36 36 0 0 1 72 0Z" fill="#3fe0c0"/><rect x="24" y="56" width="72" height="8" fill="#0b2a26"/><circle cx="60" cy="60" r="12" fill="#0b2a26"/><circle cx="60" cy="60" r="6" fill="#f2f0ff"/>`,
+ horror:`<rect width="120" height="120" fill="#120607"/><path d="M60 22 C34 22 26 44 30 64 C33 78 40 86 44 98 h32 c4-12 11-20 14-34 C94 44 86 22 60 22Z" fill="#e7e2d6"/><ellipse cx="46" cy="62" rx="9" ry="11" fill="#120607"/><ellipse cx="74" cy="62" rx="9" ry="11" fill="#120607"/><path d="M56 80 l4-8 4 8z" fill="#120607"/><path d="M48 98v-8M56 98v-8M64 98v-8M72 98v-8" stroke="#120607" stroke-width="3"/>`,
+ racing:`<rect width="120" height="120" fill="#0a1a33"/><g opacity=".9">${Array.from({length:6},(_,i)=>Array.from({length:6},(_,j)=>(i+j)%2?`<rect x="${12+i*16}" y="${12+j*10}" width="16" height="10" fill="#f2f0ff"/>`:'').join('')).join('')}</g><path d="M14 98 L60 74 L106 98" stroke="#ffd23f" stroke-width="6" fill="none"/><path d="M18 108 h84" stroke="#2563eb" stroke-width="6"/>`,
+ farm:`<rect width="120" height="120" fill="#1f2a0c"/><path d="M0 84 Q60 64 120 84 V120 H0Z" fill="#4d7c0f"/><path d="M30 84 V52 L50 36 L70 52 V84Z" fill="#e0344a"/><rect x="42" y="64" width="16" height="20" fill="#fde68a"/><circle cx="92" cy="30" r="12" fill="#ffd23f"/><path d="M82 92 v-12 M90 94 v-14 M98 92 v-12" stroke="#b6f23a" stroke-width="4" stroke-linecap="round"/>`,
+ fighter:`<rect width="120" height="120" fill="#2a0a2a"/><path d="M28 70 q0-26 22-26 h18 q14 0 14 14 v10 q0 18-18 18 h-22 q-14 0-14-16Z" fill="#ff3dd0"/><path d="M50 44 v26 M62 44 v26 M74 50 v20" stroke="#2a0a2a" stroke-width="4"/><path d="M90 30 l8-10 M96 44 l12-4 M84 22 l2-12" stroke="#ffd23f" stroke-width="5" stroke-linecap="round"/>`,
+ sports:`<rect width="120" height="120" fill="#0c2a12"/><rect x="10" y="20" width="100" height="80" rx="4" fill="none" stroke="#f2f0ff" stroke-width="3"/><path d="M60 20 v80" stroke="#f2f0ff" stroke-width="3"/><circle cx="60" cy="60" r="14" fill="none" stroke="#f2f0ff" stroke-width="3"/><circle cx="84" cy="54" r="9" fill="#f2f0ff"/><path d="M80 50 l8 8 M88 50 l-8 8" stroke="#0c2a12" stroke-width="2"/>`
+};
+const GAMES=[
+ {id:'block',name:'Block Survival',g:'Sandbox · Java',lang:'Java',feats:['Mine & build anything','Day/night survival','Crafting tree']},
+ {id:'shooter',name:'Hero Shooter',g:'Team FPS · C++',lang:'C++',feats:['Hero abilities','Ultimate charge','5v5 objectives']},
+ {id:'royale',name:'Battle Royale',g:'Last one standing · C++',lang:'C++',feats:['Shrinking storm','Drop-in loot','Build walls on the fly']},
+ {id:'web',name:'Web Swinger',g:'Open-world action · C++',lang:'C++',feats:['Swing between towers','Combo combat','City traversal']},
+ {id:'space',name:'Space Platformer',g:'3D platformer · C++',lang:'C++',feats:['Planet gravity jumps','Star collecting','Spin attack']},
+ {id:'kart',name:'Kart Racer',g:'Party racing · C++',lang:'C++',feats:['Drift boosts','Item boxes','Shortcuts']},
+ {id:'monster',name:'Monster Catcher',g:'Creature RPG · C#',lang:'C#',feats:['Catch & train creatures','Turn-based battles','Evolutions']},
+ {id:'horror',name:'Survival Horror',g:'Horror · C++',lang:'C++',feats:['Limited ammo','Stalker AI','Dark corridors']},
+ {id:'racing',name:'Street Racer',g:'Arcade racing · C++',lang:'C++',feats:['Nitro','Police chases','Car tuning']},
+ {id:'farm',name:'Cozy Farm',g:'Life sim · C#',lang:'C#',feats:['Grow crops','Seasons','Friend the town']},
+ {id:'fighter',name:'Arena Fighter',g:'Fighting · C++',lang:'C++',feats:['Combos & supers','1v1 rounds','Frame data']},
+ {id:'sports',name:'Pitch Legends',g:'Sports · C++',lang:'C++',feats:['Team tactics','Skill moves','Career mode']}
+];
+const byId=Object.fromEntries(GAMES.map(g=>[g.id,g]));
+const svg=(id,cls='gi')=>`<svg class="${cls}" viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${ICON[id]}</svg>`;
+
+// hero icons
+document.getElementById('heroA').innerHTML=ICON.block;
+document.getElementById('heroB').innerHTML=ICON.shooter;
+document.getElementById('heroM').innerHTML=`<defs><clipPath id="hl"><rect width="60" height="120"/></clipPath><clipPath id="hr"><rect x="60" width="60" height="120"/></clipPath></defs><g clip-path="url(#hl)">${ICON.block}</g><g clip-path="url(#hr)">${ICON.shooter}</g><rect x="58" width="4" height="120" fill="#3fd7f2"/>`;
+
+// code streams
+const asmL=['aload_0','invokevirtual #12','getfield World.chunks','iconst_4','→ fn place_block()','istore_2','new Entity','→ fn spawn_mob()','goto 0x2A','→ struct Chunk'];
+const asmR=['mov rax,[rcx+20h]','call Ability::Cast','vmulss xmm0,xmm1','jne 0x7F3A','→ fn fire_weapon()','lea rdx,[rsp+40h]','→ fn hitscan()','push rbx','→ struct Hero','ret'];
+const fill=(el,arr)=>{let s='';for(let i=0;i<40;i++)s+=arr[i%arr.length]+'<br>';el.innerHTML=s+s};
+fill(document.getElementById('streamL'),asmL);fill(document.getElementById('streamR'),asmR);
+
+// step reveal
+const io=new IntersectionObserver(es=>es.forEach((e)=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.2});
+document.querySelectorAll('.step').forEach((s,i)=>{s.style.transitionDelay=(i*.12)+'s';io.observe(s)});
+
+// ---------- lab ----------
+const lib=document.getElementById('lib');
+lib.innerHTML=GAMES.map(g=>`<button class="gtile" data-id="${g.id}" aria-pressed="false">${svg(g.id)}<b>${g.name}</b><span>${g.g}</span></button>`).join('');
+let pick=[];
+const slotA=document.getElementById('slotA'),slotB=document.getElementById('slotB'),go=document.getElementById('goBtn');
+function renderSlots(){
+  [slotA,slotB].forEach((s,i)=>{const g=byId[pick[i]];
+    if(g){s.classList.add('filled');s.style.borderColor=i?'var(--orange)':'var(--lime)';s.innerHTML=`${svg(g.id)}<div class="meta"><b>${g.name}</b><span>${g.g}</span></div>`}
+    else{s.classList.remove('filled');s.style.borderColor='';s.textContent=i?'Pick game B':'Pick game A'}});
+  lib.querySelectorAll('.gtile').forEach(t=>{const on=pick.includes(t.dataset.id);t.classList.toggle('sel',on);t.setAttribute('aria-pressed',on)});
+  const ok=pick.length===2;go.disabled=!ok;go.style.opacity=ok?1:.5;
+}
+lib.addEventListener('click',e=>{const t=e.target.closest('.gtile');if(!t||running)return;const id=t.dataset.id;
+  if(pick.includes(id))pick=pick.filter(x=>x!==id);else{pick.push(id);if(pick.length>2)pick.shift()}renderSlots()});
+document.getElementById('randBtn').onclick=()=>{if(running)return;const a=[...GAMES].sort(()=>Math.random()-.5);pick=[a[0].id,a[1].id];renderSlots()};
+
+const PRE=['Blockwatch','Stormcraft','Websurge','Gravforge','Kartstorm','Monsterfall','Nightbuild','Turbocraft','Harvest Royale','Combo Galaxy'];
+function mashName(a,b){const w1=a.name.split(' ')[0],w2=b.name.split(' ').slice(-1)[0];return `${w1} ${w2}`}
+let running=false;const con=document.getElementById('console');
+function log(t,c=''){const p=document.createElement('p');p.className=c;p.textContent=t;con.appendChild(p);while(con.children.length>11)con.removeChild(con.firstChild)}
+function bar(k,v){document.getElementById('f'+k).style.width=v+'%';document.getElementById('p'+k).textContent=Math.round(v)+'%'}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function animBar(k,ms,lines){const n=20;for(let i=1;i<=n;i++){bar(k,i*5);if(lines&&i%4===0)log(lines[(i/4-1)%lines.length]);await wait(ms/n)}}
+go.onclick=async()=>{
+  if(running||pick.length<2)return;running=true;go.disabled=true;go.style.opacity=.5;
+  const A=byId[pick[0]],B=byId[pick[1]];
+  document.getElementById('run').classList.add('on');document.getElementById('result').classList.remove('on');con.innerHTML='';
+  ['A','B','T','M'].forEach(k=>bar(k,0));
+  document.getElementById('lA').textContent='Decompile '+A.name;document.getElementById('lB').textContent='Decompile '+B.name;
+  document.getElementById('run').scrollIntoView({behavior:'smooth',block:'center'});
+  log(`> splice ${A.id} ${B.id}`,'hi');log(`loading ${A.name} (${A.lang}) …`);
+  await animBar('A',1700,[`  found ${120+Math.floor(Math.random()*400)} classes`,'  rebuilding control flow','  mapping game loop','  extracted: '+A.feats[0],'  extracted: '+A.feats[1]]);
+  log(`✓ ${A.name} decompiled`,'ok');log(`loading ${B.name} (${B.lang}) …`);
+  await animBar('B',1700,[`  found ${300+Math.floor(Math.random()*900)} functions`,'  lifting x64 → IR','  naming symbols','  extracted: '+B.feats[0],'  extracted: '+B.feats[1]]);
+  log(`✓ ${B.name} decompiled`,'ok');
+  await animBar('T',1600,[`  ${A.lang} → Splice-IR`,`  ${B.lang} → Splice-IR`,'  unifying physics','  unifying input','  one shared language ✓']);
+  log('✓ both games now speak Splice-IR','ok');
+  await animBar('M',1500,['  merging worlds','  porting '+B.feats[0].toLowerCase(),'  porting '+A.feats[0].toLowerCase(),'  balancing','  building …']);
+  log('✓ build ready','pk');
+  const r=document.getElementById('result');
+  document.getElementById('rCover').innerHTML=`<div class="h">${svg(A.id,'')}</div><div class="h r">${svg(B.id,'')}</div>`;
+  document.getElementById('rName').textContent=mashName(A,B);
+  document.getElementById('rSub').textContent=`${A.name} × ${B.name} · Splice-IR build`;
+  document.getElementById('rFeats').innerHTML=[A.feats[0],B.feats[0],A.feats[1],B.feats[1],A.feats[2]+' + '+B.feats[2].toLowerCase()].map(f=>`<li>${f}</li>`).join('');
+  r.classList.add('on');running=false;go.disabled=false;go.style.opacity=1;
+};
+
+// ---------- vote board ----------
+const PAIRS=[['block','shooter',31],['royale','space',22],['web','kart',17],['monster','fighter',14],['horror','farm',9],['racing','sports',7]];
+document.getElementById('votes').innerHTML=PAIRS.map((p,i)=>`<div class="vrow"><span class="rk">${i+1}</span><div class="pair">${svg(p[0])}${svg(p[1])}<span>${byId[p[0]].name} <em>×</em> ${byId[p[1]].name}</span></div><span class="vpct" data-v="${p[2]}">0%</span><div class="vbar"><i data-w="${p[2]}"></i></div></div>`).join('');
+const vio=new IntersectionObserver(es=>{if(es[0].isIntersecting){document.querySelectorAll('.vbar i').forEach(i=>i.style.width=(i.dataset.w/31*100)+'%');
+  document.querySelectorAll('.vpct').forEach(el=>{const t=+el.dataset.v;let v=0;const iv=setInterval(()=>{v++;el.textContent=v+'%';if(v>=t)clearInterval(iv)},35)});vio.disconnect()}},{threshold:.3});
+vio.observe(document.getElementById('votes'));
+const live=document.getElementById('live');
+const wallets=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';let s='';for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s+'…'+c[Math.floor(Math.random()*c.length)]+c[Math.floor(Math.random()*c.length)]};
+function ev(){const p=PAIRS[Math.floor(Math.random()*PAIRS.length)];const fee=Math.random()<.35;
+  const d=document.createElement('div');d.className='ev';
+  d.innerHTML=fee?`<span style="color:var(--yellow)">●</span><span><b>${(Math.random()*0.8+0.05).toFixed(2)} SOL</b> fees to splice pool</span><span class="k">now</span>`
+   :`${svg(p[0])}<span><b>${wallets()}</b> voted ${byId[p[0]].name.split(' ')[0]} × ${byId[p[1]].name.split(' ')[0]}</span><span class="k">now</span>`;
+  d.querySelectorAll('svg').forEach(s=>{s.style.width='28px';s.style.height='28px';s.style.borderRadius='8px';s.style.flex='none'});
+  live.prepend(d);while(live.children.length>7)live.lastChild.remove()}
+for(let i=0;i<5;i++)ev();setInterval(ev,2600);
+
+// ---------- gallery ----------
+const GAL=[['block','shooter','Queued · Round 1 leader','w'],['royale','space','Queued','w'],['web','kart','Queued','w'],['monster','fighter','Queued','w'],['horror','farm','Queued','w'],['racing','sports','Queued','w']];
+document.getElementById('gal').innerHTML=GAL.map(([a,b,s,c])=>{const A=byId[a],B=byId[b];return `<div class="shot"><div class="cv"><div class="h">${svg(a,'')}</div><div class="h r">${svg(b,'')}</div></div><div class="bd"><b>${mashName(A,B)}</b><p>${A.feats[0]} meets ${B.feats[0].toLowerCase()}.</p><span class="chip ${c}">${s}</span></div></div>`}).join('');
+
+// ---------- copy CA ----------
+const toast=document.getElementById('toast');
+document.getElementById('copyCa').onclick=async()=>{const t=document.getElementById('caText').textContent;
+  if(/soon/i.test(t)){toast.textContent='CA drops at launch';}else{try{await navigator.clipboard.writeText(t);toast.textContent='Copied'}catch(e){toast.textContent='Copy failed, select it manually'}}
+  toast.classList.add('on');setTimeout(()=>toast.classList.remove('on'),1600)};
+</script>
+</body>
+</html>

@@ -160,6 +160,13 @@ section{padding:72px 0}
 .result li{background:var(--surface2);border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-size:14px}
 .note{font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
 @media(max-width:760px){.lab{padding:18px}.lab-top{grid-template-columns:1fr}.plus{text-align:center}.run.on{grid-template-columns:1fr}.result.on{grid-template-columns:1fr}.result .cover{width:100%;height:160px}}
+img.gi{object-fit:cover;display:block}
+.slot img.gi{width:76px;height:76px;border-radius:12px;flex:none}
+.pair img.gi{width:34px;height:34px;border-radius:9px;flex:none}
+.gtile img.gi{width:100%;height:84px;border-radius:12px}
+.cover .h img,.cv .h img{width:200%;height:100%;object-fit:cover;display:block}
+.cover .h.r img,.cv .h.r img{margin-left:-100%}
+.live .ev img{width:28px;height:28px;border-radius:8px;flex:none;object-fit:cover}
 /* vote board */
 .board{margin-top:34px;display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
@@ -431,7 +438,7 @@ const GAMES=[
  {id:'horror',name:'Resident Evil 4',g:'Survival horror · C++',lang:'C++',pre:'Resi',suf:'dread',feats:['Limited ammo','Infected villagers','Dark corridors']}
 ];
 const byId=Object.fromEntries(GAMES.map(g=>[g.id,g]));
-const svg=(id,cls='gi')=>`<svg class="${cls}" viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${ICON[id]}</svg>`;
+const svg=(id,cls='gi')=>`<svg class="${cls}" data-g="${id}" viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${ICON[id]}</svg>`;
 
 // hero icons
 document.getElementById('heroA').innerHTML=ICON.block;
@@ -513,6 +520,17 @@ for(let i=0;i<5;i++)ev();setInterval(ev,2600);
 // ---------- gallery ----------
 const GAL=[['block','cod','Queued · Round 1 leader','w'],['royale','web','Queued','w'],['space','shooter','Queued','w'],['roblox','gta','Queued','w'],['kart','sports','Queued','w'],['farm','horror','Queued','w']];
 document.getElementById('gal').innerHTML=GAL.map(([a,b,s,c])=>{const A=byId[a],B=byId[b];return `<div class="shot"><div class="cv"><div class="h">${svg(a,'')}</div><div class="h r">${svg(b,'')}</div></div><div class="bd"><b>${mashName(A,B)}</b><p>${A.feats[0]} meets ${B.feats[0].toLowerCase()}.</p><span class="chip ${c}">${s}</span></div></div>`}).join('');
+
+// ---------- game pictures: drop games/<id>.png (or .jpg/.webp) in to replace an icon ----------
+const PIC={};
+function applyPics(root=document){root.querySelectorAll('svg[data-g]').forEach(el=>{const src=PIC[el.dataset.g];if(!src)return;
+  const im=document.createElement('img');im.src=src;im.alt='';im.className=el.getAttribute('class')||'';im.dataset.g=el.dataset.g;
+  im.style.cssText=el.style.cssText;el.replaceWith(im)})}
+GAMES.forEach(g=>{const exts=['png','jpg','webp'];(function tryExt(i){if(i>=exts.length)return;const t=new Image();
+  t.onload=()=>{PIC[g.id]=t.src;applyPics();if(g.id==='block')setHero('heroA',t.src);if(g.id==='shooter')setHero('heroB',t.src)};
+  t.onerror=()=>tryExt(i+1);t.src=`games/${g.id}.${exts[i]}`})(0)});
+function setHero(id,src){const el=document.getElementById(id);el.innerHTML=`<image href="${src}" width="120" height="120" preserveAspectRatio="xMidYMid slice"/>`}
+new MutationObserver(()=>applyPics()).observe(document.body,{childList:true,subtree:true});
 
 // ---------- copy CA ----------
 const toast=document.getElementById('toast');

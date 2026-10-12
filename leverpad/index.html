@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="lever-api" content="https://leverpad-app.vercel.app/api">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src https://leverpad-app.vercel.app https://cdn.jsdelivr.net; style-src https://leverpad-app.vercel.app 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src https://d8j0ntlcm91z4.cloudfront.net; connect-src https://leverpad-app.vercel.app; frame-src https://dexscreener.com; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="canonical" href="https://orch.lol/leverpad/">
+<meta property="og:url" content="https://orch.lol/leverpad/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lever · Launch a coin. It comes with longs.</title>
+<meta name="description" content="A pump.fun launchpad where every coin's trading fees build its own pool, and that pool backs longs on the coin. Every win is reserved before the long opens.">
+<meta property="og:title" content="Lever">
+<meta property="og:description" content="Launch a coin. It comes with longs.">
+<meta name="theme-color" content="#B4EE4A">
+<meta property="og:image" content="https://leverpad-app.vercel.app/logo.jpg">
+<link rel="icon" href="https://leverpad-app.vercel.app/logo.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="https://leverpad-app.vercel.app/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Sora:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://leverpad-app.vercel.app/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="#home" aria-label="Lever home">
+    <span class="mark"><img src="https://leverpad-app.vercel.app/logo.jpg" alt="" width="46" height="46"></span>Lever
+  </a>
+  <nav class="nav" aria-label="Main">
+    <a href="#home" data-nav="home">Coins</a>
+    <a href="#launch" data-nav="launch">Launch</a>
+    <a href="#lever" data-nav="lever">$LEVER</a>
+    <a href="#me" data-nav="me">My coins</a>
+  </nav>
+  <button class="btn dark sm" type="button" id="wallet">Connect wallet</button>
+</header>
+
+<main id="main">
+
+<!-- HOME -->
+<section data-view="home" class="stack" aria-labelledby="h-home">
+  <div class="row">
+    <div class="card hero f3">
+      <video class="hero-logo hero-motion" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261011_210421_fb281cbc-4a8a-46b4-a548-7945be9c900c.mp4" poster="https://leverpad-app.vercel.app/logo.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+      <img class="hero-logo hero-still" src="https://leverpad-app.vercel.app/logo.jpg" alt="" width="220" height="220">
+      <div>
+        <span class="chip"><span class="dot"></span><span id="status-chip">Longs built into every launch</span></span>
+        <h1 class="h-hero" id="h-home" tabindex="-1" style="margin-top:24px">Launch a coin.<br>It comes with longs.</h1>
+        <p class="lede">Each coin's trading fees build its own pool. The pool backs longs on that coin, and every win is reserved before the long opens.</p>
+      </div>
+      <div class="btns">
+        <a class="btn primary" href="#launch">Launch a coin</a>
+        <a class="btn soft" href="#coins">Find a coin</a>
+      </div>
+    </div>
+    <div class="card night f2" aria-label="How a pool balances longs">
+      <div class="head" style="margin-bottom:0"><h2 style="font-size:18px;font-weight:500">The lever</h2><span class="mono note" style="color:var(--night-muted)">how every pool works</span></div>
+      <div class="lever" aria-hidden="true">
+        <div class="beam" style="transform:rotate(-9deg)">
+          <div class="w pool" style="transform:rotate(9deg)"><small>POOL</small><b>20.00 ◎</b></div>
+          <div class="w owed" style="transform:rotate(9deg)"><small>LONGS OWED</small><b>10.40 ◎</b></div>
+        </div>
+        <div class="fulcrum"></div><div class="ground"></div>
+      </div>
+      <p>The pool always outweighs what longs can win. When it can't, new longs wait.</p>
+    </div>
+  </div>
+
+  <div class="row" id="stats"></div>
+
+  <div class="row" id="coins">
+    <section class="card f3" aria-labelledby="h-coins">
+      <div class="head"><h2 class="h2" id="h-coins">Coins on Lever</h2><span class="note" id="claim-note"></span></div>
+      <div id="coin-list"></div>
+    </section>
+    <section class="card f2 stack" aria-labelledby="h-feed">
+      <h2 class="h2" id="h-feed">Pool activity</h2>
+      <div class="feed" id="feed"></div>
+    </section>
+  </div>
+
+  <div class="row" id="how">
+    <section class="card f1"><span class="num">1</span><h3>Fees fill the pool</h3><p>Every coin launched here gets its own pool wallet as its pump.fun creator. All of its creator fees land in that pool.</p></section>
+    <section class="card f1"><span class="num">2</span><h3>Longs unlock at 1 SOL</h3><p>Once a coin's pool holds 1 SOL, longs open on it. Long size is capped by the pool, so a busy coin carries bigger longs.</p></section>
+    <section class="card f1"><span class="num">3</span><h3>Wins are reserved upfront</h3><p>Each long's max win, 3x its margin, is locked in the pool when it opens. The pool can never owe more than it holds.</p></section>
+  </div>
+
+  <div class="row" id="lever">
+    <section class="card f3" aria-labelledby="h-lever">
+      <h2 id="h-lever" style="font-size:28px;letter-spacing:-.03em">$LEVER</h2>
+      <p style="margin:12px 0 20px;font-size:16px">The coin behind the launchpad. Every Lever coin's long market runs on the same engine, and $LEVER holders share in it.</p>
+      <div id="lever-ca"></div>
+    </section>
+    <section class="card accent f2 stack" style="justify-content:space-between">
+      <h2 style="font-size:28px;letter-spacing:-.03em;line-height:1.15">Your coin, longable from day one.</h2>
+      <a class="btn lime" href="#launch" style="align-self:flex-start">Launch a coin</a>
+    </section>
+  </div>
+
+  <section class="card" style="padding:12px 28px" aria-label="Questions">
+    <details><summary>Can I open a long today?</summary><p id="faq-longs">Not yet. Coins launch now and their pools fill from trading fees. Longs switch on once the long engine is finished and audited, and the site will say so here.</p></details>
+    <details><summary>Who controls a coin's pool?</summary><p>Each pool is a separate wallet that Lever's server controls. It's set as the coin's pump.fun creator, so creator fees go there, not to the launcher. Pools only pay winning longs.</p></details>
+    <details><summary>Can someone pump a coin to fake a win?</summary><p>Longs will settle on a 5-minute average price with a minimum hold time, so a quick buy can't fake a win.</p></details>
+    <details><summary>Do liquidations dump the coin?</summary><p>No. Longs are settled from the pool, so nothing is sold on-chain when someone is liquidated.</p></details>
+    <details><summary>Can a dev long their own coin?</summary><p>No. The wallet that launched a coin will be blocked from longing it.</p></details>
+  </section>
+</section>
+
+<!-- COIN -->
+<section data-view="coin" class="stack" hidden aria-label="Coin" id="coin-view">
+  <div class="stack" id="coin-top"></div>
+  <section class="card chart-card" id="coin-chart" aria-labelledby="h-chart" hidden></section>
+  <div class="stack" id="coin-rest"></div>
+</section>
+
+<!-- LAUNCH -->
+<section data-view="launch" hidden aria-labelledby="h-launch">
+  <h1 class="h-page" id="h-launch" tabindex="-1">Launch a coin</h1>
+  <p class="muted" style="margin:6px 0 24px">It goes live on pump.fun with its own fee pool. Longs unlock once that pool reaches 1 SOL.</p>
+  <div id="launch-closed" class="banner info" style="margin-bottom:16px" hidden>Launches open soon. You can fill this in now and it'll be saved on this device.</div>
+  <div class="row" style="align-items:flex-start">
+    <form class="f3 stack" id="lf" novalidate>
+      <section class="card stack" style="gap:20px">
+        <h2 style="font-size:18px">Coin details</h2>
+        <div class="row">
+          <label class="field" style="flex:2 1 240px">Name
+            <input id="lf-name" type="text" maxlength="32" autocomplete="off" aria-describedby="e-name">
+            <span class="err" id="e-name" hidden></span>
+          </label>
+          <label class="field" style="flex:1 1 160px">Ticker
+            <input id="lf-tick" type="text" maxlength="10" autocomplete="off" class="mono" aria-describedby="e-tick" placeholder="e.g. LDOG">
+            <span class="err" id="e-tick" hidden></span>
+          </label>
+        </div>
+        <label class="field">Description <span class="hint" style="margin-top:-6px">optional</span>
+          <textarea id="lf-desc" rows="3" maxlength="500"></textarea>
+          <span class="hint"><span id="lf-count">0</span> / 500</span>
+        </label>
+        <div class="field">
+          <span>Image</span>
+          <label class="drop" for="lf-img">
+            <span class="av" id="lf-pv"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3E4A2C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16 L15 11 L6 20"/></svg></span>
+            <span style="flex:1 1 180px"><span style="display:block;font-size:15px">Choose an image</span><span class="hint">PNG, JPG, GIF or WebP, under 2 MB</span></span>
+            <span class="btn ghost sm">Choose file</span>
+          </label>
+          <input id="lf-img" type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="skip" aria-describedby="e-img">
+          <span class="err" id="e-img" hidden></span>
+        </div>
+      </section>
+      <section class="card stack">
+        <h2 style="font-size:18px">Links <span class="muted" style="font-weight:400;font-size:14px">optional</span></h2>
+        <div class="row">
+          <label class="field f1">X
+            <input id="lf-x" type="text" placeholder="@handle or x.com link" aria-describedby="e-x">
+            <span class="err" id="e-x" hidden></span>
+          </label>
+          <label class="field f1">Telegram
+            <input id="lf-tg" type="text" placeholder="t.me link" aria-describedby="e-tg">
+            <span class="err" id="e-tg" hidden></span>
+          </label>
+        </div>
+      </section>
+      <section class="card stack">
+        <h2 style="font-size:18px">First buy <span class="muted" style="font-weight:400;font-size:14px">optional</span></h2>
+        <label class="field">Amount (SOL)
+          <input id="lf-dev" type="text" inputmode="decimal" autocomplete="off" class="mono" placeholder="0" aria-describedby="lf-dev-hint e-dev">
+          <span class="hint" id="lf-dev-hint">Buy your own coin in the same transaction as the launch, so nobody can buy before you. Leave empty to skip.</span>
+          <span class="err" id="e-dev" hidden></span>
+        </label>
+        <div class="seg c4" id="lf-devs"><button type="button" data-d="0.1">0.1 ◎</button><button type="button" data-d="0.5">0.5 ◎</button><button type="button" data-d="1">1 ◎</button><button type="button" data-d="2">2 ◎</button></div>
+      </section>
+    </form>
+    <aside class="f2 stack">
+      <section class="card" aria-label="Preview">
+        <div class="note" style="margin-bottom:14px">How it shows on Lever</div>
+        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:16px;background:var(--soft)">
+          <span class="av" id="pv-av" style="width:52px;height:52px;border-radius:16px;background:var(--accent-soft);color:var(--accent-deep);font-size:20px">?</span>
+          <div style="flex:1;min-width:0"><div id="pv-name" style="font-weight:600;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Your coin</div><div class="mono note" id="pv-tick">$TICKER</div></div>
+          <span class="pill">New</span>
+        </div>
+        <div class="meter" style="margin-top:16px"><i style="width:0%"></i></div>
+        <div class="mono note" style="margin-top:6px;font-size:12px">0 ◎ in pool · 1 ◎ to unlock longs</div>
+      </section>
+      <section class="card night stack" style="gap:14px">
+        <h2 style="font-size:18px;font-weight:500">What your coin gets</h2>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#B4EE4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Its own fee pool wallet, set as its pump.fun creator</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#B4EE4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>A long market once the pool hits 1 SOL</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#B4EE4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Every long's max win reserved upfront</div>
+        <p style="font-size:14px">Creator fees go to the pool, not to your wallet. That's what makes the coin longable.</p>
+      </section>
+      <section class="card stack" style="gap:12px">
+        <div id="lf-wallet" class="note" style="font-size:14px"></div>
+        <button class="btn primary" type="button" id="do-launch">Launch on pump.fun</button>
+        <p class="msg" id="lf-msg" role="status" aria-live="polite"></p>
+        <p class="note"><span id="lf-cost">Your wallet signs and pays about 0.03 SOL.</span> Not available to US users.</p>
+      </section>
+    </aside>
+  </div>
+</section>
+
+<!-- ME -->
+<section data-view="me" hidden id="me"></section>
+
+</main>
+<footer>
+  <span>Leverage can lose your whole margin.</span>
+  <span>Not available to US users.</span>
+</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script src="https://leverpad-app.vercel.app/app.js" defer></script>
+<script src="https://leverpad-app.vercel.app/demo.js" defer></script>
+</body>
+</html>

@@ -70,16 +70,21 @@
 
   <div class="row" id="stats"></div>
 
-  <div class="row" id="coins">
-    <section class="card f3" aria-labelledby="h-coins">
-      <div class="head"><h2 class="h2" id="h-coins">Coins on Lever</h2><span class="note" id="claim-note"></span></div>
-      <div id="coin-list"></div>
-    </section>
-    <section class="card f2 stack" aria-labelledby="h-feed">
-      <h2 class="h2" id="h-feed">Pool activity</h2>
-      <div class="feed" id="feed"></div>
-    </section>
-  </div>
+  <section class="card" id="coins" aria-labelledby="h-coins">
+    <div class="head"><h2 class="h2" id="h-coins">Coins on Lever</h2><span class="note" id="claim-note"></span></div>
+    <div class="search">
+      <label for="coin-q" class="vh">Search coins</label>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20 L16.2 16.2"/></svg>
+      <input id="coin-q" type="search" autocomplete="off" spellcheck="false" placeholder="Search by name, ticker or contract address" aria-describedby="coin-count">
+    </div>
+    <div id="coin-list" class="coin-grid"></div>
+    <p class="note" id="coin-count" aria-live="polite" style="margin-top:14px"></p>
+  </section>
+
+  <section class="card stack" aria-labelledby="h-feed">
+    <h2 class="h2" id="h-feed">Pool activity</h2>
+    <div class="feed" id="feed"></div>
+  </section>
 
   <div class="row" id="how">
     <section class="card f1"><span class="num">1</span><h3>Fees fill the pool</h3><p>Every coin launched here gets its own pool wallet as its pump.fun creator. All of its creator fees land in that pool.</p></section>
@@ -161,6 +166,11 @@
             <span class="err" id="e-tg" hidden></span>
           </label>
         </div>
+        <label class="field">Website
+          <input id="lf-web" type="text" inputmode="url" autocomplete="url" placeholder="https://yourcoin.com" aria-describedby="lf-web-hint e-web">
+          <span class="hint" id="lf-web-hint">Shows as the website on your coin's pump.fun page. Leave empty to use Lever's.</span>
+          <span class="err" id="e-web" hidden></span>
+        </label>
       </section>
       <section class="card stack">
         <h2 style="font-size:18px">First buy <span class="muted" style="font-weight:400;font-size:14px">optional</span></h2>

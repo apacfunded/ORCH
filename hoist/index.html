@@ -23,6 +23,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
 <style>
 /* Hoist: a job-site launchpad. Cream paper, site-ink black, one construction orange. */
+/* the condensed display font has no ◎, so draw just that glyph smaller from a system font */
+@font-face{font-family:SolGlyph;src:local("Arial"),local("Helvetica"),local("Segoe UI Symbol"),local("DejaVu Sans");unicode-range:U+25CE;size-adjust:62%}
 :root{
   --bg:#F4EFE6;--paper:#FFFAF2;--sunk:#EDE5D7;--line:#E1D6C4;--line2:#EAE1D2;
   --ink:#241C12;--muted:#6B5D4B;--dim:#9A8C78;
@@ -30,7 +32,7 @@
   --ok:#2F6B2A;--ok-soft:#E3EEDB;--err:#B42318;--warn:#7A4A00;--warn-soft:#FBEBC8;
   --night:#241C12;--night2:#33291D;--night-ink:#E9DFCE;--night-muted:#B8A88F;
   --r:12px;--r-lg:16px;
-  --disp:'Big Shoulders Display','Barlow',system-ui,sans-serif;--sans:'Barlow',system-ui,sans-serif;
+  --disp:SolGlyph,'Big Shoulders Display','Barlow',system-ui,sans-serif;--sans:'Barlow',system-ui,sans-serif;
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -327,17 +329,17 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;paddin
         <!-- counterweight = the pool -->
         <rect x="30" y="116" width="104" height="84" rx="6" fill="#C2581C"/>
         <text x="82" y="146" text-anchor="middle" font-family="Barlow,sans-serif" font-size="14" font-weight="600" letter-spacing="1.5" fill="#FFFAF2">POOL</text>
-        <text x="82" y="182" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-size="34" font-weight="600" fill="#FFFAF2">20.00 ◎</text>
+        <text x="82" y="182" text-anchor="middle" font-family="SolGlyph,'Big Shoulders Display',sans-serif" font-size="34" font-weight="600" fill="#FFFAF2">20.00 ◎</text>
         <!-- trolley -->
         <rect x="392" y="116" width="40" height="12" rx="3" fill="#241C12"/>
         <!-- cable + load (animated) -->
         <rect class="cable" x="410" y="128" width="4" height="168" fill="#241C12"/>
         <g class="load">
           <rect x="398" y="290" width="28" height="18" rx="4" fill="#241C12"/>
-          <path d="M412 308 V326 A22 22 0 1 1 376 330" fill="none" stroke="#241C12" stroke-width="8" stroke-linecap="round"/>
-          <circle cx="398" cy="352" r="38" fill="#FFFAF2" stroke="#241C12" stroke-width="5"/>
-          <text x="398" y="343" text-anchor="middle" font-family="Barlow,sans-serif" font-size="11" font-weight="600" letter-spacing="1" fill="#6B5D4B">LONGS OWED</text>
-          <text x="398" y="370" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-size="26" font-weight="600" fill="#241C12">10.40 ◎</text>
+          <rect x="409" y="306" width="6" height="10" fill="#241C12"/>
+          <circle cx="412" cy="364" r="48" fill="#FFFAF2" stroke="#241C12" stroke-width="5"/>
+          <text x="412" y="352" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="600" letter-spacing="1" fill="#6B5D4B">LONGS OWED</text>
+          <text x="412" y="384" text-anchor="middle" font-family="SolGlyph,'Big Shoulders Display',sans-serif" font-size="30" font-weight="600" fill="#241C12">10.40 ◎</text>
         </g>
       </svg>
       <figcaption><span><b>The pool is the counterweight.</b> It always outweighs what longs can win. When it can't, new longs wait.</span></figcaption>

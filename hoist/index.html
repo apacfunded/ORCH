@@ -14,7 +14,7 @@
 <meta property="og:description" content="Launch a coin. It comes with longs.">
 <meta property="og:image" content="https://orch.lol/hoist/logo-512.png">
 <meta name="twitter:card" content="summary">
-<meta name="theme-color" content="#1E170F">
+<meta name="theme-color" content="#180A0B">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-64.png" type="image/png" sizes="64x64">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -22,12 +22,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..600&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Hoist v2: espresso hero, cream cards, construction orange. Archivo (wide) for words, DM Mono for every number. */
+/* Hoist v2 (oxblood): near-black red hero, blush cards, oxblood red. Archivo (wide) for words, DM Mono for every number. */
 :root{
-  --bg:#F4EFE6;--paper:#FFFAF2;--sunk:#EDE5D7;--line:#E1D6C4;--line2:#D9CDB8;
-  --ink:#241C12;--muted:#6B5D4B;--dim:#9A8C78;
-  --night:#1E170F;--night2:#241C12;--night-line:#3A2F22;--night-edge:#5A4A35;--night-ink:#F4EFE6;--night-text:#C9BBA4;--night-muted:#9C8C74;
-  --or:#C2581C;--or-deep:#A84A14;--or-light:#E8936A;--or-soft:#F6E1D2;--cream:#FFFAF2;
+  --bg:#F6ECE8;--paper:#FFFAF8;--sunk:#EEDFDA;--line:#E8D6D0;--line2:#DEC6BF;
+  --ink:#180A0B;--muted:#6E4A47;--dim:#A08380;
+  --night:#180A0B;--night2:#22100F;--night-line:#3A1E1F;--night-edge:#5C3335;--night-ink:#F6ECE8;--night-text:#D2B5B1;--night-muted:#A88380;
+  --or:#D12E44;--or-deep:#A8213A;--or-light:#F2788A;--or-soft:#F9DCE0;--cream:#FFFAF8;
   --ok:#2F6B2A;--ok-soft:#E3EEDB;--err:#B42318;--warn:#7A4A00;--warn-soft:#FBEBC8;
   --r:12px;--r-lg:16px;
   --sans:'Archivo',system-ui,sans-serif;--mono:'DM Mono',ui-monospace,monospace;
@@ -69,7 +69,7 @@ button,input,textarea{font:inherit;color:inherit}
 .btn.primary,.btn.lime{background:var(--or);color:var(--cream)}
 .btn.primary:hover,.btn.lime:hover{background:var(--or-deep);color:var(--cream)}
 .btn.dark{background:var(--ink);color:var(--cream)}
-.btn.dark:hover{background:#3A2F22;color:var(--cream)}
+.btn.dark:hover{background:#3A1E1F;color:var(--cream)}
 .btn.soft{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
 .btn.soft:hover{color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .btn.ghost{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
@@ -97,7 +97,7 @@ h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
 .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}
 .btns{display:flex;flex-wrap:wrap;gap:12px}
 .card p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
-.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--night-edge);border-radius:999px;padding:7px 14px;font-family:var(--mono);font-size:13px;color:#E8DCC8}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--night-edge);border-radius:999px;padding:7px 14px;font-family:var(--mono);font-size:13px;color:#EAD3CF}
 .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--or)}
 .tag{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--or-deep)}
 .sec-title{font-size:clamp(32px,3.6vw,42px);line-height:1;font-stretch:112%;letter-spacing:-.02em}
@@ -109,21 +109,21 @@ h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
 .hero h1 span{color:var(--or-light)}
 .hero .lede{margin:0;max-width:480px;font-size:19px;line-height:1.6;color:var(--night-text)}
 .rig{position:relative;margin:0;height:460px;border:1px solid var(--night-line);border-radius:var(--r-lg);background:var(--night2);overflow:hidden}
-.rig .grid{position:absolute;inset:0;background-image:linear-gradient(#2E241A 1px,transparent 1px),linear-gradient(90deg,#2E241A 1px,transparent 1px);background-size:32px 32px}
-.rig .axis{position:absolute;left:28px;right:28px;top:50%;border-top:1px dashed #4A3D2C}
+.rig .grid{position:absolute;inset:0;background-image:linear-gradient(#2B1415 1px,transparent 1px),linear-gradient(90deg,#2B1415 1px,transparent 1px);background-size:32px 32px}
+.rig .axis{position:absolute;left:28px;right:28px;top:50%;border-top:1px dashed #4A2628}
 .rig .logo{position:absolute;left:50%;top:50%;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:48px;box-shadow:0 30px 60px rgba(0,0,0,.45);animation:lift 6s ease-in-out infinite}
 @keyframes lift{0%,100%{transform:translateY(8px)}50%{transform:translateY(-10px)}}
 .rig .read{position:absolute;top:28px;display:flex;flex-direction:column;gap:4px;font-family:var(--mono)}
 .rig .read small{font-size:12px;color:var(--night-muted);letter-spacing:.08em}
 .rig .read b{font-weight:400;font-size:26px}
-.rig .read i{width:120px;border-top:1px dashed #6B5D4B;margin-top:6px}
+.rig .read i{width:120px;border-top:1px dashed #6E4A47;margin-top:6px}
 .rig .read.l{left:28px}.rig .read.l b{color:var(--or-light)}
 .rig .read.r{right:28px;align-items:flex-end}
 .rig .foot{position:absolute;left:28px;right:28px;bottom:26px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;font:400 12px var(--mono);color:var(--night-muted)}
 
 /* stats card, overlapping the hero */
 .stats-wrap{margin-top:-40px;position:relative}
-#stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(36,28,18,.08)}
+#stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(24,10,11,.08)}
 #stats .card.stat{border:0;border-radius:0;background:transparent;padding:22px 24px}
 #stats .card.stat+.card.stat{border-left:1px solid var(--line)}
 .stat .k{font-size:14px;color:var(--muted)}
@@ -150,7 +150,7 @@ h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
 .coin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
 .coin-grid .empty{grid-column:1/-1}
 .ctile{display:flex;flex-direction:column;gap:16px;padding:18px;border-radius:14px;background:var(--paper);color:var(--ink);text-decoration:none;border:1px solid var(--line);transition:border-color .12s ease,box-shadow .12s ease}
-.ctile:hover{color:var(--ink);border-color:var(--line2);box-shadow:0 8px 22px rgba(36,28,18,.08)}
+.ctile:hover{color:var(--ink);border-color:var(--line2);box-shadow:0 8px 22px rgba(24,10,11,.08)}
 .ctile .ctop{display:flex;align-items:center;gap:12px}
 .ctile .nm{flex:1;min-width:0}
 .ctile .cn{font-weight:600;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -161,7 +161,7 @@ h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
 .av.md{width:48px;height:48px;border-radius:12px;font-size:20px}
 .av.lg{width:76px;height:76px;border-radius:18px;font-size:30px}
 .meter{height:8px;border-radius:4px;background:var(--sunk);overflow:hidden}
-.meter i{display:block;height:100%;border-radius:4px;background:#B8A88F}
+.meter i{display:block;height:100%;border-radius:4px;background:#BFA19D}
 .meter.on i{background:var(--or)}
 .pill{flex:0 0 auto;display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:500;background:var(--warn-soft);color:var(--warn)}
 .pill.ok{background:var(--ok-soft);color:var(--ok)}
@@ -209,7 +209,7 @@ details p{margin:8px 0 0!important}
 .lever .w small{font-size:12px;letter-spacing:.06em}
 .lever .w b{font-size:20px;font-weight:500}
 .lever .w.pool{left:0;height:80px;background:var(--or);color:var(--cream)}
-.lever .w.owed{right:0;height:60px;background:#3A2F22;color:var(--night-ink);box-shadow:inset 0 0 0 1px var(--night-edge)}
+.lever .w.owed{right:0;height:60px;background:#3A1E1F;color:var(--night-ink);box-shadow:inset 0 0 0 1px var(--night-edge)}
 .lever .w.owed small{color:var(--night-muted)}
 .lever .fulcrum{position:absolute;left:50%;top:106px;transform:translateX(-50%);width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:52px solid var(--night-edge)}
 .lever .ground{position:absolute;left:0;right:0;top:158px;border-top:1px dashed var(--night-edge)}
@@ -224,7 +224,7 @@ details p{margin:8px 0 0!important}
 .sum div{display:flex;justify-content:space-between;gap:12px;padding:11px 0}.sum div+div{border-top:1px solid var(--line)}
 .sum span:last-child{font-family:var(--mono)}
 .banner{margin:0;padding:12px 14px;border-radius:8px;background:var(--warn-soft);color:var(--warn);font-size:14px;line-height:1.5}
-.banner.info{background:var(--or-soft);color:#6E2F0A}
+.banner.info{background:var(--or-soft);color:#7A1626}
 .banner a{color:inherit}
 #coin-top>.row{align-items:flex-start}
 #coin-top h1{font-stretch:112%;font-size:40px!important;line-height:1;letter-spacing:-.02em!important}
@@ -243,7 +243,7 @@ details p{margin:8px 0 0!important}
 .field input[aria-invalid=true],.field textarea[aria-invalid=true]{border-color:var(--err)}
 .field .err{font-size:13px;font-weight:500;color:var(--err)}
 .field .hint{font-size:13px;font-weight:400;color:var(--muted)}
-.drop{display:flex;flex-wrap:wrap;align-items:center;gap:16px;border:1px dashed #C9BBA4;border-radius:var(--r);padding:16px;cursor:pointer;background:var(--bg)}
+.drop{display:flex;flex-wrap:wrap;align-items:center;gap:16px;border:1px dashed #D2B5B1;border-radius:var(--r);padding:16px;cursor:pointer;background:var(--bg)}
 .drop:hover{border-color:var(--ink)}
 .drop .av{width:60px;height:60px;border-radius:12px}
 .msg{margin:0;font-size:14px;line-height:1.5}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
@@ -259,7 +259,7 @@ td{padding:14px 12px;border-top:1px solid var(--line)}
 .table-wrap{overflow-x:auto}
 
 footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:20px 0 40px;border-top:1px solid var(--line);font:400 13px var(--mono);color:var(--muted)}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 18px;border-radius:8px;font-size:15px;z-index:40;max-width:calc(100% - 32px);box-shadow:0 10px 28px rgba(36,28,18,.3)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 18px;border-radius:8px;font-size:15px;z-index:40;max-width:calc(100% - 32px);box-shadow:0 10px 28px rgba(24,10,11,.3)}
 
 @media (max-width:900px){
   #stats{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -378,7 +378,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;paddin
         <div class="grid3" role="img" aria-label="Example: pool 20 SOL, longs owed 10.40 SOL, room left 9.60 SOL">
           <span>Pool</span><div class="b" style="background:var(--or);width:100%"></div><span>20.00 ◎</span>
           <span>Longs owed</span><div class="b" style="background:var(--ink);width:52%"></div><span>10.40 ◎</span>
-          <span>Room left</span><div class="b" style="background:repeating-linear-gradient(-45deg,#D9CDB8 0 6px,#EDE5D7 6px 12px);width:48%"></div><span>9.60 ◎</span>
+          <span>Room left</span><div class="b" style="background:repeating-linear-gradient(-45deg,#DEC6BF 0 6px,#EEDFDA 6px 12px);width:48%"></div><span>9.60 ◎</span>
         </div>
         <p>When a new long's max win would not fit in the room left, it waits until fees come in or other longs close.</p>
       </div>
@@ -442,7 +442,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;paddin
         <div class="field">
           <span>Image</span>
           <label class="drop" for="lf-img">
-            <span class="av" id="lf-pv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A84A14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16 L15 11 L6 20"/></svg></span>
+            <span class="av" id="lf-pv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A8213A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16 L15 11 L6 20"/></svg></span>
             <span style="flex:1 1 180px"><span style="display:block;font-size:15px">Choose an image</span><span class="hint">PNG, JPG, GIF or WebP, under 2 MB</span></span>
             <span class="btn ghost sm">Choose file</span>
           </label>
@@ -491,9 +491,9 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;paddin
       </section>
       <section class="card night stack" style="gap:14px">
         <h2 class="form-title">What your coin gets</h2>
-        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#E8936A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Its own fee pool wallet, set as its pump.fun creator</div>
-        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#E8936A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>A long market once the pool hits 1 SOL</div>
-        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#E8936A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Every long's max win reserved upfront</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#F2788A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Its own fee pool wallet, set as its pump.fun creator</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#F2788A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>A long market once the pool hits 1 SOL</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#F2788A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Every long's max win reserved upfront</div>
         <p style="font-size:14px">Creator fees go to the pool, not to your wallet. That's what makes the coin longable.</p>
       </section>
       <section class="card stack" style="gap:12px">

@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="lever-api" content="https://leverpad-app.vercel.app/api">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://leverpad-app.vercel.app https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src https://leverpad-app.vercel.app; frame-src https://dexscreener.com; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoist · Launch a coin. It comes with longs.</title>
+<meta name="description" content="A pump.fun launchpad where every coin's trading fees build its own pool, and that pool backs longs on the coin. Every win is reserved before the long opens.">
+<link rel="canonical" href="https://orch.lol/hoist/">
+<meta property="og:url" content="https://orch.lol/hoist/">
+<meta property="og:title" content="Hoist ($HOIST)">
+<meta property="og:description" content="Launch a coin. It comes with longs.">
+<meta property="og:image" content="https://orch.lol/hoist/logo-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#F4EFE6">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-64.png" type="image/png" sizes="64x64">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Hoist: a job-site launchpad. Cream paper, site-ink black, one construction orange. */
+:root{
+  --bg:#F4EFE6;--paper:#FFFAF2;--sunk:#EDE5D7;--line:#E1D6C4;--line2:#EAE1D2;
+  --ink:#241C12;--muted:#6B5D4B;--dim:#9A8C78;
+  --or:#C2581C;--or-deep:#A84A14;--or-soft:#F6E1D2;--cream:#FFFAF2;
+  --ok:#2F6B2A;--ok-soft:#E3EEDB;--err:#B42318;--warn:#7A4A00;--warn-soft:#FBEBC8;
+  --night:#241C12;--night2:#33291D;--night-ink:#E9DFCE;--night-muted:#B8A88F;
+  --r:12px;--r-lg:16px;
+  --disp:'Big Shoulders Display','Barlow',system-ui,sans-serif;--sans:'Barlow',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+[tabindex="-1"]:focus{outline:none}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;min-height:100vh}
+a{color:var(--ink);text-decoration-color:var(--or);text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{color:var(--or-deep)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--or);outline-offset:3px}
+.mono{font-family:var(--sans);font-variant-numeric:tabular-nums;font-weight:500}
+.muted{color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;background:var(--ink);color:var(--cream);padding:10px 14px;border-radius:8px;z-index:30}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+/* hazard stripe, used once under the header */
+.hazard{height:8px;background:repeating-linear-gradient(-45deg,var(--ink) 0 14px,var(--or) 14px 28px)}
+
+/* header */
+.top{display:flex;align-items:center;gap:24px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);min-height:44px}
+.brand img{width:44px;height:44px;border-radius:11px;display:block}
+.brand b{font-family:var(--disp);font-weight:600;font-size:32px;letter-spacing:.02em;line-height:1;text-transform:uppercase}
+.nav{display:flex;gap:4px}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;color:var(--muted);text-decoration:none;font-weight:500;font-size:16px;border-bottom:3px solid transparent}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--or)}
+.top .spacer{flex:1}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:8px;border:0;font-size:16px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background-color .12s ease,box-shadow .12s ease,color .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--or);color:var(--cream)}
+.btn.primary:hover{background:var(--or-deep);color:var(--cream)}
+.btn.dark{background:var(--ink);color:var(--cream)}
+.btn.dark:hover{background:#3A2F22;color:var(--cream)}
+.btn.lime{background:var(--or);color:var(--cream)}
+.btn.lime:hover{background:var(--or-deep);color:var(--cream)}
+.btn.soft{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn.soft:hover{background:var(--paper);color:var(--ink)}
+.btn.ghost{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.ghost:hover{color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn.sm{min-height:44px;padding:0 16px;font-size:15px}
+.btn[disabled],.btn[aria-disabled=true]{background:var(--sunk);color:var(--dim);box-shadow:none;cursor:not-allowed;transform:none}
+.wallet-chip{display:inline-flex;align-items:center;gap:8px}.wallet-chip i{width:8px;height:8px;border-radius:50%;background:#7BC86C}
+
+/* primitives */
+main{padding:28px 0 48px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;flex-wrap:wrap;gap:16px}
+.f3{flex:3 1 540px}.f2{flex:2 1 360px}.f1{flex:1 1 280px}.fs{flex:1 1 200px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;min-width:0;box-shadow:0 1px 2px rgba(36,28,18,.05)}
+.card.night,.card.accent{background:var(--night);color:var(--cream);border-color:var(--night)}
+.card.night p,.card.accent p{color:var(--night-ink)}
+.card.night .note{color:var(--night-muted)}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+.h-hero{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:clamp(56px,8.4vw,116px);line-height:.88;letter-spacing:.005em}
+.h-hero span{color:var(--or)}
+.h-page{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:clamp(40px,5vw,64px);line-height:.95}
+.h2{font-size:22px}
+.sec-title{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:clamp(34px,4vw,48px);line-height:.95}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.lede{font-size:19px;line-height:1.55;color:var(--muted);max-width:480px;margin:22px 0 0}
+.card p{margin:0;font-size:15px;line-height:1.55;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--cream);border-radius:6px;padding:6px 12px;font-size:14px;font-weight:500}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--or)}
+.tag{font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--or-deep)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center;padding:12px 0 8px}
+.crane{position:relative}
+.crane svg{display:block;width:100%;height:auto}
+.crane figcaption{margin-top:10px;display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--muted)}
+.crane figcaption b{color:var(--ink);font-weight:600}
+.crane .cable{transform-box:fill-box;transform-origin:50% 0;animation:cable 6s ease-in-out infinite}
+.crane .load{animation:load 6s ease-in-out infinite}
+@keyframes cable{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+@keyframes load{0%,100%{transform:translateY(0)}50%{transform:translateY(-85px)}}
+
+/* stats band */
+#stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--ink);color:var(--cream);border-radius:var(--r-lg);overflow:hidden}
+#stats .card.stat{background:transparent;border:0;border-radius:0;box-shadow:none;padding:22px 24px;color:var(--cream)}
+#stats .card.stat+.card.stat{border-left:1px solid #3D3326}
+#stats .stat .k,#stats .stat .s{color:var(--night-muted)}
+.stat .k{font-size:14px;font-weight:500;color:var(--muted)}
+.stat .v{margin-top:6px;font-family:var(--disp);font-weight:600;font-size:42px;line-height:1;letter-spacing:.01em}
+.stat .s{margin-top:6px;font-size:13px;color:var(--muted)}
+.card.stat{padding:20px}
+
+/* live tape (activity feed) */
+.tape{display:flex;align-items:center;gap:14px;margin-top:16px}
+.tape .lbl2{flex:0 0 auto;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--or-deep)}
+.feed{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px;flex:1;min-width:0}
+.feed div{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:var(--paper);border:1px solid var(--line);font-size:14px;white-space:nowrap}
+.feed .d{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.feed .d.claim{background:var(--or)}.feed .d.launch{background:var(--ink)}
+.feed .a{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+
+/* coins */
+.coins-sec{margin-top:40px}
+.search{position:relative;margin:0 0 16px}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search input{width:100%;min-height:52px;padding:0 16px 0 46px;border-radius:10px;border:2px solid var(--line);background:var(--paper);font-size:16px}
+.search input::placeholder{color:var(--dim)}
+.search input:focus{border-color:var(--ink);outline:none}
+.coin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.coin-grid .empty{grid-column:1/-1}
+.ctile{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:var(--r);background:var(--paper);color:var(--ink);text-decoration:none;border:1px solid var(--line);border-top:4px solid var(--ink);transition:border-color .12s ease,box-shadow .12s ease}
+.ctile:hover{color:var(--ink);border-top-color:var(--or);box-shadow:0 6px 18px rgba(36,28,18,.08)}
+.ctile .ctop{display:flex;align-items:center;gap:12px}
+.ctile .nm{flex:1;min-width:0}
+.ctile .cn{font-weight:600;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctile .cmc{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ctile .cmc .mono{font-family:var(--disp);font-weight:600;font-size:26px;line-height:1}
+.av{width:44px;height:44px;border-radius:10px;background:var(--or-soft);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--or-deep);overflow:hidden;flex:0 0 auto}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.md{width:52px;height:52px;border-radius:12px;font-size:20px}
+.av.lg{width:80px;height:80px;border-radius:16px;font-size:30px}
+.meter{height:10px;border-radius:5px;background:var(--sunk);overflow:hidden}
+.meter i{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--dim) 0 6px,#AFA18C 6px 12px)}
+.meter.on i{background:var(--or)}
+.pill{flex:0 0 auto;display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600;background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.grey{background:var(--sunk);color:var(--muted)}
+.coin{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:14px 0;border-top:1px solid var(--line)}
+.coin:first-child{border-top:0}
+.coin .nm{flex:1 1 140px;min-width:0}
+.coin .nm a{font-weight:600;color:var(--ink);text-decoration:none}.coin .nm a:hover{color:var(--or-deep)}
+.empty{border:2px dashed var(--line);border-radius:var(--r);padding:28px 20px;text-align:center}
+.empty b{display:block;font-weight:600}.empty span{display:block;margin:6px 0 16px;font-size:14px;color:var(--muted)}
+
+/* how it works */
+.how-sec{margin-top:56px}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
+.how section{border-top:4px solid var(--ink);padding-top:16px}
+.how .num{font-family:var(--disp);font-weight:600;font-size:64px;line-height:.9;color:var(--or)}
+.how h3{font-size:21px;margin:12px 0 8px}
+.how p{margin:0;font-size:16px;line-height:1.55;color:var(--muted)}
+
+/* token band + faq */
+.band{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:56px}
+.band .card.night h2{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:clamp(38px,4.4vw,56px);line-height:.92;color:var(--cream)}
+.band .card.night h2 span{color:var(--or)}
+.cta{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:var(--or);color:var(--cream);border-radius:var(--r-lg);padding:24px 28px}
+.cta h2{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:clamp(30px,3.6vw,44px);line-height:.95}
+details{border-top:1px solid var(--line);padding:14px 0}
+details:first-of-type{border-top:0;padding-top:4px}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:17px;font-weight:600;min-height:32px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--disp);font-size:28px;line-height:1;color:var(--or)}
+details[open] summary::after{content:"–"}
+details p{margin:8px 0 0!important}
+
+/* coin page: the balance card, drawn as a crane jib */
+.lever{position:relative;height:220px}
+.lever .beam{position:absolute;left:4%;right:4%;top:100px;height:14px;background:repeating-linear-gradient(90deg,var(--cream) 0 3px,transparent 3px 18px),#5A4A35;border-top:3px solid var(--cream);border-bottom:3px solid var(--cream);transition:transform .35s ease}
+.lever .w{position:absolute;bottom:17px;width:120px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.lever .w small{font-size:12px;font-weight:600;letter-spacing:.08em}
+.lever .w b{font-family:var(--disp);font-size:26px;font-weight:600;line-height:1}
+.lever .w.pool{left:0;height:80px;background:var(--or);color:var(--cream)}
+.lever .w.owed{right:0;height:60px;background:var(--cream);color:var(--ink)}
+.lever .w.owed small{color:var(--muted)}
+.lever .fulcrum{position:absolute;left:50%;top:108px;transform:translateX(-50%);width:22px;height:84px;background:repeating-linear-gradient(45deg,var(--cream) 0 2px,transparent 2px 10px),repeating-linear-gradient(-45deg,var(--cream) 0 2px,transparent 2px 10px);border-left:3px solid var(--cream);border-right:3px solid var(--cream)}
+.lever .ground{position:absolute;left:0;right:0;top:192px;height:3px;background:var(--night-muted)}
+
+/* coin page pieces */
+.lbl{font-size:14px;color:var(--muted);margin-bottom:8px;font-weight:500}
+.seg{display:grid;gap:6px}.seg.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.seg.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.seg button{min-height:46px;border-radius:8px;border:0;box-shadow:inset 0 0 0 1px var(--line);background:var(--paper);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer}
+.seg button:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--cream);box-shadow:none}
+.sum{background:var(--bg);border-radius:var(--r);padding:2px 14px;font-size:15px}
+.sum div{display:flex;justify-content:space-between;gap:12px;padding:10px 0}.sum div+div{border-top:1px solid var(--line)}
+.sum span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+.banner{margin:0;padding:12px 14px;border-radius:8px;background:var(--warn-soft);color:var(--warn);font-size:14px;line-height:1.5}
+.banner.info{background:var(--or-soft);color:#6E2F0A}
+.banner a{color:inherit}
+#coin-top>.row{align-items:flex-start}
+#coin-top h1{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:48px!important;line-height:.95;letter-spacing:.01em!important}
+.chart-card{padding-bottom:20px}
+.chart-frame{position:relative;height:440px;border-radius:var(--r);overflow:hidden;background:var(--bg);border:1px solid var(--line)}
+.chart-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.chart-empty{display:grid;place-items:center;padding:16px;text-align:center;color:var(--muted)}
+
+/* launch form */
+.field{display:flex;flex-direction:column;gap:8px;font-size:15px;font-weight:600;min-width:0}
+.field input,.field textarea{min-height:50px;padding:0 14px;border-radius:8px;border:2px solid var(--line);background:#fff;font-size:16px;font-weight:400}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field input:focus,.field textarea:focus{border-color:var(--ink);outline:none}
+.field textarea{padding:12px 14px;line-height:1.5;resize:vertical}
+.field input[aria-invalid=true],.field textarea[aria-invalid=true]{border-color:var(--err)}
+.field .err{font-size:13px;font-weight:500;color:var(--err)}
+.field .hint{font-size:13px;font-weight:400;color:var(--muted)}
+.drop{display:flex;flex-wrap:wrap;align-items:center;gap:16px;border:2px dashed var(--line);border-radius:var(--r);padding:16px;cursor:pointer;background:var(--bg)}
+.drop:hover{border-color:var(--ink)}
+.drop .av{width:60px;height:60px;border-radius:12px}
+.msg{margin:0;font-size:14px;line-height:1.5}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+.check{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5}
+.check svg{flex:0 0 auto;margin-top:2px}
+.pv{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r);background:var(--bg);border-top:4px solid var(--ink)}
+.form-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--or-deep);margin:0}
+
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:13px;font-weight:600;color:var(--muted);padding:10px 12px}
+td{padding:14px 12px;border-top:1px solid var(--line)}
+.table-wrap{overflow-x:auto}
+
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:20px 0 32px;border-top:4px solid var(--ink);font-size:14px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 18px;border-radius:8px;font-size:15px;z-index:40;max-width:calc(100% - 32px);box-shadow:0 10px 28px rgba(36,28,18,.3)}
+
+@media (max-width:980px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:12px}
+  .band{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:820px){
+  #stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #stats .card.stat:nth-child(3){border-left:0}
+  #stats .card.stat:nth-child(n+3){border-top:1px solid #3D3326}
+  .how{grid-template-columns:minmax(0,1fr)}
+  .top{flex-wrap:wrap;gap:8px 16px}
+  .nav{order:3;width:100%;overflow-x:auto;border-top:1px solid var(--line)}
+  .nav a{flex:1 0 auto;justify-content:center;padding:0 10px}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  main{padding-top:16px}
+  .card{padding:18px}
+  .stat .v{font-size:34px}
+  #stats .card.stat{padding:16px}
+  .tape{flex-direction:column;align-items:stretch;gap:8px}
+  .lever .w{width:100px}.lever .w b{font-size:22px}
+  .f3,.f2,.f1{flex-basis:100%}
+  .chart-frame{height:360px}
+  .cta{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .crane .cable,.crane .load{animation:none}
+  .lever .beam,.btn,.ctile{transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="hazard" aria-hidden="true"></div>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="#home" aria-label="Hoist home"><img src="logo-512.png" alt="" width="44" height="44"><b>Hoist</b></a>
+  <nav class="nav" aria-label="Main">
+    <a href="#home" data-nav="home">Coins</a>
+    <a href="#launch" data-nav="launch">Launch</a>
+    <a href="#lever" data-nav="lever">$HOIST</a>
+    <a href="#me" data-nav="me">My coins</a>
+  </nav>
+  <span class="spacer"></span>
+  <button class="btn dark sm" type="button" id="wallet">Connect wallet</button>
+</header>
+
+<main id="main">
+
+<!-- HOME -->
+<section data-view="home" aria-labelledby="h-home">
+  <div class="hero">
+    <div>
+      <span class="chip"><span class="dot"></span><span id="status-chip">Longs built into every launch</span></span>
+      <h1 class="h-hero" id="h-home" tabindex="-1" style="margin-top:24px">Launch a coin.<br><span>It comes with longs.</span></h1>
+      <p class="lede">Each coin's trading fees build its own pool. The pool backs longs on that coin, and every win is reserved before the long opens.</p>
+      <div class="btns" style="margin-top:28px">
+        <a class="btn primary" href="#launch">Launch a coin</a>
+        <a class="btn soft" href="#coins">Find a coin</a>
+      </div>
+    </div>
+    <figure class="crane" style="margin:0" aria-label="A crane: the pool is the counterweight, longs are the load">
+      <svg viewBox="0 0 520 430" role="img" aria-hidden="true">
+        <!-- ground -->
+        <rect x="0" y="414" width="520" height="4" fill="#241C12"/>
+        <rect x="120" y="398" width="88" height="16" fill="#241C12"/>
+        <!-- mast -->
+        <rect x="150" y="96" width="28" height="302" fill="none" stroke="#241C12" stroke-width="5"/>
+        <polyline points="150,110 178,138 150,166 178,194 150,222 178,250 150,278 178,306 150,334 178,362 150,390" fill="none" stroke="#241C12" stroke-width="4"/>
+        <!-- apex and ties -->
+        <polygon points="164,36 152,96 176,96" fill="#241C12"/>
+        <line x1="164" y1="38" x2="30" y2="94" stroke="#241C12" stroke-width="3"/>
+        <line x1="164" y1="38" x2="500" y2="94" stroke="#241C12" stroke-width="3"/>
+        <!-- jib -->
+        <rect x="24" y="94" width="482" height="22" fill="#241C12"/>
+        <polyline points="186,113 200,97 214,113 228,97 242,113 256,97 270,113 284,97 298,113 312,97 326,113 340,97 354,113 368,97 382,113 396,97 410,113 424,97 438,113 452,97 466,113 480,97 494,113" fill="none" stroke="#F4EFE6" stroke-width="3"/>
+        <!-- cab -->
+        <rect x="178" y="116" width="34" height="30" rx="4" fill="#C2581C"/>
+        <rect x="186" y="122" width="18" height="12" rx="2" fill="#F4EFE6"/>
+        <!-- counterweight = the pool -->
+        <rect x="30" y="116" width="104" height="84" rx="6" fill="#C2581C"/>
+        <text x="82" y="146" text-anchor="middle" font-family="Barlow,sans-serif" font-size="14" font-weight="600" letter-spacing="1.5" fill="#FFFAF2">POOL</text>
+        <text x="82" y="182" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-size="34" font-weight="600" fill="#FFFAF2">20.00 ◎</text>
+        <!-- trolley -->
+        <rect x="392" y="116" width="40" height="12" rx="3" fill="#241C12"/>
+        <!-- cable + load (animated) -->
+        <rect class="cable" x="410" y="128" width="4" height="168" fill="#241C12"/>
+        <g class="load">
+          <rect x="398" y="290" width="28" height="18" rx="4" fill="#241C12"/>
+          <path d="M412 308 V326 A22 22 0 1 1 376 330" fill="none" stroke="#241C12" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="398" cy="352" r="38" fill="#FFFAF2" stroke="#241C12" stroke-width="5"/>
+          <text x="398" y="343" text-anchor="middle" font-family="Barlow,sans-serif" font-size="11" font-weight="600" letter-spacing="1" fill="#6B5D4B">LONGS OWED</text>
+          <text x="398" y="370" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-size="26" font-weight="600" fill="#241C12">10.40 ◎</text>
+        </g>
+      </svg>
+      <figcaption><span><b>The pool is the counterweight.</b> It always outweighs what longs can win. When it can't, new longs wait.</span></figcaption>
+    </figure>
+  </div>
+
+  <div id="stats" style="margin-top:32px"></div>
+  <div class="tape" aria-labelledby="h-feed">
+    <h2 class="lbl2" id="h-feed">Pool activity</h2>
+    <div class="feed" id="feed"></div>
+  </div>
+
+  <section class="coins-sec" id="coins" aria-labelledby="h-coins">
+    <div class="head"><h2 class="sec-title" id="h-coins">Coins on Hoist</h2><span class="note" id="claim-note"></span></div>
+    <div class="search">
+      <label for="coin-q" class="vh">Search coins</label>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20 L16.2 16.2"/></svg>
+      <input id="coin-q" type="search" autocomplete="off" spellcheck="false" placeholder="Search by name, ticker or contract address" aria-describedby="coin-count">
+    </div>
+    <div id="coin-list" class="coin-grid"></div>
+    <p class="note" id="coin-count" aria-live="polite" style="margin:14px 0 0"></p>
+  </section>
+
+  <section class="how-sec" id="how" aria-labelledby="h-how">
+    <h2 class="sec-title" id="h-how">How it lifts</h2>
+    <div class="how">
+      <section><span class="num">01</span><h3>Fees fill the pool</h3><p>Every coin launched here gets its own pool wallet as its pump.fun creator. All of its creator fees land in that pool.</p></section>
+      <section><span class="num">02</span><h3>Longs unlock at 1 SOL</h3><p>Once a coin's pool holds 1 SOL, longs open on it. Long size is capped by the pool, so a busy coin carries bigger longs.</p></section>
+      <section><span class="num">03</span><h3>Wins are reserved upfront</h3><p>Each long's max win, 3x its margin, is locked in the pool when it opens. The pool can never owe more than it holds.</p></section>
+    </div>
+  </section>
+
+  <div class="band" id="lever">
+    <section class="card night stack" aria-labelledby="h-lever" style="gap:16px;padding:32px">
+      <span class="tag" style="color:#E8936A">The coin behind the crane</span>
+      <h2 id="h-lever">$HOIST earns<br><span>from every coin.</span></h2>
+      <p>Every Hoist coin's long market runs on the same engine, and $HOIST holders share in it.</p>
+      <div id="lever-ca"></div>
+    </section>
+    <section class="card" aria-labelledby="h-faq">
+      <h2 class="sec-title" id="h-faq" style="font-size:36px;margin-bottom:8px">Questions</h2>
+      <details><summary>Can I open a long today?</summary><p id="faq-longs">Not yet. Coins launch now and their pools fill from trading fees. Longs switch on once the long engine is finished and audited, and the site will say so here.</p></details>
+      <details><summary>Who controls a coin's pool?</summary><p>Each pool is a separate wallet that Hoist's server controls. It's set as the coin's pump.fun creator, so creator fees go there, not to the launcher. Pools only pay winning longs.</p></details>
+      <details><summary>Can someone pump a coin to fake a win?</summary><p>Longs will settle on a 5-minute average price with a minimum hold time, so a quick buy can't fake a win.</p></details>
+      <details><summary>Do liquidations dump the coin?</summary><p>No. Longs are settled from the pool, so nothing is sold on-chain when someone is liquidated.</p></details>
+      <details><summary>Can a dev long their own coin?</summary><p>No. The wallet that launched a coin will be blocked from longing it.</p></details>
+    </section>
+  </div>
+
+  <div class="cta">
+    <h2>Your coin, longable from day one.</h2>
+    <a class="btn dark" href="#launch">Launch a coin</a>
+  </div>
+</section>
+
+<!-- COIN -->
+<section data-view="coin" class="stack" hidden aria-label="Coin" id="coin-view">
+  <div class="stack" id="coin-top"></div>
+  <section class="card chart-card" id="coin-chart" aria-labelledby="h-chart" hidden></section>
+  <div class="stack" id="coin-rest"></div>
+</section>
+
+<!-- LAUNCH -->
+<section data-view="launch" hidden aria-labelledby="h-launch">
+  <span class="tag">New coin · pump.fun</span>
+  <h1 class="h-page" id="h-launch" tabindex="-1" style="margin-top:8px">Launch a coin</h1>
+  <p class="muted" style="margin:10px 0 24px;font-size:17px">It goes live on pump.fun with its own fee pool. Longs unlock once that pool reaches 1 SOL.</p>
+  <div id="launch-closed" class="banner info" style="margin-bottom:16px" hidden>Launches open soon. You can fill this in now and it'll be saved on this device.</div>
+  <div class="row" style="align-items:flex-start">
+    <form class="f3 stack" id="lf" novalidate>
+      <section class="card stack" style="gap:20px">
+        <h2 class="form-title">Coin details</h2>
+        <div class="row">
+          <label class="field" style="flex:2 1 240px">Name
+            <input id="lf-name" type="text" maxlength="32" autocomplete="off" aria-describedby="e-name">
+            <span class="err" id="e-name" hidden></span>
+          </label>
+          <label class="field" style="flex:1 1 160px">Ticker
+            <input id="lf-tick" type="text" maxlength="10" autocomplete="off" class="mono" aria-describedby="e-tick" placeholder="e.g. LDOG">
+            <span class="err" id="e-tick" hidden></span>
+          </label>
+        </div>
+        <label class="field">Description <span class="hint" style="margin-top:-6px">optional</span>
+          <textarea id="lf-desc" rows="3" maxlength="500"></textarea>
+          <span class="hint"><span id="lf-count">0</span> / 500</span>
+        </label>
+        <div class="field">
+          <span>Image</span>
+          <label class="drop" for="lf-img">
+            <span class="av" id="lf-pv"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A84A14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16 L15 11 L6 20"/></svg></span>
+            <span style="flex:1 1 180px"><span style="display:block;font-size:15px">Choose an image</span><span class="hint">PNG, JPG, GIF or WebP, under 2 MB</span></span>
+            <span class="btn ghost sm">Choose file</span>
+          </label>
+          <input id="lf-img" type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="skip" aria-describedby="e-img">
+          <span class="err" id="e-img" hidden></span>
+        </div>
+      </section>
+      <section class="card stack">
+        <h2 class="form-title">Links · optional</h2>
+        <div class="row">
+          <label class="field f1">X
+            <input id="lf-x" type="text" placeholder="@handle or x.com link" aria-describedby="e-x">
+            <span class="err" id="e-x" hidden></span>
+          </label>
+          <label class="field f1">Telegram
+            <input id="lf-tg" type="text" placeholder="t.me link" aria-describedby="e-tg">
+            <span class="err" id="e-tg" hidden></span>
+          </label>
+        </div>
+        <label class="field">Website
+          <input id="lf-web" type="text" inputmode="url" autocomplete="url" placeholder="https://yourcoin.com" aria-describedby="lf-web-hint e-web">
+          <span class="hint" id="lf-web-hint">Shows as the website on your coin's pump.fun page. Leave empty to use Hoist's.</span>
+          <span class="err" id="e-web" hidden></span>
+        </label>
+      </section>
+      <section class="card stack">
+        <h2 class="form-title">First buy · optional</h2>
+        <label class="field">Amount (SOL)
+          <input id="lf-dev" type="text" inputmode="decimal" autocomplete="off" class="mono" placeholder="0" aria-describedby="lf-dev-hint e-dev">
+          <span class="hint" id="lf-dev-hint">Buy your own coin in the same transaction as the launch, so nobody can buy before you. Leave empty to skip.</span>
+          <span class="err" id="e-dev" hidden></span>
+        </label>
+        <div class="seg c4" id="lf-devs"><button type="button" data-d="0.1">0.1 ◎</button><button type="button" data-d="0.5">0.5 ◎</button><button type="button" data-d="1">1 ◎</button><button type="button" data-d="2">2 ◎</button></div>
+      </section>
+    </form>
+    <aside class="f2 stack">
+      <section class="card" aria-label="Preview">
+        <h2 class="form-title" style="margin-bottom:12px">How it shows on Hoist</h2>
+        <div class="pv">
+          <span class="av" id="pv-av" style="width:52px;height:52px;font-size:20px">?</span>
+          <div style="flex:1;min-width:0"><div id="pv-name" style="font-weight:600;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Your coin</div><div class="note" id="pv-tick">$TICKER</div></div>
+          <span class="pill">New</span>
+        </div>
+        <div class="meter" style="margin-top:14px"><i style="width:0%"></i></div>
+        <div class="note" style="margin-top:6px">0 ◎ in pool · 1 ◎ to unlock longs</div>
+      </section>
+      <section class="card night stack" style="gap:14px">
+        <h2 class="form-title" style="color:#E8936A">What your coin gets</h2>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#E8936A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Its own fee pool wallet, set as its pump.fun creator</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#E8936A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>A long market once the pool hits 1 SOL</div>
+        <div class="check"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#E8936A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10 L8 14 L16 6"/></svg>Every long's max win reserved upfront</div>
+        <p style="font-size:14px">Creator fees go to the pool, not to your wallet. That's what makes the coin longable.</p>
+      </section>
+      <section class="card stack" style="gap:12px">
+        <div id="lf-wallet" class="note" style="font-size:14px"></div>
+        <button class="btn primary" type="button" id="do-launch">Launch on pump.fun</button>
+        <p class="msg" id="lf-msg" role="status" aria-live="polite"></p>
+        <p class="note"><span id="lf-cost">Your wallet signs and pays about 0.03 SOL.</span> Not available to US users.</p>
+      </section>
+    </aside>
+  </div>
+</section>
+
+<!-- ME -->
+<section data-view="me" hidden id="me"></section>
+
+</main>
+<footer>
+  <span>Leverage can lose your whole margin.</span>
+  <span>Not available to US users.</span>
+</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script src="brand.js"></script>
+<script src="https://leverpad-app.vercel.app/app.js" defer></script>
+<script src="https://leverpad-app.vercel.app/demo.js" defer></script>
+</body>
+</html>

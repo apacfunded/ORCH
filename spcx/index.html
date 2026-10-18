@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Space Exploration ($SPCX): the memecoin with its own custom CA ending in spcx. Creator fees go into Elon's Jar to help fund the Cybercab.">
+<meta name="description" content="Space Exploration ($SPCX): the memecoin with its own custom CA ending in spcx. Creator fees go into the Cybercab Fund to help fund the Cybercab.">
 <meta name="theme-color" content="#03060e">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Space Exploration $SPCX</title>
@@ -107,18 +107,18 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 .sec-head h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(40px,7vw,72px);line-height:.9;margin:0;letter-spacing:.01em}
 .sec-head p{margin:0;color:var(--muted);max-width:44ch}
 
-/* jar */
-.jar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px}
-@media (max-width:760px){.jar{grid-template-columns:1fr}}
-.jar-main{border:2px solid var(--flare);padding:28px;background:linear-gradient(180deg,rgba(46,230,255,.08),transparent 60%),var(--panel);min-width:0}
-.jar-main .big{font-family:var(--display);font-size:clamp(56px,10vw,104px);line-height:.9;color:var(--flare);font-variant-numeric:tabular-nums;margin:10px 0 4px}
-.jar-main .big small{font-size:.4em;color:var(--star);margin-left:8px}
-.jar-main .ex{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.jar-main p{color:var(--star);margin:18px 0 0;max-width:52ch}
+/* fund */
+.fund{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px}
+@media (max-width:760px){.fund{grid-template-columns:1fr}}
+.fund-main{border:2px solid var(--flare);padding:28px;background:linear-gradient(180deg,rgba(46,230,255,.08),transparent 60%),var(--panel);min-width:0}
+.fund-main .big{font-family:var(--display);font-size:clamp(56px,10vw,104px);line-height:.9;color:var(--flare);font-variant-numeric:tabular-nums;margin:10px 0 4px}
+.fund-main .big small{font-size:.4em;color:var(--star);margin-left:8px}
+.fund-main .ex{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.fund-main p{color:var(--star);margin:18px 0 0;max-width:52ch}
 .wallet{margin-top:18px;font-family:var(--mono);font-size:13px;color:var(--muted);overflow-wrap:anywhere;border-top:1px solid var(--line);padding-top:14px}
 .wallet b{color:var(--star);font-weight:500}
-.jar-side{border:2px solid var(--line);background:var(--panel);padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
-.jar-side h3{font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;margin:0;letter-spacing:.02em}
+.fund-side{border:2px solid var(--line);background:var(--panel);padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.fund-side h3{font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;margin:0;letter-spacing:.02em}
 .rules{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .rules li{padding-left:22px;position:relative;color:var(--muted)}
 .rules li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:9px;background:var(--flare)}
@@ -209,7 +209,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
     </svg>
     <div class="eyebrow">Ticker $SPCX · Custom CA</div>
     <h1>Space<br>Explor&shy;ation <span class="tick">$SPCX</span></h1>
-    <p class="lede">The coin with its own custom CA, <b>paired with the real $SPCX stock</b>. Every creator fee goes to Elon to <b>help fund the new Cybercab</b>, stacked in Elon's Jar until he claims it. Strap in.</p>
+    <p class="lede">The coin with its own custom CA, <b>paired with the real $SPCX stock</b>. Every creator fee goes to Elon to <b>help fund the new Cybercab</b>, stacked in the Cybercab Fund until he claims it. Strap in.</p>
 
     <div class="ca" role="group" aria-label="Contract address">
       <span class="lbl">CA</span>
@@ -218,7 +218,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
     </div>
 
     <div class="cta">
-      <a class="btn ghost" href="#jar">See Elon's Jar</a>
+      <a class="btn ghost" href="#jar">See the Cybercab Fund</a>
       <span class="btn ghost soon" id="buy-soon">Launching soon on pump.fun</span>
       <a class="btn primary" id="buy-link" hidden href="https://pump.fun/" target="_blank" rel="noopener">Buy on pump.fun ↗</a>
       <a class="btn ghost" id="hero-x" hidden href="https://x.com/" target="_blank" rel="noopener">Join us on X ↗</a>
@@ -239,23 +239,23 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 
     <section class="sec" id="jar" aria-labelledby="jar-title">
       <div class="sec-head">
-        <h2 id="jar-title">Elon's Jar</h2>
+        <h2 id="jar-title">Cybercab Fund</h2>
         <p>Creator fees don't go to the dev. They go to Elon to help fund the Cybercab, held in one public wallet until he claims it.</p>
       </div>
       <div class="jar">
         <div class="jar-main">
-          <div class="ex" id="jar-label">Jar balance <span id="jar-live" class="live" hidden><i></i>Live</span></div>
+          <div class="ex" id="jar-label">Fund balance <span id="jar-live" class="live" hidden><i></i>Live</span></div>
           <div class="big"><span id="jar-bal">0.000</span><small>SOL</small></div>
           <p>Every trade on $SPCX pays a creator fee. 100% of it lands here as our contribution to Elon's new Cybercab. Nobody spends it. It sits on-chain, in public, waiting for him.</p>
-          <div class="wallet">Jar wallet: <b id="jar-wallet">posted at launch</b></div>
+          <div class="wallet">Fund wallet: <b id="jar-wallet">posted at launch</b></div>
         </div>
         <div class="jar-side">
-          <h3>Jar rules</h3>
+          <h3>Fund rules</h3>
           <ul class="rules">
-            <li><b>One wallet, all fees.</b> The jar wallet is set as the coin's creator, so fees flow in on their own.</li>
+            <li><b>One wallet, all fees.</b> The fund wallet is set as the coin's creator, so fees flow in on their own.</li>
             <li><b>Never touched.</b> No withdrawals by the team. Anyone can check the balance on Solscan.</li>
-            <li><b>Elon claims it.</b> If Elon verifies a wallet publicly, the whole jar gets sent to him for the Cybercab.</li>
-            <li><b>No claim? Plan B.</b> If Elon doesn't claim the jar by the deadline we post on X, the fees go toward buying a flying Roadster and tokenizing it on-chain.</li>
+            <li><b>Elon claims it.</b> If Elon verifies a wallet publicly, the whole fund gets sent to him for the Cybercab.</li>
+            <li><b>No claim? Plan B.</b> If Elon doesn't claim the fund by the deadline we post on X, the fees go toward buying a flying Roadster and tokenizing it on-chain.</li>
             <li><b>Held by the $SPCX team</b> until then. Elon isn't involved and hasn't endorsed this.</li>
           </ul>
         </div>
@@ -267,7 +267,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
         <div class="planb-copy">
           <div class="eyebrow">Plan B</div>
           <h2 id="planb-title">Elon doesn't claim?<br><span>We buy the flying Roadster.</span></h2>
-          <p>If the jar sits unclaimed past the deadline, the creator fees go toward buying a flying Tesla Roadster and tokenizing it on Solana. The car goes on-chain. Either way, the fees end up in something space-age.</p>
+          <p>If the fund sits unclaimed past the deadline, the creator fees go toward buying a flying Tesla Roadster and tokenizing it on Solana. The car goes on-chain. Either way, the fees end up in something space-age.</p>
         </div>
         <svg class="roadster" viewBox="0 0 360 200" aria-hidden="true">
           <g class="car">
@@ -287,8 +287,8 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
       <div class="sec-head"><h2 id="how-title">How it works</h2></div>
       <div class="steps">
         <div class="step"><div class="n">STEP 1</div><h3>Buy $SPCX</h3><p>Check the CA ends in spcx, then buy on pump.fun.</p></div>
-        <div class="step"><div class="n">STEP 2</div><h3>Fees fund the Cybercab</h3><p>Every trade's creator fee goes into Elon's Jar for the new Cybercab.</p></div>
-        <div class="step"><div class="n">STEP 3</div><h3>Tag Elon</h3><p>Post the jar balance and tag him. The bigger it gets, the harder it is to ignore.</p></div>
+        <div class="step"><div class="n">STEP 2</div><h3>Fees fund the Cybercab</h3><p>Every trade's creator fee goes into the Cybercab Fund.</p></div>
+        <div class="step"><div class="n">STEP 3</div><h3>Tag Elon</h3><p>Post the fund balance and tag him. The bigger it gets, the harder it is to ignore.</p></div>
       </div>
     </section>
 
@@ -305,10 +305,10 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
     <section class="sec" aria-labelledby="road-title">
       <div class="sec-head"><h2 id="road-title">Flight plan</h2><p>Four mission stages, from the pad to Mars.</p></div>
       <div class="road">
-        <div class="phase now"><span class="tag">NOW</span><div class="alt">Stage 1</div><h3>Liftoff</h3><ul><li>Launch with the custom CA</li><li>Open Elon's Jar</li><li>Site and X live</li></ul></div>
-        <div class="phase"><div class="alt">Stage 2</div><h3>Max Q</h3><ul><li>Bond on pump.fun</li><li>Live jar tracker</li><li>First 1,000 holders</li></ul></div>
-        <div class="phase"><div class="alt">Stage 3</div><h3>Orbit</h3><ul><li>Jar milestone posts</li><li>Tag-Elon raids</li><li>Launch-day events</li></ul></div>
-        <div class="phase"><div class="alt">Stage 4</div><h3>Mars</h3><ul><li>Elon claims the jar</li><li>Or Plan B: buy a flying Roadster and tokenize it</li><li>Everyone else: to Mars</li></ul></div>
+        <div class="phase now"><span class="tag">NOW</span><div class="alt">Stage 1</div><h3>Liftoff</h3><ul><li>Launch with the custom CA</li><li>Open the Cybercab Fund</li><li>Site and X live</li></ul></div>
+        <div class="phase"><div class="alt">Stage 2</div><h3>Max Q</h3><ul><li>Bond on pump.fun</li><li>Live fund tracker</li><li>First 1,000 holders</li></ul></div>
+        <div class="phase"><div class="alt">Stage 3</div><h3>Orbit</h3><ul><li>Fund milestone posts</li><li>Tag-Elon raids</li><li>Launch-day events</li></ul></div>
+        <div class="phase"><div class="alt">Stage 4</div><h3>Mars</h3><ul><li>Elon claims the fund</li><li>Or Plan B: buy a flying Roadster and tokenize it</li><li>Everyone else: to Mars</li></ul></div>
       </div>
     </section>
 
@@ -355,11 +355,11 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
     <section class="faq" aria-labelledby="faq-title">
       <div class="sec-head"><h2 id="faq-title">FAQ</h2></div>
       <details><summary>Is this a SpaceX share?</summary><p>No. $SPCX is a memecoin on Solana. It shares the ticker of SpaceX's Nasdaq stock, but holding it gives you no ownership in SpaceX.</p></details>
-      <details><summary>Does Elon get the creator fees?</summary><p>Yes, that's the plan. They go into Elon's Jar to help fund the new Cybercab. If he verifies a wallet publicly, the full balance gets sent to him. Until then the $SPCX team holds it and won't spend it.</p></details>
-      <details><summary>What if Elon never claims it?</summary><p>We post a claim deadline on X. If the jar is still unclaimed after it, the creator fees go toward buying a flying Tesla Roadster and tokenizing it on Solana.</p></details>
+      <details><summary>Does Elon get the creator fees?</summary><p>Yes, that's the plan. They go into the Cybercab Fund. If he verifies a wallet publicly, the full balance gets sent to him. Until then the $SPCX team holds it and won't spend it.</p></details>
+      <details><summary>What if Elon never claims it?</summary><p>We post a claim deadline on X. If the fund is still unclaimed after it, the creator fees go toward buying a flying Tesla Roadster and tokenizing it on Solana.</p></details>
       <details><summary>Is Elon or SpaceX involved?</summary><p>No. This is a community coin. Neither Elon Musk nor SpaceX is affiliated with it or has endorsed it.</p></details>
       <details><summary>How do I know I have the real CA?</summary><p>The real contract address ends in spcx. Copy it from this page or the pinned post on our X.</p></details>
-      <details><summary>Where can I check the jar?</summary><p>The jar wallet goes up at launch. Paste it into Solscan to see every fee that came in.</p></details>
+      <details><summary>Where can I check the fund?</summary><p>The fund wallet goes up at launch. Paste it into Solscan to see every fee that came in.</p></details>
     </section>
   </div>
 </main>

@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Space Exploration ($SPCX): the memecoin with its own custom CA, paired with $SPCX stock. Creator fees go to Elon to help fund the Cybercab.">
+<meta name="theme-color" content="#05070d">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Space Exploration $SPCX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Poster layout: one giant stacked headline over a starfield, a launch arc, thick-bordered blocks below. Single dark look on purpose. */
+:root{
+  --void:#05070d; --panel:#0c111c; --line:#1f2a3d; --star:#e9eef7; --muted:#8a97ad; --flare:#ffb547;
+  --display:"Anton",Impact,"Arial Narrow",sans-serif;
+  --body:"Work Sans",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--void);color:var(--star);font-family:var(--body);font-size:16px;line-height:1.55;overflow-x:hidden}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--flare);outline-offset:3px}
+
+/* stars */
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main,header,footer{position:relative;z-index:1}
+
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:20px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:22px;letter-spacing:.04em;text-decoration:none}
+.brand svg{width:34px;height:34px}
+.nav-x{font-family:var(--mono);font-size:13px;border:1px solid var(--line);padding:10px 14px;border-radius:999px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.nav-x:hover{border-color:var(--flare);color:var(--flare)}
+
+.hero{padding-block:40px 56px;position:relative}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--flare)}
+h1{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.86;margin:14px 0 0;font-size:clamp(64px,15vw,184px);letter-spacing:.005em;text-wrap:balance}
+h1 .tick{color:var(--flare)}
+.arc{position:absolute;right:-40px;top:10px;width:min(560px,70vw);height:auto;opacity:.9;pointer-events:none}
+.arc path{stroke-dasharray:900;stroke-dashoffset:0;animation:draw 2.4s ease-out both}
+@keyframes draw{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+.lede{max-width:52ch;font-size:19px;color:var(--star);margin:26px 0 0}
+.lede b{color:var(--flare);font-weight:600}
+
+.ca{margin-top:30px;display:flex;flex-wrap:wrap;align-items:stretch;border:2px solid var(--star);max-width:640px}
+.ca .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:var(--star);color:var(--void);padding:0 14px;display:flex;align-items:center}
+.ca code{flex:1;min-width:0;font-family:var(--mono);font-size:14px;padding:14px;overflow-wrap:anywhere;color:var(--star)}
+.ca code .end{color:var(--flare)}
+.ca button{font:600 14px var(--body);background:var(--flare);color:var(--void);border:0;padding:0 18px;min-height:48px;cursor:pointer}
+.ca button:hover{filter:brightness(1.08)}
+
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.btn{font:600 16px var(--body);text-decoration:none;padding:14px 22px;min-height:48px;display:inline-flex;align-items:center;gap:8px;border:2px solid var(--star)}
+.btn.primary{background:var(--star);color:var(--void)}
+.btn.primary:hover{background:var(--flare);border-color:var(--flare)}
+.btn.ghost:hover{border-color:var(--flare);color:var(--flare)}
+
+/* marquee */
+.tape{border-block:2px solid var(--star);background:var(--flare);color:var(--void);overflow:hidden;white-space:nowrap}
+.tape div{display:inline-block;font-family:var(--display);font-size:28px;letter-spacing:.04em;padding-block:10px;animation:scroll 22s linear infinite}
+.tape span{padding-inline:22px}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* blocks */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;padding-block:56px}
+.block{border:2px solid var(--line);background:var(--panel);padding:26px;min-width:0}
+.block h2{font-family:var(--display);font-weight:400;font-size:34px;line-height:1;text-transform:uppercase;margin:0 0 12px;letter-spacing:.01em}
+.block p{margin:0;color:var(--muted)}
+.pair{display:flex;align-items:center;gap:14px;margin-top:20px;font-family:var(--mono);font-size:15px}
+.pair .chip{border:2px solid var(--star);padding:8px 12px}
+.pair .chip.hot{border-color:var(--flare);color:var(--flare)}
+.pair .x{color:var(--muted)}
+
+/* twitter spot */
+.xcard{display:flex;flex-direction:column;gap:16px}
+.xhead{display:flex;align-items:center;gap:14px}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--void);border:2px solid var(--line);display:grid;place-items:center;flex:none}
+.avatar svg{width:34px;height:34px}
+.handle{font-family:var(--mono);font-size:15px;color:var(--muted)}
+.handle strong{display:block;font-family:var(--body);font-size:18px;color:var(--star);font-weight:600}
+.post{border-left:3px solid var(--flare);padding-left:14px;color:var(--star)}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:0;border:2px solid var(--line);margin-bottom:56px}
+.facts div{padding:18px 20px;border-right:2px solid var(--line);border-bottom:2px solid var(--line);margin:-0 -2px -2px 0}
+.facts dt{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-family:var(--display);font-size:30px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.facts dd.flare{color:var(--flare)}
+
+footer{border-top:2px solid var(--line)}
+footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;color:var(--muted);font-size:13px}
+
+/* stock strip */
+.stock{border:2px solid var(--line);background:var(--panel);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;padding:16px 20px;margin-top:40px}
+.stock .sym{font-family:var(--display);font-size:26px;letter-spacing:.03em}
+.stock .sym small{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.1em;margin-left:8px}
+.stock .note{color:var(--muted);font-size:14px;max-width:46ch}
+.stock a{font-family:var(--mono);font-size:13px;border:1px solid var(--line);padding:10px 14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.stock a:hover{border-color:var(--flare);color:var(--flare)}
+
+/* section heads */
+.sec{padding-block:56px 0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:22px}
+.sec-head h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(40px,7vw,72px);line-height:.9;margin:0;letter-spacing:.01em}
+.sec-head p{margin:0;color:var(--muted);max-width:44ch}
+
+/* jar */
+.jar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px}
+@media (max-width:760px){.jar{grid-template-columns:1fr}}
+.jar-main{border:2px solid var(--flare);padding:28px;background:linear-gradient(180deg,rgba(255,181,71,.08),transparent 60%),var(--panel);min-width:0}
+.jar-main .big{font-family:var(--display);font-size:clamp(56px,10vw,104px);line-height:.9;color:var(--flare);font-variant-numeric:tabular-nums;margin:10px 0 4px}
+.jar-main .big small{font-size:.4em;color:var(--star);margin-left:8px}
+.jar-main .ex{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.jar-main p{color:var(--star);margin:18px 0 0;max-width:52ch}
+.wallet{margin-top:18px;font-family:var(--mono);font-size:13px;color:var(--muted);overflow-wrap:anywhere;border-top:1px solid var(--line);padding-top:14px}
+.wallet b{color:var(--star);font-weight:500}
+.jar-side{border:2px solid var(--line);background:var(--panel);padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.jar-side h3{font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;margin:0;letter-spacing:.02em}
+.rules{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.rules li{padding-left:22px;position:relative;color:var(--muted)}
+.rules li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:9px;background:var(--flare)}
+.rules li b{color:var(--star);font-weight:600}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px;counter-reset:s}
+.step{border:2px solid var(--line);padding:24px;background:var(--panel);min-width:0}
+.step .n{font-family:var(--mono);font-size:13px;color:var(--flare);letter-spacing:.1em}
+.step h3{font-family:var(--display);font-weight:400;font-size:28px;text-transform:uppercase;margin:8px 0 8px;line-height:1}
+.step p{margin:0;color:var(--muted)}
+
+/* countdown */
+.count{border:2px solid var(--star);display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.count div{padding:20px 12px;text-align:center;border-right:2px solid var(--star)}
+.count div:last-child{border-right:0}
+.count b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(40px,9vw,80px);line-height:1;font-variant-numeric:tabular-nums}
+.count span{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.count-note{margin:12px 0 0;color:var(--muted);font-family:var(--mono);font-size:13px}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:0;border:2px solid var(--line)}
+.phase{padding:24px;border-right:2px solid var(--line);border-bottom:2px solid var(--line);margin:0 -2px -2px 0;min-width:0;position:relative}
+.phase .alt{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.phase h3{font-family:var(--display);font-weight:400;font-size:34px;text-transform:uppercase;margin:6px 0 10px;line-height:1}
+.phase ul{margin:0;padding-left:18px;color:var(--muted);display:grid;gap:6px}
+.phase.now h3{color:var(--flare)}
+.phase .tag{position:absolute;top:20px;right:20px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;border:1px solid var(--flare);color:var(--flare);padding:3px 8px}
+
+/* memes */
+.memes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
+.meme{aspect-ratio:1/1;max-width:100%;border:2px solid var(--line);background:radial-gradient(circle at 70% 30%,#1a2336,var(--panel) 70%);padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.meme .top,.meme .bot{font-family:var(--display);font-size:28px;text-transform:uppercase;line-height:1;letter-spacing:.01em}
+.meme .bot{color:var(--flare);text-align:right}
+
+/* faq */
+.faq{display:grid;gap:10px;margin-bottom:56px}
+.faq details{border:2px solid var(--line);background:var(--panel)}
+.faq summary{cursor:pointer;padding:18px 20px;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px;min-height:44px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--mono);color:var(--flare)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{margin:0;padding:0 20px 18px;color:var(--muted);max-width:68ch}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--star);color:var(--void);font:600 14px var(--body);padding:10px 16px;z-index:5}
+
+@media (max-width:640px){.arc{opacity:.45;right:-80px}}
+@media (prefers-reduced-motion:reduce){.arc path,.tape div{animation:none}}
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Space Exploration home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="34" rx="26" ry="10" fill="none" stroke="#e9eef7" stroke-width="3" transform="rotate(-22 32 34)"/><circle cx="32" cy="34" r="9" fill="#e9eef7"/><circle cx="52" cy="20" r="4.5" fill="#ffb547"/></svg>
+      $SPCX
+    </a>
+    <a class="nav-x" id="nav-x" href="https://x.com/" target="_blank" rel="noopener">Follow on X ↗</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <svg class="arc" viewBox="0 0 560 420" aria-hidden="true">
+      <path d="M10 410 C 180 400, 360 300, 540 20" fill="none" stroke="#ffb547" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="540" cy="20" r="7" fill="#ffb547"/>
+    </svg>
+    <div class="eyebrow">Ticker $SPCX · Custom CA</div>
+    <h1>Space<br>Explor&shy;ation <span class="tick">$SPCX</span></h1>
+    <p class="lede">The coin with its own custom CA, <b>paired with the real $SPCX stock</b>. Every creator fee goes to Elon to <b>help fund the new Cybercab</b>, stacked in Elon's Jar until he claims it. Strap in.</p>
+
+    <div class="ca" role="group" aria-label="Contract address">
+      <span class="lbl">CA</span>
+      <code id="ca-text">Coming soon<span class="end">…spcx</span></code>
+      <button type="button" id="copy-ca">Copy</button>
+    </div>
+
+    <div class="cta">
+      <a class="btn ghost" href="#jar">See Elon's Jar</a>
+      <a class="btn primary" id="buy-link" href="https://pump.fun/" target="_blank" rel="noopener">Buy on pump.fun ↗</a>
+      <a class="btn ghost" id="hero-x" href="https://x.com/" target="_blank" rel="noopener">Join us on X ↗</a>
+    </div>
+  </section>
+
+  <div class="tape" aria-hidden="true"><div>
+    <span>$SPCX</span><span>★</span><span>CUSTOM CA …SPCX</span><span>★</span><span>PAIRED WITH $SPCX STOCK</span><span>★</span><span>FEES FUND ELON'S CYBERCAB</span><span>★</span><span>TO ORBIT</span><span>★</span>
+    <span>$SPCX</span><span>★</span><span>CUSTOM CA …SPCX</span><span>★</span><span>PAIRED WITH $SPCX STOCK</span><span>★</span><span>FEES FUND ELON'S CYBERCAB</span><span>★</span><span>TO ORBIT</span><span>★</span>
+  </div></div>
+
+  <div class="wrap">
+    <div class="stock">
+      <div class="sym">SPCX<small>NASDAQ · SPACE EXPLORATION TECHNOLOGIES CORP.</small></div>
+      <div class="note">The stock our ticker is paired with. Public since June 12, 2026.</div>
+      <a href="https://www.google.com/finance/quote/SPCX:NASDAQ" target="_blank" rel="noopener">Check SPCX price ↗</a>
+    </div>
+
+    <section class="sec" id="jar" aria-labelledby="jar-title">
+      <div class="sec-head">
+        <h2 id="jar-title">Elon's Jar</h2>
+        <p>Creator fees don't go to the dev. They go to Elon to help fund the Cybercab, held in one public wallet until he claims it.</p>
+      </div>
+      <div class="jar">
+        <div class="jar-main">
+          <div class="ex" id="jar-label">Example balance until launch</div>
+          <div class="big"><span id="jar-bal">42.069</span><small>SOL</small></div>
+          <p>Every trade on $SPCX pays a creator fee. 100% of it lands here as our contribution to Elon's new Cybercab. Nobody spends it. It sits on-chain, in public, waiting for him.</p>
+          <div class="wallet">Jar wallet: <b id="jar-wallet">posted at launch</b></div>
+        </div>
+        <div class="jar-side">
+          <h3>Jar rules</h3>
+          <ul class="rules">
+            <li><b>One wallet, all fees.</b> The jar wallet is set as the coin's creator, so fees flow in on their own.</li>
+            <li><b>Never touched.</b> No withdrawals by the team. Anyone can check the balance on Solscan.</li>
+            <li><b>Elon claims it.</b> If Elon verifies a wallet publicly, the whole jar gets sent to him for the Cybercab.</li>
+            <li><b>Held by the $SPCX team</b> until then. Elon isn't involved and hasn't endorsed this.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="how-title">
+      <div class="sec-head"><h2 id="how-title">How it works</h2></div>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 1</div><h3>Buy $SPCX</h3><p>Check the CA ends in spcx, then buy on pump.fun.</p></div>
+        <div class="step"><div class="n">STEP 2</div><h3>Fees fund the Cybercab</h3><p>Every trade's creator fee goes into Elon's Jar for the new Cybercab.</p></div>
+        <div class="step"><div class="n">STEP 3</div><h3>Tag Elon</h3><p>Post the jar balance and tag him. The bigger it gets, the harder it is to ignore.</p></div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="count-title">
+      <div class="sec-head"><h2 id="count-title">T-minus</h2><p id="count-sub">Liftoff time gets announced on X.</p></div>
+      <div class="count" role="timer" aria-live="off">
+        <div><b id="cd-d">--</b><span>Days</span></div>
+        <div><b id="cd-h">--</b><span>Hours</span></div>
+        <div><b id="cd-m">--</b><span>Min</span></div>
+        <div><b id="cd-s">--</b><span>Sec</span></div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="road-title">
+      <div class="sec-head"><h2 id="road-title">Flight plan</h2><p>Four mission stages, from the pad to Mars.</p></div>
+      <div class="road">
+        <div class="phase now"><span class="tag">NOW</span><div class="alt">Stage 1</div><h3>Liftoff</h3><ul><li>Launch with the custom CA</li><li>Open Elon's Jar</li><li>Site and X live</li></ul></div>
+        <div class="phase"><div class="alt">Stage 2</div><h3>Max Q</h3><ul><li>Bond on pump.fun</li><li>Live jar tracker</li><li>First 1,000 holders</li></ul></div>
+        <div class="phase"><div class="alt">Stage 3</div><h3>Orbit</h3><ul><li>Jar milestone posts</li><li>Tag-Elon raids</li><li>Launch-day events</li></ul></div>
+        <div class="phase"><div class="alt">Stage 4</div><h3>Mars</h3><ul><li>Elon claims the jar</li><li>Everyone else: to Mars</li></ul></div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="meme-title">
+      <div class="sec-head"><h2 id="meme-title">Mission memes</h2><p>Screenshot one and post it.</p></div>
+      <div class="memes">
+        <div class="meme"><div class="top">Buy the stock?</div><div class="bot">Buy the coin.</div></div>
+        <div class="meme"><div class="top">Elon checking the Cybercab budget</div><div class="bot">$SPCX holders: we got you</div></div>
+        <div class="meme"><div class="top">Booster caught</div><div class="bot">$SPCX caught</div></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="block">
+        <h2>Paired with the stock</h2>
+        <p>SpaceX trades on Nasdaq as $SPCX. This coin carries the same four letters, on-chain, with a contract address that ends in them.</p>
+        <div class="pair"><span class="chip">NASDAQ: SPCX</span><span class="x">⇄</span><span class="chip hot">SOL: $SPCX</span></div>
+      </article>
+
+      <article class="block">
+        <h2>Its own custom CA</h2>
+        <p>No random string. The contract address was ground to end in <span style="font-family:var(--mono);color:var(--flare)">spcx</span>, so you know it's the real one at a glance.</p>
+      </article>
+
+      <article class="block xcard" aria-labelledby="x-title">
+        <h2 id="x-title">On X</h2>
+        <div class="xhead">
+          <div class="avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="34" rx="26" ry="10" fill="none" stroke="#e9eef7" stroke-width="3" transform="rotate(-22 32 34)"/><circle cx="32" cy="34" r="9" fill="#e9eef7"/><circle cx="52" cy="20" r="4.5" fill="#ffb547"/></svg></div>
+          <div class="handle"><strong>Space Exploration</strong><span id="x-handle">@yourhandle</span></div>
+        </div>
+        <p class="post">Launch updates, the CA and every pump get posted here first.</p>
+        <a class="btn primary" id="card-x" href="https://x.com/" target="_blank" rel="noopener">Follow on X ↗</a>
+      </article>
+    </section>
+
+    <dl class="facts">
+      <div><dt>Ticker</dt><dd class="flare">$SPCX</dd></div>
+      <div><dt>Chain</dt><dd>Solana</dd></div>
+      <div><dt>Launch</dt><dd>pump.fun</dd></div>
+      <div><dt>CA ends in</dt><dd class="flare">spcx</dd></div>
+      <div><dt>Creator fees</dt><dd class="flare">Cybercab fund</dd></div>
+    </dl>
+
+    <section class="faq" aria-labelledby="faq-title">
+      <div class="sec-head"><h2 id="faq-title">FAQ</h2></div>
+      <details><summary>Is this a SpaceX share?</summary><p>No. $SPCX is a memecoin on Solana. It shares the ticker of SpaceX's Nasdaq stock, but holding it gives you no ownership in SpaceX.</p></details>
+      <details><summary>Does Elon get the creator fees?</summary><p>Yes, that's the plan. They go into Elon's Jar to help fund the new Cybercab. If he verifies a wallet publicly, the full balance gets sent to him. Until then the $SPCX team holds it and won't spend it.</p></details>
+      <details><summary>Is Elon or SpaceX involved?</summary><p>No. This is a community coin. Neither Elon Musk nor SpaceX is affiliated with it or has endorsed it.</p></details>
+      <details><summary>How do I know I have the real CA?</summary><p>The real contract address ends in spcx. Copy it from this page or the pinned post on our X.</p></details>
+      <details><summary>Where can I check the jar?</summary><p>The jar wallet goes up at launch. Paste it into Solscan to see every fee that came in.</p></details>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>$SPCX is a memecoin. It is not a SpaceX share and is not affiliated with or endorsed by SpaceX or Elon Musk.</span>
+    <span>Not financial advice.</span>
+  </div>
+</footer>
+
+<script>
+/* edit these three when you have them */
+const CONFIG = { ca: "", xHandle: "", pumpUrl: "", jarWallet: "", jarBalance: null, launchAt: "" };
+
+(function(){
+  if (CONFIG.ca){ document.getElementById('ca-text').innerHTML = CONFIG.ca.slice(0,-4) + '<span class="end">' + CONFIG.ca.slice(-4) + '</span>'; }
+  if (CONFIG.xHandle){
+    const h = CONFIG.xHandle.replace(/^@/,'');
+    document.getElementById('x-handle').textContent = '@' + h;
+    ['nav-x','hero-x','card-x'].forEach(id => document.getElementById(id).href = 'https://x.com/' + h);
+  }
+  if (CONFIG.pumpUrl){ document.getElementById('buy-link').href = CONFIG.pumpUrl; }
+  if (CONFIG.jarWallet){ document.getElementById('jar-wallet').textContent = CONFIG.jarWallet; }
+  if (CONFIG.jarBalance !== null){ document.getElementById('jar-bal').textContent = Number(CONFIG.jarBalance).toFixed(3); document.getElementById('jar-label').textContent = 'Jar balance'; }
+
+  const pad = n => String(n).padStart(2,'0');
+  const target = CONFIG.launchAt ? new Date(CONFIG.launchAt).getTime() : NaN;
+  if (!isNaN(target)){
+    document.getElementById('count-sub').textContent = 'Liftoff ' + new Date(target).toLocaleString([], {dateStyle:'medium', timeStyle:'short'});
+    const tick = () => {
+      let t = Math.max(0, Math.floor((target - Date.now())/1000));
+      document.getElementById('cd-d').textContent = pad(Math.floor(t/86400));
+      document.getElementById('cd-h').textContent = pad(Math.floor(t%86400/3600));
+      document.getElementById('cd-m').textContent = pad(Math.floor(t%3600/60));
+      document.getElementById('cd-s').textContent = pad(t%60);
+      if (t === 0) document.getElementById('count-sub').textContent = 'We have liftoff.';
+    };
+    tick(); setInterval(tick, 1000);
+  }
+
+  const btn = document.getElementById('copy-ca');
+  function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1600); }
+  btn.addEventListener('click', () => {
+    if (!CONFIG.ca){ toast('CA drops at launch'); return; }
+    navigator.clipboard.writeText(CONFIG.ca).then(()=>toast('CA copied')).catch(()=>{
+      const r=document.createRange(); r.selectNodeContents(document.getElementById('ca-text'));
+      const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected. Press copy');
+    });
+  });
+
+  /* starfield */
+  const c = document.getElementById('sky'), x = c.getContext('2d');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* three depth layers: far stars crawl, near stars fly and stretch into streaks when you scroll */
+  const TINTS = ['#e9eef7','#cfe0ff','#ffe4b8'];
+  let stars = [], shoots = [], w, h, warp = 0, lastY = scrollY, mx = 0, my = 0, px = 0, py = 0, nextShoot = 0;
+  function size(){
+    const d = devicePixelRatio || 1; w = innerWidth; h = innerHeight;
+    c.width = w*d; c.height = h*d; x.setTransform(d,0,0,d,0,0);
+    stars = Array.from({length: Math.round(w*h/1300)}, () => {
+      const z = Math.random() < .6 ? 1 : Math.random() < .7 ? 2 : 3;
+      return {x:Math.random()*w, y:Math.random()*h, z, r:(Math.random()*.6+.3)*z*.7, a:Math.random()*.5+.35+z*.08,
+              tw:Math.random()*6.283, ts:Math.random()*.05+.01, tint:TINTS[Math.random()<.85?0:Math.random()<.6?1:2]};
+    });
+  }
+  addEventListener('scroll', () => { warp = Math.min(warp + Math.abs(scrollY - lastY)*.06, 18); lastY = scrollY; }, {passive:true});
+  addEventListener('pointermove', e => { mx = (e.clientX/w - .5); my = (e.clientY/h - .5); }, {passive:true});
+
+  function shoot(){
+    const fromLeft = Math.random() < .5;
+    shoots.push({x: fromLeft ? Math.random()*w*.5 : w*.5 + Math.random()*w*.5, y: Math.random()*h*.4,
+                 vx: (fromLeft ? 1 : -1)*(7+Math.random()*5), vy: 3+Math.random()*3, life: 1});
+  }
+  function frame(t){
+    x.clearRect(0,0,w,h);
+    warp *= .92;
+    px += (mx - px)*.05; py += (my - py)*.05;
+    for (const s of stars){
+      const speed = (.08 + warp*.35) * s.z * s.z * .45;
+      if (!still){ s.y -= speed; s.tw += s.ts; if (s.y < -20){ s.y = h + 10; s.x = Math.random()*w; } }
+      const ox = -px*14*s.z, oy = -py*10*s.z;
+      const sx = s.x + ox, sy = s.y + oy;
+      const alpha = s.a * (.7 + .3*Math.sin(s.tw));
+      x.globalAlpha = alpha; x.strokeStyle = x.fillStyle = s.tint;
+      const len = warp * s.z * s.z * .9;
+      if (len > 1.5){
+        x.lineWidth = s.r*1.4; x.lineCap = 'round';
+        x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx, sy + len); x.stroke();
+      } else {
+        x.beginPath(); x.arc(sx, sy, s.r, 0, 6.283); x.fill();
+        if (s.z === 3 && alpha > .8){ /* bright star glint */
+          x.globalAlpha = alpha*.35; x.lineWidth = .6;
+          x.beginPath(); x.moveTo(sx - s.r*4, sy); x.lineTo(sx + s.r*4, sy); x.moveTo(sx, sy - s.r*4); x.lineTo(sx, sy + s.r*4); x.stroke();
+        }
+      }
+    }
+    if (!still){
+      if (t > nextShoot){ shoot(); nextShoot = t + 1800 + Math.random()*2600; }
+      for (let i = shoots.length - 1; i >= 0; i--){
+        const m = shoots[i];
+        m.x += m.vx; m.y += m.vy; m.life -= .012;
+        if (m.life <= 0 || m.x < -100 || m.x > w + 100 || m.y > h + 100){ shoots.splice(i,1); continue; }
+        const tx = m.x - m.vx*14, ty = m.y - m.vy*14;
+        const g = x.createLinearGradient(m.x, m.y, tx, ty);
+        g.addColorStop(0, 'rgba(255,229,190,' + m.life + ')');
+        g.addColorStop(.3, 'rgba(255,181,71,' + m.life*.5 + ')');
+        g.addColorStop(1, 'rgba(255,181,71,0)');
+        x.globalAlpha = 1; x.strokeStyle = g; x.lineWidth = 2; x.lineCap = 'round';
+        x.beginPath(); x.moveTo(m.x, m.y); x.lineTo(tx, ty); x.stroke();
+        x.fillStyle = 'rgba(255,245,225,' + m.life + ')';
+        x.beginPath(); x.arc(m.x, m.y, 1.8, 0, 6.283); x.fill();
+      }
+      requestAnimationFrame(frame);
+    }
+  }
+  addEventListener('resize', () => { size(); if (still) frame(0); });
+  size(); frame(0);
+})();
+</script>
+</body>
+</html>

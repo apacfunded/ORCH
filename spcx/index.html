@@ -3,16 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Space Exploration ($SPCX): the memecoin with its own custom CA, paired with $SPCX stock. Creator fees go to Elon to help fund the Cybercab.">
-<meta name="theme-color" content="#05070d">
+<meta name="description" content="Space Exploration ($SPCX): the memecoin with its own custom CA ending in spcx. Creator fees go into Elon's Jar to help fund the Cybercab.">
+<meta name="theme-color" content="#03060e">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Space Exploration $SPCX</title>
+</head>
+<body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Poster layout: one giant stacked headline over a starfield, a launch arc, thick-bordered blocks below. Single dark look on purpose. */
 :root{
-  --void:#05070d; --panel:#0c111c; --line:#1f2a3d; --star:#e9eef7; --muted:#8a97ad; --flare:#ffb547;
+  --void:#03060e; --panel:#0a1220; --line:#1b2c44; --star:#e9eef7; --muted:#8ea4c2; --flare:#2ee6ff;
   --display:"Anton",Impact,"Arial Narrow",sans-serif;
   --body:"Work Sans",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -108,7 +110,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 /* jar */
 .jar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px}
 @media (max-width:760px){.jar{grid-template-columns:1fr}}
-.jar-main{border:2px solid var(--flare);padding:28px;background:linear-gradient(180deg,rgba(255,181,71,.08),transparent 60%),var(--panel);min-width:0}
+.jar-main{border:2px solid var(--flare);padding:28px;background:linear-gradient(180deg,rgba(46,230,255,.08),transparent 60%),var(--panel);min-width:0}
 .jar-main .big{font-family:var(--display);font-size:clamp(56px,10vw,104px);line-height:.9;color:var(--flare);font-variant-numeric:tabular-nums;margin:10px 0 4px}
 .jar-main .big small{font-size:.4em;color:var(--star);margin-left:8px}
 .jar-main .ex{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
@@ -161,7 +163,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 
 /* memes */
 .memes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
-.meme{aspect-ratio:1/1;max-width:100%;border:2px solid var(--line);background:radial-gradient(circle at 70% 30%,#1a2336,var(--panel) 70%);padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.meme{aspect-ratio:1/1;max-width:100%;border:2px solid var(--line);background:radial-gradient(circle at 70% 30%,#13263a,var(--panel) 70%);padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
 .meme .top,.meme .bot{font-family:var(--display);font-size:28px;text-transform:uppercase;line-height:1;letter-spacing:.01em}
 .meme .bot{color:var(--flare);text-align:right}
 
@@ -174,31 +176,36 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 .faq details[open] summary::after{content:"−"}
 .faq details p{margin:0;padding:0 20px 18px;color:var(--muted);max-width:68ch}
 
+.btn.soon{cursor:default;color:var(--muted);border-color:var(--line)}
+.live{display:inline-flex;align-items:center;gap:6px;margin-left:10px;color:var(--flare)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--flare);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.live i{animation:none}}
+.wallet a{color:var(--star);font-weight:500;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.wallet a:hover{color:var(--flare)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--star);color:var(--void);font:600 14px var(--body);padding:10px 16px;z-index:5}
 
 @media (max-width:640px){.arc{opacity:.45;right:-80px}}
 @media (prefers-reduced-motion:reduce){.arc path,.tape div{animation:none}}
 </style>
-</head>
-<body>
 
 <canvas id="sky" aria-hidden="true"></canvas>
 
 <header>
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Space Exploration home">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="34" rx="26" ry="10" fill="none" stroke="#e9eef7" stroke-width="3" transform="rotate(-22 32 34)"/><circle cx="32" cy="34" r="9" fill="#e9eef7"/><circle cx="52" cy="20" r="4.5" fill="#ffb547"/></svg>
+      <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="34" rx="26" ry="10" fill="none" stroke="#e9eef7" stroke-width="3" transform="rotate(-22 32 34)"/><circle cx="32" cy="34" r="9" fill="#e9eef7"/><circle cx="52" cy="20" r="4.5" fill="#2ee6ff"/></svg>
       $SPCX
     </a>
-    <a class="nav-x" id="nav-x" href="https://x.com/" target="_blank" rel="noopener">Follow on X ↗</a>
+    <a class="nav-x" id="nav-x" hidden href="https://x.com/" target="_blank" rel="noopener">Follow on X ↗</a>
   </div>
 </header>
 
 <main id="top">
   <section class="hero wrap">
     <svg class="arc" viewBox="0 0 560 420" aria-hidden="true">
-      <path d="M10 410 C 180 400, 360 300, 540 20" fill="none" stroke="#ffb547" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="540" cy="20" r="7" fill="#ffb547"/>
+      <path d="M10 410 C 180 400, 360 300, 540 20" fill="none" stroke="#2ee6ff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="540" cy="20" r="7" fill="#2ee6ff"/>
     </svg>
     <div class="eyebrow">Ticker $SPCX · Custom CA</div>
     <h1>Space<br>Explor&shy;ation <span class="tick">$SPCX</span></h1>
@@ -206,14 +213,15 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 
     <div class="ca" role="group" aria-label="Contract address">
       <span class="lbl">CA</span>
-      <code id="ca-text">Coming soon<span class="end">…spcx</span></code>
-      <button type="button" id="copy-ca">Copy</button>
+      <code id="ca-text">Drops at launch · ends in <span class="end">spcx</span></code>
+      <button type="button" id="copy-ca" hidden>Copy</button>
     </div>
 
     <div class="cta">
       <a class="btn ghost" href="#jar">See Elon's Jar</a>
-      <a class="btn primary" id="buy-link" href="https://pump.fun/" target="_blank" rel="noopener">Buy on pump.fun ↗</a>
-      <a class="btn ghost" id="hero-x" href="https://x.com/" target="_blank" rel="noopener">Join us on X ↗</a>
+      <span class="btn ghost soon" id="buy-soon">Launching soon on pump.fun</span>
+      <a class="btn primary" id="buy-link" hidden href="https://pump.fun/" target="_blank" rel="noopener">Buy on pump.fun ↗</a>
+      <a class="btn ghost" id="hero-x" hidden href="https://x.com/" target="_blank" rel="noopener">Join us on X ↗</a>
     </div>
   </section>
 
@@ -236,8 +244,8 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
       </div>
       <div class="jar">
         <div class="jar-main">
-          <div class="ex" id="jar-label">Example balance until launch</div>
-          <div class="big"><span id="jar-bal">42.069</span><small>SOL</small></div>
+          <div class="ex" id="jar-label">Jar balance <span id="jar-live" class="live" hidden><i></i>Live</span></div>
+          <div class="big"><span id="jar-bal">0.000</span><small>SOL</small></div>
           <p>Every trade on $SPCX pays a creator fee. 100% of it lands here as our contribution to Elon's new Cybercab. Nobody spends it. It sits on-chain, in public, waiting for him.</p>
           <div class="wallet">Jar wallet: <b id="jar-wallet">posted at launch</b></div>
         </div>
@@ -264,12 +272,12 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
         <svg class="roadster" viewBox="0 0 360 200" aria-hidden="true">
           <g class="car">
             <path d="M40 128 C 60 104, 110 92, 150 90 L 200 72 C 222 64, 252 66, 270 82 L 312 104 C 326 110, 330 122, 326 132 L 40 138 Z" fill="#e9eef7"/>
-            <path d="M162 90 L 202 76 C 220 70, 244 72, 258 84 L 238 92 Z" fill="#05070d" opacity=".85"/>
-            <circle cx="96" cy="138" r="16" fill="#05070d" stroke="#e9eef7" stroke-width="4"/>
-            <circle cx="276" cy="136" r="16" fill="#05070d" stroke="#e9eef7" stroke-width="4"/>
-            <path class="jet" d="M40 132 L 6 124 L 6 146 Z" fill="#ffb547"/>
-            <path class="jet" d="M120 154 L 112 186 L 136 186 Z" fill="#ffb547"/>
-            <path class="jet" d="M262 152 L 254 184 L 278 184 Z" fill="#ffb547"/>
+            <path d="M162 90 L 202 76 C 220 70, 244 72, 258 84 L 238 92 Z" fill="#03060e" opacity=".85"/>
+            <circle cx="96" cy="138" r="16" fill="#03060e" stroke="#e9eef7" stroke-width="4"/>
+            <circle cx="276" cy="136" r="16" fill="#03060e" stroke="#e9eef7" stroke-width="4"/>
+            <path class="jet" d="M40 132 L 6 124 L 6 146 Z" fill="#2ee6ff"/>
+            <path class="jet" d="M120 154 L 112 186 L 136 186 Z" fill="#2ee6ff"/>
+            <path class="jet" d="M262 152 L 254 184 L 278 184 Z" fill="#2ee6ff"/>
           </g>
         </svg>
       </div>
@@ -284,7 +292,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
       </div>
     </section>
 
-    <section class="sec" aria-labelledby="count-title">
+    <section class="sec" id="count-sec" aria-labelledby="count-title" hidden>
       <div class="sec-head"><h2 id="count-title">T-minus</h2><p id="count-sub">Liftoff time gets announced on X.</p></div>
       <div class="count" role="timer" aria-live="off">
         <div><b id="cd-d">--</b><span>Days</span></div>
@@ -325,10 +333,10 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
         <p>No random string. The contract address was ground to end in <span style="font-family:var(--mono);color:var(--flare)">spcx</span>, so you know it's the real one at a glance.</p>
       </article>
 
-      <article class="block xcard" aria-labelledby="x-title">
+      <article class="block xcard" id="x-card" aria-labelledby="x-title" hidden>
         <h2 id="x-title">On X</h2>
         <div class="xhead">
-          <div class="avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="34" rx="26" ry="10" fill="none" stroke="#e9eef7" stroke-width="3" transform="rotate(-22 32 34)"/><circle cx="32" cy="34" r="9" fill="#e9eef7"/><circle cx="52" cy="20" r="4.5" fill="#ffb547"/></svg></div>
+          <div class="avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="34" rx="26" ry="10" fill="none" stroke="#e9eef7" stroke-width="3" transform="rotate(-22 32 34)"/><circle cx="32" cy="34" r="9" fill="#e9eef7"/><circle cx="52" cy="20" r="4.5" fill="#2ee6ff"/></svg></div>
           <div class="handle"><strong>Space Exploration</strong><span id="x-handle">@yourhandle</span></div>
         </div>
         <p class="post">Launch updates, the CA and every pump get posted here first.</p>
@@ -364,23 +372,61 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 </footer>
 
 <script>
-/* edit these three when you have them */
-const CONFIG = { ca: "", xHandle: "", pumpUrl: "", jarWallet: "", jarBalance: null, launchAt: "" };
+/* fill these in at launch; anything left blank stays hidden */
+const CONFIG = { ca: "", xHandle: "", pumpUrl: "", jarWallet: "", jarBalance: null, launchAt: "", rpcUrl: "" };
 
 (function(){
-  if (CONFIG.ca){ document.getElementById('ca-text').innerHTML = CONFIG.ca.slice(0,-4) + '<span class="end">' + CONFIG.ca.slice(-4) + '</span>'; }
+  const $ = id => document.getElementById(id);
+  const show = (...ids) => ids.forEach(id => $(id).hidden = false);
+  if (CONFIG.ca){
+    $('ca-text').innerHTML = '';
+    $('ca-text').append(CONFIG.ca.slice(0,-4));
+    const e = document.createElement('span'); e.className = 'end'; e.textContent = CONFIG.ca.slice(-4); $('ca-text').append(e);
+    show('copy-ca');
+  }
   if (CONFIG.xHandle){
     const h = CONFIG.xHandle.replace(/^@/,'');
-    document.getElementById('x-handle').textContent = '@' + h;
-    ['nav-x','hero-x','card-x'].forEach(id => document.getElementById(id).href = 'https://x.com/' + h);
+    $('x-handle').textContent = '@' + h;
+    ['nav-x','hero-x','card-x'].forEach(id => $(id).href = 'https://x.com/' + h);
+    show('nav-x','hero-x','x-card');
   }
-  if (CONFIG.pumpUrl){ document.getElementById('buy-link').href = CONFIG.pumpUrl; }
-  if (CONFIG.jarWallet){ document.getElementById('jar-wallet').textContent = CONFIG.jarWallet; }
-  if (CONFIG.jarBalance !== null){ document.getElementById('jar-bal').textContent = Number(CONFIG.jarBalance).toFixed(3); document.getElementById('jar-label').textContent = 'Jar balance'; }
+  if (CONFIG.pumpUrl){ $('buy-link').href = CONFIG.pumpUrl; show('buy-link'); $('buy-soon').hidden = true; }
+  if (CONFIG.jarBalance !== null){ $('jar-bal').textContent = Number(CONFIG.jarBalance).toFixed(3); }
+
+  /* live jar: reads the wallet's SOL balance straight from Solana, refreshes every 30s.
+     If the network call is blocked, the page keeps showing CONFIG.jarBalance. */
+  if (CONFIG.jarWallet){
+    const w = CONFIG.jarWallet.trim();
+    const a = document.createElement('a');
+    a.href = 'https://solscan.io/account/' + encodeURIComponent(w); a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = w + ' ↗';
+    $('jar-wallet').replaceWith(a);
+    const RPC = CONFIG.rpcUrl || 'https://api.mainnet-beta.solana.com';
+    let shown = null;
+    const animate = to => {
+      const from = shown ?? 0, t0 = performance.now(), dur = shown === null ? 900 : 500;
+      const step = t => { const k = Math.min(1,(t-t0)/dur), v = from + (to-from)*(1-Math.pow(1-k,3));
+        $('jar-bal').textContent = v.toFixed(3); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step); shown = to;
+    };
+    const load = async () => {
+      try{
+        const res = await fetch(RPC, {method:'POST', headers:{'content-type':'application/json'},
+          body: JSON.stringify({jsonrpc:'2.0', id:1, method:'getBalance', params:[w, {commitment:'confirmed'}]})});
+        const j = await res.json();
+        if (typeof j?.result?.value !== 'number') throw 0;
+        const sol = j.result.value / 1e9;
+        if (sol !== shown) animate(sol);
+        show('jar-live');
+      }catch(_){ $('jar-live').hidden = true; }
+    };
+    load(); setInterval(load, 30000);
+  }
 
   const pad = n => String(n).padStart(2,'0');
   const target = CONFIG.launchAt ? new Date(CONFIG.launchAt).getTime() : NaN;
   if (!isNaN(target)){
+    show('count-sec');
     document.getElementById('count-sub').textContent = 'Liftoff ' + new Date(target).toLocaleString([], {dateStyle:'medium', timeStyle:'short'});
     const tick = () => {
       let t = Math.max(0, Math.floor((target - Date.now())/1000));
@@ -407,7 +453,7 @@ const CONFIG = { ca: "", xHandle: "", pumpUrl: "", jarWallet: "", jarBalance: nu
   const c = document.getElementById('sky'), x = c.getContext('2d');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* three depth layers: far stars crawl, near stars fly and stretch into streaks when you scroll */
-  const TINTS = ['#e9eef7','#cfe0ff','#ffe4b8'];
+  const TINTS = ['#e9eef7','#cfe0ff','#bff6ff'];
   let stars = [], shoots = [], w, h, warp = 0, lastY = scrollY, mx = 0, my = 0, px = 0, py = 0, nextShoot = 0;
   function size(){
     const d = devicePixelRatio || 1; w = innerWidth; h = innerHeight;
@@ -457,12 +503,12 @@ const CONFIG = { ca: "", xHandle: "", pumpUrl: "", jarWallet: "", jarBalance: nu
         if (m.life <= 0 || m.x < -100 || m.x > w + 100 || m.y > h + 100){ shoots.splice(i,1); continue; }
         const tx = m.x - m.vx*14, ty = m.y - m.vy*14;
         const g = x.createLinearGradient(m.x, m.y, tx, ty);
-        g.addColorStop(0, 'rgba(255,229,190,' + m.life + ')');
-        g.addColorStop(.3, 'rgba(255,181,71,' + m.life*.5 + ')');
-        g.addColorStop(1, 'rgba(255,181,71,0)');
+        g.addColorStop(0, 'rgba(200,248,255,' + m.life + ')');
+        g.addColorStop(.3, 'rgba(46,230,255,' + m.life*.5 + ')');
+        g.addColorStop(1, 'rgba(46,230,255,0)');
         x.globalAlpha = 1; x.strokeStyle = g; x.lineWidth = 2; x.lineCap = 'round';
         x.beginPath(); x.moveTo(m.x, m.y); x.lineTo(tx, ty); x.stroke();
-        x.fillStyle = 'rgba(255,245,225,' + m.life + ')';
+        x.fillStyle = 'rgba(230,252,255,' + m.life + ')';
         x.beginPath(); x.arc(m.x, m.y, 1.8, 0, 6.283); x.fill();
       }
       requestAnimationFrame(frame);

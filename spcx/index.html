@@ -122,6 +122,19 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
 .rules li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:9px;background:var(--flare)}
 .rules li b{color:var(--star);font-weight:600}
 
+/* plan b */
+.planb{border:2px solid var(--star);display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);align-items:center;gap:20px;padding:28px;background:var(--panel)}
+@media (max-width:760px){.planb{grid-template-columns:1fr}}
+.planb h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(36px,6vw,60px);line-height:.95;margin:10px 0 14px;text-wrap:balance}
+.planb h2 span{color:var(--flare)}
+.planb p{margin:0;color:var(--muted);max-width:52ch}
+.roadster{width:100%;max-width:360px;height:auto;justify-self:center}
+.roadster .car{animation:hover 3.2s ease-in-out infinite;transform-origin:center}
+.roadster .jet{animation:flick .18s steps(2) infinite}
+@keyframes hover{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+@keyframes flick{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.roadster .car,.roadster .jet{animation:none}}
+
 /* steps */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px;counter-reset:s}
 .step{border:2px solid var(--line);padding:24px;background:var(--panel);min-width:0}
@@ -205,8 +218,8 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
   </section>
 
   <div class="tape" aria-hidden="true"><div>
-    <span>$SPCX</span><span>★</span><span>CUSTOM CA …SPCX</span><span>★</span><span>PAIRED WITH $SPCX STOCK</span><span>★</span><span>FEES FUND ELON'S CYBERCAB</span><span>★</span><span>TO ORBIT</span><span>★</span>
-    <span>$SPCX</span><span>★</span><span>CUSTOM CA …SPCX</span><span>★</span><span>PAIRED WITH $SPCX STOCK</span><span>★</span><span>FEES FUND ELON'S CYBERCAB</span><span>★</span><span>TO ORBIT</span><span>★</span>
+    <span>$SPCX</span><span>★</span><span>CUSTOM CA …SPCX</span><span>★</span><span>PAIRED WITH $SPCX STOCK</span><span>★</span><span>FEES FUND ELON'S CYBERCAB</span><span>★</span><span>NO CLAIM = FLYING ROADSTER</span><span>★</span><span>TO ORBIT</span><span>★</span>
+    <span>$SPCX</span><span>★</span><span>CUSTOM CA …SPCX</span><span>★</span><span>PAIRED WITH $SPCX STOCK</span><span>★</span><span>FEES FUND ELON'S CYBERCAB</span><span>★</span><span>NO CLAIM = FLYING ROADSTER</span><span>★</span><span>TO ORBIT</span><span>★</span>
   </div></div>
 
   <div class="wrap">
@@ -234,9 +247,31 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
             <li><b>One wallet, all fees.</b> The jar wallet is set as the coin's creator, so fees flow in on their own.</li>
             <li><b>Never touched.</b> No withdrawals by the team. Anyone can check the balance on Solscan.</li>
             <li><b>Elon claims it.</b> If Elon verifies a wallet publicly, the whole jar gets sent to him for the Cybercab.</li>
+            <li><b>No claim? Plan B.</b> If Elon doesn't claim the jar by the deadline we post on X, the fees go toward buying a flying Roadster and tokenizing it on-chain.</li>
             <li><b>Held by the $SPCX team</b> until then. Elon isn't involved and hasn't endorsed this.</li>
           </ul>
         </div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="planb-title">
+      <div class="planb">
+        <div class="planb-copy">
+          <div class="eyebrow">Plan B</div>
+          <h2 id="planb-title">Elon doesn't claim?<br><span>We buy the flying Roadster.</span></h2>
+          <p>If the jar sits unclaimed past the deadline, the creator fees go toward buying a flying Tesla Roadster and tokenizing it on Solana. The car goes on-chain. Either way, the fees end up in something space-age.</p>
+        </div>
+        <svg class="roadster" viewBox="0 0 360 200" aria-hidden="true">
+          <g class="car">
+            <path d="M40 128 C 60 104, 110 92, 150 90 L 200 72 C 222 64, 252 66, 270 82 L 312 104 C 326 110, 330 122, 326 132 L 40 138 Z" fill="#e9eef7"/>
+            <path d="M162 90 L 202 76 C 220 70, 244 72, 258 84 L 238 92 Z" fill="#05070d" opacity=".85"/>
+            <circle cx="96" cy="138" r="16" fill="#05070d" stroke="#e9eef7" stroke-width="4"/>
+            <circle cx="276" cy="136" r="16" fill="#05070d" stroke="#e9eef7" stroke-width="4"/>
+            <path class="jet" d="M40 132 L 6 124 L 6 146 Z" fill="#ffb547"/>
+            <path class="jet" d="M120 154 L 112 186 L 136 186 Z" fill="#ffb547"/>
+            <path class="jet" d="M262 152 L 254 184 L 278 184 Z" fill="#ffb547"/>
+          </g>
+        </svg>
       </div>
     </section>
 
@@ -265,7 +300,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
         <div class="phase now"><span class="tag">NOW</span><div class="alt">Stage 1</div><h3>Liftoff</h3><ul><li>Launch with the custom CA</li><li>Open Elon's Jar</li><li>Site and X live</li></ul></div>
         <div class="phase"><div class="alt">Stage 2</div><h3>Max Q</h3><ul><li>Bond on pump.fun</li><li>Live jar tracker</li><li>First 1,000 holders</li></ul></div>
         <div class="phase"><div class="alt">Stage 3</div><h3>Orbit</h3><ul><li>Jar milestone posts</li><li>Tag-Elon raids</li><li>Launch-day events</li></ul></div>
-        <div class="phase"><div class="alt">Stage 4</div><h3>Mars</h3><ul><li>Elon claims the jar</li><li>Everyone else: to Mars</li></ul></div>
+        <div class="phase"><div class="alt">Stage 4</div><h3>Mars</h3><ul><li>Elon claims the jar</li><li>Or Plan B: buy a flying Roadster and tokenize it</li><li>Everyone else: to Mars</li></ul></div>
       </div>
     </section>
 
@@ -313,6 +348,7 @@ footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:10px 24px;j
       <div class="sec-head"><h2 id="faq-title">FAQ</h2></div>
       <details><summary>Is this a SpaceX share?</summary><p>No. $SPCX is a memecoin on Solana. It shares the ticker of SpaceX's Nasdaq stock, but holding it gives you no ownership in SpaceX.</p></details>
       <details><summary>Does Elon get the creator fees?</summary><p>Yes, that's the plan. They go into Elon's Jar to help fund the new Cybercab. If he verifies a wallet publicly, the full balance gets sent to him. Until then the $SPCX team holds it and won't spend it.</p></details>
+      <details><summary>What if Elon never claims it?</summary><p>We post a claim deadline on X. If the jar is still unclaimed after it, the creator fees go toward buying a flying Tesla Roadster and tokenizing it on Solana.</p></details>
       <details><summary>Is Elon or SpaceX involved?</summary><p>No. This is a community coin. Neither Elon Musk nor SpaceX is affiliated with it or has endorsed it.</p></details>
       <details><summary>How do I know I have the real CA?</summary><p>The real contract address ends in spcx. Copy it from this page or the pinned post on our X.</p></details>
       <details><summary>Where can I check the jar?</summary><p>The jar wallet goes up at launch. Paste it into Solscan to see every fee that came in.</p></details>

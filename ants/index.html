@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="$ANTS is a live ant colony on Solana. Every buy is an ant marching in. Creator fees get burned.">
+<link rel="icon" type="image/png" href="/ants/pfp.png">
+<meta property="og:title" content="$ANTS Colony">
+<meta property="og:description" content="Every buy is an ant. Creator fees get burned.">
+<meta property="og:image" content="https://orch.lol/ants/banner.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://orch.lol/ants/banner.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>$ANTS Colony</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: product landing. A glass ant farm is the hero; colonies feed and launch form below. Single warm-earth look, colors set explicitly. */
+:root{
+  --bg:#f4efe6; --card:#fffaf2; --ink:#241c12; --muted:#7a6a55; --line:#e4d9c6;
+  --accent:#c2581c; --accent-ink:#fffaf2; --soil:#2b1b0f; --soil-2:#3a2616; --tunnel:#6b4a2e; --good:#3f7d4e; --bad:#b23a2a;
+  --display:"Fraunces",Georgia,serif; --body:"Figtree",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font:600 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:12px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand svg{width:34px;height:34px;flex:none}
+.brand b{font:600 22px/1 var(--display);letter-spacing:-.01em}
+.nav nav{margin-left:auto;display:flex;gap:2px;margin-right:4px}
+.nav nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px;padding:10px 12px;border-radius:8px}
+.nav nav a:hover{color:var(--ink);background:var(--card)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px var(--body);cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+@media (max-width:760px){.nav nav{display:none}.nav .xbtn{margin-left:auto}}
+.btn svg{flex:none}
+
+.first{position:relative;overflow:hidden;background:var(--soil);min-height:calc(100svh - 70px)}
+.bg-farm{position:absolute;inset:0;z-index:0}
+#farm{display:block;width:100%;height:100%}
+.bg-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(18,11,5,.74) 0%,rgba(18,11,5,.42) 42%,rgba(18,11,5,.06) 78%)}
+@media (max-width:920px){.bg-scrim{background:linear-gradient(180deg,rgba(18,11,5,.55),rgba(18,11,5,.35))}}
+.first .hero{position:relative;z-index:1}
+.hero{padding-block:56px 40px;min-height:calc(100svh - 70px);display:flex;flex-direction:column;justify-content:center;color:#fffaf2}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:center}
+@media (max-width:920px){.hero-grid{grid-template-columns:1fr}}
+.hero .eyebrow{color:#f2a46b}
+.hero h1{color:#fffaf2;max-width:12ch}
+.hero h1 em{color:#f2a46b}
+.hero .lede{color:rgba(255,250,242,.84);margin-top:18px}
+.btn.ghost{background:rgba(255,250,242,.08);color:#fffaf2;border-color:rgba(255,250,242,.32)}
+.btn.ghost:hover{border-color:#fffaf2}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.tag{display:flex;align-items:center;gap:10px;background:#fffaf2;color:var(--ink);border-radius:999px;padding:6px 14px 6px 6px;font-size:14px;font-weight:500;max-width:100%}
+.tag .pfp{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 13px var(--body);color:#fff;background:var(--accent);flex:none}
+.tag span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{display:flex;align-items:center;gap:8px;background:rgba(18,11,5,.7);border:1px solid rgba(255,250,242,.18);color:#f4efe6;border-radius:999px;padding:8px 14px;font:500 13px var(--body)}
+.live i{width:8px;height:8px;border-radius:50%;background:#7fd38f;box-shadow:0 0 0 3px rgba(127,211,143,.25)}
+.counter{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.counter div{background:rgba(18,11,5,.7);border:1px solid rgba(255,250,242,.14);color:rgba(255,250,242,.8);border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.3}
+.counter b{display:block;font:600 20px var(--body);color:#fffaf2;font-variant-numeric:tabular-nums}
+.empty{display:inline-flex;align-items:center;gap:10px;margin-top:10px;background:rgba(18,11,5,.7);border:1px dashed rgba(255,250,242,.3);color:rgba(255,250,242,.85);border-radius:14px;padding:10px 14px;font-size:14px}
+.empty b{color:#fffaf2}
+.sheet{min-width:0}
+h1{font:500 clamp(42px,7vw,84px)/.96 var(--display);letter-spacing:-.025em;margin:10px 0 0;text-wrap:balance}
+h1 em{font-style:italic;color:var(--accent)}
+.lede{color:var(--muted);font-size:17px;max-width:46ch;margin:0 0 18px}
+.cta{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:820px){.hero-head{grid-template-columns:1fr}}
+
+.feed{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 24px 50px -24px rgba(0,0,0,.7);display:flex;flex-direction:column;min-width:0}
+.feed h3{font:600 20px var(--display);margin:0}
+.feed .sub{color:var(--muted);font-size:14px;margin:2px 0 12px}
+.trades{list-style:none;margin:0;padding:0;flex:1;overflow:hidden;max-height:420px}
+.trades li{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.trades li:last-child{border-bottom:0}
+.trades .ic{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600}
+.trades .buy .ic{background:#e6efe3;color:var(--good)}
+.trades .sell .ic{background:#f3e1dc;color:var(--bad)}
+.trades .who{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trades .who small{display:block;color:var(--muted);font-size:12px}
+.trades .amt{font-weight:600;font-variant-numeric:tabular-nums}
+.trades .buy .amt{color:var(--good)} .trades .sell .amt{color:var(--bad)}
+.trades li.in{animation:slide .45s ease}
+@keyframes slide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.feed .btn{margin-top:14px;width:100%}
+.demo{font-size:13px;color:var(--muted);margin:12px 4px 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:28px 4px 0;font-size:14px;color:rgba(255,250,242,.8);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.lg{width:10px;height:10px;border-radius:50%}
+.lg.buy{background:var(--good)} .lg.sell{background:var(--bad)}
+.demo-inline{margin-left:auto;font-size:13px}
+@media (max-width:700px){.demo-inline{margin-left:0}}
+.strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:40px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip div{padding:18px 4px;color:var(--muted);font-size:14px}
+.strip div+div{padding-left:20px;border-left:1px solid var(--line)}
+.strip b{display:block;font:500 34px/1.1 var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
+@media (max-width:700px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}.strip div:nth-child(3){padding-left:4px;border-left:0}.strip div:nth-child(n+3){border-top:1px solid var(--line)}}
+
+section{padding-block:64px 0}
+h2{font:500 clamp(30px,4vw,44px)/1.05 var(--display);letter-spacing:-.02em;margin:8px 0 8px;text-wrap:balance}
+.sec-sub{color:var(--muted);max-width:56ch;margin:0 0 24px}
+
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
+.step .n{font:500 40px/1 var(--display);color:var(--accent)}
+.step b{display:block;font:600 19px var(--display);margin:14px 0 6px}
+.step p{color:var(--muted);margin:0;font-size:15px}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tabs button{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:600 14px var(--body);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.colonies{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:920px){.colonies{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:580px){.colonies{grid-template-columns:1fr}}
+.col{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.col.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.col-top{display:flex;gap:12px;align-items:center}
+.col-top .pfp{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#fff;font:600 16px var(--body);flex:none}
+.col-top b{font:600 18px var(--display);display:block;line-height:1.2}
+.col-top span{color:var(--muted);font-size:13px}
+.mini{height:64px;border-radius:12px;background:var(--soil);overflow:hidden}
+.mini canvas{width:100%;height:100%;display:block}
+.col-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:13px;color:var(--muted)}
+.col-stats b{display:block;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+.prog{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+.prog .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog .bar span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.col .btn{width:100%}
+
+.launch{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
+@media (max-width:880px){.launch{grid-template-columns:1fr}}
+.launch form{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:22px}
+@media (max-width:520px){.launch form{padding:18px}}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:14px;min-width:0}
+fieldset+fieldset{border-top:1px solid var(--line);padding-top:20px}
+legend{font:600 18px var(--display);padding:0;margin-bottom:14px}
+legend span{font:500 13px var(--body);color:var(--muted);margin-left:6px}
+.flabel{font-weight:600;font-size:14px}
+.pre{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding-left:14px;min-height:44px}
+.pre:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(194,88,28,.15)}
+.pre>span{color:var(--muted);font-weight:600}
+.pre svg{width:16px;height:16px;color:var(--muted);flex:none}
+.field .pre input{border:0;background:transparent;padding-left:0;box-shadow:none;outline:none}
+.field.bad .pre{border-color:var(--bad)}
+.err{font-size:13px;color:var(--bad)}
+.drop{display:flex;align-items:center;gap:14px;padding:14px;border:1.5px dashed #d3c4ab;border-radius:14px;background:var(--bg);cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--accent)}
+.drop-thumb{width:56px;height:56px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--muted);flex:none}
+.drop-thumb svg{width:24px;height:24px}
+.drop-thumb img{width:100%;height:100%;object-fit:cover}
+.drop b{display:block;font-size:15px}
+.drop small{color:var(--muted);font-size:13px}
+.sr{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.field:has(#f-img:focus-visible) .drop{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.seg button{min-height:64px;border:1px solid var(--line);background:var(--bg);border-radius:14px;cursor:pointer;text-align:left;padding:10px 12px;color:var(--ink);font:inherit}
+.seg button b{display:block;font-size:15px}
+.seg button small{color:var(--muted);font-size:12px}
+.seg button[aria-checked="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--card)}
+.submit-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.btn.big{min-height:52px;padding:0 28px;font-size:16px}
+.preview{position:sticky;top:calc(88px + env(safe-area-inset-top,0px))}
+@media (max-width:880px){.preview{position:static}}
+.label-sm{font:600 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 2px 10px}
+.pcard .pfp{overflow:hidden}
+.pcard .pfp img{width:100%;height:100%;object-fit:cover}
+.pdesc{margin:0;color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.lk{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:6px 10px;border-radius:999px;border:1px dashed #d3c4ab;color:var(--muted)}
+.lk svg{width:13px;height:13px}
+.lk.on{border-style:solid;border-color:var(--ink);color:var(--ink)}
+.col-links{display:flex;gap:6px;margin-left:auto}
+.launch ul{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:10px;color:var(--muted)}
+.launch li{display:flex;gap:10px}
+.launch li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:10px;flex:none}
+form{display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field input,.field textarea,.field select{font:400 15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:44px;width:100%}
+.field textarea{min-height:88px;resize:vertical}
+.field .help{font-size:13px;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.row2{grid-template-columns:1fr}}
+
+details{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:18px 0;display:flex;justify-content:space-between;gap:16px;font:600 19px var(--display);min-height:44px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 24px var(--body);color:var(--accent)}
+details[open] summary::after{content:"−"}
+details p{margin:0 0 18px;color:var(--muted);max-width:66ch}
+
+footer{margin-top:72px;background:var(--bg);border-top:1px solid var(--line);padding-block:24px 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.xbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--ink);text-decoration:none;flex:none}
+.xbtn:hover{border-color:var(--muted)}
+.xbtn svg{width:16px;height:16px}
+.trades li.none{display:block;text-align:center;color:var(--muted);border:0;padding:28px 8px}
+.trades li.none b{display:block;color:var(--ink);font:600 16px var(--display);margin-bottom:4px}
+.pv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.pv .btn{margin:0;width:auto;font-size:14px}
+.pv-note{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+.col-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);text-decoration:none;flex:none}
+.col-x svg{width:13px;height:13px}
+.colony{position:relative;height:calc(100svh - 70px);min-height:460px;background:var(--soil);overflow:hidden;padding:0}
+.colony #farm{position:absolute;inset:0;width:100%;height:100%;display:block}
+.colony-ui{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.colony-ui>*{pointer-events:auto}
+.live{display:flex;align-items:center;gap:8px;background:rgba(18,11,5,.78);border:1px solid rgba(255,250,242,.18);color:#f4efe6;border-radius:999px;padding:9px 14px;font:500 13px var(--body)}
+.live i{width:8px;height:8px;border-radius:50%;background:#7fd38f;box-shadow:0 0 0 3px rgba(127,211,143,.25)}
+.empty{background:rgba(18,11,5,.78);border:1px dashed rgba(255,250,242,.3);color:rgba(255,250,242,.85);border-radius:999px;padding:9px 14px;font-size:13px}
+.empty b{color:#fffaf2}
+.pvbar{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(18,11,5,.78);border:1px solid rgba(255,250,242,.18);border-radius:999px;padding:4px 4px 4px 14px;color:rgba(255,250,242,.7);font-size:13px}
+.btn.small{min-height:36px;padding:0 14px;font-size:13px}
+.pvbar .btn{background:var(--accent);border-color:var(--accent);color:#fffaf2}
+.pvbar .btn.ghost{background:transparent;color:#fffaf2;border-color:rgba(255,250,242,.35)}
+@media (max-width:560px){.pvbar{margin-left:0}}
+.scroll-cue{position:absolute;left:50%;top:18px;transform:translateX(-50%);display:none}
+@media (min-width:900px){.scroll-cue{display:flex;top:auto;bottom:16px;align-items:center;gap:8px;color:#fffaf2;text-decoration:none;font:600 13px var(--body);background:rgba(18,11,5,.78);border:1px solid rgba(255,250,242,.18);border-radius:999px;padding:9px 16px}}
+.info{padding-block:64px 0}
+.info-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px 40px;align-items:end}
+@media (max-width:860px){.info-head{grid-template-columns:1fr}}
+.coin-id{display:flex;gap:18px;align-items:center}
+.coin-logo{width:84px;height:84px;flex:none}
+.coin-logo svg{width:100%;height:100%}
+.info h1{margin-top:6px;max-width:12ch}
+.info .lede{margin:0}
+.ca{grid-column:1/-1;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 16px;min-width:0;max-width:640px}
+.ca-k{font-weight:600;font-size:13px;color:var(--muted)}
+.ca code{font:500 14px ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.cta{grid-column:1/-1}
+.cta .btn svg{width:15px;height:15px}
+.info-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;margin-top:48px;align-items:start}
+@media (max-width:900px){.info-grid{grid-template-columns:1fr}}
+.info-grid .steps{grid-template-columns:1fr;gap:12px;margin-top:18px}
+.info-grid .step{display:flex;gap:18px;align-items:flex-start}
+.info-grid .step .n{flex:none;width:44px}
+.info-grid .step b{margin:2px 0 6px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);font:500 14px var(--body);padding:12px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px)}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#colony" aria-label="$ANTS home"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#c2581c"/><g fill="#fffaf2"><ellipse cx="20" cy="34" rx="8" ry="6"/><ellipse cx="32" cy="33" rx="5" ry="4"/><circle cx="42" cy="31" r="5"/></g><g stroke="#fffaf2" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M29 30l-5-8M32 30l0-9M35 30l5-8M29 36l-5 8M32 37l0 9M35 36l5 8M45 27l5-7M44 26l1-8"/></g></svg><b>$ANTS</b></a>
+    <nav aria-label="Sections"><a href="#colony">Colony</a><a href="#info">Info</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+    <a class="xbtn" id="navX" href="#" aria-label="$ANTS on X" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.8-6.3L6.4 22H3.3l7.3-8.3L1 2h6.3l4.4 5.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a>
+    <a class="btn primary" id="navBuy" href="#" target="_blank" rel="noopener">Buy $ANTS</a>
+  </div>
+</header>
+
+<main>
+  <section class="colony" id="colony" aria-label="Live ant colony">
+    <canvas id="farm" aria-label="Live ant farm. Each buy sends an ant in, each sell sends one running out."></canvas>
+    <div class="colony-ui">
+      <div class="live"><i></i>$ANTS colony · live</div>
+      <div class="empty" id="empty"><b>No ants yet.</b> The first buy sends the first ant in.</div>
+      <div class="pvbar"><span>Preview</span><button class="btn small" id="pvBuy" type="button">A buy</button><button class="btn small ghost" id="pvSell" type="button">A sell</button></div>
+    </div>
+    <a class="scroll-cue" href="#info">Coin info<span aria-hidden="true">↓</span></a>
+  </section>
+
+  <section class="info" id="info">
+    <div class="wrap">
+      <div class="info-head">
+        <div class="coin-id">
+          <div class="coin-logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#c2581c"/><g fill="#fffaf2"><ellipse cx="20" cy="34" rx="8" ry="6"/><ellipse cx="32" cy="33" rx="5" ry="4"/><circle cx="42" cy="31" r="5"/></g><g stroke="#fffaf2" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M29 30l-5-8M32 30l0-9M35 30l5-8M29 36l-5 8M32 37l0 9M35 36l5 8M45 27l5-7M44 26l1-8"/></g></svg></div>
+          <div>
+            <div class="eyebrow">$ANTS · Solana</div>
+            <h1>Every buy is an <em>ant</em>.</h1>
+          </div>
+        </div>
+        <p class="lede">$ANTS is a live ant colony. Every buy sends an ant marching into the farm carrying food. Every sell sends one grabbing food and running for the exit. All creator fees get burned.</p>
+        <div class="ca"><span class="ca-k">CA</span><code id="ca">Launching soon on pump.fun</code><button class="btn small" id="copy" type="button">Copy</button></div>
+        <div class="cta">
+          <a class="btn primary" id="infoBuy" href="#" target="_blank" rel="noopener">Buy on pump.fun</a>
+          <a class="btn" id="infoX" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.8-6.3L6.4 22H3.3l7.3-8.3L1 2h6.3l4.4 5.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg>X</a>
+          <a class="btn" id="infoWeb" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.8 5.8 3.8 9s-1.2 6.2-3.8 9c-2.6-2.8-3.8-5.8-3.8-9S9.4 5.8 12 3Z"/></svg>Website</a>
+          <a class="btn" href="#colony">Watch the colony</a>
+        </div>
+      </div>
+
+      <div class="strip">
+        <div><b id="cAnts">0</b>ants inside</div>
+        <div><b id="cBuys">0</b>buys</div>
+        <div><b id="cSells">0</b>paper hands</div>
+        <div><b id="cVol">0</b>SOL volume</div>
+      </div>
+
+      <div class="info-grid">
+        <div id="how">
+          <h2>How the colony works</h2>
+          <div class="steps">
+            <div class="step"><div class="n">1</div><div><b>Buy and an ant walks in</b><p>Every buy spawns an ant carrying food from the surface into the tunnels. Bigger buys send bigger ants: scouts, workers and soldiers.</p></div></div>
+            <div class="step"><div class="n">2</div><div><b>Sell and an ant runs off</b><p>A seller ant grabs food from its chamber, climbs out of the hole and sprints away. The colony shrinks by one.</p></div></div>
+            <div class="step"><div class="n">3</div><div><b>Creator fees get burned</b><p>Every creator fee $ANTS earns is used to buy back $ANTS and burn it. The dev keeps none of it.</p></div></div>
+            <div class="step"><div class="n">4</div><div><b>Fill the bonding curve, crown the queen</b><p>The queen waits in the bottom chamber. When $ANTS completes its bonding curve, she gets crowned.</p></div></div>
+          </div>
+        </div>
+        <aside class="feed" aria-label="Live trades">
+          <h3>Trail log</h3>
+          <p class="sub">Every trade, as it hits the colony.</p>
+          <ul class="trades" id="trades"></ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2>FAQ</h2>
+      <details><summary>Are the ants real trades?</summary><p>Yes, once $ANTS is live. Each ant is one on-chain buy and each ant that runs off is a sell. The preview buttons only show on your own screen.</p></details>
+      <details><summary>What happens to the creator fees?</summary><p>They get burned. Creator fees are used to buy $ANTS and send it to the burn address, so the supply only goes down.</p></details>
+      <details><summary>What makes an ant bigger?</summary><p>Buy size. Small buys are scout ants, mid buys are workers, and big buys are soldier ants.</p></details>
+      <details><summary>What happens when someone sells?</summary><p>One ant grabs a piece of food, runs up the tunnel and leaves the colony with a "paper hands" tag.</p></details>
+      <details><summary>What is the queen?</summary><p>She lives in the bottom chamber. When $ANTS finishes its bonding curve on pump.fun, the queen gets crowned.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>$ANTS · Creator fees get burned</span><span>Not financial advice</span></div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const toast = $("#toast");
+const say = t => { toast.textContent = t; toast.classList.add("show"); clearTimeout(say.t); say.t = setTimeout(()=>toast.classList.remove("show"), 2200); };
+
+/* ---------------- Ant farm ---------------- */
+const NET = {
+  surface:.1,
+  main:[[.5,.1],[.49,.22],[.53,.36],[.5,.5],[.46,.64],[.5,.78]],
+  branches:[
+    {from:1, pts:[[.39,.26],[.26,.24]], ch:[.18,.26]},
+    {from:2, pts:[[.64,.40],[.76,.36]], ch:[.83,.37]},
+    {from:3, pts:[[.39,.54],[.27,.50]], ch:[.19,.52]},
+    {from:4, pts:[[.59,.68],[.72,.64]], ch:[.8,.65]}
+  ],
+  queen:[.5,.88]
+};
+const farm = (() => {
+  const cv = $("#farm"), ctx = cv.getContext("2d");
+  const bgc = document.createElement("canvas"), bctx = bgc.getContext("2d");
+  let W = 0, H = 0, dpr = 1, routes = [], chambers = [], ants = [], tags = [], puffs = [], last = performance.now(), queenOpen = false;
+
+  let HEAD = 70;
+  function px(p){ const top = 26; return [p[0]*W, top + (p[1]-NET.surface)/(1-NET.surface)*(H-top-10)]; }
+  const SY = () => px([0, NET.surface])[1];
+  function buildRoutes(){
+    routes = []; chambers = [];
+    NET.branches.forEach(b => {
+      const pts = NET.main.slice(0, b.from+1).concat(b.pts, [b.ch]).map(px);
+      routes.push(mk(pts));
+      chambers.push({c:px(b.ch), rx:Math.min(W*.075, 84), ry:Math.min(H*.055, 30)});
+    });
+    const qpts = NET.main.concat([NET.queen]).map(px);
+    routes.push(mk(qpts));
+    chambers.push({c:px(NET.queen), rx:Math.min(W*.11, 120), ry:Math.min(H*.07, 38), queen:true});
+  }
+  function mk(pts){
+    const seg = []; let len = 0;
+    for (let i = 1; i < pts.length; i++){ const l = Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]); seg.push(l); len += l; }
+    return {pts, seg, len};
+  }
+  function at(r, d){
+    d = Math.max(0, Math.min(r.len, d));
+    for (let i = 0; i < r.seg.length; i++){
+      if (d <= r.seg[i]){ const t = d / r.seg[i], a = r.pts[i], b = r.pts[i+1]; return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, Math.atan2(b[1]-a[1], b[0]-a[0])]; }
+      d -= r.seg[i];
+    }
+    const n = r.pts.length; return [r.pts[n-1][0], r.pts[n-1][1], 0];
+  }
+
+  function paintSoil(){
+    bgc.width = W*dpr; bgc.height = H*dpr; bctx.setTransform(dpr,0,0,dpr,0,0);
+    const sy = SY();
+    // air / topsoil
+    const air = bctx.createLinearGradient(0,0,0,sy); air.addColorStop(0,"#efe3cd"); air.addColorStop(1,"#e2d2b4");
+    bctx.fillStyle = air; bctx.fillRect(0,0,W,sy);
+    // soil
+    const g = bctx.createLinearGradient(0,sy,0,H);
+    g.addColorStop(0,"#5a3b22"); g.addColorStop(.35,"#45301c"); g.addColorStop(1,"#26180d");
+    bctx.fillStyle = g; bctx.fillRect(0,sy,W,H-sy);
+    // strata bands
+    for (let i = 0; i < 5; i++){
+      const y = sy + (H-sy)*(.15 + i*.19);
+      bctx.fillStyle = `rgba(255,220,170,${.03 + (i%2)*.02})`;
+      bctx.beginPath(); bctx.moveTo(0,y);
+      for (let x = 0; x <= W; x += 40) bctx.lineTo(x, y + Math.sin(x*.01 + i)*6);
+      bctx.lineTo(W, y+18); bctx.lineTo(0, y+18); bctx.fill();
+    }
+    // grains + pebbles
+    let s = 3; const r = () => (s = s*16807 % 2147483647)/2147483647;
+    for (let i = 0; i < W*H/90; i++){
+      const x = r()*W, y = sy + r()*(H-sy);
+      bctx.fillStyle = r() < .5 ? "rgba(255,230,190,.07)" : "rgba(0,0,0,.18)";
+      bctx.fillRect(x, y, 1.2, 1.2);
+    }
+    for (let i = 0; i < W/18; i++){
+      const x = r()*W, y = sy + 20 + r()*(H-sy-20), rr = 2 + r()*5;
+      bctx.fillStyle = `rgba(${150+r()*50|0},${120+r()*40|0},${90+r()*30|0},.35)`;
+      bctx.beginPath(); bctx.ellipse(x, y, rr*1.3, rr, r()*3, 0, Math.PI*2); bctx.fill();
+    }
+    // surface line with grass tufts
+    bctx.fillStyle = "#6f8f4e"; bctx.fillRect(0, sy-3, W, 3);
+    bctx.strokeStyle = "#6f8f4e"; bctx.lineWidth = 1.4; bctx.lineCap = "round";
+    for (let x = 4; x < W; x += 7 + r()*10){ const h = 4 + r()*9; bctx.beginPath(); bctx.moveTo(x, sy-2); bctx.lineTo(x + (r()-.5)*5, sy-2-h); bctx.stroke(); }
+    // mound around entrance
+    const [ex] = px(NET.main[0]);
+    bctx.fillStyle = "#8a6440"; bctx.beginPath(); bctx.ellipse(ex, sy, 34, 9, 0, Math.PI, 0); bctx.fill();
+    // tunnels
+    const tw = Math.max(13, Math.min(18, W/55));
+    const strokeAll = (w, col) => { bctx.strokeStyle = col; bctx.lineWidth = w; bctx.lineJoin = "round"; bctx.lineCap = "round"; routes.forEach(rt => { bctx.beginPath(); rt.pts.forEach((p,i)=> i?bctx.lineTo(p[0],p[1]):bctx.moveTo(p[0],p[1])); bctx.stroke(); }); };
+    strokeAll(tw+5, "rgba(20,12,6,.55)");
+    chambers.forEach(c => { bctx.fillStyle = "rgba(20,12,6,.55)"; bctx.beginPath(); bctx.ellipse(c.c[0], c.c[1], c.rx+3, c.ry+3, 0, 0, Math.PI*2); bctx.fill(); });
+    strokeAll(tw, "#7a5534");
+    chambers.forEach(c => {
+      const cg = bctx.createRadialGradient(c.c[0], c.c[1]-c.ry*.3, 4, c.c[0], c.c[1], c.rx);
+      cg.addColorStop(0, c.queen ? "#93683f" : "#8a6240"); cg.addColorStop(1, "#6b4a2e");
+      bctx.fillStyle = cg; bctx.beginPath(); bctx.ellipse(c.c[0], c.c[1], c.rx, c.ry, 0, 0, Math.PI*2); bctx.fill();
+    });
+    strokeAll(tw*.45, "rgba(160,118,78,.45)");
+    // food piles in chambers
+    chambers.forEach((c,i) => {
+      for (let k = 0; k < 6; k++){
+        bctx.fillStyle = k%2 ? "#e8c88a" : "#d9a35a";
+        bctx.beginPath(); bctx.arc(c.c[0] - c.rx*.45 + k*4 + r()*3, c.c[1] + c.ry*.55 - r()*4, 2.2, 0, Math.PI*2); bctx.fill();
+      }
+    });
+  }
+
+  function resize(){
+    const rc = cv.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1);
+    const oldW = W, oldH = H; W = rc.width; H = rc.height;
+    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    buildRoutes(); paintSoil();
+    if (oldW) ants.forEach(a => { a.x *= W/oldW; a.y *= H/oldH; a.tx *= W/oldW; a.ty *= H/oldH; });
+  }
+
+  function newAnt(o){
+    const ri = o.queen ? routes.length-1 : Math.floor(Math.random()*(routes.length-1));
+    return Object.assign({ri, d:0, mode:"in", x:0, y:0, ang:Math.PI/2, ph:Math.random()*6, sp:34+Math.random()*16, s:1, crumb:true, tx:0, ty:0, wait:0, born:performance.now()}, o);
+  }
+  function spawnBuy(sol){
+    const s = 0.95 + Math.min(.8, sol/6);
+    const a = newAnt({s, sp: 40+Math.random()*18});
+    if (reduce){ const p = randIn(chambers[a.ri]); Object.assign(a, {mode:"roam", crumb:false, x:p[0], y:p[1], tx:p[0], ty:p[1]}); }
+    ants.push(a);
+    if (reduce) { trim(); return; }
+    const [x,y] = px(NET.main[0]);
+    tags.push({x, y: y-16, text: `+${sol.toFixed(2)} SOL`, life:1});
+    trim();
+  }
+  function spawnSell(sol){
+    const pool = ants.filter(a => a.mode === "roam");
+    const a = pool[Math.floor(Math.random()*pool.length)];
+    if (!a) return false;
+    if (reduce){ a.gone = true; ants = ants.filter(x => !x.gone); return true; }
+    a.mode = "out"; a.seller = true; a.crumb = true; a.sell = sol; a.sp = 70; a.d = routes[a.ri].len;
+    // the food it grabs leaves a gap: small dust puff in the chamber
+    puffs.push({x:a.x, y:a.y, r:4, life:1, c:"200,150,100"});
+    return true;
+  }
+  function trim(){
+    const max = W < 520 ? 90 : 150;
+    const inside = ants.filter(a => a.mode !== "out");
+    if (inside.length > max){
+      const oldest = inside.filter(a => a.mode === "roam").sort((a,b)=>a.born-b.born)[0];
+      if (oldest){ oldest.mode = "out"; oldest.crumb = false; oldest.d = routes[oldest.ri].len; }
+    }
+  }
+  function seed(n){
+    ants = [];
+    for (let i = 0; i < n; i++){
+      const a = newAnt({mode:"roam", crumb:false, s: .85 + Math.random()*.5, born: performance.now() - (n-i)*1000});
+      const ch = chambers[a.ri]; const p = randIn(ch); a.x = p[0]; a.y = p[1]; a.tx = a.x; a.ty = a.y; a.wait = Math.random()*2;
+      ants.push(a);
+    }
+  }
+  function randIn(ch){ const t = Math.random()*Math.PI*2, r = Math.sqrt(Math.random())*.8; return [ch.c[0] + Math.cos(t)*ch.rx*r, ch.c[1] + Math.sin(t)*ch.ry*r*.85]; }
+
+  function step(dt){
+    ants.forEach(a => {
+      const rt = routes[a.ri];
+      if (a.mode === "in"){
+        a.d += a.sp*dt; const p = at(rt, a.d); a.x = p[0]; a.y = p[1]; a.ang = p[2]; a.ph += dt*18;
+        if (a.d >= rt.len){ a.mode = "roam"; a.wait = .4; a.tx = a.x; a.ty = a.y; a.drop = true; }
+      } else if (a.mode === "out"){
+        a.d -= a.sp*1.1*dt; const p = at(rt, a.d); a.x = p[0]; a.y = p[1]; a.ang = p[2] + Math.PI; a.ph += dt*18;
+        if (a.d <= 0){
+          if (a.seller){
+            a.mode = "flee"; a.dir = Math.random() < .5 ? -1 : 1; a.y = SY() - 4; a.ang = a.dir > 0 ? 0 : Math.PI;
+            for (let k = 0; k < 7; k++) puffs.push({x:a.x + (Math.random()-.5)*14, y:a.y - Math.random()*6, r:3 + Math.random()*4, life:1, c:"178,58,42"});
+            tags.push({x:a.x, y:a.y-18, text:`−${a.sell.toFixed(2)} SOL · paper hands`, life:1.3, sell:true});
+          } else a.gone = true;
+        }
+      } else if (a.mode === "flee"){
+        a.x += a.dir*140*dt; a.ph += dt*30; a.y = SY() - 4 + Math.sin(a.ph*.5)*1.2;
+        if (Math.random() < .5) puffs.push({x:a.x - a.dir*6, y:a.y + 2, r:2, life:.6, c:"160,120,80"});
+        if (a.x < -20 || a.x > W + 20) a.gone = true;
+      } else {
+        if (a.drop){ a.crumb = false; a.drop = false; }
+        const dx = a.tx - a.x, dy = a.ty - a.y, dist = Math.hypot(dx, dy);
+        if (dist < 1.5){ a.wait -= dt; if (a.wait <= 0){ const p = randIn(chambers[a.ri]); a.tx = p[0]; a.ty = p[1]; a.wait = .3 + Math.random()*2.4; } }
+        else { const v = a.sp*.45*dt; a.x += dx/dist*Math.min(v,dist); a.y += dy/dist*Math.min(v,dist); const target = Math.atan2(dy,dx); let da = target - a.ang; da = Math.atan2(Math.sin(da), Math.cos(da)); a.ang += da*Math.min(1, dt*8); a.ph += dt*14; }
+      }
+    });
+    ants = ants.filter(a => !a.gone);
+    tags.forEach(t => { t.life -= dt*.6; t.y -= dt*14; });
+    tags = tags.filter(t => t.life > 0);
+    puffs.forEach(p => { p.life -= dt*1.6; p.r += dt*14; p.y -= dt*6; });
+    puffs = puffs.filter(p => p.life > 0);
+  }
+
+  function drawAnt(a){
+    const s = a.s*1.15;
+    ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(a.ang);
+    ctx.strokeStyle = "#120a05"; ctx.lineWidth = .9*s; ctx.lineCap = "round";
+    for (let i = -1; i <= 1; i++) for (const side of [-1,1]){
+      const sw = Math.sin(a.ph + i*2.1 + (side>0?Math.PI:0))*1.7*s;
+      ctx.beginPath(); ctx.moveTo(i*1.4*s, 0); ctx.lineTo(i*1.6*s + sw*.5, side*2.6*s); ctx.lineTo(i*2.6*s + sw, side*4.6*s); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(4.6*s, -.6*s); ctx.quadraticCurveTo(6.4*s, -2.6*s, 7.4*s, -2.2*s); ctx.moveTo(4.6*s, .6*s); ctx.quadraticCurveTo(6.4*s, 2.6*s, 7.4*s, 2.2*s); ctx.stroke();
+    ctx.fillStyle = "#120a05";
+    ctx.beginPath(); ctx.ellipse(-4.2*s, 0, 3.3*s, 2.4*s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, 0, 1.9*s, 1.2*s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(3.3*s, 0, 1.7*s, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "rgba(255,220,170,.18)"; ctx.beginPath(); ctx.ellipse(-4.6*s, -.9*s, 1.5*s, .7*s, 0, 0, Math.PI*2); ctx.fill();
+    if (a.crumb){ ctx.fillStyle = a.seller ? "#e0704f" : "#f0c46a"; ctx.beginPath(); ctx.arc(5.6*s, 0, 1.7*s, 0, Math.PI*2); ctx.fill(); }
+    ctx.restore();
+  }
+  function drawQueen(){
+    const q = chambers[chambers.length-1]; const s = 2.4;
+    const fake = {x:q.c[0]+6, y:q.c[1]-2, ang:Math.PI, ph:performance.now()/900, s, crumb:false};
+    drawAnt(fake);
+    ctx.fillStyle = "#e7c27a"; ctx.font = "600 11px Figtree, system-ui"; ctx.textAlign = "center";
+    ctx.fillText(queenOpen ? "QUEEN · CROWNED" : "QUEEN", q.c[0], q.c[1] - q.ry - 6);
+  }
+  function draw(){
+    ctx.drawImage(bgc, 0, 0, W, H);
+    drawQueen();
+    puffs.forEach(p => { ctx.fillStyle = `rgba(${p.c},${Math.max(0,p.life)*.45})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); });
+    ants.forEach(drawAnt);
+    tags.forEach(t => {
+      ctx.globalAlpha = Math.max(0, t.life);
+      ctx.font = "600 13px Figtree, system-ui"; ctx.textAlign = "center";
+      const w = ctx.measureText(t.text).width + 16;
+      ctx.fillStyle = t.sell ? "#b23a2a" : "#3f7d4e";
+      ctx.beginPath(); ctx.roundRect(t.x - w/2, t.y - 12, w, 22, 11); ctx.fill();
+      ctx.fillStyle = "#fffaf2"; ctx.fillText(t.text, t.x, t.y + 4);
+      ctx.globalAlpha = 1;
+    });
+  }
+  function loop(now){
+    const dt = Math.min(.05, (now - last)/1000); last = now;
+    if (!reduce) step(dt); draw(); const n = ants.filter(a=>a.mode!=="out"&&a.mode!=="flee").length; $("#cAnts").textContent = n; $("#empty").hidden = ants.length > 0;
+    requestAnimationFrame(loop);
+  }
+  new ResizeObserver(() => resize()).observe(cv);
+  resize();
+  requestAnimationFrame(t => { last = t; loop(t); });
+  return { spawnBuy, spawnSell, seed, count: () => ants.filter(a=>a.mode==="roam").length, setQueen(v){ queenOpen = v; } };
+})();
+
+/* ---------------- Trades ---------------- */
+let buys = 0, vol = 0, sells = 0;
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+const wallet = () => { let a = "", b = ""; for (let i = 0; i < 4; i++){ a += B58[Math.random()*58|0]; b += B58[Math.random()*58|0]; } return a + "…" + b; };
+function stats(){ $("#cBuys").textContent = buys.toLocaleString(); $("#cSells").textContent = sells.toLocaleString(); $("#cVol").textContent = vol.toFixed(1); }
+function emptyFeed(){ $("#trades").innerHTML = '<li class="none"><b>No trades yet</b>Buys and sells show up here when $ANTS goes live.</li>'; }
+function trade(silent, forceBuy, forceSell){
+  const isBuy = forceBuy ? true : forceSell ? false : Math.random() < .72;
+  if (!isBuy && !silent && farm.count() === 0){ say("No ants in the colony to sell yet"); return; }
+  const none = $("#trades .none"); if (none) none.remove();
+  const sol = +(Math.pow(Math.random(), 2.2)*6 + .05).toFixed(2);
+  const li = document.createElement("li"); li.className = (isBuy ? "buy" : "sell") + (silent ? "" : " in");
+  const kind = sol > 3 ? "Soldier ant" : sol > 1 ? "Worker ant" : "Scout ant";
+  li.innerHTML = `<span class="ic">${isBuy?"+":"−"}</span><span class="who">${wallet()}<small>${isBuy ? kind + " walked in" : "Took food and ran"}</small></span><span class="amt">${isBuy?"+":"−"}${sol.toFixed(2)}</span>`;
+  const ul = $("#trades"); ul.prepend(li); while (ul.children.length > 8) ul.lastChild.remove();
+  if (!silent){ vol += sol; if (isBuy){ buys++; farm.spawnBuy(sol); } else { sells++; farm.spawnSell(sol); } stats(); }
+}
+$("#pvBuy").onclick = () => trade(false, true);
+$("#pvSell").onclick = () => trade(false, false, true);
+
+/* ---------------- Links ---------------- */
+// Paste the real links here when they exist.
+const LINKS = { x: "", web: "", buy: "", ca: "" };
+function link(id, url, soon){ const a = $(id); if (!a) return; if (url) a.href = url; else a.onclick = e => { e.preventDefault(); say(soon); }; }
+link("#navX", LINKS.x, "X link coming soon"); link("#infoX", LINKS.x, "X link coming soon");
+link("#infoWeb", LINKS.web, "Website coming soon");
+link("#navBuy", LINKS.buy, "$ANTS goes live on pump.fun soon"); link("#infoBuy", LINKS.buy, "$ANTS goes live on pump.fun soon");
+if (LINKS.ca) $("#ca").textContent = LINKS.ca;
+$("#copy").onclick = () => {
+  if (!LINKS.ca) return say("The CA drops at launch");
+  navigator.clipboard.writeText(LINKS.ca).then(() => say("Copied CA")).catch(() => { const rg = document.createRange(); rg.selectNodeContents($("#ca")); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); say("CA selected. Copy it from here"); });
+};
+
+farm.seed(0); stats(); emptyFeed();
+</script>
+
+</body>
+</html>

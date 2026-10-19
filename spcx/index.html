@@ -477,8 +477,8 @@ const CONFIG = { ca: "", xHandle: "spcx_solona", pumpUrl: "", jarWallet: "", jar
     warp *= .92;
     px += (mx - px)*.05; py += (my - py)*.05;
     for (const s of stars){
-      const speed = (.42 + warp*.35) * s.z * s.z * .45; /* visible drift: far stars ~10px/s, near stars ~100px/s */
-      if (!still){ s.y -= speed; s.tw += s.ts; if (s.y < -20){ s.y = h + 10; s.x = Math.random()*w; } }
+      const speed = (still ? .5 : (.8 + warp*.35)) * s.z * s.z * .45; /* clear drift: far ~20px/s, near ~200px/s; gentler if the device asks for reduced motion */
+      s.y -= speed; s.tw += s.ts; if (s.y < -20){ s.y = h + 10; s.x = Math.random()*w; }
       const ox = -px*14*s.z, oy = -py*10*s.z;
       const sx = s.x + ox, sy = s.y + oy;
       const alpha = s.a * (.7 + .3*Math.sin(s.tw));
@@ -511,11 +511,11 @@ const CONFIG = { ca: "", xHandle: "spcx_solona", pumpUrl: "", jarWallet: "", jar
         x.fillStyle = 'rgba(230,252,255,' + m.life + ')';
         x.beginPath(); x.arc(m.x, m.y, 1.8, 0, 6.283); x.fill();
       }
-      requestAnimationFrame(frame);
     }
+    requestAnimationFrame(frame); /* stars always drift; reduced motion only drops shooting stars */
   }
-  addEventListener('resize', () => { size(); if (still) frame(0); });
-  size(); frame(0);
+  addEventListener('resize', size);
+  size(); requestAnimationFrame(frame);
 })();
 </script>
 </body>

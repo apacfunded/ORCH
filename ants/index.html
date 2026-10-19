@@ -599,7 +599,7 @@ $("#pvSell").onclick = () => trade(false, false, true);
 
 /* ---------------- Links ---------------- */
 // Paste the real links here when they exist.
-const LINKS = { x: "", web: "", buy: "", ca: "" };
+const LINKS = { x: "https://x.com/ants_solona", web: "https://orch.lol/ants", buy: "", ca: "" };
 function link(id, url, soon){ const a = $(id); if (!a) return; if (url) a.href = url; else a.onclick = e => { e.preventDefault(); say(soon); }; }
 link("#navX", LINKS.x, "X link coming soon"); link("#infoX", LINKS.x, "X link coming soon");
 link("#infoWeb", LINKS.web, "Website coming soon");

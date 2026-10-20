@@ -35,6 +35,8 @@ h1,h2,h3{font-weight:600;text-wrap:balance;margin:0;line-height:1.1}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;font:500 15px var(--display);cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none}
 .btn:hover{border-color:var(--gold)}
+.xbtn{padding:0;width:44px;font-size:18px}
+@media(max-width:720px){.xbtn{margin-left:auto}header .btn.primary{margin-left:0}}
 .btn.primary{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
 .btn.primary:hover{background:#f0c862}
 .btn:focus-visible,.pack:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -199,6 +201,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   <div class="wrap">
     <a class="logo" href="#top"><img src="pfp.png" alt="" width="40" height="40">Poke<span>Packs</span></a>
     <nav><a href="#packs">Packs</a><a href="#feed">Live rips</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+    <a class="btn xbtn" href="https://x.com/pokepacks_sol" target="_blank" rel="noopener" aria-label="PokePacks on X">𝕏</a>
     <a class="btn primary" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a>
   </div>
 </header>
@@ -292,6 +295,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
 <footer>
   <div class="wrap">
     <span>PokePacks ($POKEPACKS) · not affiliated with Nintendo, The Pokémon Company or any grading company</span>
+    <a href="https://x.com/pokepacks_sol" target="_blank" rel="noopener">@pokepacks_sol on X</a>
     <span class="note">Example data until launch</span>
   </div>
 </footer>

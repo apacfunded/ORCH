@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="PokePacks ($POKEPACKS): creator fees open Pokémon mystery packs and the graded slabs pulled get sent to holders.">
+<link rel="icon" type="image/png" href="/pokepacks/pfp.png">
+<meta property="og:title" content="PokePacks ($POKEPACKS)">
+<meta property="og:description" content="Every trade rips a pack. Graded slabs get sent to holders.">
+<meta property="og:image" content="https://orch.lol/pokepacks/pfp.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orch.lol/pokepacks/pfp.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>PokePacks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Product landing: sticky bar, slab hero, pack shelf with inline preview, rip feed, steps, FAQ. Dark vault, gold leaf. */
+:root{
+  --bg:#0d0b06; --surface:#18140b; --surface-2:#211b0f; --line:#3a311d;
+  --fg:#f5efdf; --muted:#b5a98c; --gold:#e6b84a; --gold-ink:#1a1305;
+  --live:#3fd28a; --grail:#ff7a3d; --rare:#7fb6ff;
+  --display:"Sora",ui-sans-serif,system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--display);font-size:16px;line-height:1.6;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+h1,h2,h3{font-weight:600;text-wrap:balance;margin:0;line-height:1.1}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;font:500 15px var(--display);cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none}
+.btn:hover{border-color:var(--gold)}
+.btn.primary{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
+.btn.primary:hover{background:#f0c862}
+.btn:focus-visible,.pack:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.logo{font-weight:600;font-size:20px;letter-spacing:-.01em;text-decoration:none}
+.logo span{color:var(--gold)}
+.logo{display:inline-flex;align-items:center;gap:10px}
+.logo img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.pfp{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:16px;display:block}
+nav{display:flex;gap:20px;margin-left:auto;font-size:14px;color:var(--muted)}
+nav a{text-decoration:none}nav a:hover{color:var(--fg)}
+@media(max-width:720px){nav{display:none}header .btn{margin-left:auto}}
+
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-block:56px 40px}
+.hero h1{font-size:clamp(40px,7vw,76px);letter-spacing:-.03em;margin-top:12px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p.lede{color:var(--muted);font-size:18px;max-width:46ch;margin:20px 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.ca{margin-top:20px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+@media(max-width:860px){.hero{grid-template-columns:1fr;gap:32px;padding-block:32px}}
+
+/* slab */
+.stage{perspective:1100px;display:grid;place-items:center;min-height:440px}
+.slab{width:270px;max-width:100%;border-radius:16px;padding:12px;background:#d9dde3;border:1px solid #f4f6f8;transform-style:preserve-3d;transition:transform .2s ease;position:relative}
+.slab .label{background:#fff;border-radius:6px;padding:8px 10px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;color:#141414;font-family:var(--mono);font-size:12px;line-height:1.35}
+.slab .label b{font-weight:500}
+.slab .grade{grid-row:span 3;align-self:center;text-align:right}
+.slab .grade small{display:block;font-size:12px;color:#5a5a5a}
+.slab .grade strong{font:600 30px var(--display);line-height:1}
+.slab .window{margin-top:10px;border-radius:8px;aspect-ratio:63/88;position:relative;overflow:hidden;background:var(--c1)}
+.slab .window::before{content:"";position:absolute;inset:0;background:conic-gradient(from var(--a,0deg) at 50% 50%,var(--c1),var(--c2),var(--c1),var(--c3),var(--c1));opacity:.9}
+.slab .window::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 14px,rgba(255,255,255,.14) 14px 16px)}
+.slab .cardname{position:absolute;inset:auto 10px 10px 10px;z-index:1;background:rgba(10,8,4,.72);color:#fff;border-radius:6px;padding:8px 10px;font-size:13px;line-height:1.3}
+.slab .cardname span{display:block;font-family:var(--mono);font-size:12px;color:#e8dcc0}
+.slab .emblem{position:absolute;top:50%;left:50%;width:46%;aspect-ratio:1;transform:translate(-50%,-62%);border-radius:50%;z-index:1;border:6px solid rgba(255,255,255,.85);background:rgba(255,255,255,.15)}
+.slab .emblem::after{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:6px;margin-top:-3px;background:rgba(255,255,255,.85)}
+.slab .emblem i{position:absolute;top:50%;left:50%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:#fff;z-index:1}
+.slab.reveal{animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.85) rotateY(90deg)}100%{transform:scale(1) rotateY(0)}}
+.stage-cap{margin-top:16px;text-align:center;font-size:13px;color:var(--muted);font-family:var(--mono)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--surface);padding:18px 20px;min-width:0}
+.stat .k{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px;background:var(--surface-2);margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .6s ease}
+@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.stat:first-child{grid-column:1/-1}}
+
+section{padding-block:72px 0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:28px}
+.sec-head h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin-top:8px}
+.sec-head p{color:var(--muted);max-width:44ch;margin:0}
+
+/* vault */
+.vault{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:center}
+.vault img{width:100%;height:auto;aspect-ratio:480/639;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+.vault-copy h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:8px 0 16px}
+.vault-copy p{color:var(--muted);max-width:48ch;margin:0 0 24px}
+.vault-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.vault-facts div{border-top:2px solid var(--gold);padding-top:10px}
+.vault-facts b{display:block;font-weight:600}
+.vault-facts span{font-size:14px;color:var(--muted)}
+@media(max-width:860px){.vault{grid-template-columns:1fr;gap:28px}.vault img{max-height:520px}}
+@media(max-width:480px){.vault-facts{grid-template-columns:1fr}}
+
+.strip-head{margin-top:48px;margin-bottom:16px}
+.vault-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.vault-strip figure{margin:0;min-width:0}
+.vault-strip img{width:100%;aspect-ratio:3/4;object-fit:contain;background:var(--surface);border:1px solid var(--line);border-radius:12px;display:block;transition:transform .2s ease}
+.vault-strip figure:hover img{transform:translateY(-4px)}
+.vault-strip figcaption{margin-top:8px;font-size:14px;line-height:1.35}
+.vault-strip figcaption b{display:block;font-weight:500}
+.vault-strip figcaption span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media(max-width:860px){.vault-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.vault-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.slab.photo{padding:0;background:none;border:0;width:300px}
+.slab.photo img{width:100%;display:block;border-radius:12px}
+.mini .real{width:100%;aspect-ratio:3/4;object-fit:contain;background:#111;border-radius:6px;display:block}
+.mini .realname{font-family:var(--mono);font-size:12px;line-height:1.3;margin-top:6px}
+.mini .realname b{font-weight:500}
+
+/* packs */
+.packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media(max-width:860px){.packs{grid-template-columns:1fr}}
+.pack{all:unset;cursor:pointer;display:grid;grid-template-columns:96px 1fr;gap:18px;align-items:center;padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);transition:border-color .15s}
+.pack:hover{border-color:var(--gold)}
+.pack[aria-pressed="true"]{border-color:var(--gold);background:var(--surface-2)}
+.foil{aspect-ratio:5/8;border-radius:6px;position:relative;overflow:hidden;background:var(--p1)}
+.foil::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--p1) 0 40%,var(--p2) 40% 60%,var(--p1) 60%)}
+.foil::after{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(90deg,var(--p2) 0 6px,var(--p1) 6px 12px)}
+.foil b{position:absolute;inset:auto 6px 10px;z-index:1;font:600 12px var(--display);color:var(--gold-ink);background:var(--p2);border-radius:4px;text-align:center;padding:3px 0}
+.packimg{width:96px;height:auto;aspect-ratio:3/5;object-fit:cover;border-radius:6px;display:block;transition:transform .2s ease}
+.pack:hover .packimg,.pack[aria-pressed="true"] .packimg{transform:translateY(-4px) rotate(-2deg)}
+.preview-head{align-items:flex-start}
+.preview-head .packimg{width:72px}
+.pack h3{font-size:20px}
+.pack .price{font-family:var(--mono);color:var(--gold);font-size:14px;margin-top:2px}
+.pack .meta{font-size:14px;color:var(--muted);margin-top:6px}
+.pack .go{font-size:13px;margin-top:8px;color:var(--fg);font-family:var(--mono)}
+
+.preview{margin-top:20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:24px}
+.preview-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:20px}
+.preview-head h3{font-size:22px}
+.preview-head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.odds{display:flex;height:10px;border-radius:99px;overflow:hidden;margin-bottom:8px;background:var(--surface-2)}
+.odds-key{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:22px}
+.odds-key span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--d);margin-right:6px}
+.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.mini{border-radius:12px;padding:8px;background:#d9dde3;color:#141414;position:relative}
+.mini .lbl{background:#fff;border-radius:5px;padding:6px 8px;font-family:var(--mono);font-size:12px;line-height:1.3;display:flex;justify-content:space-between;gap:6px}
+.mini .lbl b{font-weight:500;display:block}
+.mini .lbl strong{font:600 18px var(--display)}
+.mini .win{margin-top:6px;border-radius:6px;aspect-ratio:63/50;background:conic-gradient(from 30deg,var(--c1),var(--c2),var(--c1),var(--c3),var(--c1))}
+.mini .odd{position:absolute;top:-8px;right:-6px;font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--fg);border:1px solid var(--line)}
+.tier{font-family:var(--mono);font-size:12px;margin-top:6px;display:flex;justify-content:space-between;color:#333}
+
+/* feed */
+.feed{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:grid;grid-template-columns:90px minmax(0,1fr) 110px 70px;gap:12px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);background:var(--surface);font-size:14px}
+.row:first-child{border-top:0}
+.row.head{background:var(--surface-2);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row .w{font-family:var(--mono);color:var(--muted)}
+.row .c{min-width:0}.row .c b{font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .c span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.row .g{font-family:var(--mono);text-align:right}
+.chip{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);justify-self:start}
+.chip.grail{color:var(--grail);border-color:currentColor}.chip.rare{color:var(--rare);border-color:currentColor}.chip.common{color:var(--muted)}
+.row.new{animation:slide .5s ease}
+@keyframes slide{from{background:var(--surface-2)}to{background:var(--surface)}}
+@media(max-width:620px){.row{grid-template-columns:minmax(0,1fr) auto}.row .w,.row.head .w{display:none}.row .g{display:none}.row.head{display:none}}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;counter-reset:s}
+@media(max-width:860px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}}
+.step{border-top:2px solid var(--gold);padding-top:16px;counter-increment:s}
+.step::before{content:"0" counter(s);font-family:var(--mono);color:var(--gold);font-size:13px}
+.step h3{font-size:18px;margin:8px 0 6px}
+.step p{color:var(--muted);margin:0;font-size:15px}
+
+/* faq */
+.faq{max-width:760px}
+details{border-bottom:1px solid var(--line);padding:18px 0}
+summary{cursor:pointer;font-weight:500;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::after{content:"+";color:var(--gold);font-family:var(--mono)}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin:10px 0 0;max-width:62ch}
+
+footer{margin-top:88px;border-top:1px solid var(--line);padding-block:28px 40px;font-size:13px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between}
+.note{display:inline-block;font-family:var(--mono);font-size:12px;padding:4px 10px;border:1px dashed var(--line);border-radius:6px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top"><img src="pfp.png" alt="" width="40" height="40">Poke<span>Packs</span></a>
+    <nav><a href="#packs">Packs</a><a href="#feed">Live rips</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+    <a class="btn primary" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <img class="pfp" src="pfp.png" alt="PokePacks logo" width="96" height="96">
+        <div class="eyebrow">Creator fees → graded slabs → holders</div>
+        <h1>Every trade<br>rips a <em>pack.</em></h1>
+        <p class="lede">PokePacks ($POKEPACKS) uses its creator fees to open real Pokémon mystery packs on pump.fun. Every graded card pulled gets sent to a holder's wallet.</p>
+        <div class="cta">
+          <button class="btn primary" id="ripBtn" type="button">Rip a demo pack</button>
+          <a class="btn" href="#packs">Preview the packs</a>
+        </div>
+        <div class="ca">CA: <span id="ca">coming at launch</span></div>
+      </div>
+      <div>
+        <div class="stage" id="stage"><div class="slab" id="slab"></div></div>
+        <div class="stage-cap" id="cap">Tap "Rip a demo pack" to pull a slab</div>
+      </div>
+    </div>
+
+    <div class="stats" aria-label="Fee pot and rip stats">
+      <div class="stat"><div class="k">Fee pot to next rip</div><div class="v"><span id="pot">0.62</span> / 1.00 SOL</div><div class="bar"><i id="potbar" style="width:62%"></i></div></div>
+      <div class="stat"><div class="k">Next rip</div><div class="v mono" id="timer">04:12</div></div>
+      <div class="stat"><div class="k">Packs ripped</div><div class="v" id="ripped">148</div></div>
+      <div class="stat"><div class="k">Slabs sent</div><div class="v" id="sent">148</div></div>
+    </div>
+
+    <section id="vault">
+      <div class="vault">
+        <img src="vault-slabs.jpg" alt="Stacks of graded Pokémon card slabs, including PSA 10s, lined up in the vault" width="480" height="639">
+        <div class="vault-copy">
+          <div class="eyebrow">The vault</div>
+          <h2>Real slabs, stacked and ready to ship</h2>
+          <p>Every card in the pack pools is a graded slab sitting in the vault. When a pack rips, the slab it pulls is the one that goes to a holder's wallet. Winners can hold it, sell it or redeem the physical card.</p>
+          <div class="vault-facts">
+            <div><b>Graded</b><span>PSA, BGS and CGC</span></div>
+            <div><b>Vaulted</b><span>Insured storage</span></div>
+            <div><b>Redeemable</b><span>Ship the real slab</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="strip-head"><div class="eyebrow">In the vault now</div></div>
+      <div class="vault-strip" id="strip"></div>
+    </section>
+
+    <section id="packs">
+      <div class="sec-head">
+        <div><div class="eyebrow">Pack shelf</div><h2>See what's inside before it rips</h2></div>
+        <p>Tap a pack to preview every graded card in its pool and the odds of pulling each tier.</p>
+      </div>
+      <div class="packs" id="shelf"></div>
+      <div class="preview" id="preview" aria-live="polite"></div>
+    </section>
+
+    <section id="feed">
+      <div class="sec-head">
+        <div><div class="eyebrow">Live rips</div><h2>Where the slabs went</h2></div>
+        <p>Every pack the fee wallet opens, the slab it pulled and the holder it was sent to.</p>
+      </div>
+      <div class="feed" id="feedList">
+        <div class="row head"><span class="w">Wallet</span><span class="c">Slab</span><span>Tier</span><span class="g">Grade</span></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="sec-head"><div><div class="eyebrow">The loop</div><h2>How PokePacks works</h2></div></div>
+      <div class="steps">
+        <div class="step"><h3>Fees fill the pot</h3><p>Every buy and sell sends creator fees to the public rip wallet.</p></div>
+        <div class="step"><h3>The pot rips a pack</h3><p>At 1 SOL, the bot opens a mystery pack on pump.fun. Bigger pots open better packs.</p></div>
+        <div class="step"><h3>A holder gets the slab</h3><p>The pulled card goes to a random holder, weighted by bag size. Hold 0.1% or more to qualify.</p></div>
+        <div class="step"><h3>Grails feed the chart</h3><p>When a slab is worth more than the pack cost, part of the difference buys back and burns $POKEPACKS.</p></div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="sec-head"><div><div class="eyebrow">FAQ</div><h2>Questions</h2></div></div>
+      <div class="faq">
+        <details><summary>Are the cards real?</summary><p>Yes. Pack pulls are tokenized cards backed by real graded slabs held in an insured vault. Winners can hold them, sell them or redeem the physical slab.</p></details>
+        <details><summary>How do I qualify for pulls?</summary><p>Hold at least 0.1% of supply when a pack rips. More $POKEPACKS means better odds of being picked, but every qualifying wallet has a chance.</p></details>
+        <details><summary>Can I see the pack contents before a rip?</summary><p>Yes. Each pack on the shelf above lists its full card pool and tier odds. The pool shown here is example data until launch, when it switches to the live pump.fun pack lists.</p></details>
+        <details><summary>Where can I check the fee wallet?</summary><p>The rip wallet address goes live with the CA. Every pack purchase and slab transfer can be checked on Solscan.</p></details>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>PokePacks ($POKEPACKS) · not affiliated with Nintendo, The Pokémon Company or any grading company</span>
+    <span class="note">Example data until launch</span>
+  </div>
+</footer>
+
+<script>
+const TYPES={fire:["#ff7a3d","#ffd23f","#c2381c"],water:["#3f8cff","#a6e1ff","#1b3f9e"],grass:["#4cc76a","#d6f26a","#1d6b3a"],psychic:["#b86bff","#ffb3f1","#4b1f8f"],dark:["#2b2f4a","#f2d36b","#11131f"],electric:["#ffd23f","#fff6b0","#d18a00"],dragon:["#c99a3a","#7fd3ff","#5b3a10"],normal:["#c9c2b0","#ffffff","#7d7563"]};
+const C=(name,set,yr,grader,grade,type,tier,odds,img)=>({name,set,yr,grader,grade,type,tier,odds,img});
+const PACKS=[
+ {id:"starter",name:"Case Hits",img:"pack-case-hits.jpg",price:"0.25 SOL",p1:"#2e5f3d",p2:"#d6f26a",note:"Case-hit chase cards",
+  pool:[
+   C("Pikachu","Base Set #58/102",1999,"PSA",9,"electric","Common",24),
+   C("Eevee","Jungle #51/64",1999,"PSA",9,"normal","Common",22),
+   C("Snorlax Holo","Jungle #11/64",1999,"PSA",8,"normal","Common",18),
+   C("Wartortle","Base Set #42/102",1999,"PSA",6,"water","Common",14,"slab-wartortle.jpg"),
+   C("Venusaur Holo","Base Set #15/102",1999,"PSA",8,"grass","Rare",10),
+   C("Lance's Charizard V","Celebrations Promo SWSH133",2021,"SGC",9.5,"fire","Rare",8,"slab-lance-charizard.jpg"),
+   C("Mewtwo Holo","Base Set #10/102",1999,"PSA",9,"psychic","Grail",4)]},
+ {id:"rare",name:"Alt Arts",img:"pack-alt-arts.jpg",price:"1 SOL",p1:"#1b3f9e",p2:"#a6e1ff",note:"Alt arts and special illustration rares",
+  pool:[
+   C("Pikachu VMAX Rainbow","Vivid Voltage #188/185",2020,"PSA",10,"electric","Common",22),
+   C("Rayquaza VMAX Alt Art","Evolving Skies #218/203",2021,"PSA",10,"dragon","Common",20),
+   C("Gardevoir ex SIR","Scarlet & Violet #245",2023,"SGC",9,"psychic","Common",18,"slab-gardevoir.jpg"),
+   C("Charizard ex SIR","Scarlet & Violet 151 #199/165",2023,"PSA",10,"fire","Rare",16),
+   C("Gengar & Mimikyu GX Alt","Team Up #165/181",2019,"BGS",9.5,"psychic","Rare",14),
+   C("Giratina V Alt Art","Lost Origin #186/196",2022,"PSA",10,"dragon","Grail",10)]},
+ {id:"grail",name:"Perfect 10",img:"pack-perfect-10.jpg",price:"5 SOL",p1:"#3a2a0c",p2:"#e6b84a",note:"PSA 10 gem mints only",
+  pool:[
+   C("Charmander","XY Evolutions #9",2016,"PSA",10,"fire","Common",26,"slab-charmander.jpg"),
+   C("Umbreon VMAX Alt Art","Evolving Skies #215/203",2021,"PSA",10,"dark","Common",24),
+   C("Sabrina Holo","Gym Challenge #20",2000,"PSA",10,"psychic","Rare",18,"slab-sabrina.jpg"),
+   C("Shining Charizard","Neo Destiny #107/105",2002,"PSA",10,"fire","Rare",15),
+   C("Lugia 1st Edition","Neo Genesis #9/111",2000,"PSA",10,"psychic","Rare",12),
+   C("Charizard 1st Edition","Base Set #4/102",1999,"PSA",10,"fire","Grail",5)]}
+];
+const TIERC={Common:"var(--muted)",Rare:"var(--rare)",Grail:"var(--grail)"};
+const gradeWord=g=>g>=10?"GEM MT":g>=9.5?"GEM MINT":g>=9?"MINT":g>=8.5?"NM-MT+":g>=8?"NM-MT":"EX-MT";
+const vars=t=>{const c=TYPES[t];return `--c1:${c[0]};--c2:${c[1]};--c3:${c[2]}`};
+
+function slabHTML(c){
+  return `<div class="label"><b>${c.yr} POKÉMON</b><div class="grade"><small>${c.grader} ${gradeWord(c.grade)}</small><strong>${c.grade}</strong></div><b>${c.name.toUpperCase()}</b><span>${c.set}</span></div>
+  <div class="window" style="${vars(c.type)}"><div class="emblem"><i></i></div><div class="cardname">${c.name}<span>${c.set} · ${c.tier}</span></div></div>`;
+}
+const slab=document.getElementById("slab"),cap=document.getElementById("cap");
+function showSlab(c,packName){
+  slab.innerHTML=c.img?`<img src="${c.img}" alt="${c.name} ${c.grader} ${c.grade} slab">`:slabHTML(c);slab.classList.toggle("photo",!!c.img);slab.classList.remove("reveal");void slab.offsetWidth;slab.classList.add("reveal");
+  cap.textContent=packName?`Pulled from ${packName} · ${c.tier} · example odds ${c.odds}%`:"Featured slab from the vault";
+}
+showSlab(PACKS[0].pool.find(c=>c.img&&c.tier==="Rare"));
+
+/* tilt */
+const stage=document.getElementById("stage");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(!reduce){
+  stage.addEventListener("pointermove",e=>{const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;slab.style.transform=`rotateY(${x*22}deg) rotateX(${-y*18}deg)`;slab.querySelector(".window")?.style.setProperty("--a",`${x*180}deg`)});
+  stage.addEventListener("pointerleave",()=>{slab.style.transform=""});
+}
+
+function roll(pool){let r=Math.random()*pool.reduce((s,c)=>s+c.odds,0);for(const c of pool){if((r-=c.odds)<0)return c}return pool[0]}
+
+/* shelf + preview */
+const shelf=document.getElementById("shelf"),prev=document.getElementById("preview");
+let current=PACKS[1];
+PACKS.forEach(p=>{
+  const b=document.createElement("button");b.className="pack";b.type="button";b.id="pack-"+p.id;
+  b.innerHTML=`<img class="packimg" src="${p.img}" alt="${p.name} pack" width="96" height="160"><div><h3>${p.name}</h3><div class="price">${p.price} from the fee pot</div><div class="meta">${p.note} · ${p.pool.length} slabs</div><div class="go">Preview pack →</div></div>`;
+  b.onclick=()=>{current=p;renderPreview();prev.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"})};
+  shelf.appendChild(b);
+});
+function renderPreview(){
+  document.querySelectorAll(".pack").forEach(b=>b.setAttribute("aria-pressed",b.id==="pack-"+current.id));
+  const tiers={Common:0,Rare:0,Grail:0};current.pool.forEach(c=>tiers[c.tier]+=c.odds);
+  prev.innerHTML=`<div class="preview-head"><div style="display:flex;gap:16px;align-items:center"><img class="packimg" src="${current.img}" alt="" width="72" height="120"><div><h3>${current.name} · ${current.price}</h3><p>${current.pool.length} graded slabs in this pool. One gets pulled per rip.</p></div></div><button class="btn primary" id="ripThis" type="button">Rip this pack (demo)</button></div>
+  <div class="odds">${Object.entries(tiers).map(([t,v])=>`<i style="width:${v}%;background:${TIERC[t]}"></i>`).join("")}</div>
+  <div class="odds-key">${Object.entries(tiers).map(([t,v])=>`<span style="--d:${TIERC[t]}">${t} ${v}%</span>`).join("")}</div>
+  <div class="pool">${current.pool.map(c=>`<div class="mini"><span class="odd">${c.odds}%</span>${c.img?`<img class="real" src="${c.img}" alt="${c.name} ${c.grader} ${c.grade}" loading="lazy"><div class="realname"><b>${c.name}</b> · ${c.grader} ${c.grade}</div>`:`<div class="lbl"><div><b>${c.name}</b>${c.set}</div><strong>${c.grade}</strong></div><div class="win" style="${vars(c.type)}"></div>`}<div class="tier"><span>${c.grader} · ${c.yr}</span><span style="color:${c.tier==="Grail"?"#b8461a":c.tier==="Rare"?"#1b4fa0":"#555"}">${c.tier}</span></div></div>`).join("")}</div>`;
+  document.getElementById("ripThis").onclick=()=>rip(current,true);
+}
+renderPreview();
+
+document.getElementById("strip").innerHTML=PACKS.flatMap(p=>p.pool.filter(c=>c.img).map(c=>({c,p}))).map(({c,p})=>`<figure><img src="${c.img}" alt="${c.name} graded ${c.grader} ${c.grade}" loading="lazy"><figcaption><b>${c.name}</b><span>${c.grader} ${c.grade} · in ${p.name}</span></figcaption></figure>`).join("");
+
+/* feed */
+const feed=document.getElementById("feedList");
+const wallet=()=>{const a="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789";let s="";for(let i=0;i<4;i++)s+=a[Math.random()*a.length|0];s+="…";for(let i=0;i<4;i++)s+=a[Math.random()*a.length|0];return s};
+function addRow(c,fresh){
+  const r=document.createElement("div");r.className="row"+(fresh?" new":"");
+  r.innerHTML=`<span class="w">${wallet()}</span><span class="c"><b>${c.name}</b><span>${c.set}</span></span><span class="chip ${c.tier.toLowerCase()}">${c.tier}</span><span class="g">${c.grader} ${c.grade}</span>`;
+  feed.insertBefore(r,feed.children[1]||null);
+  while(feed.children.length>9)feed.lastElementChild.remove();
+}
+for(let i=0;i<7;i++){const p=PACKS[i%3===2?2:i%2];addRow(roll(p.pool),false)}
+
+let ripped=148;
+function rip(p,scroll){
+  const c=roll(p.pool);showSlab(c,p.name);addRow(c,true);
+  ripped++;document.getElementById("ripped").textContent=ripped;document.getElementById("sent").textContent=ripped;
+  if(scroll)document.getElementById("top").scrollIntoView({behavior:reduce?"auto":"smooth"});
+}
+document.getElementById("ripBtn").onclick=()=>rip(PACKS[Math.random()<.15?2:Math.random()<.5?1:0],false);
+
+/* pot + timer demo */
+let pot=0.62,t=252;
+setInterval(()=>{
+  t=t>0?t-1:300;pot=Math.min(1,pot+0.0015);
+  if(pot>=1){pot=0.05;rip(PACKS[1],false)}
+  document.getElementById("timer").textContent=String(t/60|0).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+  document.getElementById("pot").textContent=pot.toFixed(2);
+  document.getElementById("potbar").style.width=Math.round(pot*100)+"%";
+},1000);
+</script>
+
+</body>
+</html>

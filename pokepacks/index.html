@@ -57,11 +57,7 @@ nav a{text-decoration:none}nav a:hover{color:var(--fg)}
 .hero h1 em{font-style:normal;color:var(--gold)}
 .hero p.lede{color:var(--muted);font-size:18px;max-width:46ch;margin:20px 0 28px}
 .cta{display:flex;flex-wrap:wrap;gap:12px}
-.ca{margin-top:20px;font-family:var(--mono);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
-#ca{color:var(--fg);word-break:break-all;user-select:all}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--live);display:inline-block}
-.copy{min-height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:500 12px var(--mono);cursor:pointer}
-.copy:hover{border-color:var(--gold)}
+.ca{margin-top:20px;font-family:var(--mono);font-size:13px;color:var(--muted)}
 @media(max-width:860px){.hero{grid-template-columns:1fr;gap:32px;padding-block:32px}}
 
 /* slab */
@@ -206,7 +202,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
     <a class="logo" href="#top"><img src="pfp.png" alt="" width="40" height="40">Poke<span>Packs</span></a>
     <nav><a href="#packs">Packs</a><a href="#feed">Live rips</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
     <a class="btn xbtn" href="https://x.com/pokepacks_sol" target="_blank" rel="noopener" aria-label="PokePacks on X">𝕏</a>
-    <a class="btn primary" href="https://pump.fun/coin/24TFsqzNGU4waeZayRGe9jw8dr84CH65XXEt7pCSpump" target="_blank" rel="noopener">Buy on pump.fun</a>
+    <a class="btn primary" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a>
   </div>
 </header>
 
@@ -222,7 +218,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
           <button class="btn primary" id="ripBtn" type="button">Rip a demo pack</button>
           <a class="btn" href="#packs">Preview the packs</a>
         </div>
-        <div class="ca"><span class="live-dot"></span>Live on pump.fun · CA: <span id="ca">24TFsqzNGU4waeZayRGe9jw8dr84CH65XXEt7pCSpump</span> <button class="copy" id="copyCa" type="button">Copy</button></div>
+        <div class="ca">CA: <span id="ca">coming at launch</span></div>
       </div>
       <div>
         <div class="stage" id="stage"><div class="slab" id="slab"></div></div>
@@ -290,7 +286,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
         <details><summary>Are the cards real?</summary><p>Yes. Pack pulls are tokenized cards backed by real graded slabs held in an insured vault. Winners can hold them, sell them or redeem the physical slab.</p></details>
         <details><summary>How do I qualify for pulls?</summary><p>Hold at least 0.1% of supply when a pack rips. More $POKEPACKS means better odds of being picked, but every qualifying wallet has a chance.</p></details>
         <details><summary>Can I see the pack contents before a rip?</summary><p>Yes. Each pack on the shelf above lists its full card pool and tier odds. The pool shown here is example data until launch, when it switches to the live pump.fun pack lists.</p></details>
-        <details><summary>Where can I check the fee wallet?</summary><p>The rip wallet address will be posted here and on X. Every pack purchase and slab transfer can be checked on Solscan.</p></details>
+        <details><summary>Where can I check the fee wallet?</summary><p>The rip wallet address goes live with the CA. Every pack purchase and slab transfer can be checked on Solscan.</p></details>
       </div>
     </section>
   </div>
@@ -399,8 +395,6 @@ function rip(p,scroll){
   if(scroll)document.getElementById("top").scrollIntoView({behavior:reduce?"auto":"smooth"});
 }
 document.getElementById("ripBtn").onclick=()=>rip(PACKS[Math.random()<.15?2:Math.random()<.5?1:0],false);
-
-document.getElementById("copyCa").onclick=e=>{const b=e.currentTarget;navigator.clipboard.writeText(document.getElementById("ca").textContent).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1500)}).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("ca"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r)})};
 
 /* pot + timer demo */
 let pot=0.62,t=252;

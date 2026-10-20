@@ -316,7 +316,11 @@ $("launchBtn").onclick = async () => {
     const tx = new W.Transaction();
     tx.add(W.ComputeBudgetProgram.setComputeUnitLimit({ units: Number($("cu").value) || 400000 }));
     const prio = Number($("prio").value) || 0;
-    if (prio > 0) tx.add(W.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: prio }));
+    if (prio > 0){
+      // SetComputeUnitPrice built by hand: the library helper needs Node's Buffer, which browsers lack
+      const d = new Uint8Array(9); d[0] = 3; new DataView(d.buffer).setBigUint64(1, BigInt(Math.floor(prio)), true);
+      tx.add(new W.TransactionInstruction({ programId: W.ComputeBudgetProgram.programId, keys: [], data: d }));
+    }
     tx.add(buildCreateV2(mintKp.publicKey, botPk, creator, name, symbol, uri, $("mayhem").checked));
     const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash; tx.feePayer = botPk;

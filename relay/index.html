@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Relay Launchpad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<script src="https://unpkg.com/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
+<style>
+/* Layout: one working column of numbered launch steps beside a sticky "relay" card that shows who pays vs who is dev */
+:root{
+  --bg:#f3f1ec; --panel:#fffdf8; --line:#ddd7cb; --fg:#1d1b17; --muted:#6c665a;
+  --accent:#d9480f; --accent-ink:#fff; --ok:#2b8a3e; --bad:#c92a2a; --chip:#efe9dd;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141310; --panel:#1d1b17; --line:#36322a; --fg:#f1ece2; --muted:#a59d8e;
+  --accent:#ff7a3d; --accent-ink:#1a0e06; --ok:#69db7c; --bad:#ff8787; --chip:#2a2721; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141310; --panel:#1d1b17; --line:#36322a; --fg:#f1ece2; --muted:#a59d8e;
+  --accent:#ff7a3d; --accent-ink:#1a0e06; --ok:#69db7c; --bad:#ff8787; --chip:#2a2721; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto;padding-block:40px 64px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:28px}
+h1{font:800 clamp(34px,6vw,56px)/1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);max-width:56ch;margin:10px 0 0}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px}
+.steps{display:grid;gap:16px}
+.step h2{font:600 19px/1.2 var(--display);margin:0;display:flex;gap:10px;align-items:baseline}
+.step h2 i{font:600 12px var(--mono);font-style:normal;color:var(--accent)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.row{grid-template-columns:1fr}}
+label{display:grid;gap:5px;font-weight:600;font-size:13px;min-width:0}
+label small{font-weight:400;color:var(--muted)}
+input,textarea,select{font:14px var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:9px 11px;width:100%;min-width:0}
+input.mono,textarea.mono{font:13px var(--mono)}
+textarea{resize:vertical;min-height:70px}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{background:var(--chip);color:var(--fg);border:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+button{font:600 14px var(--body);border:0;border-radius:7px;padding:10px 14px;cursor:pointer;background:var(--chip);color:var(--fg)}
+button.primary{background:var(--accent);color:var(--accent-ink);font-size:16px;padding:14px 18px;width:100%}
+button:disabled{opacity:.5;cursor:not-allowed}
+.note{font-size:13px;color:var(--muted);margin:0}
+.warn{font-size:13px;border-left:3px solid var(--accent);padding:6px 0 6px 10px;margin:0}
+.status{font:13px var(--mono);overflow-wrap:anywhere}
+.status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:grid;gap:16px}
+.relay{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:4px}
+.node{display:grid;gap:2px;padding:10px 12px;border-radius:8px;background:var(--chip)}
+.node b{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.node code{font:13px var(--mono);overflow-wrap:anywhere}
+.node.dev{background:var(--accent);color:var(--accent-ink)} .node.dev b{color:inherit;opacity:.8}
+.arrow{text-align:center;font:12px var(--mono);color:var(--muted);padding:2px 0}
+.result{display:grid;gap:8px}
+.result a{color:var(--accent);font-weight:600}
+.hidden{display:none!important}
+.chk{display:flex;gap:8px;align-items:center;font-weight:500}
+.chk input{width:auto}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Relay<span>.</span></h1>
+      <p class="sub">Launch a pump.fun coin from your bot wallet with your main wallet set as creator. The bot signs and pays; the main wallet shows as dev and receives creator fees.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="steps">
+
+      <section class="step">
+        <h2><i>01</i>Bot wallet (signs &amp; pays)</h2>
+        <div class="seg" role="group" aria-label="How the bot wallet signs">
+          <button id="modeExt" aria-pressed="true" type="button">Browser wallet</button>
+          <button id="modeKey" aria-pressed="false" type="button">Paste private key</button>
+        </div>
+        <div id="extBox" style="display:grid;gap:8px">
+          <button id="connectBtn" type="button">Connect Phantom / Solflare / Backpack</button>
+          <p class="note">Switch your wallet extension to the bot account before connecting.</p>
+        </div>
+        <div id="keyBox" class="hidden" style="display:grid;gap:8px">
+          <label for="botKey">Bot private key <small>base58 or JSON byte array. Stays in this tab, never saved or sent anywhere.</small>
+            <input id="botKey" class="mono" type="password" autocomplete="off" spellcheck="false" placeholder="5Kd3…">
+          </label>
+        </div>
+        <p id="botStatus" class="status">Not connected</p>
+      </section>
+
+      <section class="step">
+        <h2><i>02</i>Main wallet (shows as dev)</h2>
+        <label for="creator">Creator address <small>Gets the dev label and the coin's creator fees. No signature needed.</small>
+          <input id="creator" class="mono" spellcheck="false" placeholder="Main wallet public key">
+        </label>
+      </section>
+
+      <section class="step">
+        <h2><i>03</i>Coin details</h2>
+        <div class="row">
+          <label for="name">Name <small>max 32</small><input id="name" maxlength="32"></label>
+          <label for="symbol">Ticker <small>max 13</small><input id="symbol" maxlength="13"></label>
+        </div>
+        <label for="desc">Description<textarea id="desc"></textarea></label>
+        <div class="row">
+          <label for="twitter">X link<input id="twitter" placeholder="https://x.com/…"></label>
+          <label for="website">Website<input id="website" placeholder="https://orch.lol/…"></label>
+        </div>
+        <label for="telegram">Telegram<input id="telegram" placeholder="https://t.me/…"></label>
+        <label for="image">Image<input id="image" type="file" accept="image/*"></label>
+        <button id="uploadBtn" type="button">Upload metadata to pump.fun IPFS</button>
+        <label for="uri">Metadata URI <small>Filled by the upload, or paste your own JSON URI (max 200 chars).</small>
+          <input id="uri" class="mono" maxlength="200" spellcheck="false" placeholder="https://ipfs.io/ipfs/…">
+        </label>
+        <p id="uriStatus" class="status"></p>
+      </section>
+
+      <section class="step">
+        <h2><i>04</i>Network &amp; mint</h2>
+        <label for="rpc">RPC URL <small>A private RPC (Helius, Triton, QuickNode) lands far more reliably than the public one.</small>
+          <input id="rpc" class="mono" spellcheck="false" value="https://api.mainnet-beta.solana.com">
+        </label>
+        <div class="row">
+          <label for="prio">Priority fee <small>micro-lamports per CU</small><input id="prio" type="number" min="0" value="200000"></label>
+          <label for="cu">Compute limit<input id="cu" type="number" min="100000" value="400000"></label>
+        </div>
+        <label for="mintKey">Vanity mint key <small>Optional. Leave blank to generate a fresh CA.</small>
+          <input id="mintKey" class="mono" type="password" autocomplete="off" spellcheck="false" placeholder="base58 or JSON array of a ground …pump key">
+        </label>
+        <label class="chk" for="mayhem"><input id="mayhem" type="checkbox"> Mayhem mode</label>
+      </section>
+
+      <section class="step">
+        <button id="launchBtn" class="primary" type="button">Launch coin</button>
+        <p class="warn">The bot wallet is still visible on-chain as the signer and fee payer. Anyone opening the create transaction on Solscan can see it. Do a small test launch first to confirm pump.fun shows your main wallet as dev.</p>
+        <p id="launchStatus" class="status"></p>
+        <div id="result" class="result hidden"></div>
+      </section>
+    </div>
+
+    <aside>
+      <div class="relay" aria-live="polite">
+        <div class="node"><b>Signer · pays rent + fees</b><code id="vBot">bot wallet</code></div>
+        <div class="arrow">signs create_v2 ↓</div>
+        <div class="node"><b>New mint (CA)</b><code id="vMint">generated at launch</code></div>
+        <div class="arrow">creator = ↓</div>
+        <div class="node dev"><b>Dev on pump.fun · creator fees</b><code id="vCreator">main wallet</code></div>
+      </div>
+      <p class="note">Uses pump.fun's <code>create_v2</code> instruction (Token-2022), program 6EF8…F6P. No dev buy is included; buy from any wallet after it lands.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+const W = window.solanaWeb3;
+const $ = id => document.getElementById(id);
+const PUMP = new W.PublicKey("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P");
+const MAYHEM = new W.PublicKey("MAyhSmzXzV1pTf7LsNkrNwkWKTo4ougAJ1PPg47MD4e");
+const T22 = new W.PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+const ATA = new W.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+const DISC = [214,144,76,236,95,139,49,180];
+const enc = new TextEncoder();
+
+let mode = "ext", wallet = null, botPk = null;
+
+// remembered RPC
+try { const r = localStorage.getItem("relay.rpc"); if (r) $("rpc").value = r; } catch(e){}
+$("rpc").addEventListener("change", () => { try { localStorage.setItem("relay.rpc", $("rpc").value.trim()); } catch(e){} });
+
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function b58decode(s){
+  let n = 0n; for (const c of s){ const i = B58.indexOf(c); if (i < 0) throw new Error("bad base58"); n = n*58n + BigInt(i); }
+  const out = []; while (n > 0n){ out.unshift(Number(n & 255n)); n >>= 8n; }
+  for (const c of s){ if (c === "1") out.unshift(0); else break; }
+  return new Uint8Array(out);
+}
+function parseKey(s){
+  s = s.trim(); if (!s) return null;
+  const bytes = s.startsWith("[") ? new Uint8Array(JSON.parse(s)) : b58decode(s);
+  if (bytes.length !== 64) throw new Error("private key must be 64 bytes");
+  return W.Keypair.fromSecretKey(bytes);
+}
+const short = pk => { const s = pk.toString(); return s.slice(0,6) + "…" + s.slice(-6); };
+function setStatus(el, msg, cls){ el.textContent = msg; el.className = "status" + (cls ? " " + cls : ""); }
+
+function setMode(m){
+  mode = m;
+  $("modeExt").setAttribute("aria-pressed", m === "ext");
+  $("modeKey").setAttribute("aria-pressed", m === "key");
+  $("extBox").classList.toggle("hidden", m !== "ext");
+  $("keyBox").classList.toggle("hidden", m !== "key");
+  botPk = null; refreshBot();
+}
+$("modeExt").onclick = () => setMode("ext");
+$("modeKey").onclick = () => setMode("key");
+
+function findWallet(){
+  return window.phantom?.solana || window.solflare || window.backpack?.solana || window.backpack || window.solana || null;
+}
+$("connectBtn").onclick = async () => {
+  wallet = findWallet();
+  if (!wallet){ setStatus($("botStatus"), "No Solana wallet extension found in this page. Host this file on a website (or localhost), or use the private key option.", "bad"); return; }
+  try {
+    const r = await wallet.connect();
+    botPk = new W.PublicKey((r?.publicKey || wallet.publicKey).toString());
+    refreshBot();
+  } catch(e){ setStatus($("botStatus"), "Wallet connection was declined: " + e.message, "bad"); }
+};
+$("botKey").addEventListener("input", refreshBot);
+function refreshBot(){
+  if (mode === "key"){
+    try { const kp = parseKey($("botKey").value); botPk = kp ? kp.publicKey : null; }
+    catch(e){ botPk = null; setStatus($("botStatus"), "Key not recognised: " + e.message, "bad"); $("vBot").textContent = "bot wallet"; return; }
+  }
+  if (botPk){ setStatus($("botStatus"), "Bot: " + botPk.toString(), "ok"); $("vBot").textContent = botPk.toString(); }
+  else { setStatus($("botStatus"), "Not connected"); $("vBot").textContent = "bot wallet"; }
+  checkCreator();
+}
+function checkCreator(){
+  const v = $("creator").value.trim();
+  try { const pk = new W.PublicKey(v); $("vCreator").textContent = pk.toString();
+    if (botPk && pk.equals(botPk)) $("vCreator").textContent += " (same as bot)";
+  } catch { $("vCreator").textContent = v ? "invalid address" : "main wallet"; }
+}
+$("creator").addEventListener("input", checkCreator);
+$("mintKey").addEventListener("input", () => {
+  try { const kp = parseKey($("mintKey").value); $("vMint").textContent = kp ? kp.publicKey.toString() : "generated at launch"; }
+  catch(e){ $("vMint").textContent = "invalid mint key"; }
+});
+
+$("uploadBtn").onclick = async () => {
+  const f = $("image").files[0];
+  if (!f || !$("name").value || !$("symbol").value){ setStatus($("uriStatus"), "Add a name, ticker and image first.", "bad"); return; }
+  const fd = new FormData();
+  fd.append("file", f); fd.append("name", $("name").value); fd.append("symbol", $("symbol").value);
+  fd.append("description", $("desc").value); fd.append("twitter", $("twitter").value);
+  fd.append("telegram", $("telegram").value); fd.append("website", $("website").value); fd.append("showName", "true");
+  setStatus($("uriStatus"), "Uploading…");
+  try {
+    const r = await fetch("https://pump.fun/api/ipfs", { method: "POST", body: fd });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if (!j.metadataUri) throw new Error("no metadataUri in response");
+    $("uri").value = j.metadataUri; setStatus($("uriStatus"), "Metadata uploaded.", "ok");
+  } catch(e){
+    setStatus($("uriStatus"), "pump.fun blocked the upload from this page (" + e.message + "). Upload the metadata JSON elsewhere and paste its URI.", "bad");
+  }
+};
+
+function borshString(s){ const b = enc.encode(s); const len = new Uint8Array(4); new DataView(len.buffer).setUint32(0, b.length, true); return [...len, ...b]; }
+const pda = (seeds, prog) => W.PublicKey.findProgramAddressSync(seeds, prog)[0];
+const ata = (owner, mint, tokenProg) => pda([owner.toBuffer(), tokenProg.toBuffer(), mint.toBuffer()], ATA);
+
+function buildCreateV2(mint, user, creator, name, symbol, uri, mayhem){
+  const bondingCurve = pda([enc.encode("bonding-curve"), mint.toBuffer()], PUMP);
+  const solVault = pda([enc.encode("sol-vault")], MAYHEM);
+  const keys = [
+    [mint, true, true],
+    [pda([enc.encode("mint-authority")], PUMP), false, false],
+    [bondingCurve, false, true],
+    [ata(bondingCurve, mint, T22), false, true],
+    [pda([enc.encode("global")], PUMP), false, false],
+    [user, true, true],
+    [W.SystemProgram.programId, false, false],
+    [T22, false, false],
+    [ATA, false, false],
+    [MAYHEM, false, true],
+    [pda([enc.encode("global-params")], MAYHEM), false, false],
+    [solVault, false, true],
+    [pda([enc.encode("mayhem-state"), mint.toBuffer()], MAYHEM), false, true],
+    [ata(solVault, mint, T22), false, true],
+    [pda([enc.encode("__event_authority")], PUMP), false, false],
+    [PUMP, false, false],
+  ].map(([pubkey, isSigner, isWritable]) => ({ pubkey, isSigner, isWritable }));
+  const data = new Uint8Array([
+    ...DISC, ...borshString(name), ...borshString(symbol), ...borshString(uri),
+    ...creator.toBytes(), mayhem ? 1 : 0, 0 /* is_cashback_enabled: OptionBool(false) */
+  ]);
+  return new W.TransactionInstruction({ programId: PUMP, keys, data });
+}
+
+$("launchBtn").onclick = async () => {
+  const st = $("launchStatus"); $("result").classList.add("hidden");
+  try {
+    if (!botPk) throw new Error("Connect the bot wallet first.");
+    let creator; try { creator = new W.PublicKey($("creator").value.trim()); } catch { throw new Error("Enter a valid main wallet address."); }
+    const name = $("name").value.trim(), symbol = $("symbol").value.trim(), uri = $("uri").value.trim();
+    if (!name || !symbol) throw new Error("Add a name and ticker.");
+    if (!uri) throw new Error("Add a metadata URI (upload or paste one).");
+    const mintKp = parseKey($("mintKey").value) || W.Keypair.generate();
+    $("vMint").textContent = mintKp.publicKey.toString();
+
+    $("launchBtn").disabled = true;
+    setStatus(st, "Building transaction…");
+    const conn = new W.Connection($("rpc").value.trim(), "confirmed");
+    const tx = new W.Transaction();
+    tx.add(W.ComputeBudgetProgram.setComputeUnitLimit({ units: Number($("cu").value) || 400000 }));
+    const prio = Number($("prio").value) || 0;
+    if (prio > 0) tx.add(W.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: prio }));
+    tx.add(buildCreateV2(mintKp.publicKey, botPk, creator, name, symbol, uri, $("mayhem").checked));
+    const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash; tx.feePayer = botPk;
+
+    let signed;
+    if (mode === "key"){
+      const botKp = parseKey($("botKey").value);
+      tx.sign(botKp, mintKp); signed = tx;
+    } else {
+      setStatus(st, "Approve in your wallet…");
+      signed = await wallet.signTransaction(tx);
+      signed.partialSign(mintKp);
+    }
+    setStatus(st, "Sending…");
+    const sig = await conn.sendRawTransaction(signed.serialize(), { skipPreflight: false, maxRetries: 5 });
+    setStatus(st, "Confirming " + sig.slice(0,10) + "…");
+    const conf = await conn.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, "confirmed");
+    if (conf.value.err) throw new Error("Transaction failed: " + JSON.stringify(conf.value.err));
+    setStatus(st, "Launched.", "ok");
+    const ca = mintKp.publicKey.toString();
+    $("result").innerHTML = `<div class="node"><b>CA</b><code>${ca}</code></div>
+      <a href="https://pump.fun/coin/${ca}" target="_blank" rel="noopener">Open on pump.fun</a>
+      <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">View transaction on Solscan</a>`;
+    $("result").classList.remove("hidden");
+  } catch(e){
+    const logs = e.logs ? "\n" + e.logs.slice(-6).join("\n") : "";
+    setStatus(st, (e.message || String(e)) + logs, "bad");
+  } finally { $("launchBtn").disabled = false; }
+};
+})();
+</script>

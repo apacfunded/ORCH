@@ -1,0 +1,11 @@
+{
+  "name": "Relay Test",
+  "symbol": "RTEST",
+  "description": "Test launch from Relay. Not a real coin.",
+  "image": "https://orch.lol/relay/test/pfp.png",
+  "showName": true,
+  "createdOn": "https://pump.fun",
+  "twitter": "",
+  "telegram": "",
+  "website": "https://orch.lol/relay"
+}

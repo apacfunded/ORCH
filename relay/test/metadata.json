@@ -1,6 +1,6 @@
 {
-  "name": "Relay Test",
-  "symbol": "RTEST",
+  "name": "test",
+  "symbol": "TEST",
   "description": "Test launch from Relay. Not a real coin.",
   "image": "https://orch.lol/relay/test/pfp.png",
   "showName": true,

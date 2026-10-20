@@ -126,8 +126,8 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:grid
 
       <section class="step">
         <h2><i>04</i>Network &amp; mint</h2>
-        <label for="rpc">RPC URL <small>A private RPC (Helius, Triton, QuickNode) lands far more reliably than the public one.</small>
-          <input id="rpc" class="mono" spellcheck="false" value="https://api.mainnet-beta.solana.com">
+        <label for="rpc">RPC URL <small>The free PublicNode RPC works from the browser. A private RPC (Helius, Triton, QuickNode) lands launches more reliably.</small>
+          <input id="rpc" class="mono" spellcheck="false" value="https://solana-rpc.publicnode.com">
         </label>
         <div class="row">
           <label for="prio">Priority fee <small>micro-lamports per CU</small><input id="prio" type="number" min="0" value="200000"></label>
@@ -174,7 +174,7 @@ const enc = new TextEncoder();
 let mode = "ext", wallet = null, botPk = null;
 
 // remembered RPC
-try { const r = localStorage.getItem("relay.rpc"); if (r) $("rpc").value = r; } catch(e){}
+try { const r = localStorage.getItem("relay.rpc"); if (r && !r.includes("api.mainnet-beta")) $("rpc").value = r; } catch(e){}
 $("rpc").addEventListener("change", () => { try { localStorage.setItem("relay.rpc", $("rpc").value.trim()); } catch(e){} });
 
 const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";

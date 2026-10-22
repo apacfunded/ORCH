@@ -107,6 +107,23 @@ const saveFollowEx = () => chrome.storage.local.set({ followExclude: [...followE
 let followFocus = new Set(); // focus mode: the wallets everyone follows
 chrome.storage.local.get('followFocus').then(r => { followFocus = new Set(r.followFocus || []); if (st && (tab === 'wallets' || tab === 'follow')) render(); });
 const saveFollowFocus = () => chrome.storage.local.set({ followFocus: [...followFocus] });
+let followExtra = []; // outside accounts to follow, pasted by the user
+chrome.storage.local.get('followExtra').then(r => { followExtra = r.followExtra || []; if (st && (typeof tab !== 'undefined') && (tab === 'follow' || page === 'wallets')) render(); });
+const saveFollowExtra = () => chrome.storage.local.set({ followExtra });
+const fxDraft = { text: '', bad: [] };
+// Pulls Solana addresses out of pasted text: plain addresses, pump.fun profile links, Solscan links, comma or line separated.
+function parseAddrList(text) {
+  const own = new Set(st.wallets.map(w => w.address));
+  const good = [], bad = [], mine = [];
+  for (const raw of String(text || '').split(/[\s,;]+/).filter(Boolean)) {
+    const m = raw.match(/[1-9A-HJ-NP-Za-km-z]{32,44}/g);
+    const a = m ? m[m.length - 1] : null;
+    if (!a || !isAddress(a)) { bad.push(raw.length > 24 ? raw.slice(0, 22) + '…' : raw); continue; }
+    if (own.has(a)) { mine.push(a); continue; }
+    if (!good.includes(a)) good.push(a);
+  }
+  return { good, bad, mine };
+}
 let likeEx = null; // wallets left out of liking (null = not loaded yet: everyone but the callout's owner)
 chrome.storage.local.get('likeExclude').then(r => { likeEx = r.likeExclude ? new Set(r.likeExclude) : null; if (st && tab === 'like' && !page) render(); });
 const saveLikeEx = () => chrome.storage.local.set({ likeExclude: [...likeEx] });
@@ -1906,10 +1923,20 @@ function followCard() {
   const list = (attr, isOn) => `<div class="fxlist">${st.wallets.map(w => `<label class="fx"><input type="checkbox" ${attr}="${w.address}" ${isOn(w) ? 'checked' : ''}>${avatar(w, 'sm')}<span class="trunc">${esc(w.name)}</span></label>`).join('')}</div>`;
   // Followers in focus mode: ticked wallets, minus any that would have no one to follow.
   const pairs = focusMode ? inc.filter(w => foc.some(t => t.address !== w.address)).length : inc.length;
-  const canGo = ready && (focusMode ? foc.length >= 1 && pairs >= 1 : inc.length >= 2);
+  const ext = followExtra.length;
+  const pairsX = focusMode ? inc.filter(w => ext || foc.some(t => t.address !== w.address)).length : inc.length;
+  const canGo = ready && (focusMode ? (foc.length + ext) >= 1 && pairsX >= 1 : (inc.length >= 2 || (inc.length >= 1 && ext >= 1)));
+  const extLabel = ext ? ` + ${plural(ext, 'account')}` : '';
   const goLabel = focusMode
-    ? (!foc.length ? 'Pick wallets to get followed' : !pairs ? 'Pick wallets to do the following' : `Follow ${plural(foc.length, 'focus wallet')} · from ${plural(pairs, 'wallet')}`)
-    : (inc.length >= 2 ? `Follow each other · ${plural(inc.length, 'wallet')}` : 'Tick at least 2 wallets');
+    ? (!(foc.length + ext) ? 'Pick wallets or paste addresses to follow' : !pairsX ? 'Pick wallets to do the following' : `Follow ${foc.length ? plural(foc.length, 'focus wallet') : ''}${foc.length && ext ? ' + ' : ''}${ext ? plural(ext, 'outside account') : ''} · from ${plural(pairsX, 'wallet')}`)
+    : (inc.length >= 2 ? `Follow each other${extLabel} · ${plural(inc.length, 'wallet')}` : inc.length >= 1 && ext ? `Follow ${plural(ext, 'account')} · from ${plural(inc.length, 'wallet')}` : 'Tick at least 2 wallets, or paste addresses');
+  const extraBox = `<div class="fxextra" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
+      <div class="row" style="align-items:baseline"><b class="grow">Also follow these accounts</b>${ext ? `<button class="btn sm ghost" id="fxtClear">Clear ${ext}</button>` : ''}</div>
+      <div class="sub" style="margin-top:4px">Paste wallet addresses or pump.fun profile links, one per line or comma separated. Every ticked wallet follows them. Paste a profile address, not a coin CA.</div>
+      <textarea id="fxtIn" rows="4" spellcheck="false" placeholder="7xKX…9fQ2&#10;https://pump.fun/profile/…" style="width:100%;margin-top:10px;font-family:var(--mono);font-size:12.5px">${esc(fxDraft.text)}</textarea>
+      <div class="actions" style="margin-top:8px;justify-content:flex-start;gap:8px"><button class="btn sm primary" id="fxtAdd">Add addresses</button>${fxDraft.bad.length ? `<span class="sub" style="color:var(--warn)">Skipped ${plural(fxDraft.bad.length, 'line')} that ${fxDraft.bad.length === 1 ? "isn't" : "aren't"} an address: ${esc(fxDraft.bad.slice(0, 3).join(', '))}${fxDraft.bad.length > 3 ? '…' : ''}</span>` : ''}</div>
+      ${ext ? `<div class="fxlist" style="margin-top:10px">${followExtra.map(a => `<span class="fx" style="justify-content:space-between">${avatarFor(a, a.slice(0, 2))}<span class="mono trunc grow">${esc(short(a))}</span><button class="btn icon ghost" data-fxrm="${a}" aria-label="Remove ${esc(a)}" title="Remove">${I.x}</button></span>`).join('')}</div>` : ''}
+    </div>`;
   return `<div class="card" style="margin:0 0 16px">
     <b>Follow on pump.fun</b>
     <div class="seg"><button data-fwmode="all" class="${focusMode ? '' : 'active'}">All follow all</button><button data-fwmode="focus" class="${focusMode ? 'active' : ''}">All follow a few</button></div>
@@ -1923,6 +1950,7 @@ function followCard() {
     : `<div class="sub" style="margin-top:8px">Ticked wallets all follow each other. Untick any you want left out: they won't follow or be followed. Truth remembers your picks.</div>
     ${picker('fx', store.get('fxN', 10), 'How many wallets to pick', inc.length, true)}
     ${list('data-fx', w => !followEx.has(w.address))}`}
+    ${extraBox}
     ${ready ? '' : '<p class="hint" style="margin-bottom:0">Connect the pump.fun login in the Callouts tab first.</p>'}
     <p class="err" id="fwErr"></p>
     <div class="actions" style="margin-top:10px"><button class="btn primary" id="fwGo" ${canGo ? '' : 'disabled'}>${goLabel}</button></div>
@@ -1933,6 +1961,19 @@ function wireFollow() {
   $$('[data-fx]').forEach(cb => cb.onchange = () => { cb.checked ? followEx.delete(cb.dataset.fx) : followEx.add(cb.dataset.fx); saveFollowEx(); render(); });
   $$('[data-ff]').forEach(cb => cb.onchange = () => { cb.checked ? followFocus.add(cb.dataset.ff) : followFocus.delete(cb.dataset.ff); saveFollowFocus(); render(); });
   $$('[data-fwmode]').forEach(b => b.onclick = () => { store.set('fwMode', b.dataset.fwmode); render(); });
+  on('#fxtIn', 'input', (e) => { fxDraft.text = e.target.value; });
+  on('#fxtAdd', 'click', () => {
+    const { good, bad, mine } = parseAddrList($('#fxtIn')?.value || fxDraft.text);
+    const before = followExtra.length;
+    followExtra = [...new Set([...followExtra, ...good])].slice(0, 500);
+    saveFollowExtra();
+    fxDraft.text = ''; fxDraft.bad = bad;
+    const added = followExtra.length - before;
+    toast(added ? `Added ${plural(added, 'address', 'addresses')}${mine.length ? ` · ${mine.length} already in Truth` : ''}` : mine.length ? 'Those are already wallets in Truth' : 'No new addresses found');
+    render();
+  });
+  on('#fxtClear', 'click', () => { followExtra = []; saveFollowExtra(); fxDraft.bad = []; render(); });
+  $$('[data-fxrm]').forEach(b => b.onclick = () => { followExtra = followExtra.filter(a => a !== b.dataset.fxrm); saveFollowExtra(); render(); });
   // Quick picks: tick only the first N wallets (in list order), all of them, or none.
   const pickFirst = (n) => { followEx.clear(); st.wallets.forEach((w, i) => { if (i >= n) followEx.add(w.address); }); saveFollowEx(); render(); };
   const pickFocus = (n) => { followFocus = new Set(st.wallets.slice(0, n).map(w => w.address)); saveFollowFocus(); render(); };
@@ -1967,7 +2008,7 @@ function wireFollow() {
       const t = await activeTab();
       if (!t?.url || !/^https:\/\/([a-z0-9-]+\.)*pump\.fun\//.test(t.url)) throw new Error('This runs on a pump.fun tab, so it needs the Truth extension. The website handles buys, sells, sends and holdings.');
       const focusMode = store.get('fwMode', 'all') === 'focus';
-      await send({ type: 'followRun', tabId: t.id, addresses: st.wallets.filter(w => !followEx.has(w.address)).map(w => w.address), ...(focusMode ? { targets: st.wallets.filter(w => followFocus.has(w.address)).map(w => w.address) } : {}) });
+      await send({ type: 'followRun', tabId: t.id, addresses: st.wallets.filter(w => !followEx.has(w.address)).map(w => w.address), ...(focusMode ? { targets: st.wallets.filter(w => followFocus.has(w.address)).map(w => w.address) } : {}), extra: followExtra });
       await refresh();
     } catch (e) { b.disabled = false; const el = $('#fwErr'); if (el) el.textContent = e.message; }
   });

@@ -416,7 +416,7 @@ async function runThesis({ tabId, mint, items }) {
 }
 
 // ---------------- follow: every wallet follows every other wallet on pump.fun ----------------
-async function runFollow({ tabId, addresses, targets: targetPick }) {
+async function runFollow({ tabId, addresses, targets: targetPick, extra: extraIn }) {
   const tpls = (await local.get('pumpTpl')) || {};
   if (!tpls.login || !tpls.post) throw new Error('Connect the pump.fun login first (Callouts tab)');
   if (activeThesis) throw new Error('Another pump.fun job is running. Wait for it to finish.');
@@ -424,18 +424,21 @@ async function runFollow({ tabId, addresses, targets: targetPick }) {
   const all = Array.isArray(addresses) ? scoped.filter(a => addresses.includes(a)) : scoped; // wallets that do the following
   // Focus mode: followers only follow the picked focus wallets. Otherwise everyone follows everyone.
   const focus = Array.isArray(targetPick) ? scoped.filter(a => targetPick.includes(a)) : null;
+  // Outside accounts (pasted addresses that aren't wallets in Truth): every follower follows them too.
+  const extra = [...new Set((Array.isArray(extraIn) ? extraIn : []).map(a => String(a).trim()).filter(a => b58.isAddress(a) && !scoped.includes(a)))].slice(0, 500);
+  const extraSet = new Set(extra);
   if (focus) {
-    if (!focus.length) throw new Error('Pick at least 1 wallet to get followed');
+    if (!focus.length && !extra.length) throw new Error('Pick at least 1 wallet or paste an address to get followed');
     if (!all.length) throw new Error('Pick at least 1 wallet to do the following');
-    if (!all.some(a => focus.some(t => t !== a))) throw new Error('Pick a follower that is not the only focus wallet');
-  } else if (all.length < 2) throw new Error('Pick at least 2 wallets to follow each other');
-  const goal = focus || all; // who gets followed
+    if (!all.some(a => [...focus, ...extra].some(t => t !== a))) throw new Error('Pick a follower that is not the only focus wallet');
+  } else if (all.length < 2 && !(all.length >= 1 && extra.length)) throw new Error('Pick at least 2 wallets to follow each other, or paste addresses to follow');
+  const goal = [...(focus || all), ...extra]; // who gets followed
   const everyone = [...new Set([...all, ...goal])];
   const s = await settings();
   const selected = await local.get('selected');
   const ids = (await local.get('pumpUserIds')) || {};
   if (!(await tabReady(tabId))) throw new Error('Open pump.fun in this tab and wait for it to load, then try again.');
-  const job = { kind: 'follow', focus: !!focus, startedAt: Date.now(), done: false, step: '', rows: everyone.map(a => ({ address: a, state: 'waiting', detail: (focus && goal.includes(a) && !all.includes(a) ? 'focus wallet · ' : '') + (ids[a] ? 'account known' : goal.includes(a) ? 'waiting for account lookup' : 'waiting for its turn') })) };
+  const job = { kind: 'follow', focus: !!focus, startedAt: Date.now(), done: false, step: '', rows: everyone.map(a => ({ address: a, state: 'waiting', outside: extraSet.has(a) || undefined, detail: extraSet.has(a) ? 'outside account · gets followed by address' : (focus && goal.includes(a) && !all.includes(a) ? 'focus wallet · ' : '') + (ids[a] ? 'account known' : goal.includes(a) ? 'waiting for account lookup' : 'waiting for its turn') })) };
   const save = () => session.set('job_follow', job);
   await save();
   activeThesis = { token: crypto.randomUUID(), tabId, addresses: new Set([...everyone, selected].filter(Boolean)), templateRe: templateRegex(tpls.login.message), needsAddress: tpls.login.message.includes('{{address}}') };
@@ -466,7 +469,7 @@ async function runFollow({ tabId, addresses, targets: targetPick }) {
   keepAlive((async () => {
     try {
       // Pass 1: learn pump.fun's account id for wallets that will get followed and we haven't seen yet.
-      const unknown = goal.filter(a => !ids[a]);
+      const unknown = goal.filter(a => !ids[a] && !extraSet.has(a)); // outside accounts can't sign in, so they're followed by address
       for (let n = 0; n < unknown.length; n++) {
         const row = job.rows.find(r => r.address === unknown[n]);
         job.step = `Step 1 of 2: looking up pump.fun accounts (${n + 1} of ${unknown.length})`;
@@ -515,6 +518,7 @@ async function runFollow({ tabId, addresses, targets: targetPick }) {
       }
       // Focus wallets that weren't followers: done once their account is known.
       for (const row of job.rows) if (!all.includes(row.address)) {
+        if (extraSet.has(row.address)) { row.state = 'posted'; row.error = null; row.detail = 'outside account · followed by address'; continue; }
         if (ids[row.address]) { row.state = 'posted'; row.detail = 'focus wallet · account found'; }
         else { row.state = 'failed'; row.error = row.detail?.startsWith('lookup failed') ? row.detail : "couldn't find its pump.fun account, follows used the wallet address"; }
       }

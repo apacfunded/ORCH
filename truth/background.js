@@ -145,7 +145,7 @@ async function state() {
     settings: await settings(),
     connected: (await local.get('connectedOrigins')) || [],
     taught: teachInfo(await local.get('pumpTpl')),
-    jobs: { thesis: await session.get('job_thesis'), buy: await session.get('job_buy'), follow: await session.get('job_follow'), like: await session.get('job_like') },
+    jobs: { thesis: await session.get('job_thesis'), buy: await session.get('job_buy'), follow: await session.get('job_follow'), like: await session.get('job_like'), likes: await likeRunList() },
     teachLog: (await session.get('teachLog')) || [],
   };
 }
@@ -519,20 +519,44 @@ async function relayLike(address, ids) {
   err.code = r.code;
   throw err;
 }
+// Several like runs can go at once on the website. Each lives in likeRuns; a wallet that is in two
+// runs takes turns (walletTurn) so its pump.fun sessions never overlap.
+const likeRuns = new Map();
+let likeRunsLoaded = false;
+async function loadLikeRuns() {
+  if (likeRunsLoaded) return;
+  likeRunsLoaded = true;
+  // Runs from before a page refresh can't continue (the keys were locked): mark what was left.
+  for (const j of (await session.get('jobs_like_web')) || []) {
+    if (!j.done) { j.done = true; j.stopped = true; for (const r of j.rows) if (r.state === 'waiting' || r.state === 'posting') { r.state = 'skipped'; r.error = 'Stopped: the page was refreshed'; delete r.detail; } }
+    likeRuns.set(j.id, j);
+  }
+  await saveLikeRuns();
+}
+const saveLikeRuns = () => session.set('jobs_like_web', [...likeRuns.values()]);
+async function likeRunList() { await loadLikeRuns(); return [...likeRuns.values()].sort((a, b) => b.startedAt - a.startedAt); }
+const walletTurns = new Map();
+function walletTurn(address, fn) {
+  const prev = walletTurns.get(address) || Promise.resolve();
+  const next = prev.catch(() => {}).then(fn);
+  walletTurns.set(address, next.catch(() => {}));
+  return next;
+}
 async function runLikeWeb({ targets, addresses }) {
+  await loadLikeRuns();
   const list = [];
   for (const t of targets || []) if (t && /^[\w-]{4,80}$/.test(String(t.calloutId)) && !list.some(x => x.calloutId === t.calloutId)) list.push({ mint: b58.isAddress(t.mint) ? t.mint : null, calloutId: String(t.calloutId) });
   if (!list.length) throw new Error('Paste at least one pump.fun callout link');
   if (list.length > 200) throw new Error('Up to 200 callout links at a time');
-  if (activeThesis) throw new Error('Another pump.fun job is running. Wait for it to finish.');
+  if ([...likeRuns.values()].filter(j => !j.done).length >= 10) throw new Error('10 like runs are already going. Wait for one to finish.');
   if (!(await session.get('keys'))) throw new Error('Wallet is locked');
   const scoped = (await scopedWallets()).map(w => w.address);
   const likers = scoped.filter(a => (addresses || []).includes(a));
   if (!likers.length) throw new Error('Tick at least 1 wallet to do the liking');
-  const job = { kind: 'like', web: true, startedAt: Date.now(), done: false, targets: list, mint: list[0].mint, calloutId: list.length === 1 ? list[0].calloutId : null, rows: likers.map(a => ({ address: a, state: 'waiting' })) };
-  const save = () => session.set('job_like', job);
+  const job = { id: crypto.randomUUID(), kind: 'like', web: true, startedAt: Date.now(), done: false, targets: list, mint: list[0].mint, calloutId: list.length === 1 ? list[0].calloutId : null, rows: likers.map(a => ({ address: a, state: 'waiting' })) };
+  likeRuns.set(job.id, job);
+  const save = saveLikeRuns;
   await save();
-  activeThesis = { token: crypto.randomUUID(), tabId: null, addresses: new Set(likers) };
   const pace = makePace(FOLLOW_GAP_MS);
   const dead = new Map(); // callout ids pump.fun says are gone: skip them for the remaining wallets
   keepAlive((async () => {
@@ -547,7 +571,7 @@ async function runLikeWeb({ targets, addresses }) {
           const left = todo.filter(id => !got.get(id)?.ok && !(got.get(id) && LIKE_CODES[got.get(id).code]));
           if (!left.length) break;
           try {
-            for (let i = 0; i < left.length; i += 50) for (const r of await relayLike(likers[n], left.slice(i, i + 50))) got.set(r.id, r);
+            await walletTurn(likers[n], async () => { for (let i = 0; i < left.length; i += 50) for (const r of await relayLike(likers[n], left.slice(i, i + 50))) got.set(r.id, r); });
             if (!left.some(id => !got.has(id) || got.get(id).status === 429)) break;
             hit = true;
           } catch (e) {
@@ -577,7 +601,7 @@ async function runLikeWeb({ targets, addresses }) {
         if (n < likers.length - 1) await sleep(pace.gap());
       }
       job.dead = Object.fromEntries(dead);
-    } finally { activeThesis = null; job.done = true; await save(); }
+    } finally { job.done = true; await save(); }
   })());
   return job;
 }
@@ -1792,6 +1816,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case 'unfollowRun': return runUnfollow(msg);
       case 'likeRun': return runLike(msg);
       case 'likeRunWeb': return runLikeWeb(msg);
+      case 'clearLikeRun': { await loadLikeRuns(); const j = likeRuns.get(msg.id); if (j?.done) likeRuns.delete(msg.id); await saveLikeRuns(); return state(); }
+      case 'clearLikeRunsDone': { await loadLikeRuns(); for (const [id, j] of likeRuns) if (j.done) likeRuns.delete(id); await saveLikeRuns(); return state(); }
       case 'selfView': return keepAlive(runSelfView(msg));
       case 'buyRun': return runBuy(msg);
       case 'sellRun': return runSell(msg);

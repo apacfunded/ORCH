@@ -138,7 +138,7 @@ function parseAddrList(text) {
 let likeEx = null; // wallets left out of liking (null = not loaded yet: everyone but the callout's owner)
 chrome.storage.local.get('likeExclude').then(r => { likeEx = r.likeExclude ? new Set(r.likeExclude) : null; if (st && tab === 'like' && !page) render(); });
 const saveLikeEx = () => chrome.storage.local.set({ likeExclude: [...likeEx] });
-const likeUi = { link: '', links: store.get('likeLinks', '') };
+const likeUi = { link: '', links: store.get('likeLinks', ''), open: new Set() };
 const activeGroup = () => st.groups?.find(g => g.id === st.activeGroup) || { id: 'main', name: 'Main group', count: st.wallets.length };
 function afterGroupChange() { resetData(); trade.picked = null; split.picked = null; split.extra = []; split.asset = null; bundle.action = null; trade.stage = 'form'; wal.select = false; wal.sel = new Set(); wal.moving = null; wal.renaming = null; wal.removing = null; act.loaded = false; }
 
@@ -278,7 +278,7 @@ function viewKey() {
   if (DOCKS.includes(tab)) return tab + ':' + (SHEET_STEP[tab]?.() || '');
   if (tab === 'bbuy' || tab === 'bsell') return `${tab}:${bundle.action}:${trade.stage}:${st.jobs?.buy ? 'job' : ''}`;
   if (tab === 'callouts') return `callouts:${thesis.stage}:${st.jobs?.thesis ? 'job' : ''}`;
-  if (tab === 'like') return `like:${st.jobs?.like ? 'job' : ''}`;
+  if (tab === 'like') return `like:${st.jobs?.like ? 'job' : ''}`; // web like runs keep the scroll position while they update
   if (tab === 'activity') return 'activity:' + act.mode;
   return tab;
 }
@@ -287,7 +287,7 @@ function acctBtn() {
   const w = selectedWallet(), all = isAll();
   return `<button class="acct" id="acctBtn" aria-label="Switch wallet or group" aria-haspopup="dialog">${all ? avatarAll('sm') : avatar(w, 'sm')}<span class="acct-txt">${st.groups?.length > 1 ? `<span class="acct-grp trunc">${esc(activeGroup().name)}</span>` : ''}<span class="trunc">${!st.wallets.length ? 'No wallets' : all ? 'All wallets' : esc(w?.name || 'Wallet')}</span></span>${I.chev}</button>`;
 }
-const runningJob = (id) => { const j = st.jobs && ({ bbuy: st.jobs.buy, bsell: st.jobs.buy, callouts: st.jobs.thesis, follow: st.jobs.follow, like: st.jobs.like })[id]; return !!(j && !j.done); };
+const runningJob = (id) => { const j = st.jobs && ({ bbuy: st.jobs.buy, bsell: st.jobs.buy, callouts: st.jobs.thesis, follow: st.jobs.follow, like: st.jobs.like })[id]; return !!(j && !j.done) || (id === 'like' && !!st.jobs?.likes?.some(r => !r.done)); };
 const navHtml = () => TABS.map(([label, items]) => `<div class="sgrp">${label ? `<div class="sgl">${esc(label)}</div>` : ''}${items.map(([id, l, ico]) => `<button class="sitem${tab === id ? ' active' : ''}" data-tab="${id}" ${tab === id ? 'aria-current="page"' : ''}>${I[ico] || ''}<span>${esc(l)}</span>${runningJob(id) ? '<span class="sdot" title="Running"></span>' : ''}</button>`).join('')}</div>`).join('');
 const tabShell = () => `<div class="app${navOpen ? ' nav-open' : ''}">
   <aside class="side" aria-label="Main">
@@ -446,7 +446,7 @@ async function pollRefresh() {
   render();
 }
 function pollWhileRunning() {
-  const running = Object.values(st.jobs || {}).some(j => j && !j.done);
+  const running = Object.values(st.jobs || {}).flat().some(j => j && !j.done);
   if (running && !pollTimer) pollTimer = setTimeout(async () => { pollTimer = null; await pollRefresh(); }, 2000);
 }
 function statusDot(state) {
@@ -1743,21 +1743,24 @@ function parseCalloutLinks(text) {
   }
   return { found, bad };
 }
+function likeRunCard(job) {
+  const ok = job.rows.filter(r => r.state === 'posted').length, n = job.targets?.length || 1;
+  const finished = job.rows.filter(r => !['waiting', 'posting'].includes(r.state)).length;
+  const dead = Object.entries(job.dead || {});
+  const open = likeUi.open.has(job.id) || !job.done;
+  const when = new Date(job.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return `<div class="card" style="margin:10px 0 0">
+    <div class="row"><b>${plural(n, 'callout')} · ${plural(job.rows.length, 'wallet')}</b>${job.done ? `<span class="inline"><button class="link muted xs" data-lkopen="${job.id}">${open ? 'Hide' : 'Details'}</button><button class="btn sm" data-lkclose="${job.id}">Close</button></span>` : `<span class="badge on live"><span class="dot"></span>${finished} of ${job.rows.length}</span>`}</div>
+    <div class="sub" style="margin-top:2px">${job.done ? `${job.stopped ? 'Stopped' : 'Done'}: ${ok} of ${plural(job.rows.length, 'wallet')} liked` : 'Running'} · started ${esc(when)}</div>
+    ${open ? `<div class="list" style="margin-top:8px">${job.rows.map(r => `<div class="item">${statusDot(r.state)}<div class="grow"><div class="name">${esc(nameOf(r.address))}</div><div class="sub" style="white-space:normal">${esc(r.detail || r.state)}</div>${r.error ? `<div class="sub" style="white-space:normal;color:var(--loss)">${esc(r.error)}</div>` : ''}</div></div>`).join('')}</div>` : ''}
+    ${dead.length ? `<div class="note warn" style="margin-top:8px">${plural(dead.length, 'link')} couldn't be liked by anyone: ${dead.map(([id, why]) => `<span class="mono">${esc(id.slice(0, 8))}…</span> ${esc(why)}`).join(', ')}</div>` : ''}
+  </div>`;
+}
 function viewLikeWeb(v) {
-  const job = st.jobs?.like;
-  if (job) {
-    const ok = job.rows.filter(r => r.state === 'posted').length;
-    if (!job.done) pollWhileRunning();
-    const n = job.targets?.length || 1;
-    const dead = Object.entries(job.dead || {});
-    v.innerHTML = `<div class="card">
-      <div class="row"><b>${job.done ? `Done: ${ok} of ${plural(job.rows.length, 'wallet')} liked` : `Liking ${plural(n, 'callout')} from ${plural(job.rows.length, 'wallet')}…`}</b>${job.done ? '<button class="btn sm" id="lkDone">Close</button>' : '<span class="badge on live"><span class="dot"></span>keep this page open</span>'}</div>
-      <div class="list" style="margin-top:10px">${job.rows.map(r => `<div class="item">${statusDot(r.state)}<div class="grow"><div class="name">${esc(nameOf(r.address))}</div><div class="sub" style="white-space:normal">${esc(r.detail || r.state)}</div>${r.error ? `<div class="sub" style="white-space:normal;color:var(--loss)">${esc(r.error)}</div>` : ''}</div></div>`).join('')}</div>
-      ${dead.length ? `<div class="note warn" style="margin-top:10px">${plural(dead.length, 'link')} couldn't be liked by anyone: ${dead.map(([id, why]) => `<span class="mono">${esc(id.slice(0, 8))}…</span> ${esc(why)}`).join(', ')}</div>` : ''}
-    </div>`;
-    on('#lkDone', 'click', async () => { st = await send({ type: 'clearJob', kind: 'like' }); render(); });
-    return;
-  }
+  const ae = document.activeElement, keepFocus = ae?.id === 'lkLinks' ? [ae.selectionStart, ae.selectionEnd, ae.scrollTop] : null;
+  const runs = st.jobs?.likes || [];
+  if (runs.some(r => !r.done)) pollWhileRunning();
+  const runsHtml = runs.length ? `<div class="row sec-row" style="margin-top:16px"><h3 class="sec">Runs</h3>${runs.filter(r => r.done).length > 1 ? '<button class="link muted" id="lkClearDone">Close finished</button>' : ''}</div>${runs.map(likeRunCard).join('')}` : '';
   const { found, bad } = parseCalloutLinks(likeUi.links);
   const isOn = (w) => !(likeEx && likeEx.has(w.address));
   const on_ = st.wallets.filter(isOn);
@@ -1773,8 +1776,13 @@ function viewLikeWeb(v) {
     <p class="err" id="lkErr"></p>
     <div class="actions" style="margin-top:10px"><button class="btn primary" id="lkGo" ${canGo ? '' : 'disabled'}>${!found.length ? 'Paste callout links' : !on_.length ? 'Tick at least 1 wallet' : `Like ${plural(found.length, 'callout')} from ${plural(on_.length, 'wallet')}`}</button></div>
   </div>
-  <p class="hint" style="margin-top:12px">Goes one wallet at a time. Keep this page open while it runs.</p>`;
+  <p class="hint" style="margin-top:12px">Each run goes one wallet at a time. You can start more runs while others are going; a wallet in two runs takes turns. Keep this page open while they run.</p>
+  ${runsHtml}`;
+  $$('[data-lkclose]').forEach(b => b.onclick = async () => { likeUi.open.delete(b.dataset.lkclose); st = await send({ type: 'clearLikeRun', id: b.dataset.lkclose }); render(); });
+  $$('[data-lkopen]').forEach(b => b.onclick = () => { const id = b.dataset.lkopen; likeUi.open.has(id) ? likeUi.open.delete(id) : likeUi.open.add(id); render(); });
+  on('#lkClearDone', 'click', async () => { st = await send({ type: 'clearLikeRunsDone' }); render(); });
   const ta = $('#lkLinks');
+  if (keepFocus) { ta.focus(); ta.setSelectionRange(keepFocus[0], keepFocus[1]); ta.scrollTop = keepFocus[2]; }
   const saveLinks = () => { likeUi.links = ta.value; store.set('likeLinks', likeUi.links); };
   ta.oninput = () => { saveLinks(); clearTimeout(viewLikeWeb.t); viewLikeWeb.t = setTimeout(() => { const pos = ta.selectionStart; render(); const t2 = $('#lkLinks'); if (t2) { t2.focus(); t2.setSelectionRange(pos, pos); } }, 400); };
   $$('[data-lk]').forEach(cb => cb.onchange = () => { likeEx ||= new Set(); cb.checked ? likeEx.delete(cb.dataset.lk) : likeEx.add(cb.dataset.lk); saveLikeEx(); render(); });
@@ -1786,6 +1794,7 @@ function viewLikeWeb(v) {
       saveLinks();
       const { found: list } = parseCalloutLinks(likeUi.links);
       await send({ type: 'likeRunWeb', targets: list.map(l => ({ mint: l.mint, calloutId: l.calloutId })), addresses: st.wallets.filter(isOn).map(w => w.address) });
+      likeUi.links = ''; store.set('likeLinks', '');
       await refresh();
     } catch (e) { b.disabled = false; const el = $('#lkErr'); if (el) el.textContent = e.message; }
   });

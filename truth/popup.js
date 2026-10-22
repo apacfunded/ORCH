@@ -8,9 +8,9 @@ const sheetHost = document.getElementById('sheet');
 const send = (m) => new Promise((res, rej) => chrome.runtime.sendMessage(m, r => r?.ok ? res(r.result) : rej(new Error(r?.error || chrome.runtime.lastError?.message || 'No response from the extension'))));
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const short = (a) => a ? `${a.slice(0, 4)}…${a.slice(-4)}` : '';
-const $ = (sel) => document.querySelector(sel);
+const $ = (sel) => (sheet && sheetHost.querySelector(sel)) || document.querySelector(sel);
 const $$ = (sel) => [...root.querySelectorAll(sel)];
-const S$ = (sel) => [...sheetHost.querySelectorAll(sel)];
+const S$ = (sel) => [...(sheet ? sheetHost : root).querySelectorAll(sel)];
 const on = (sel, ev, fn) => { const el = $(sel); if (el) el.addEventListener(ev, fn); return el; };
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 const fmtNum = (x, max = 4) => { const n = Number(x); if (!isFinite(n)) return '0'; return n.toLocaleString(undefined, { maximumFractionDigits: n >= 1000 ? 2 : max }); };
@@ -69,8 +69,20 @@ const avatarAll = (size = '') => `<span class="av all ${size}" aria-hidden="true
 
 // ---------------- state ----------------
 let st = null;
+const TABS = [
+  ['Wallet', [['home', 'Portfolio', 'home'], ['wallets', 'Wallets', 'wallets'], ['receive', 'Receive', 'receive'], ['send', 'Send', 'send'], ['swap', 'Swap', 'swap'], ['sweep', 'Sweep', 'sweep']]],
+  ['Bundle', [['bbuy', 'Bundle buy', 'receive'], ['bsell', 'Bundle sell', 'send']]],
+  ['pump.fun', [['callouts', 'Callouts', 'callouts'], ['reply', 'Quick reply', 'edit'], ['templates', 'Templates', 'copy'], ['follow', 'Follow', 'stack'], ['like', 'Like', 'like']]],
+  ['Insights', [['activity', 'Activity', 'activity'], ['pnl', 'PnL', 'bundle']]],
+  ['', [['settings', 'Settings', 'settings']]],
+];
+const TAB_IDS = TABS.flatMap(([, items]) => items.map(([id]) => id));
+const TAB_TITLE = Object.fromEntries(TABS.flatMap(([, items]) => items.map(([id, l]) => [id, l])));
+const TAB_SUB = { home: 'Balances and coins across your wallets', wallets: 'Add, rename, group and remove wallets', receive: 'Addresses to fund your wallets', send: 'Send SOL or a coin to one wallet or many', swap: 'Buy or sell a coin from the active wallet', sweep: 'Pull SOL or a coin from many wallets into one', bbuy: 'Buy one coin from every wallet at once', bsell: 'Sell a share of the bag from every wallet', callouts: 'Post a different callout from each wallet', reply: 'Post one callout from the active wallet', templates: 'Saved callout text', follow: 'Have your wallets follow each other', like: 'Like a callout from every wallet', activity: 'Trades, sends and callouts', pnl: 'Profit and loss across your wallets', settings: 'RPC, trading defaults and look' };
+const DOCKS = ['receive', 'send', 'swap', 'sweep'];
+let navOpen = false;
 let tab = store.get('tab', 'home');
-if (!['home', 'bundle', 'callouts', 'like', 'activity'].includes(tab)) tab = 'home';
+if (!TAB_IDS.includes(tab)) tab = 'home';
 let page = null;      // 'settings' | 'wallets' | 'reply'
 let sheet = null;     // { kind, ...data }
 let onb = null;       // 'done' right after the first wallet is added
@@ -90,10 +102,10 @@ const wal = { mode: 'new', created: null, report: null, renaming: null, removing
 const act = { mode: 'activity', open: null, loaded: false };
 const grp = { creating: false, renaming: false };
 let followEx = new Set(); // wallets left out of 'follow each other'
-chrome.storage.local.get('followExclude').then(r => { followEx = new Set(r.followExclude || []); if (st && page === 'wallets') render(); });
+chrome.storage.local.get('followExclude').then(r => { followEx = new Set(r.followExclude || []); if (st && (tab === 'wallets' || tab === 'follow')) render(); });
 const saveFollowEx = () => chrome.storage.local.set({ followExclude: [...followEx] });
 let followFocus = new Set(); // focus mode: the wallets everyone follows
-chrome.storage.local.get('followFocus').then(r => { followFocus = new Set(r.followFocus || []); if (st && page === 'wallets') render(); });
+chrome.storage.local.get('followFocus').then(r => { followFocus = new Set(r.followFocus || []); if (st && (tab === 'wallets' || tab === 'follow')) render(); });
 const saveFollowFocus = () => chrome.storage.local.set({ followFocus: [...followFocus] });
 let likeEx = null; // wallets left out of liking (null = not loaded yet: everyone but the callout's owner)
 chrome.storage.local.get('likeExclude').then(r => { likeEx = r.likeExclude ? new Set(r.likeExclude) : null; if (st && tab === 'like' && !page) render(); });
@@ -204,7 +216,7 @@ function render() {
   if (!st) return;
   if (rendering) { renderAgain = true; return; }
   rendering = true;
-  try { do { renderAgain = false; renderMain(); renderSheet(); } while (renderAgain); }
+  try { do { renderAgain = false; renderMain(); if (sheet) renderSheet(); } while (renderAgain); }
   finally { rendering = false; }
 }
 
@@ -222,10 +234,10 @@ function renderMain() {
   const old = document.getElementById('view');
   const sc = old && lastKey === key ? old.scrollTop : 0;
   withKeep(root, () => {
-    root.innerHTML = page ? pageShell() : tabShell();
+    root.innerHTML = tabShell();
     wireShell();
     document.body.classList.toggle('fullphoto', !page && tab === 'activity' && act.mode === 'pnl' && !!st.settings.showBackground);
-    VIEWS[page || tab]();
+    (VIEWS[tab] || VIEWS.home)();
   });
   const v = document.getElementById('view'); if (v) v.scrollTop = sc;
   lastKey = key;
@@ -233,41 +245,54 @@ function renderMain() {
 
 // Scroll position is kept while a screen re-renders, and reset when you move to a different screen or step.
 function viewKey() {
-  if (page === 'wallets') return `wallets:${wal.select}:${wal.confirm}`;
+  if (tab === 'wallets') return `wallets:${wal.select}:${wal.confirm}`;
   if (page) return page;
-  if (tab === 'bundle') return `bundle:${bundle.action}:${trade.stage}:${st.jobs?.buy ? 'job' : ''}`;
+  if (DOCKS.includes(tab)) return tab + ':' + (SHEET_STEP[tab]?.() || '');
+  if (tab === 'bbuy' || tab === 'bsell') return `${tab}:${bundle.action}:${trade.stage}:${st.jobs?.buy ? 'job' : ''}`;
   if (tab === 'callouts') return `callouts:${thesis.stage}:${st.jobs?.thesis ? 'job' : ''}`;
   if (tab === 'like') return `like:${st.jobs?.like ? 'job' : ''}`;
   if (tab === 'activity') return 'activity:' + act.mode;
   return tab;
 }
 
-function header() {
+function acctBtn() {
   const w = selectedWallet(), all = isAll();
-  return `<header class="top">
-    <button class="acct" id="acctBtn" aria-label="Switch wallet or group" aria-haspopup="dialog">${all ? avatarAll('sm') : avatar(w, 'sm')}<span class="acct-txt">${st.groups?.length > 1 ? `<span class="acct-grp trunc">${esc(activeGroup().name)}</span>` : ''}<span class="trunc">${!st.wallets.length ? 'No wallets' : all ? 'All wallets' : esc(w?.name || 'Wallet')}</span></span>${I.chev}</button>
-    <div class="spacer"></div>
-    <button class="btn icon ghost" id="copyBtn" title="Copy ${esc(w?.name || '')}'s address" aria-label="Copy address">${I.copy}</button>
-    <button class="btn icon ghost" id="lockBtn" title="Lock" aria-label="Lock">${I.lock}</button>
-    <button class="btn icon ghost" id="gearBtn" title="Settings" aria-label="Settings">${I.settings}</button>
-  </header>`;
+  return `<button class="acct" id="acctBtn" aria-label="Switch wallet or group" aria-haspopup="dialog">${all ? avatarAll('sm') : avatar(w, 'sm')}<span class="acct-txt">${st.groups?.length > 1 ? `<span class="acct-grp trunc">${esc(activeGroup().name)}</span>` : ''}<span class="trunc">${!st.wallets.length ? 'No wallets' : all ? 'All wallets' : esc(w?.name || 'Wallet')}</span></span>${I.chev}</button>`;
 }
-const tabShell = () => header() + `<main id="view" class="view"></main>
-  <nav class="nav" aria-label="Main">${NAV.map(([id, l, ico]) => `<button data-tab="${id}" class="${tab === id ? 'active' : ''}" ${tab === id ? 'aria-current="page"' : ''}>${ico}<span>${l}</span></button>`).join('')}</nav>`;
-const pageShell = () => `<header class="top"><button class="btn icon ghost" id="backBtn" aria-label="Back">${I.back}</button><h1 class="ptitle">${PAGE_TITLES[page]}</h1><div class="spacer"></div>${page === 'wallets' ? `<button class="btn sm primary" id="addW">${I.plus} Add wallet</button>` : ''}</header><main id="view" class="view"></main>`;
+const runningJob = (id) => { const j = st.jobs && ({ bbuy: st.jobs.buy, bsell: st.jobs.buy, callouts: st.jobs.thesis, follow: st.jobs.follow, like: st.jobs.like })[id]; return !!(j && !j.done); };
+const navHtml = () => TABS.map(([label, items]) => `<div class="sgrp">${label ? `<div class="sgl">${esc(label)}</div>` : ''}${items.map(([id, l, ico]) => `<button class="sitem${tab === id ? ' active' : ''}" data-tab="${id}" ${tab === id ? 'aria-current="page"' : ''}>${I[ico] || ''}<span>${esc(l)}</span>${runningJob(id) ? '<span class="sdot" title="Running"></span>' : ''}</button>`).join('')}</div>`).join('');
+const tabShell = () => `<div class="app${navOpen ? ' nav-open' : ''}">
+  <aside class="side" aria-label="Main">
+    <div class="brand"><span class="logo">${I.mark}</span><b>Truth</b><span class="ver">web</span></div>
+    ${acctBtn()}
+    <nav class="snav">${navHtml()}</nav>
+  </aside>
+  <div class="scrim-nav" id="navScrim"></div>
+  <div class="mainc">
+    <header class="top">
+      <button class="btn icon ghost menu" id="menuBtn" aria-label="Open menu">${I.stack}</button>
+      <div class="ttl"><h1 class="ptitle">${esc(TAB_TITLE[tab] || 'Truth')}</h1><p class="psub">${esc(TAB_SUB[tab] || '')}</p></div>
+      <div class="spacer"></div>
+      ${tab === 'wallets' ? `<button class="btn sm primary" id="addW">${I.plus} Add wallet</button>` : ''}
+      <button class="btn icon ghost" id="copyBtn" title="Copy ${esc(selectedWallet()?.name || '')}'s address" aria-label="Copy address">${I.copy}</button>
+      <button class="btn icon ghost" id="lockBtn" title="Lock" aria-label="Lock">${I.lock}</button>
+    </header>
+    <main id="view" class="view" data-v="${tab}"></main>
+  </div>
+</div>`;
 
 function wireShell() {
   on('#acctBtn', 'click', () => openSheet('accounts'));
   on('#copyBtn', 'click', () => { const w = selectedWallet(); if (w) copy(w.address, `${w.name}'s address copied`); });
   on('#lockBtn', 'click', async () => { closeSheet(); await send({ type: 'lock' }); refresh(); });
-  on('#gearBtn', 'click', () => go({ page: 'settings' }));
-  on('#backBtn', 'click', () => go({ page: null }));
+  on('#menuBtn', 'click', () => { navOpen = !navOpen; document.querySelector('.app')?.classList.toggle('nav-open', navOpen); });
+  on('#navScrim', 'click', () => { navOpen = false; document.querySelector('.app')?.classList.remove('nav-open'); });
   on('#addW', 'click', () => openAdd());
-  $$('.nav button').forEach(b => b.onclick = () => go({ tab: b.dataset.tab }));
+  $$('.sitem').forEach(b => b.onclick = () => go({ tab: b.dataset.tab }));
 }
 function go({ tab: t, page: p }) {
-  if (t !== undefined) { tab = t; page = null; store.set('tab', t); if (t === 'activity') act.loaded = false; }
-  if (p !== undefined) page = p;
+  const n = p !== undefined ? (p || 'home') : t;
+  if (n !== undefined) { tab = n; page = null; navOpen = false; store.set('tab', n); if (n === 'activity' || n === 'pnl') act.loaded = false; if (DOCK_INIT[n]) dockInit[n] = false; }
   closeSheet();
   renderMain();
 }
@@ -276,6 +301,7 @@ function go({ tab: t, page: p }) {
 let sheetKey = '';
 const SHEET_STEP = { sweep: () => sw.step, send: () => split.step, swap: () => swap.step, add: () => wal.mode + (wal.created ? 'c' : '') + (wal.report ? 'r' : '') };
 function openSheet(kind, data = {}) {
+  if (DOCKS.includes(kind)) { dockInit[kind] = true; sheet = null; sheetHost.innerHTML = ''; sheetHost.classList.remove('open'); if (tab !== kind) { tab = kind; navOpen = false; store.set('tab', kind); } renderMain(); return; }
   sheet = { kind, ...data };
   sheetHost.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="sheet-body" id="sbody"></div></div>`;
   sheetHost.classList.add('open');
@@ -285,7 +311,7 @@ function openSheet(kind, data = {}) {
 }
 function closeSheet() { if ((sheet?.kind === 'send' && split.busy) || (sheet?.kind === 'sweep' && sw.busy)) { toast('Sending… wait for it to finish'); return; } sheet = null; sheetHost.innerHTML = ''; sheetHost.classList.remove('open'); }
 function renderSheet() {
-  if (!sheet) return;
+  if (!sheet) { if (DOCKS.includes(tab) && st?.unlocked && st.wallets.length) renderMain(); return; }
   const b = document.getElementById('sbody'); if (!b) return;
   const key = sheet.kind + ':' + (SHEET_STEP[sheet.kind]?.() || '');
   const sc = key === sheetKey ? b.scrollTop : 0;
@@ -440,7 +466,7 @@ function wireActs() {
     const a = b.dataset.act;
     if (a === 'send') openSend();
     else if (a === 'swap') openSwap();
-    else if (a === 'bundle') go({ tab: 'bundle' });
+    else if (a === 'bundle') go({ tab: 'bbuy' });
     else if (a === 'sweep') openSweep();
     else openSheet('receive');
   });
@@ -588,7 +614,7 @@ function sheetToken(b) {
     </div>
     <div class="links"><a href="https://pump.fun/coin/${c.mint}" target="_blank" rel="noopener">pump.fun ${I.ext}</a><a href="https://solscan.io/token/${c.mint}" target="_blank" rel="noopener">Solscan ${I.ext}</a><button class="link" id="sCa">${I.copy} Copy CA</button></div>`;
   wireHead();
-  const toBundle = (side) => { trade.side = side; trade.mint = c.mint; trade.stage = 'form'; trade.toks = null; trade.picked = null; bundle.action = side; go({ tab: 'bundle' }); };
+  const toBundle = (side) => { trade.side = side; trade.mint = c.mint; trade.stage = 'form'; trade.toks = null; trade.picked = null; bundle.action = side; go({ tab: side === 'sell' ? 'bsell' : 'bbuy' }); };
   on('#sBB', 'click', () => toBundle('buy'));
   on('#sBS', 'click', () => toBundle('sell'));
   on('#sBuy', 'click', () => openSwap('buy', c.mint));
@@ -1218,7 +1244,7 @@ function viewBundle() {
     pollWhileRunning();
     return;
   }
-  if (!callout.info && !callout.error) detectCoin().then(() => { if (!trade.mint && callout.info?.ca) trade.mint = callout.info.ca; if (tab === 'bundle' && !page) render(); });
+  if (!callout.info && !callout.error) detectCoin().then(() => { if (!trade.mint && callout.info?.ca) trade.mint = callout.info.ca; if ((tab === 'bbuy' || tab === 'bsell') && !page) render(); });
   if (!trade.mint && callout.info?.ca) trade.mint = callout.info.ca;
   if (trade.picked === null) trade.picked = st.wallets.map(w => w.address);
   trade.picked = trade.picked.filter(a => st.wallets.some(w => w.address === a));
@@ -1728,7 +1754,7 @@ function wireLike(i) {
 function viewReply() {
   const v = $('#view');
   if (callout.autoSubmit === null) callout.autoSubmit = !!st.settings.autoSubmit;
-  if (!callout.info && !callout.error) { v.innerHTML = '<div class="sk row"></div>'; detectCoin().then(() => page === 'reply' && render()); return; }
+  if (!callout.info && !callout.error) { v.innerHTML = '<div class="sk row"></div>'; detectCoin().then(() => tab === 'reply' && render()); return; }
   if (!callout.info) { v.innerHTML = `<div class="empty"><b>No coin open</b>${esc(callout.error)}<br><button class="btn sm" id="rt">Check again</button></div>`; on('#rt', 'click', () => { callout.error = ''; render(); }); return; }
   const i = callout.info, w = selectedWallet();
   v.innerHTML = `
@@ -1797,7 +1823,7 @@ function actEntry(e) {
 
 function viewActivity() {
   const v = $('#view');
-  const seg = `<div class="seg" style="margin:0 0 12px"><button data-am="activity" class="${act.mode === 'activity' ? 'active' : ''}">Activity</button><button data-am="pnl" class="${act.mode === 'pnl' ? 'active' : ''}">PnL</button></div>`;
+  const seg = `<div class="seg actseg" style="margin:0 0 12px"><button data-am="activity" class="${act.mode === 'activity' ? 'active' : ''}">Activity</button><button data-am="pnl" class="${act.mode === 'pnl' ? 'active' : ''}">PnL</button></div>`;
   const wireSeg = () => $$('[data-am]').forEach(b => b.onclick = () => { act.mode = b.dataset.am; render(); });
   if (act.mode === 'pnl') { viewPnl(v, seg); wireSeg(); return; }
   if (!act.loaded) { act.loaded = true; loadLogs(); }
@@ -2076,7 +2102,7 @@ function viewWallets() {
       </div>`;
   }).join('');
   const T = pnlReady() ? pnl.totals : null;
-  v.innerHTML = groupBar() + followCard() + `
+  v.innerHTML = groupBar() + `
     <div class="row" style="margin-bottom:8px"><span class="muted small">${plural(st.wallets.length, 'wallet')}</span><span class="inline">${T ? `<span class="badge ${T.pnl > 0 ? 'good' : T.pnl < 0 ? 'bad' : ''} num">${signed(T.pnl)} total</span>` : ''}${st.wallets.length > 1 ? `<button class="btn sm ghost" id="sweepBtn">${I.sweep} Sweep SOL</button>` : ''}<button class="btn sm ghost" id="selMode">Select</button><button class="btn icon ghost" id="pnlrf" title="Refresh" aria-label="Refresh">${I.refresh}</button></span></div>
     <div class="list">${rows}</div>
     <p class="hint">Friends' addresses (for sending) are in Settings. Only add wallets whose owners agreed. Keys are encrypted with your password and never leave this browser.</p>`;
@@ -2294,7 +2320,37 @@ function wirePnlChart(pnl) {
   svg.addEventListener('pointermove', move); svg.addEventListener('pointerdown', move); svg.addEventListener('pointerleave', leave);
 }
 
-const VIEWS = { home: viewHome, bundle: viewBundle, callouts: viewCallouts, like: viewLike, activity: viewActivity, settings: viewSettings, wallets: viewWallets, reply: viewReply, templates: viewTemplates };
+const dockInit = {};
+const DOCK_INIT = {
+  send: () => { if (split.busy) return; Object.assign(split, { asset: null, step: 'what', amount: '', results: null }); if (split.picked === null) split.picked = []; },
+  swap: () => { if (swap.busy) return; Object.assign(swap, { side: 'buy', mint: callout.info?.ca || '', mode: 'sol', amount: '', sellPct: '', step: 'coin', bal: null, toks: null, toksMint: '', started: false }); },
+  sweep: () => { if (sw.busy) return; Object.assign(sw, { step: 'pick', toPaste: '', picked: null, plan: null, planErr: '', results: null, asset: sw.asset || 'SOL' }); if (!sw.to || !(walletOf(sw.to) || isAddress(sw.to))) sw.to = (!isAll() && st.selected) || st.wallets[0]?.address; setTimeout(loadSweepPlan); },
+};
+const viewDock = (kind) => () => {
+  if (!dockInit[kind]) { dockInit[kind] = true; DOCK_INIT[kind]?.(); }
+  const v = $('#view'); v.innerHTML = '<div class="dock" id="dbody"></div>'; SHEETS[kind](document.getElementById('dbody'));
+};
+function viewReceive() {
+  const v = $('#view');
+  const list = isAll() ? st.wallets : [selectedWallet()];
+  v.innerHTML = `<div class="rgrid">${list.map(w => `<div class="rcard">
+      <div class="row">${avatar(w, 'sm')}<b class="grow trunc">${esc(w.name)}</b><button class="btn sm" data-rcopy="${w.address}">${I.copy} Copy</button></div>
+      <div class="qr">${qrSvg(w.address)}</div>
+      <div class="mono addr">${esc(w.address)}</div>
+      <a class="link muted" href="https://solscan.io/account/${w.address}" target="_blank" rel="noopener">View on Solscan ${I.ext}</a>
+    </div>`).join('')}</div>
+    <p class="hint">Send SOL or any Solana token to an address above.${!isAll() && st.wallets.length > 1 ? ' Switch to All wallets in the sidebar to see every address.' : ''}</p>`;
+  $$('[data-rcopy]').forEach(b => b.onclick = () => copy(b.dataset.rcopy, `${nameOf(b.dataset.rcopy)}'s address copied`));
+}
+const VIEWS = {
+  home: viewHome, wallets: viewWallets, settings: viewSettings, reply: viewReply, templates: viewTemplates, callouts: viewCallouts, like: viewLike,
+  receive: viewReceive, send: viewDock('send'), swap: viewDock('swap'), sweep: viewDock('sweep'),
+  bbuy: () => { if (bundle.action !== 'buy') { bundle.action = 'buy'; trade.side = 'buy'; trade.stage = 'form'; } viewBundle(); },
+  bsell: () => { if (bundle.action !== 'sell') { bundle.action = 'sell'; trade.side = 'sell'; trade.stage = 'form'; } viewBundle(); },
+  follow: () => { const v = $('#view'); const h = followCard(); v.innerHTML = h || '<div class="empty"><b>Add a second wallet</b>Following needs at least two wallets in this group.</div>'; wireFollow(); },
+  activity: () => { act.mode = 'activity'; viewActivity(); },
+  pnl: () => { act.mode = 'pnl'; viewActivity(); },
+};
 
 refresh().catch(e => { root.innerHTML = `<main class="view"><div class="note bad"><b>Couldn't start.</b> ${esc(e.message)}</div></main>`; });
 

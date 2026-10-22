@@ -1,0 +1,23 @@
+/* Truth on the web: the extension popup becomes a centered app column. */
+:root { --popup-w: 440px; --popup-h: min(820px, calc(100dvh - 48px)); }
+html {
+  min-height: 100%;
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(171,159,242,.10), transparent 70%),
+    #0a0a0d;
+}
+body {
+  width: var(--popup-w); height: var(--popup-h);
+  margin: 24px auto;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 40px 80px -40px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.02);
+  /* Makes the sheet and toast (position: fixed) stay inside the app column. */
+  transform: translateZ(0);
+}
+.toast { max-width: calc(var(--popup-w) - 32px); }
+@media (max-width: 520px), (max-height: 560px) {
+  :root { --popup-w: 100vw; --popup-h: 100dvh; }
+  body { margin: 0; border: 0; border-radius: 0; box-shadow: none;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+}

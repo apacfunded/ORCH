@@ -1,6 +1,17 @@
 import { toRaw, fromRaw, ATA_RENT_LAMPORTS } from './lib/solana.js';
 import { isAddress } from './lib/base58.js';
 import { qrSvg } from './lib/qr.js';
+// The website (orch.lol/truth) has no pump.fun tab: callouts post through the Truth relay and the coin is pasted in.
+const IS_WEB = /web/.test(chrome.runtime.getManifest().version);
+const WEB_COIN_KEY = 'truthweb.coin';
+const webCoin = { get: () => { try { return localStorage.getItem(WEB_COIN_KEY) || ''; } catch { return ''; } }, set: (ca) => { try { ca ? localStorage.setItem(WEB_COIN_KEY, ca) : localStorage.removeItem(WEB_COIN_KEY); } catch {} } };
+// Accepts a bare CA or any pump.fun / dexscreener / solscan link that contains one.
+function parseCoinInput(text) {
+  const t = String(text || '').trim();
+  const m = t.match(/[1-9A-HJ-NP-Za-km-z]{32,44}/g) || [];
+  return m.find(x => isAddress(x)) || null;
+}
+const NO_WEB_COIN = 'Paste the coin address (CA) or its pump.fun link.';
 
 // ---------------- helpers ----------------
 const root = document.getElementById('root');
@@ -977,6 +988,14 @@ async function pumpTab() { const t = await activeTab(); if (!t) throw new Error(
 const fillTemplate = (tpl, i) => tpl.replace(/\{name\}/g, i.name || '').replace(/\{ticker\}/g, i.ticker || '').replace(/\{ca\}/g, i.ca || '').replace(/\{link\}/g, i.link || '');
 async function detectCoin() {
   callout.error = ''; callout.info = null;
+  if (IS_WEB) {
+    const ca = webCoin.get();
+    if (!ca) { callout.error = NO_WEB_COIN; return; }
+    const m = meta[ca] || {};
+    callout.info = { ca, name: m.name || '', ticker: m.symbol || '', link: `https://pump.fun/coin/${ca}` };
+    if (!callout.text) callout.text = fillTemplate(st.settings.template, callout.info);
+    return;
+  }
   const t = await activeTab();
   if (!t?.url || !/^https:\/\/([a-z0-9-]+\.)*pump\.fun\//.test(t.url)) { callout.error = 'Posting from pump.fun pages needs the Truth extension. On the website you can still buy, sell, send and track every wallet.'; return; }
   try {
@@ -1537,6 +1556,7 @@ function teachPanel(v) {
   on('#tlClear', 'click', async () => { st = await send({ type: 'clearTeachLog' }); render(); });
 }
 const connectedRow = () => {
+  if (IS_WEB) return `<div class="connected">${I.check}<span>Callouts post through the Truth relay. No setup needed.</span>${callout.info ? '<button class="link muted" id="chgCoin">Change coin</button>' : ''}</div>`;
   const p = st.taught.postPath || '';
   const odd = p && (!/callout/i.test(p) || /repl(y|ies)|comment|thread|message|chat/i.test(p));
   return `<div class="connected">${I.check}<span>pump.fun login connected</span><button class="link muted" id="reteach">Re-teach</button></div>
@@ -1547,10 +1567,11 @@ function viewCallouts() {
   const v = $('#view');
   if (!drafts || !tpls) { Promise.all([loadDrafts(), loadTpls()]).then(render); v.innerHTML = '<div class="sk row"></div>'; return; }
   if (!callout.info && !callout.error) { v.innerHTML = '<div class="sk row"></div><div class="sk row"></div>'; detectCoin().then(() => { if (tab === 'callouts' && !page) render(); }); return; }
-  if (!st.taught.login || !st.taught.post) return teachPanel(v);
+  if (!IS_WEB && (!st.taught.login || !st.taught.post)) return teachPanel(v);
   const wireCommon = () => {
     on('#reteach', 'click', async () => { st = await send({ type: 'forgetTeach' }); teach.watching = false; render(); });
     on('#single', 'click', () => go({ page: 'reply' }));
+    on('#chgCoin', 'click', () => { webCoin.set(''); callout.info = null; callout.error = NO_WEB_COIN; callout.text = ''; render(); });
   };
   const i = callout.info;
   const job = st.jobs?.thesis;
@@ -1558,7 +1579,7 @@ function viewCallouts() {
     const done = job.rows.filter(r => r.state === 'posted').length, failed = job.rows.filter(r => r.state === 'failed').length;
     v.innerHTML = `
       ${coinHeader(i || { ca: job.mint })}
-      <div class="row sec-row"><h3 class="sec">${job.done ? `Posted ${done} of ${job.rows.length}` : 'Posting'}</h3>${job.done ? '' : '<span class="badge on live"><span class="dot"></span>keep the pump.fun tab open</span>'}</div>
+      <div class="row sec-row"><h3 class="sec">${job.done ? `Posted ${done} of ${job.rows.length}` : 'Posting'}</h3>${job.done ? '' : `<span class="badge on live"><span class="dot"></span>${IS_WEB ? 'keep this page open' : 'keep the pump.fun tab open'}</span>`}</div>
       <div class="list">${job.rows.map(r => `<div class="item">${statusDot(r.state)}<div class="grow"><div class="name">${esc(nameOf(r.address))}</div>${r.state === 'failed' && r.error ? `<div class="sub" style="color:var(--loss);white-space:normal">${esc(r.error)}</div>` : `<div class="sub">${esc(r.state === 'posting' && r.tries > 1 ? `retrying (try ${r.tries})` : r.state)}</div>`}${r.warn ? `<div class="sub" style="color:var(--warn);white-space:normal">${esc(r.warn)}</div>` : ''}${r.detail ? `<div class="sub mono" style="white-space:normal">${esc(r.detail)}</div>` : ''}</div></div>`).join('')}</div>
       ${job.done && failed ? `<div class="note warn">${plural(failed, 'wallet')} didn't post. Truth already retried the temporary errors. Check the reason above, then retry.</div>` : ''}
       <p class="err" id="err"></p>
@@ -1568,14 +1589,32 @@ function viewCallouts() {
     on('#retryFailed', 'click', async () => {
       $('#retryFailed').disabled = true;
       try {
-        const t = await pumpTab();
         const items = job.rows.filter(r => r.state === 'failed' && r.text).map(r => ({ address: r.address, text: r.text }));
-        await send({ type: 'thesisRun', tabId: t.id, mint: job.mint, items });
+        if (IS_WEB) await send({ type: 'thesisRunWeb', mint: job.mint, items });
+        else { const t = await pumpTab(); await send({ type: 'thesisRun', tabId: t.id, mint: job.mint, items }); }
         await refresh();
       } catch (e) { $('#err').textContent = e.message; $('#retryFailed').disabled = false; }
     });
     on('#toLike', 'click', () => go({ tab: 'like' }));
     pollWhileRunning();
+    return;
+  }
+  if (!i && IS_WEB) {
+    v.innerHTML = `${connectedRow()}
+      <div class="card" style="margin-top:16px">
+        <b>Which coin?</b>
+        <div class="sub" style="margin-top:4px">Every wallet you tick posts its own callout on this coin.</div>
+        <label class="field" style="margin-top:10px"><span class="lbl">Coin address or pump.fun link</span><input id="coinIn" placeholder="e.g. pump.fun/coin/…" autocomplete="off" spellcheck="false"></label>
+        <p class="err" id="coinErr"></p>
+        <div class="actions" style="margin-top:8px"><button class="btn primary" id="coinGo" disabled>Use this coin</button></div>
+      </div>`;
+    const inp = $('#coinIn');
+    const check = () => { $('#coinGo').disabled = !parseCoinInput(inp.value); $('#coinErr').textContent = inp.value.trim() && !parseCoinInput(inp.value) ? "That doesn't contain a coin address." : ''; };
+    const use = () => { const ca = parseCoinInput(inp.value); if (!ca) return; webCoin.set(ca); callout.error = ''; callout.info = null; callout.text = ''; render(); };
+    inp.oninput = check;
+    inp.onkeydown = (e) => { if (e.key === 'Enter') use(); };
+    on('#coinGo', 'click', use);
+    inp.focus();
     return;
   }
   if (!i) {
@@ -1597,7 +1636,7 @@ function viewCallouts() {
       <h2 style="margin-top:8px">Review ${plural(ready.length, 'callout')}</h2>
       ${coinHeader(i)}
       <div class="list" style="margin-top:8px">${ready.map(w => `<div class="item col"><div class="row"><span class="inline">${avatar(w, 'sm')}<b>${esc(w.name)}</b></span><span class="mono muted">${short(w.address)}</span></div><div class="dim" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px">${esc(d[w.address].text.trim())}</div></div>`).join('')}</div>
-      <p class="hint">Goes out one wallet at a time, ${esc(st.settings.thesisDelaySec)}s apart. Keep this pump.fun tab open until it finishes. You can close Truth.</p>
+      <p class="hint">Goes out one wallet at a time, ${esc(st.settings.thesisDelaySec)}s apart. ${IS_WEB ? 'Keep this page open until it finishes.' : 'Keep this pump.fun tab open until it finishes. You can close Truth.'}</p>
       <p class="err" id="err"></p>
       <div class="actions"><button class="btn" id="back2">Back</button><button class="btn primary" id="go">Post ${plural(ready.length, 'callout')}</button></div>`;
     const back = () => { thesis.stage = 'edit'; render(); };
@@ -1605,8 +1644,9 @@ function viewCallouts() {
     on('#go', 'click', async () => {
       $('#go').disabled = true;
       try {
-        const t = await pumpTab();
-        await send({ type: 'thesisRun', tabId: t.id, mint: i.ca, items: ready.map(w => ({ address: w.address, text: d[w.address].text.trim() })) });
+        const items = ready.map(w => ({ address: w.address, text: d[w.address].text.trim() }));
+        if (IS_WEB) await send({ type: 'thesisRunWeb', mint: i.ca, items });
+        else { const t = await pumpTab(); await send({ type: 'thesisRun', tabId: t.id, mint: i.ca, items }); }
         for (const w of ready) d[w.address].text = '';
         saveDrafts(); thesis.stage = 'edit';
         await refresh();
@@ -1626,7 +1666,7 @@ function viewCallouts() {
         ${tplSelect(w, i)}
       </div>`).join('')}</div>
     <div class="actions"><button class="btn primary" id="review" ${ready.length ? '' : 'disabled'}>${ready.length ? `Review ${plural(ready.length, 'callout')}` : 'Write at least one'}</button></div>
-    <p class="hint" style="margin-top:10px"><button class="link" id="tplManage">Manage templates</button> · Only posting from the active wallet? <button class="link" id="single">Quick reply</button></p>`;
+    <p class="hint" style="margin-top:10px"><button class="link" id="tplManage">Manage templates</button>${IS_WEB ? '' : ' · Only posting from the active wallet? <button class="link" id="single">Quick reply</button>'}</p>`;
   wireCommon();
   $$('[data-tplsel]').forEach(x => x.onchange = () => {
     const a = x.dataset.tplsel, [k, n] = x.value.split(':'); if (!k) return;

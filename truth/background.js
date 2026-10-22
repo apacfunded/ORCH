@@ -415,6 +415,93 @@ async function runThesis({ tabId, mint, items }) {
   return job;
 }
 
+// ---------------- thesis on the website: post through the Truth relay ----------------
+// No pump.fun tab here, so each wallet signs pump.fun's sign-in message in this page and the relay
+// (a small server Truth runs) signs in and posts. Only the signature and the callout text leave the page.
+const RELAY_URL = 'https://truth-relay.vercel.app/api/callout';
+const RELAY_CODES = {
+  DUPLICATE_CALLOUT: 'This wallet already has a live callout on this coin.',
+  ACCOUNT_NOT_FOUND: NO_ACCOUNT_NOTE,
+  COOLDOWN: 'pump.fun says this wallet is on a cooldown. Try again later.',
+  ATTEMPT_LIMIT: "This wallet has used up pump.fun's callout attempts for now.",
+  SPAM_RESTRICTED: 'pump.fun is limiting this wallet for spam. Try again later.',
+  INSUFFICIENT_BALANCE: 'This wallet needs to hold the coin to call it out.',
+  NO_ELIGIBLE_WALLET: 'This wallet needs to hold the coin to call it out.',
+  INVALID_CONTENT: 'pump.fun rejected the text. Reword it and retry.',
+  USER_BANNED: 'pump.fun has banned this wallet from posting.',
+  PRICE_UNAVAILABLE: "pump.fun has no price for this coin yet, so it can't take callouts.",
+  MAYHEM_NOT_COMPLETED: "This coin's mayhem run hasn't finished, so callouts are closed.",
+};
+function relayError(r) {
+  if (r.code && RELAY_CODES[r.code]) return RELAY_CODES[r.code];
+  if (r.error) return r.error;
+  const where = r.step === 'login' ? 'Sign-in' : 'Post';
+  const detail = typeof r.body === 'string' ? r.body : r.body?.message || r.body?.error || r.code || '';
+  return `${where} failed: HTTP ${r.status || '?'}${detail ? ' · ' + String(detail).slice(0, 140) : ''}`;
+}
+async function relayPost(address, mint, text) {
+  const timestamp = Date.now();
+  const sig = await K.sign(await seedFor(address), new TextEncoder().encode(`Sign in to pump.fun: ${timestamp}`));
+  let res;
+  try {
+    res = await fetch(RELAY_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address, signature: b58.encode(sig), timestamp, coinMint: mint, thesis: text }), signal: AbortSignal.timeout(60000) });
+  } catch (e) { throw new Error('Could not reach the Truth relay: ' + e.message); }
+  let r; try { r = await res.json(); } catch { throw new Error(`Truth relay answered HTTP ${res.status}`); }
+  if (r.ok) return r;
+  const err = new Error(relayError(r));
+  if (r.status === 429) err.message += ' (HTTP 429)';
+  err.code = r.code;
+  throw err;
+}
+async function runThesisWeb({ mint, items }) {
+  if (!(mint && b58.isAddress(mint))) throw new Error('Paste the coin address first');
+  if (!items.length) throw new Error('Write at least one callout');
+  if (activeThesis) throw new Error('Another pump.fun job is running. Wait for it to finish.');
+  const keys = await session.get('keys');
+  if (!keys) throw new Error('Wallet is locked');
+  const s = await settings();
+  const job = { mint, tabId: null, web: true, startedAt: Date.now(), done: false, rows: items.map(i => ({ address: i.address, text: i.text, state: 'waiting' })) };
+  const save = () => session.set('job_thesis', job);
+  await save();
+  activeThesis = { token: crypto.randomUUID(), tabId: null, addresses: new Set(items.map(i => i.address)) };
+  const MAX_TRIES = 3;
+  const pace = makePace(Math.max(0.5, Number(s.thesisDelaySec) || 0) * 1000);
+  keepAlive((async () => {
+    try {
+      for (let n = 0; n < items.length; n++) {
+        const row = job.rows[n];
+        row.state = 'posting'; await save();
+        for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
+          row.tries = attempt;
+          try {
+            const r = await relayPost(items[n].address, mint, items[n].text);
+            row.state = 'posted'; delete row.error;
+            row.detail = (attempt > 1 ? `try ${attempt} · ` : '') + r.link;
+            row.calloutId = r.calloutId;
+            break;
+          } catch (e) {
+            const msg = String(e?.message || e);
+            // A retry that hits "already has a callout" means an earlier try went through.
+            if (attempt > 1 && e.code === 'DUPLICATE_CALLOUT') { row.state = 'posted'; row.detail = 'went through on an earlier try'; delete row.error; break; }
+            const wait = e.code ? 0 : retryWait(msg);
+            row.error = msg;
+            if (!wait || attempt === MAX_TRIES) { row.state = 'failed'; break; }
+            row.detail = `retrying (${attempt + 1}/${MAX_TRIES})…`; await save();
+            await sleep(wait * attempt);
+          }
+        }
+        await save();
+        if (/HTTP 429|rate.?limit|too many/i.test(row.error || '') || row.tries > 1) pace.hit(); else pace.ok();
+        if (n < items.length - 1) await sleep(pace.gap());
+      }
+    } finally {
+      activeThesis = null; job.done = true; await save();
+      await logActivity({ kind: 'callout', at: job.startedAt, mint, rows: job.rows.map(r => ({ address: r.address, state: r.state, error: r.error || null })) });
+    }
+  })());
+  return job;
+}
+
 // ---------------- follow: every wallet follows every other wallet on pump.fun ----------------
 async function runFollow({ tabId, addresses, targets: targetPick, extra: extraIn }) {
   const tpls = (await local.get('pumpTpl')) || {};
@@ -1620,6 +1707,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
       case 'balances': return balances((await settings()).rpc, msg.addresses);
       case 'thesisRun': return runThesis(msg);
+      case 'thesisRunWeb': return runThesisWeb(msg);
       case 'followRun': return runFollow(msg);
       case 'unfollowRun': return runUnfollow(msg);
       case 'likeRun': return runLike(msg);

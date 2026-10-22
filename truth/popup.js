@@ -138,7 +138,7 @@ function parseAddrList(text) {
 let likeEx = null; // wallets left out of liking (null = not loaded yet: everyone but the callout's owner)
 chrome.storage.local.get('likeExclude').then(r => { likeEx = r.likeExclude ? new Set(r.likeExclude) : null; if (st && tab === 'like' && !page) render(); });
 const saveLikeEx = () => chrome.storage.local.set({ likeExclude: [...likeEx] });
-const likeUi = { link: '' };
+const likeUi = { link: '', links: store.get('likeLinks', '') };
 const activeGroup = () => st.groups?.find(g => g.id === st.activeGroup) || { id: 'main', name: 'Main group', count: st.wallets.length };
 function afterGroupChange() { resetData(); trade.picked = null; split.picked = null; split.extra = []; split.asset = null; bundle.action = null; trade.stage = 'form'; wal.select = false; wal.sel = new Set(); wal.moving = null; wal.renaming = null; wal.removing = null; act.loaded = false; }
 
@@ -1733,8 +1733,66 @@ function likeCard(i) {
     <p class="hint" style="margin:6px 0 0">View as poster opens it up to 2 times per callout, only from the wallet that posted it.</p>
   </div>`;
 }
+// Website: paste many callout links; every ticked wallet likes all of them through the Truth relay.
+function parseCalloutLinks(text) {
+  const found = [], bad = [];
+  for (const part of String(text || '').split(/[\s,]+/).map(x => x.trim()).filter(Boolean)) {
+    const l = parseCalloutLink(part);
+    if (!l || l.bad) { bad.push({ text: part, reply: !!l?.reply }); continue; }
+    if (!found.some(f => f.calloutId === l.calloutId)) found.push(l);
+  }
+  return { found, bad };
+}
+function viewLikeWeb(v) {
+  const job = st.jobs?.like;
+  if (job) {
+    const ok = job.rows.filter(r => r.state === 'posted').length;
+    if (!job.done) pollWhileRunning();
+    const n = job.targets?.length || 1;
+    const dead = Object.entries(job.dead || {});
+    v.innerHTML = `<div class="card">
+      <div class="row"><b>${job.done ? `Done: ${ok} of ${plural(job.rows.length, 'wallet')} liked` : `Liking ${plural(n, 'callout')} from ${plural(job.rows.length, 'wallet')}…`}</b>${job.done ? '<button class="btn sm" id="lkDone">Close</button>' : '<span class="badge on live"><span class="dot"></span>keep this page open</span>'}</div>
+      <div class="list" style="margin-top:10px">${job.rows.map(r => `<div class="item">${statusDot(r.state)}<div class="grow"><div class="name">${esc(nameOf(r.address))}</div><div class="sub" style="white-space:normal">${esc(r.detail || r.state)}</div>${r.error ? `<div class="sub" style="white-space:normal;color:var(--loss)">${esc(r.error)}</div>` : ''}</div></div>`).join('')}</div>
+      ${dead.length ? `<div class="note warn" style="margin-top:10px">${plural(dead.length, 'link')} couldn't be liked by anyone: ${dead.map(([id, why]) => `<span class="mono">${esc(id.slice(0, 8))}…</span> ${esc(why)}`).join(', ')}</div>` : ''}
+    </div>`;
+    on('#lkDone', 'click', async () => { st = await send({ type: 'clearJob', kind: 'like' }); render(); });
+    return;
+  }
+  const { found, bad } = parseCalloutLinks(likeUi.links);
+  const isOn = (w) => !(likeEx && likeEx.has(w.address));
+  const on_ = st.wallets.filter(isOn);
+  const canGo = found.length && on_.length && found.length <= 200;
+  v.innerHTML = `<div class="card">
+    <b>Like callouts</b>
+    <div class="sub" style="margin-top:4px">Every ticked wallet signs in to pump.fun once and likes every callout you paste. Running it again is safe: callouts a wallet already liked are skipped.</div>
+    <label class="field" style="margin-top:10px"><span class="lbl">Callout links, one per line</span><textarea id="lkLinks" rows="5" placeholder="pump.fun/callouts/…&#10;pump.fun/callouts/…" autocomplete="off" spellcheck="false">${esc(likeUi.links)}</textarea></label>
+    <p class="hint" style="margin:4px 0 0">${found.length ? `${plural(found.length, 'callout')} ready.` : 'Paste one or more pump.fun callout links.'}${found.length > 200 ? ' Up to 200 at a time.' : ''}</p>
+    ${bad.length ? `<p class="hint" style="margin:4px 0 0;color:var(--warn)">Skipping ${plural(bad.length, 'line')} that ${bad.length === 1 ? "isn't a callout link" : "aren't callout links"}${bad.some(b => b.reply) ? " (replies can't be liked here; paste the callout's own link)" : ''}: ${bad.slice(0, 3).map(b => `<span class="mono">${esc(b.text.slice(0, 40))}</span>`).join(', ')}${bad.length > 3 ? '…' : ''}</p>` : ''}
+    <div style="display:flex;gap:8px;align-items:center;margin-top:12px"><span class="sub">Which wallets</span><button class="btn sm ghost" id="lkAll">All</button><button class="btn sm ghost" id="lkNone">None</button><span class="sub">${on_.length} of ${st.wallets.length} ticked</span></div>
+    <div class="fxlist">${st.wallets.map(w => `<label class="fx"><input type="checkbox" data-lk="${w.address}" ${isOn(w) ? 'checked' : ''}>${avatar(w, 'sm')}<span class="trunc">${esc(w.name)}</span></label>`).join('')}</div>
+    <p class="err" id="lkErr"></p>
+    <div class="actions" style="margin-top:10px"><button class="btn primary" id="lkGo" ${canGo ? '' : 'disabled'}>${!found.length ? 'Paste callout links' : !on_.length ? 'Tick at least 1 wallet' : `Like ${plural(found.length, 'callout')} from ${plural(on_.length, 'wallet')}`}</button></div>
+  </div>
+  <p class="hint" style="margin-top:12px">Goes one wallet at a time. Keep this page open while it runs.</p>`;
+  const ta = $('#lkLinks');
+  const saveLinks = () => { likeUi.links = ta.value; store.set('likeLinks', likeUi.links); };
+  ta.oninput = () => { saveLinks(); clearTimeout(viewLikeWeb.t); viewLikeWeb.t = setTimeout(() => { const pos = ta.selectionStart; render(); const t2 = $('#lkLinks'); if (t2) { t2.focus(); t2.setSelectionRange(pos, pos); } }, 400); };
+  $$('[data-lk]').forEach(cb => cb.onchange = () => { likeEx ||= new Set(); cb.checked ? likeEx.delete(cb.dataset.lk) : likeEx.add(cb.dataset.lk); saveLikeEx(); render(); });
+  on('#lkAll', 'click', () => { likeEx = new Set(); saveLikeEx(); render(); });
+  on('#lkNone', 'click', () => { likeEx = new Set(st.wallets.map(w => w.address)); saveLikeEx(); render(); });
+  on('#lkGo', 'click', async () => {
+    const b = $('#lkGo'); b.disabled = true;
+    try {
+      saveLinks();
+      const { found: list } = parseCalloutLinks(likeUi.links);
+      await send({ type: 'likeRunWeb', targets: list.map(l => ({ mint: l.mint, calloutId: l.calloutId })), addresses: st.wallets.filter(isOn).map(w => w.address) });
+      await refresh();
+    } catch (e) { b.disabled = false; const el = $('#lkErr'); if (el) el.textContent = e.message; }
+  });
+}
 function viewLike() {
   const v = $('#view');
+  if (IS_WEB) return viewLikeWeb(v);
   if (!st.taught.login || !st.taught.post) {
     v.innerHTML = `<div class="empty" style="margin-top:16px"><b>Connect the pump.fun login first</b>Truth needs to learn pump.fun's sign-in once before your wallets can like anything.<br><button class="btn sm" id="toCallouts">Go to Callouts</button></div>`;
     on('#toCallouts', 'click', () => go({ tab: 'callouts' }));

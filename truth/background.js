@@ -502,6 +502,86 @@ async function runThesisWeb({ mint, items }) {
   return job;
 }
 
+// ---------------- like on the website: many callouts from many wallets through the relay ----------------
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const RELAY_LIKE_URL = RELAY_URL.replace(/\/callout$/, '/like');
+const LIKE_CODES = { CALLOUT_NOT_FOUND: 'callout not found (deleted or hidden)', CALLOUT_MODERATED: 'callout was removed by moderation', SPAM_RESTRICTED: 'pump.fun is limiting this wallet', USER_BANNED: 'wallet is banned on pump.fun' };
+async function relayLike(address, ids) {
+  const timestamp = Date.now();
+  const sig = await K.sign(await seedFor(address), new TextEncoder().encode(`Sign in to pump.fun: ${timestamp}`));
+  let res;
+  try {
+    res = await fetch(RELAY_LIKE_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address, signature: b58.encode(sig), timestamp, calloutIds: ids }), signal: AbortSignal.timeout(60000) });
+  } catch (e) { throw new Error('Could not reach the Truth relay: ' + e.message); }
+  let r; try { r = await res.json(); } catch { throw new Error(`Truth relay answered HTTP ${res.status}`); }
+  if (r.ok) return r.results || [];
+  const err = new Error(relayError(r) + (r.status === 429 ? ' (HTTP 429)' : ''));
+  err.code = r.code;
+  throw err;
+}
+async function runLikeWeb({ targets, addresses }) {
+  const list = [];
+  for (const t of targets || []) if (t && /^[\w-]{4,80}$/.test(String(t.calloutId)) && !list.some(x => x.calloutId === t.calloutId)) list.push({ mint: b58.isAddress(t.mint) ? t.mint : null, calloutId: String(t.calloutId) });
+  if (!list.length) throw new Error('Paste at least one pump.fun callout link');
+  if (list.length > 200) throw new Error('Up to 200 callout links at a time');
+  if (activeThesis) throw new Error('Another pump.fun job is running. Wait for it to finish.');
+  if (!(await session.get('keys'))) throw new Error('Wallet is locked');
+  const scoped = (await scopedWallets()).map(w => w.address);
+  const likers = scoped.filter(a => (addresses || []).includes(a));
+  if (!likers.length) throw new Error('Tick at least 1 wallet to do the liking');
+  const job = { kind: 'like', web: true, startedAt: Date.now(), done: false, targets: list, mint: list[0].mint, calloutId: list.length === 1 ? list[0].calloutId : null, rows: likers.map(a => ({ address: a, state: 'waiting' })) };
+  const save = () => session.set('job_like', job);
+  await save();
+  activeThesis = { token: crypto.randomUUID(), tabId: null, addresses: new Set(likers) };
+  const pace = makePace(FOLLOW_GAP_MS);
+  const dead = new Map(); // callout ids pump.fun says are gone: skip them for the remaining wallets
+  keepAlive((async () => {
+    try {
+      for (let n = 0; n < likers.length; n++) {
+        const row = job.rows[n];
+        const todo = list.map(t => t.calloutId).filter(id => !dead.has(id));
+        const got = new Map(); // id -> result
+        let hit = false, fatal = null;
+        row.state = 'posting'; row.detail = `signing in and liking ${plural(todo.length, 'callout')}`; await save();
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          const left = todo.filter(id => !got.get(id)?.ok && !(got.get(id) && LIKE_CODES[got.get(id).code]));
+          if (!left.length) break;
+          try {
+            for (let i = 0; i < left.length; i += 50) for (const r of await relayLike(likers[n], left.slice(i, i + 50))) got.set(r.id, r);
+            if (!left.some(id => !got.has(id) || got.get(id).status === 429)) break;
+            hit = true;
+          } catch (e) {
+            const msg = String(e?.message || e);
+            if (e.code === 'ACCOUNT_NOT_FOUND') { fatal = NO_ACCOUNT_NOTE; break; }
+            const wait = e.code ? 0 : retryWait(msg);
+            if (wait) hit = true;
+            if (!wait || attempt === 3) { fatal = msg; break; }
+            row.detail = `retrying (${attempt + 1}/3)…`; await save();
+            await sleep(wait * attempt);
+          }
+        }
+        for (const [id, r] of got) if (!r.ok && LIKE_CODES[r.code] && (r.code === 'CALLOUT_NOT_FOUND' || r.code === 'CALLOUT_MODERATED')) dead.set(id, LIKE_CODES[r.code]);
+        const liked = todo.filter(id => got.get(id)?.ok && got.get(id).created).length;
+        const already = todo.filter(id => got.get(id)?.ok && !got.get(id).created).length;
+        const failed = todo.filter(id => !got.get(id)?.ok);
+        const reasons = [...new Set(failed.map(id => { const r = got.get(id); return r ? LIKE_CODES[r.code] || r.error || `HTTP ${r.status}` : fatal || 'not tried'; }))];
+        row.results = Object.fromEntries(todo.map(id => [id, got.get(id)?.ok ? (got.get(id).created ? 'liked' : 'already') : 'failed']));
+        if (fatal && !liked && !already) { row.state = 'failed'; row.error = fatal; delete row.detail; }
+        else {
+          row.state = failed.length && !liked && !already ? 'failed' : 'posted';
+          row.detail = [liked && `liked ${liked}`, already && `already liked ${already}`, failed.length && `${failed.length} failed`].filter(Boolean).join(' · ') || 'nothing to like';
+          if (failed.length) row.error = reasons.join('; '); else delete row.error;
+        }
+        await save();
+        if (hit) pace.hit(); else pace.ok();
+        if (n < likers.length - 1) await sleep(pace.gap());
+      }
+      job.dead = Object.fromEntries(dead);
+    } finally { activeThesis = null; job.done = true; await save(); }
+  })());
+  return job;
+}
+
 // ---------------- follow: every wallet follows every other wallet on pump.fun ----------------
 async function runFollow({ tabId, addresses, targets: targetPick, extra: extraIn }) {
   const tpls = (await local.get('pumpTpl')) || {};
@@ -1711,6 +1791,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case 'followRun': return runFollow(msg);
       case 'unfollowRun': return runUnfollow(msg);
       case 'likeRun': return runLike(msg);
+      case 'likeRunWeb': return runLikeWeb(msg);
       case 'selfView': return keepAlive(runSelfView(msg));
       case 'buyRun': return runBuy(msg);
       case 'sellRun': return runSell(msg);

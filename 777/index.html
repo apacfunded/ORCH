@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>$777</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-screen pitch (headline + wallet box beside a flat slot machine), then three plain steps, one prize table, a short FAQ. Flat black/red/cream like the PFP: solid offset shadows, no glows or gradients. */
+:root{
+  --bg:#111111; --surface:#1b1b1b; --line:#2e2e2e;
+  --fg:#f4f1ea; --muted:#a7a29a; --red:#e8232f; --red-deep:#9e1620; --cream:#f4f1ea; --ink:#111111;
+  --display:"Anton","Impact","Arial Narrow",sans-serif;
+  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.5;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;line-height:1;letter-spacing:.01em;text-transform:uppercase}
+.red{color:var(--red)}
+.num{font-variant-numeric:tabular-nums}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:28px;text-decoration:none}
+.logo img{width:38px;height:38px;border-radius:8px;display:block}
+.nav-cta{display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:6px;border:2px solid transparent;font-weight:600;text-decoration:none;transition:transform .12s ease,box-shadow .12s ease}
+.btn-red{background:var(--red);color:#fff;box-shadow:4px 4px 0 var(--cream)}
+.btn-red:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--cream)}
+.btn-red:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--cream)}
+.btn-line{border-color:var(--line);color:var(--fg)}
+.btn-line:hover{border-color:var(--fg)}
+.icon-btn{width:46px;padding:0}
+[data-link].pending{opacity:.5;cursor:default}
+
+/* hero */
+.hero{padding-block:56px 64px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero > *{min-width:0}
+.hero h1{font-size:clamp(56px,8vw,96px)}
+.hero .lede{font-size:20px;color:var(--muted);margin:18px 0 28px;max-width:34ch}
+.hero .lede b{color:var(--fg);font-weight:600}
+@media (max-width:860px){.hero{grid-template-columns:1fr;padding-block:36px 48px;gap:36px}}
+
+/* wallet box */
+.checker{background:var(--cream);color:var(--ink);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:6px 6px 0 var(--red)}
+.checker label{font-family:var(--display);font-size:24px;text-transform:uppercase}
+.check-row{display:flex;gap:10px}
+.check-row input{flex:1;min-width:0;min-height:54px;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:0 14px;font-family:var(--mono);font-size:14px;color:var(--ink)}
+.check-row input::placeholder{color:#8a857c}
+.check-row input:focus{outline:none;box-shadow:0 0 0 3px rgba(232,35,47,.3)}
+.check-row input.bad{border-color:var(--red);animation:shake .4s}
+.check-row button{min-height:54px;padding:0 24px;background:var(--ink);color:var(--cream);border:0;border-radius:6px;font-family:var(--display);font-size:22px;text-transform:uppercase;transition:transform .12s}
+.check-row button:hover{background:var(--red)}
+.check-row button:active{transform:translateY(2px)}
+.hint{margin:0;font-size:14px;color:#5d5850}
+.err{margin:0;font-size:15px;color:var(--red-deep);font-weight:600}
+.card{border-top:2px solid var(--ink);padding-top:14px;display:flex;flex-direction:column;gap:10px;animation:rise .4s cubic-bezier(.2,.9,.3,1)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-head code{font-family:var(--mono);font-size:14px;font-weight:600}
+.pill{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--ink);color:var(--cream)}
+.card-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card-stats div{border:2px solid var(--ink);border-radius:6px;padding:8px 10px}
+.card-stats b{display:block;font-family:var(--display);font-size:24px;line-height:1.1}
+.card-stats span{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#5d5850}
+.card p{margin:0;font-size:15px;color:#3b3732}
+@media (max-width:440px){.check-row{flex-direction:column}}
+
+/* machine */
+.machine{background:var(--red);border:4px solid var(--cream);border-radius:18px;padding:18px;max-width:440px;width:100%;margin:0 auto;box-shadow:10px 10px 0 var(--cream);position:relative}
+.machine-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;color:#fff}
+.machine-top b{font-family:var(--display);font-size:34px;line-height:1}
+.clock{background:var(--ink);border-radius:6px;padding:6px 12px;text-align:right}
+.clock span{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.clock strong{font-family:var(--display);font-weight:400;font-size:26px;color:var(--cream);line-height:1}
+.window{background:var(--ink);border-radius:10px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative}
+.payline{position:absolute;left:4px;right:4px;top:50%;height:3px;background:var(--red);z-index:3;transform:translateY(-1px)}
+.reel{height:228px;overflow:hidden;background:var(--cream);border-radius:6px}
+.strip{display:flex;flex-direction:column;will-change:transform}
+.sym{height:76px;display:grid;place-items:center;font-family:var(--display);font-size:50px;line-height:1;color:var(--ink)}
+.sym.seven{color:var(--red);font-size:64px}
+.sym.bar{font-size:26px;letter-spacing:.06em;background:var(--ink);color:var(--cream);margin:12px 10px;height:52px;border-radius:4px}
+.reel.blur .strip{filter:blur(2px)}
+.spin{display:block;width:100%;margin-top:14px;min-height:58px;background:var(--cream);color:var(--ink);border:0;border-radius:10px;font-family:var(--display);font-size:28px;text-transform:uppercase;box-shadow:0 6px 0 var(--ink);transition:transform .1s,box-shadow .1s}
+.spin:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--ink)}
+.spin:active,.spin:disabled{transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.spin:disabled{cursor:default}
+.result{margin-top:12px;text-align:center;min-height:30px;color:#fff;font-weight:600}
+.result.win{font-family:var(--display);font-size:28px;font-weight:400;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.demo{position:absolute;top:-14px;left:18px;background:var(--ink);color:var(--cream);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:2px solid var(--cream)}
+.machine.shake{animation:shake .5s}
+
+/* sections */
+section.block{padding-block:64px;border-top:1px solid var(--line)}
+.sec-head{margin-bottom:32px;display:flex;flex-direction:column;gap:10px;max-width:56ch}
+.sec-head h2{font-size:clamp(40px,6vw,60px)}
+.sec-head p{margin:0;color:var(--muted);font-size:18px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px;display:flex;flex-direction:column;gap:10px;counter-increment:s}
+.steps li::before{content:counter(s);font-family:var(--display);font-size:22px;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center}
+.steps h3{font-size:30px}
+.steps p{margin:0;color:var(--muted)}
+@media (max-width:760px){.steps{grid-template-columns:1fr}}
+
+.prize-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.prize-grid > *{min-width:0}
+.tbl{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.tbl h3{font-size:24px;padding:16px 18px 0}
+.tbl table{width:100%;border-collapse:collapse}
+.tbl th,.tbl td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.big{font-family:var(--display);font-size:24px;color:var(--red)}
+.tbl td.dim{color:var(--muted)}
+.tbl tr{transition:background .2s}
+.tbl tr.on{background:rgba(232,35,47,.14)}
+.combo{display:inline-flex;gap:5px}
+.combo i{display:grid;place-items:center;width:32px;height:32px;border-radius:4px;background:var(--cream);color:var(--ink);font-family:var(--display);font-style:normal;font-size:18px}
+.combo i.s{color:var(--red);font-size:22px}
+.combo i.b{background:var(--ink);color:var(--cream);font-size:11px;border:1px solid var(--cream)}
+.calc{display:flex;flex-direction:column;gap:8px;padding:16px 18px;border-top:1px solid var(--line)}
+.calc label{font-weight:600;font-size:15px}
+.calc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.calc-row input{flex:1;min-width:0;min-height:48px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:0 12px;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.calc-row input:focus{outline:none;border-color:var(--fg)}
+.calc-out{font-size:17px}
+.calc-out b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--red)}
+.calc .bump{display:inline-block;animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@media (max-width:860px){.prize-grid{grid-template-columns:1fr}}
+
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 20px}
+summary{cursor:pointer;padding:18px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--display);font-size:26px;color:var(--red);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 18px;color:var(--muted)}
+@media (max-width:760px){.faq{grid-template-columns:1fr}}
+
+.ca{background:var(--red);color:#fff;border-radius:14px;padding:28px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;box-shadow:8px 8px 0 var(--cream)}
+.ca > *{min-width:0}
+.ca h2{font-size:44px}
+.ca-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.ca code{font-family:var(--mono);background:var(--ink);color:var(--cream);padding:10px 14px;border-radius:6px;font-size:14px;word-break:break-all;min-width:0}
+.ca .btn-line{border-color:#fff;color:#fff}
+.ca-links{display:flex;flex-wrap:wrap;gap:12px}
+.ca .btn-buy{background:var(--cream);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.ca .btn-buy:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+@media (max-width:760px){.ca{grid-template-columns:1fr}}
+
+footer{padding-block:40px 56px;color:var(--muted);font-size:14px;margin-top:64px;border-top:1px solid var(--line)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.foot-links{display:flex;gap:18px}
+.foot-links a{text-decoration:none}.foot-links a:hover{color:var(--fg)}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(3px)}30%,50%,70%{transform:translateX(-5px)}40%,60%{transform:translateX(5px)}}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reel.blur .strip{filter:none}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="logo" href="#top"><img src="data:image/jpeg;base64,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" alt="" width="38" height="38">$777</a>
+  <div class="nav-cta"><a class="btn btn-line icon-btn" data-link="x" href="#" target="_blank" rel="noopener" aria-label="777 on X"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.6l-5.2-6.8L5.2 22H2l8-9.2L1.5 2h6.8l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.4 3.9H5.5L17.7 20Z"/></svg></a><a class="btn btn-red" data-link="coin" href="#" target="_blank" rel="noopener">Buy $777</a></div>
+</div></header>
+
+<canvas id="confetti"></canvas>
+
+<main id="top">
+<section class="wrap hero">
+  <div>
+    <h1>Hold $777.<br><span class="red">Win SOL every hour.</span></h1>
+    <p class="lede">Every hour, every holder gets <b>one free spin</b>. Match three and <b>SOL is sent to your wallet</b>. You don't have to do anything.</p>
+
+    <form class="checker" id="checker" novalidate>
+      <label for="addr">Did I win?</label>
+      <div class="check-row">
+        <input id="addr" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your SOL address">
+        <button type="submit">Check</button>
+      </div>
+      <p class="hint" id="hint">Just paste it. No wallet connect, no signing.</p>
+      <p class="err" id="err" hidden></p>
+      <div class="card" id="card" hidden>
+        <div class="card-head"><code id="cardAddr"></code><span class="pill">Starts at launch</span></div>
+        <div class="card-stats">
+          <div><b class="num">—</b><span>Holding</span></div>
+          <div><b class="num">—</b><span>You keep</span></div>
+          <div><b class="num">—</b><span>SOL won</span></div>
+        </div>
+        <p>Nothing to show yet. Once $777 is live, your spins and wins will show up here.</p>
+      </div>
+    </form>
+  </div>
+
+  <div class="machine" id="machine">
+    <span class="demo">Try it</span>
+    <div class="machine-top"><b>777</b><div class="clock"><span id="clockLabel">Spins every</span><strong class="num" id="clock">1 hour</strong></div></div>
+    <div class="window">
+      <div class="payline"></div>
+      <div class="reel" id="r0"><div class="strip"></div></div>
+      <div class="reel" id="r1"><div class="strip"></div></div>
+      <div class="reel" id="r2"><div class="strip"></div></div>
+    </div>
+    <button class="spin" id="spinBtn" type="button">Spin</button>
+    <div class="result" id="result">Practice spin. Not real money.</div>
+  </div>
+</section>
+
+<section class="block wrap" id="how">
+  <div class="sec-head"><h2>How it works</h2></div>
+  <ol class="steps">
+    <li><h3>Buy $777</h3><p>Buy on pump.fun and keep it in your wallet. That's your ticket.</p></li>
+    <li><h3>Get a free spin</h3><p>Every hour, the machine spins once for every holder. Automatically.</p></li>
+    <li><h3>Match 3, get paid</h3><p>Land three of a kind and SOL is sent straight to your wallet.</p></li>
+  </ol>
+</section>
+
+<section class="block wrap" id="prizes">
+  <div class="sec-head"><h2>What you win</h2><p>Prizes come from the creator-fee pool. Bigger bags keep more of the prize, measured in dollars at the live price. Whatever you don't keep stays in the pool.</p></div>
+  <div class="prize-grid">
+    <div class="tbl">
+      <h3>Prizes</h3>
+      <table>
+        <thead><tr><th>Match</th><th>Wins</th><th>Odds per spin</th></tr></thead>
+        <tbody>
+          <tr><td><span class="combo"><i class="s">7</i><i class="s">7</i><i class="s">7</i></span></td><td class="big">50% of pool</td><td class="dim">1 in 500</td></tr>
+          <tr><td><span class="combo"><i>◆</i><i>◆</i><i>◆</i></span></td><td class="big">20% of pool</td><td class="dim">1 in 200</td></tr>
+          <tr><td><span class="combo"><i>$</i><i>$</i><i>$</i></span></td><td class="big">10% of pool</td><td class="dim">1 in 100</td></tr>
+          <tr><td><span class="combo"><i>♪</i><i>♪</i><i>♪</i></span></td><td class="big">5% of pool</td><td class="dim">1 in 50</td></tr>
+          <tr><td><span class="combo"><i class="b">BAR</i><i class="b">BAR</i><i class="b">BAR</i></span></td><td class="big">2% of pool</td><td class="dim">1 in 25</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tbl">
+      <h3>Your bag size</h3>
+      <table>
+        <thead><tr><th>Bag worth</th><th>You keep</th></tr></thead>
+        <tbody id="tierRows"></tbody>
+      </table>
+      <div class="calc">
+        <label for="calcBag">How much is your bag worth?</label>
+        <div class="calc-row"><input id="calcBag" type="text" inputmode="decimal" value="$250" autocomplete="off"></div>
+        <div class="calc-out" id="calcOut"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block wrap" id="faq">
+  <div class="sec-head"><h2>Questions</h2></div>
+  <div class="faq">
+    <details open><summary>Do I need to connect my wallet?</summary><p>No. Just hold $777. Never connect or sign for anyone claiming to pay out spins.</p></details>
+    <details><summary>Does a bigger bag win more often?</summary><p>No. Everyone has the same odds. A bigger bag only means you keep more of a win.</p></details>
+    <details><summary>How is my bag size measured?</summary><p>In dollars, at the live $777 price when the spin happens. As the price goes up, your tier can go up with it.</p></details>
+    <details><summary>What if I sell?</summary><p>You miss the next spin. Hold through the hour to stay in.</p></details>
+    <details><summary>Where does the prize money come from?</summary><p>100% of the coin's creator fees go into the pool. The dev wallet never gets a spin.</p></details>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="ca">
+    <div>
+      <h2>Buy $777</h2>
+      <div class="ca-box"><code id="caText">CA posts here at launch</code><button class="btn btn-line" id="copyBtn" type="button">Copy</button></div>
+    </div>
+    <div class="ca-links"><a class="btn btn-buy" data-link="coin" href="#" target="_blank" rel="noopener">pump.fun</a><a class="btn btn-line" data-link="x" href="#" target="_blank" rel="noopener">Follow on X</a></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>$777 · hold to spin</span><span class="foot-links"><a data-link="coin" href="#" target="_blank" rel="noopener">pump.fun</a><a data-link="x" href="#" target="_blank" rel="noopener">X</a></span></div></footer>
+
+<script>
+(function(){
+  // ===== EDIT THESE AT LAUNCH =====
+  var LINKS = {
+    ca:   "",   // contract address
+    coin: "",   // pump.fun coin page, e.g. https://pump.fun/coin/<CA>
+    x:    ""    // X profile, e.g. https://x.com/yourhandle
+  };
+  var DRAW_MINUTES = 60;
+  // Bag value in USD at spin time (live price). Hold at least `min` dollars to keep `keep`% of a win. Below the first tier = no spin.
+  var TIERS = [
+    { min:  10, keep:  10 },
+    { min:  100, keep:  25 },
+    { min:  250, keep:  50 },
+    { min:  500, keep:  75 },
+    { min: 1000, keep: 100 }
+  ];
+  // =================================
+  var live = !!LINKS.ca;
+  if (LINKS.ca && !LINKS.coin) LINKS.coin = "https://pump.fun/coin/" + LINKS.ca;
+  document.querySelectorAll("[data-link]").forEach(function(a){
+    var url = LINKS[a.getAttribute("data-link")];
+    if (url) a.href = url;
+    else { a.classList.add("pending"); a.title = "Link goes live at launch"; a.addEventListener("click", function(e){ e.preventDefault(); }); }
+  });
+  if (LINKS.ca) document.getElementById("caText").textContent = LINKS.ca;
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function fmtN(n){ return n.toLocaleString("en-US"); }
+  function short(n){ return "$" + fmtN(n); }
+
+  // clock
+  function pad(n){ return (n<10?"0":"")+n; }
+  if (live) {
+    var clock = document.getElementById("clock");
+    document.getElementById("clockLabel").textContent = "Next spin";
+    setInterval(function(){
+      var ms = DRAW_MINUTES*60000, s = Math.floor((ms - Date.now()%ms)/1000);
+      clock.textContent = pad(Math.floor(s/60)) + ":" + pad(s%60);
+    }, 500);
+  }
+
+  // checker
+  var form = document.getElementById("checker"), input = document.getElementById("addr"),
+      err = document.getElementById("err"), card = document.getElementById("card");
+  var B58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  try { var saved = localStorage.getItem("777.addr"); if (saved) input.value = saved; } catch(e){}
+  input.addEventListener("input", function(){ input.classList.remove("bad"); err.hidden = true; });
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = input.value.trim();
+    if (!B58.test(v)) {
+      err.textContent = v ? "That's not a full SOL address. Copy it again from your wallet." : "Paste your SOL address first.";
+      err.hidden = false; card.hidden = true;
+      input.classList.remove("bad"); void input.offsetWidth; input.classList.add("bad");
+      return;
+    }
+    try { localStorage.setItem("777.addr", v); } catch(e){}
+    err.hidden = true;
+    document.getElementById("cardAddr").textContent = v.slice(0,4) + "…" + v.slice(-4);
+    card.hidden = true; void card.offsetWidth; card.hidden = false;
+  });
+
+  // tiers + calculator
+  var tierRows = document.getElementById("tierRows");
+  tierRows.innerHTML = '<tr data-i="-1"><td class="dim">Under '+short(TIERS[0].min)+'</td><td class="dim">No spin</td></tr>' +
+    TIERS.map(function(t,i){ return '<tr data-i="'+i+'"><td>'+short(t.min)+'+</td><td class="big">'+t.keep+'%</td></tr>'; }).join("");
+  var calcIn = document.getElementById("calcBag"), out = document.getElementById("calcOut"), last = null;
+  function calc(){
+    var n = parseFloat(calcIn.value.replace(/[^0-9.]/g,"")) || 0, i = -1;
+    TIERS.forEach(function(t,k){ if (n >= t.min) i = k; });
+    out.innerHTML = i<0 ? 'You need <b>'+short(TIERS[0].min)+'</b> to get a spin.'
+      : 'You keep <b class="'+(last!==null&&last!==i&&!reduce?"bump":"")+'">'+TIERS[i].keep+'%</b> of any prize. A 7 7 7 would pay you <b>'+(50*TIERS[i].keep/100)+'%</b> of the pool.';
+    tierRows.querySelectorAll("tr").forEach(function(r){ r.classList.toggle("on", +r.getAttribute("data-i")===i); });
+    last = i;
+  }
+  calcIn.addEventListener("input", calc);
+  calcIn.addEventListener("blur", function(){ var n=parseFloat(calcIn.value.replace(/[^0-9.]/g,"")); calcIn.value = "$" + fmtN(Math.floor(n||0)); });
+  calc();
+
+  // demo reels
+  var SYMS = [{k:"seven",t:"7"},{k:"bar",t:"BAR"},{k:"gem",t:"◆"},{k:"bell",t:"♪"},{k:"sol",t:"$"}];
+  var CELL = 76, LOOPS = 5;
+  var reels = [0,1,2].map(function(i){ return document.getElementById("r"+i); });
+  reels.forEach(function(r){
+    var html = "";
+    for (var l=0; l<LOOPS+3; l++) SYMS.forEach(function(s){ html += '<div class="sym '+s.k+'">'+s.t+'</div>'; });
+    var strip = r.querySelector(".strip"); strip.innerHTML = html; strip.style.transform = "translateY(-"+CELL+"px)";
+  });
+  function rnd(){ return Math.floor(Math.random()*SYMS.length); }
+  function outcome(){
+    var r = Math.random();
+    // Same odds as the prize table: 1/500, 1/200, 1/100, 1/50, 1/25
+    if (r<.002) return {idx:[0,0,0],label:"7 7 7 · Jackpot!",big:true};
+    if (r<.007) return {idx:[2,2,2],label:"◆ ◆ ◆ · Winner!"};
+    if (r<.017) return {idx:[4,4,4],label:"$ $ $ · Winner!"};
+    if (r<.037) return {idx:[3,3,3],label:"♪ ♪ ♪ · Winner!"};
+    if (r<.077) return {idx:[1,1,1],label:"BAR BAR BAR · Winner!"};
+    var a; do { a=[rnd(),rnd(),rnd()]; } while (a[0]===a[1] && a[1]===a[2]);
+    return {idx:a,label:"No match. Try again."};
+  }
+  var btn = document.getElementById("spinBtn"), res = document.getElementById("result"),
+      machine = document.getElementById("machine"), busy = false;
+  btn.addEventListener("click", function(){
+    if (busy) return; busy = true; btn.disabled = true; btn.textContent = "Spinning…";
+    res.className = "result"; res.textContent = "";
+    var o = outcome(), done = 0;
+    reels.forEach(function(r,i){
+      var strip = r.querySelector(".strip");
+      strip.style.transition = "none"; strip.style.transform = "translateY(-"+CELL+"px)"; void strip.offsetHeight;
+      if (!reduce) r.classList.add("blur");
+      var target = LOOPS*SYMS.length + o.idx[i] - 1, dur = reduce ? 0.01 : 1.4 + i*0.5;
+      strip.style.transition = "transform "+dur+"s cubic-bezier(.12,.8,.18,1)";
+      strip.style.transform = "translateY(-"+(target*CELL)+"px)";
+      setTimeout(function(){ r.classList.remove("blur"); if (++done===3) finish(o); }, dur*1000+30);
+    });
+  });
+  function finish(o){
+    var win = o.label.indexOf("Winner")>-1 || o.big;
+    res.className = "result" + (win ? " win" : "");
+    res.textContent = o.label;
+    if (win && !reduce){ machine.classList.add("shake"); setTimeout(function(){ machine.classList.remove("shake"); },550); confetti(o.big?240:110); }
+    busy = false; btn.disabled = false; btn.textContent = "Spin again";
+  }
+
+  // copy CA
+  var copy = document.getElementById("copyBtn"), ca = document.getElementById("caText");
+  copy.addEventListener("click", function(){
+    var done = function(){ copy.textContent = "Copied"; setTimeout(function(){ copy.textContent = "Copy"; },1500); };
+    function sel(){ var r=document.createRange(); r.selectNodeContents(ca); var s=getSelection(); s.removeAllRanges(); s.addRange(r); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ca.textContent).then(done, function(){ sel(); done(); });
+    else { sel(); done(); }
+  });
+
+  // confetti
+  var cv = document.getElementById("confetti"), cx = cv.getContext("2d"), parts = [], raf = null, dpr = window.devicePixelRatio||1;
+  function size(){ cv.width = innerWidth*dpr; cv.height = innerHeight*dpr; }
+  size(); addEventListener("resize", size);
+  function confetti(n){
+    var rect = machine.getBoundingClientRect(), ox = (rect.left+rect.width/2)*dpr, oy = (rect.top+rect.height/3)*dpr;
+    var cols = ["#e8232f","#f4f1ea","#ffffff","#111111"];
+    for (var i=0;i<n;i++){ var a=Math.random()*Math.PI*2, v=(6+Math.random()*13)*dpr;
+      parts.push({x:ox,y:oy,vx:Math.cos(a)*v,vy:Math.sin(a)*v-8*dpr,s:(5+Math.random()*6)*dpr,c:cols[i%cols.length],r:Math.random()*6,l:90+Math.random()*40}); }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    parts = parts.filter(function(p){ return p.l>0; });
+    parts.forEach(function(p){ p.vy+=0.45*dpr; p.x+=p.vx; p.y+=p.vy; p.vx*=.98; p.r+=.2; p.l--;
+      cx.save(); cx.translate(p.x,p.y); cx.rotate(p.r); cx.globalAlpha=Math.min(1,p.l/30); cx.fillStyle=p.c; cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); cx.restore(); });
+    raf = parts.length ? requestAnimationFrame(tick) : (cx.clearRect(0,0,cv.width,cv.height), null);
+  }
+})();
+</script>
+</body>
+</html>

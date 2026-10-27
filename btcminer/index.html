@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BTC Miner</title>
 <meta name="description" content="$BTCMINER — every trade rents real SHA-256 hashpower. The rigs mine Bitcoin and the sats go to holders every day.">
-<meta name="theme-color" content="#f2f2f0">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230b0b0b'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial' font-weight='700' font-size='34' fill='%23f2f2f0'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#f7931a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f7931a'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial' font-weight='700' font-size='34' fill='%23ffffff'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 /* Template: Product Landing · Palette: Mono (+ mint for live) · Type: Archivo (expanded) + IBM Plex Mono */
 :root{
   --bg:#f2f2f0;--surface:#ffffff;--ink:#0b0b0b;--muted:#5d5d58;--dim:#8a8a84;--line:#dcdcd7;--line-2:#c9c9c3;
-  --live:#10b981;--dark:#0b0b0b;--dark-2:#161616;--dark-line:#2a2a2a;--on-dark:#f2f2f0;--on-dark-muted:#a3a39d;
+  --live:#10b981;--btc:#f7931a;--btc-hi:#ffa640;--dark:#0b0b0b;--dark-2:#161616;--dark-line:#2a2a2a;--on-dark:#f2f2f0;--on-dark-muted:#a3a39d;
   --display:"Archivo",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
   --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06);
 }
@@ -34,7 +34,7 @@ img,svg,canvas{display:block}
 .nav.scrolled{border-bottom-color:var(--line)}
 .nav .wrap{display:flex;align-items:center;gap:20px;height:68px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-stretch:115%;font-size:18px;letter-spacing:-.02em}
-.brand .dot{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:17px;font-weight:600}
+.brand .dot{width:30px;height:30px;border-radius:50%;background:var(--btc);color:#fff;display:grid;place-items:center;font-size:17px;font-weight:600}
 .nav nav{display:none;gap:28px;margin-left:auto}
 .nav nav a{text-decoration:none;color:var(--muted);font-size:14px}
 .nav nav a:hover{color:var(--ink)}
@@ -45,8 +45,8 @@ img,svg,canvas{display:block}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--ink);font:500 15px var(--display);text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
 .btn:hover{border-color:var(--ink)}
 .btn:active{transform:scale(.98)}
-.btn-ink{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-.btn-ink:hover{background:#2a2a2a}
+.btn-ink{background:var(--btc);border-color:var(--btc);color:var(--ink)}
+.btn-ink:hover{background:var(--btc-hi);border-color:var(--btc-hi)}
 .btn-sm{min-height:44px;padding:0 18px;font-size:14px}
 .btn[aria-disabled=true]{opacity:.5;cursor:not-allowed}
 .ico{width:16px;height:16px;fill:currentColor}
@@ -61,7 +61,7 @@ img,svg,canvas{display:block}
 @keyframes blink{50%{opacity:.35}}
 h1{font-size:clamp(44px,8.6vw,104px);line-height:.92;margin:20px 0 0}
 h1 span{display:block}
-h1 .soft{color:var(--dim)}
+h1 .soft{color:var(--btc)}
 .lead{font-size:clamp(17px,1.6vw,19px);color:var(--muted);max-width:44ch;margin:22px 0 0}
 .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
 .ca{display:flex;align-items:center;gap:10px;margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 18px;max-width:520px;box-shadow:var(--shadow)}
@@ -78,7 +78,7 @@ h1 .soft{color:var(--dim)}
 .chip.c1{left:0;top:16%}
 .chip.c2{right:0;bottom:18%;animation-delay:-3s}
 @keyframes float{50%{transform:translateY(-8px)}}
-.fallback-coin{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fafafa,#b9b9b4 55%,#7c7c77);display:none;place-items:center;font:600 120px var(--display);color:#3a3a37;box-shadow:inset 0 0 0 10px rgba(255,255,255,.4),0 30px 60px rgba(0,0,0,.18)}
+.fallback-coin{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffc46b,#f7931a 55%,#b85f00);display:none;place-items:center;font:700 120px Arial,sans-serif;color:#fff;box-shadow:inset 0 0 0 10px rgba(255,255,255,.4),0 30px 60px rgba(0,0,0,.18)}
 .no-gl .fallback-coin{display:grid}
 
 /* block ticker */
@@ -101,7 +101,7 @@ h1 .soft{color:var(--dim)}
 .num b small{font:500 13px var(--mono);color:var(--muted);letter-spacing:0;margin-left:6px}
 .num span.sub{display:block;font-size:13px;color:var(--dim);margin-top:10px}
 .meter{height:4px;border-radius:4px;background:var(--line);margin-top:14px;overflow:hidden}
-.meter i{display:block;height:100%;background:var(--ink)}
+.meter i{display:block;height:100%;background:var(--btc)}
 .example{font:400 12px var(--mono);color:var(--dim);padding:12px 0 0}
 
 /* sections */
@@ -126,7 +126,7 @@ h2{font-size:clamp(34px,5.6vw,68px);line-height:.98;margin:16px 0 0}
 .band .sec-lead{color:var(--on-dark-muted)}
 .big-bar{display:flex;gap:4px;height:84px;margin-top:44px}
 .big-bar div{border-radius:12px;position:relative;display:flex;align-items:flex-end;padding:12px 14px;font:500 14px var(--mono);overflow:hidden;transform-origin:left;transition:transform 1.1s cubic-bezier(.2,.8,.2,1)}
-.big-bar .a{flex:85;background:var(--on-dark);color:var(--dark)}
+.big-bar .a{flex:85;background:var(--btc);color:var(--dark)}
 .big-bar .b{flex:10;background:#5b5b57;color:var(--on-dark)}
 .big-bar .c{flex:5;background:#333331;color:var(--on-dark)}
 .band:not(.in) .big-bar div{transform:scaleX(0)}
@@ -389,23 +389,23 @@ var SITE = {
   // face texture: brushed silver with engraved ₿ and rim text
   function faceTex(){
     var s=1024,c=document.createElement('canvas');c.width=c.height=s;var g=c.getContext('2d');
-    var grd=g.createRadialGradient(s*.38,s*.32,s*.05,s*.5,s*.5,s*.55);grd.addColorStop(0,'#ffffff');grd.addColorStop(.55,'#d4d4cf');grd.addColorStop(1,'#9a9a95');
+    var grd=g.createRadialGradient(s*.38,s*.32,s*.05,s*.5,s*.5,s*.55);grd.addColorStop(0,'#ffd08a');grd.addColorStop(.5,'#f7931a');grd.addColorStop(1,'#b45a00');
     g.fillStyle=grd;g.fillRect(0,0,s,s);
     for(var i=0;i<1400;i++){g.strokeStyle='rgba(255,255,255,'+(Math.random()*.08)+')';g.beginPath();var r=Math.random()*s*.5;g.arc(s/2,s/2,r,0,Math.PI*2);g.stroke()}
-    g.lineWidth=14;g.strokeStyle='rgba(60,60,58,.55)';g.beginPath();g.arc(s/2,s/2,s*.44,0,Math.PI*2);g.stroke();
+    g.lineWidth=14;g.strokeStyle='rgba(120,55,0,.55)';g.beginPath();g.arc(s/2,s/2,s*.44,0,Math.PI*2);g.stroke();
     g.lineWidth=4;g.strokeStyle='rgba(255,255,255,.7)';g.beginPath();g.arc(s/2,s/2,s*.425,0,Math.PI*2);g.stroke();
-    g.font='500 40px "IBM Plex Mono", monospace';g.fillStyle='rgba(50,50,48,.7)';g.textAlign='center';g.textBaseline='middle';
+    g.font='500 40px "IBM Plex Mono", monospace';g.fillStyle='rgba(255,255,255,.85)';g.textAlign='center';g.textBaseline='middle';
     var txt='  BTC MINER · PROOF OF WORK · SHA-256 · BLOCK BY BLOCK ·';
     for(var k=0;k<txt.length;k++){var a=k/txt.length*Math.PI*2-Math.PI/2;g.save();g.translate(s/2+Math.cos(a)*s*.465,s/2+Math.sin(a)*s*.465);g.rotate(a+Math.PI/2);g.fillText(txt[k],0,0);g.restore()}
     g.font='700 600px Arial, Helvetica, sans-serif';
-    g.fillStyle='rgba(255,255,255,.85)';g.fillText('₿',s/2+8,s/2+38);
-    g.fillStyle='#2b2b29';g.fillText('₿',s/2,s/2+30);
+    g.fillStyle='rgba(120,55,0,.45)';g.fillText('₿',s/2+10,s/2+40);
+    g.fillStyle='#ffffff';g.fillText('₿',s/2,s/2+30);
     var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t;
   }
   function edgeTex(){
     var c=document.createElement('canvas');c.width=1024;c.height=32;var g=c.getContext('2d');
-    g.fillStyle='#a9a9a4';g.fillRect(0,0,1024,32);
-    for(var i=0;i<1024;i+=8){g.fillStyle='#6f6f6b';g.fillRect(i,0,3,32)}
+    g.fillStyle='#e88a14';g.fillRect(0,0,1024,32);
+    for(var i=0;i<1024;i+=8){g.fillStyle='#a85500';g.fillRect(i,0,3,32)}
     var t=new THREE.CanvasTexture(c);t.wrapS=THREE.RepeatWrapping;t.repeat.x=2;return t;
   }
   var face=faceTex();

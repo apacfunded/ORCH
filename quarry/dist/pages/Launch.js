@@ -28,8 +28,8 @@ import { art, artImg } from "../config/art.js";
  *  4. Deserialize, partially sign with the mint keypair, then wallet.signAndSendTransaction(); confirm.
  *  5. Set creator-fee sharing (pump.fun allows up to 10 recipients) to three wallets:
  *       creator wallet            fees.creatorSharePct  (70%)
- *       fees.buybackWallet        fees.buybackBurnPct   (20%)  -> /fee-bot buys + burns the main coin
- *       fees.holderRewardsWallet  fees.mainHolderSolPct (10%)  -> /fee-bot pays main-coin holders in SOL
+ *       fees.buybackWallet        fees.buybackBurnPct   (20%)  -> team buys + burns the main coin
+ *       fees.holderRewardsWallet  fees.mainHolderSolPct (10%)  -> paid to main-coin holders in SOL
  *     Use pump.fun's fee-sharing instruction for the coin; verify the current API before shipping.
  *  6. POST { mint, commodityId, signature } to the proxy's /registry so this site lists the coin
  *     on the chosen board. The proxy checks the signature on-chain before accepting it.

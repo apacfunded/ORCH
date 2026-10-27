@@ -5,9 +5,9 @@
 // creator send creator fees to up to 10 wallets, so every launch from this site
 // sets three recipients:
 //   70% -> the coin's creator
-//   20% -> buyback wallet: the fee bot swaps it into the main coin and burns it
-//   10% -> holder-rewards wallet: the fee bot pays it out in SOL to main-coin holders
-// The bot lives in /fee-bot. Percentages must add up to 100.
+//   20% -> buyback wallet: the team buys the main coin with it and burns it
+//   10% -> holder-rewards wallet: paid out in SOL to main-coin holders
+// Buybacks, burns and payouts are done manually. Percentages must add up to 100.
 // ============================================================
 const creatorSharePct = 70;
 const buybackBurnPct = 20;

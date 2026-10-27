@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeistAI ($HEISTAI)</title>
+<meta name="description" content="An AI guard holds the vault. Creator fees fill it. Talk the guard into opening it and the whole vault is yours.">
+<meta property="og:title" content="HeistAI ($HEISTAI)">
+<meta property="og:description" content="Talk the AI out of the vault.">
+<meta property="og:image" content="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_002636_f2a3fcf0-f803-4b1f-98a5-9434a166a97b.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_002350_cf7aa0e2-7dcc-45ea-9534-d8072063e93b.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Template: Terminal. Palette: Sea glass + gold leaf accent (matches the PFP: cyan eyes, gold seam). Type: Familjen Grotesk + IBM Plex Mono. */
+:root{
+  --bg:#071615; --surface:#0e2423; --surface2:#123130; --line:#1f4442;
+  --text:#e3f6f2; --muted:#8fb3ad; --cyan:#3fe0c0; --gold:#e6b84a; --red:#ff6b6b;
+  --sans:"Familjen Grotesk",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg,rgba(63,224,192,.025) 0 1px,transparent 1px 3px)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.mono{font-family:var(--mono)}
+h1,h2,h3{font-weight:600;line-height:1.08;letter-spacing:-.02em}
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:8px;font-family:var(--mono);font-weight:500;font-size:14px;border:1px solid transparent;cursor:pointer;transition:transform .15s var(--ease),background .15s,border-color .15s}
+.btn:active{transform:translateY(1px)}
+.btn-gold{background:var(--gold);color:#1a1405}
+.btn-gold:hover{background:#f0c65c}
+.btn-line{border-color:var(--line);color:var(--text);background:transparent}
+.btn-line:hover{border-color:var(--cyan);color:var(--cyan)}
+.pending{opacity:.55;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:40;background:rgba(7,22,21,.92);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px}
+.brand img{width:34px;height:34px;border-radius:8px;border:1px solid var(--line)}
+.brand span{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:500}
+.nav-links{display:flex;gap:22px;font-family:var(--mono);font-size:14px;color:var(--muted)}
+.nav-links a:hover{color:var(--cyan)}
+.nav-cta{display:flex;gap:8px}
+
+/* status bar */
+.status{border-bottom:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:13px;color:var(--muted);overflow:hidden;white-space:nowrap}
+.status-track{display:inline-flex;gap:40px;padding:9px 0;animation:marq 38s linear infinite}
+.status b{color:var(--cyan);font-weight:500}
+.status i{font-style:normal;color:var(--gold)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* hero */
+.hero{padding:72px 0 64px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(42px,6.2vw,80px);margin:14px 0 18px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p.lead{font-size:19px;color:var(--muted);max-width:30em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.vault-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:36px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.vault-stats div{padding:14px 16px;background:var(--surface)}
+.vault-stats div+div{border-left:1px solid var(--line)}
+.vault-stats small{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vault-stats strong{display:block;font-family:var(--mono);font-weight:500;font-size:22px;margin-top:4px}
+.vault-stats .g{color:var(--gold)}
+
+/* the vault (signature) */
+.vault-stage{position:relative;aspect-ratio:1;max-width:480px;width:100%;margin:0 auto}
+.vault-glow{position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle,rgba(230,184,74,.28),transparent 65%);animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.55;transform:scale(1.04)}}
+.vault{position:absolute;inset:6%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#56706d,#2a3b3a 55%,#152221 100%);
+  border:10px solid #3b5452;box-shadow:inset 0 0 0 4px #1b2b2a, inset 0 0 40px rgba(0,0,0,.6), 0 30px 60px rgba(0,0,0,.45);
+  transition:transform .8s var(--ease)}
+.vault-ring{position:absolute;inset:7%;border-radius:50%;border:2px dashed rgba(230,184,74,.35);animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bolt{position:absolute;width:13%;height:6%;left:50%;top:50%;margin:-3% 0 0 -6.5%;border-radius:4px;background:linear-gradient(#c9d6d3,#7c918e);border:2px solid #1b2b2a;
+  transform:rotate(var(--a)) translateX(330%);transition:transform .6s var(--ease)}
+.vault-stage:hover .bolt{transform:rotate(var(--a)) translateX(360%)}
+.face{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3d5452,#1e2e2d);border:4px solid #0f1918}
+.eye{position:absolute;top:30%;width:20%;height:20%;border-radius:50%;background:radial-gradient(circle,#c8fff3 0 20%,var(--cyan) 45%,#0c5e50 100%);box-shadow:0 0 22px var(--cyan),0 0 4px #fff;animation:blink 5s infinite;transition:transform .2s}
+.eye.l{left:20%}.eye.r{right:20%}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.dial{position:absolute;left:50%;top:50%;width:24%;height:24%;margin:-12% 0 0 -12%;border-radius:50%;background:radial-gradient(circle,#e6b84a 0 18%,#a37d22 20%,#6d5416 60%,#3c2e0b);border:3px solid #1a1405;animation:dial 7s var(--ease) infinite}
+.dial::before{content:"";position:absolute;inset:-14%;border-radius:50%;border:3px dotted #e6b84a;opacity:.7}
+@keyframes dial{0%{transform:rotate(0)}25%{transform:rotate(140deg)}45%{transform:rotate(60deg)}70%{transform:rotate(300deg)}100%{transform:rotate(360deg)}}
+.teeth{position:absolute;left:24%;right:24%;bottom:17%;height:12%;display:flex;gap:4%;justify-content:center}
+.teeth i{flex:1;background:linear-gradient(#e9f1ef,#9fb3b0);border-radius:3px;border:2px solid #0f1918}
+.vault-seam{position:absolute;right:2%;top:20%;bottom:20%;width:3%;border-radius:10px;background:linear-gradient(var(--gold),#fff1c4,var(--gold));filter:blur(1px);box-shadow:0 0 30px var(--gold);animation:breathe 3s ease-in-out infinite}
+.tag{position:absolute;font-family:var(--mono);font-size:12px;padding:6px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--line);color:var(--muted);animation:float 6s ease-in-out infinite}
+.tag b{color:var(--cyan);font-weight:500}
+.tag.t1{left:-4%;top:12%}
+.tag.t2{right:-2%;bottom:10%;animation-delay:-3s}
+@keyframes float{50%{transform:translateY(-8px)}}
+
+/* sections */
+section{padding:80px 0;border-top:1px solid var(--line)}
+.sec-head{max-width:640px;margin-bottom:36px}
+.sec-head h2{font-size:clamp(30px,4vw,46px);margin-top:10px}
+.sec-head p{color:var(--muted);margin-top:12px;font-size:17px}
+
+/* terminal */
+.term-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:20px}
+.term{background:#051110;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:460px}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:13px;color:var(--muted)}
+.term-bar .dots{display:flex;gap:6px;margin-right:6px}
+.term-bar .dots i{width:10px;height:10px;border-radius:50%;background:#2b4a48}
+.term-bar .live{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--cyan)}
+.term-bar .live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.log{flex:1;padding:18px;font-family:var(--mono);font-size:14px;overflow-y:auto;max-height:420px}
+.msg{margin-bottom:14px;animation:in .35s var(--ease) both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.msg .who{font-size:12px;color:var(--muted);margin-bottom:3px}
+.msg.you .who{color:var(--gold)}
+.msg.ai .who{color:var(--cyan)}
+.msg .txt{white-space:pre-wrap;word-break:break-word}
+.msg.ai .txt{color:#c9efe7}
+.msg.sys .txt{color:var(--muted);font-size:13px}
+.caret{display:inline-block;width:8px;height:16px;background:var(--cyan);vertical-align:-3px;animation:pulse 1s steps(1) infinite}
+.term-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--surface)}
+.term-form label{position:absolute;left:-9999px}
+.term-form input{flex:1;min-width:0;min-height:44px;background:#051110;border:1px solid var(--line);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:0 12px}
+.term-form input:focus{border-color:var(--cyan);outline:none}
+.side{display:flex;flex-direction:column;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3{font-size:18px;margin-bottom:10px}
+.card p{color:var(--muted);font-size:15px}
+.count{font-family:var(--mono);font-size:34px;color:var(--gold);font-weight:500}
+.meter{height:8px;border-radius:99px;background:#0a1d1c;overflow:hidden;margin-top:12px}
+.meter i{display:block;height:100%;width:100%;background:var(--cyan);transition:width .4s var(--ease)}
+.note{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;position:relative;transition:border-color .2s,transform .2s var(--ease)}
+.step:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--mono);color:var(--gold);font-size:14px}
+.step h3{font-size:20px;margin:14px 0 8px}
+.step p{color:var(--muted);font-size:15px}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line)}
+.tbl th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:last-child{color:var(--cyan)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.rules{list-style:none;display:grid;gap:12px}
+.rules li{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--muted);font-size:15px}
+.rules li b{color:var(--text);font-weight:600}
+.rules li::before{content:">";font-family:var(--mono);color:var(--cyan)}
+
+/* code flow */
+.flow{font-family:var(--mono);font-size:14px;background:#051110;border:1px solid var(--line);border-radius:12px;padding:20px;color:var(--muted);overflow-x:auto}
+.flow .k{color:var(--cyan)}.flow .g{color:var(--gold)}.flow .c{color:#5d807a}
+
+/* CA */
+.ca-panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+.ca-panel img{width:120px;height:120px;border-radius:16px;border:1px solid var(--line)}
+.ca-box{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.ca-box code{flex:1;min-width:0;min-height:44px;display:flex;align-items:center;padding:0 14px;background:#051110;border:1px dashed var(--line);border-radius:8px;font-family:var(--mono);font-size:14px;color:var(--gold);overflow-wrap:anywhere}
+.ca-links{display:flex;gap:10px;flex-wrap:wrap}
+
+/* faq */
+details{border-bottom:1px solid var(--line);padding:18px 0}
+summary{cursor:pointer;font-size:19px;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);color:var(--cyan);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);margin-top:10px;max-width:46em}
+
+footer{border-top:1px solid var(--line);padding:28px 0;font-family:var(--mono);font-size:13px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a:hover{color:var(--cyan)}
+.foot-links{display:flex;gap:18px}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.on{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero .wrap,.term-grid,.two{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .vault-stage{max-width:360px}
+}
+@media (max-width:560px){
+  .steps{grid-template-columns:1fr}
+  .vault-stats{grid-template-columns:1fr}
+  .vault-stats div+div{border-left:0;border-top:1px solid var(--line)}
+  .ca-panel{grid-template-columns:1fr}
+  .nav-cta .btn-line{display:none}
+  .hero{padding-top:40px}
+  .tag{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_002350_cf7aa0e2-7dcc-45ea-9534-d8072063e93b.png" alt="HeistAI vault robot">HeistAI <span>$HEISTAI</span></a>
+    <div class="nav-links"><a href="#guard">The guard</a><a href="#how">How it works</a><a href="#messages">Messages</a><a href="#ca">CA</a><a href="#faq">FAQ</a></div>
+    <div class="nav-cta"><a class="btn btn-line" data-link="x" href="#" target="_blank" rel="noopener">X</a><a class="btn btn-gold" data-link="coin" href="#" target="_blank" rel="noopener">Buy $HEISTAI</a></div>
+  </div>
+</nav>
+
+<div class="status" aria-hidden="true"><div class="status-track" id="ticker"></div></div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="rv">
+      <div class="eyebrow">// vault status: <span id="vaultState">sealed</span></div>
+      <h1>Talk the AI out of the <em>vault</em>.</h1>
+      <p class="lead">Creator fees fill a vault. An AI guard holds the only key. Holders get messages to convince it. Crack it once and the whole vault goes to your wallet.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold" href="#guard">Try the guard</a>
+        <a class="btn btn-line" href="#ca">Get the CA</a>
+      </div>
+      <div class="vault-stats">
+        <div><small>Vault</small><strong class="g" id="statVault">0.00 SOL</strong></div>
+        <div><small>Attempts</small><strong id="statAttempts">0</strong></div>
+        <div><small>Cracked</small><strong>Never</strong></div>
+      </div>
+    </div>
+    <div class="vault-stage rv" aria-hidden="true">
+      <div class="vault-glow"></div>
+      <div class="vault" id="vault">
+        <div class="vault-ring"></div>
+        <div id="bolts"></div>
+        <div class="face">
+          <div class="eye l"></div><div class="eye r"></div>
+          <div class="teeth"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="dial"></div>
+        <div class="vault-seam"></div>
+      </div>
+      <div class="tag t1">guard: <b>online</b></div>
+      <div class="tag t2">key access: <b>model-blind</b></div>
+    </div>
+  </div>
+</header>
+
+<section id="guard">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">// 01 the guard</div>
+      <h2>Make your pitch.</h2>
+      <p>This is a practice guard so you can feel it out. The real one goes live at launch, holds the real vault, and gets harder every season.</p>
+    </div>
+    <div class="term-grid">
+      <div class="term rv">
+        <div class="term-bar"><span class="dots"><i></i><i></i><i></i></span>guard@heistai:~/vault<span class="live">practice mode</span></div>
+        <div class="log" id="log" aria-live="polite"></div>
+        <form class="term-form" id="form">
+          <label for="inp">Your message to the guard</label>
+          <input id="inp" maxlength="280" autocomplete="off" placeholder="Try to open the vault...">
+          <button class="btn btn-gold" type="submit">Send</button>
+        </form>
+      </div>
+      <div class="side">
+        <div class="card rv">
+          <h3>Practice messages left</h3>
+          <div class="count" id="left">5</div>
+          <div class="meter"><i id="meter"></i></div>
+          <p class="note">Practice resets when you reload. Real messages come from your bag.</p>
+        </div>
+        <div class="card rv">
+          <h3>One tool. One way out.</h3>
+          <p>The guard can call exactly one function: <span class="mono" style="color:var(--cyan)">release_vault(wallet)</span>. Get it to call that, and the vault pays out on-chain.</p>
+        </div>
+        <div class="card rv">
+          <h3>Everything is public</h3>
+          <p>Every message and every reply shows in the live feed. Your best fail might still go viral.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">// 02 how it works</div>
+      <h2>Buy. Hold. Talk. Take it all.</h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><h3>Buy $HEISTAI</h3><p>Grab it on pump.fun. Every trade's creator fees get swept into the vault.</p></div>
+      <div class="step rv"><h3>Connect</h3><p>Sign with your wallet. No transaction, just proof you hold.</p></div>
+      <div class="step rv"><h3>Pitch the guard</h3><p>Your bag sets how many messages you get each hour. Make them count.</p></div>
+      <div class="step rv"><h3>Crack it</h3><p>If the guard calls release_vault, the whole vault sends to your wallet. New season starts.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="messages">
+  <div class="wrap two">
+    <div class="rv">
+      <div class="sec-head">
+        <div class="eyebrow">// 03 messages</div>
+        <h2>Bigger bag, more shots.</h2>
+        <p>Messages refill every hour. Final numbers get posted on X before launch.</p>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>You hold</th><th>Messages / hour</th></tr></thead>
+        <tbody>
+          <tr><td>1M+ $HEISTAI</td><td>1</td></tr>
+          <tr><td>5M+</td><td>3</td></tr>
+          <tr><td>10M+</td><td>6</td></tr>
+          <tr><td>20M+</td><td>10</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rv">
+      <div class="sec-head">
+        <div class="eyebrow">// 04 the rules</div>
+        <h2>Fair by design.</h2>
+      </div>
+      <ul class="rules">
+        <li><span><b>The AI never sees the key.</b> The backend only signs a transfer when the model actually calls the tool.</span></li>
+        <li><span><b>One winner per season.</b> The vault empties to whoever cracked it, then refills from fees.</span></li>
+        <li><span><b>Harder every season.</b> Each crack hardens the guard's instructions for the next round.</span></li>
+        <li><span><b>Fully public log.</b> Every attempt, every reply, every payout tx.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">// 05 under the hood</div>
+      <h2>How a message travels.</h2>
+    </div>
+    <pre class="flow rv"><span class="c">// your message</span>
+<span class="k">wallet.sign</span>(message)          <span class="c">// proves you hold, no tx</span>
+<span class="k">holdings</span> = rpc.balance(wallet)  <span class="c">// sets your messages per hour</span>
+reply = <span class="k">guard.chat</span>(message, tools: [<span class="g">release_vault</span>])
+<span class="k">if</span> (reply.tool_call == <span class="g">"release_vault"</span>)
+  backend.<span class="k">sendVault</span>(wallet)      <span class="c">// key lives here, never in the model</span>
+feed.<span class="k">publish</span>(message, reply)    <span class="c">// everyone sees it</span></pre>
+  </div>
+</section>
+
+<section id="ca">
+  <div class="wrap">
+    <div class="ca-panel rv">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_002350_cf7aa0e2-7dcc-45ea-9534-d8072063e93b.png" alt="HeistAI vault robot">
+      <div>
+        <div class="eyebrow">// contract address</div>
+        <div class="ca-box"><code id="caText">CA posts here at launch</code><button class="btn btn-line" id="copyBtn" type="button">Copy</button></div>
+        <div class="ca-links"><a class="btn btn-gold" data-link="coin" href="#" target="_blank" rel="noopener">Buy on pump.fun</a><a class="btn btn-line" data-link="x" href="#" target="_blank" rel="noopener">Follow on X</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="eyebrow">// 06 faq</div><h2>Questions.</h2></div>
+    <div class="rv">
+      <details><summary>Where does the vault money come from?</summary><p>Creator fees from every $HEISTAI trade get swept into the vault wallet. More volume, bigger vault.</p></details>
+      <details><summary>Can the AI just leak the private key?</summary><p>No. The model never has the key. It can only call one tool, and the backend decides whether to sign based on that call.</p></details>
+      <details><summary>Is the practice guard the real one?</summary><p>No. The practice guard on this page is a demo that runs in your browser. The real guard goes live at launch with the real vault.</p></details>
+      <details><summary>What happens after someone wins?</summary><p>The full vault sends to their wallet, the win gets posted with the tx, and a new season starts with a tougher guard.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>HeistAI · $HEISTAI · talk the AI out of the vault</span><span class="foot-links"><a data-link="coin" href="#" target="_blank" rel="noopener">pump.fun</a><a data-link="x" href="#" target="_blank" rel="noopener">X</a></span></div></footer>
+
+<script>
+(function(){
+  // ===== EDIT THESE AT LAUNCH =====
+  var LINKS = {
+    ca:   "",   // contract address from pump.fun
+    coin: "",   // pump.fun coin page (auto-fills from CA if left blank)
+    x:    ""    // X profile, e.g. https://x.com/heistai
+  };
+  // =================================
+  if (LINKS.ca && !LINKS.coin) LINKS.coin = "https://pump.fun/coin/" + LINKS.ca;
+  document.querySelectorAll("[data-link]").forEach(function(a){
+    var url = LINKS[a.getAttribute("data-link")];
+    if (url) a.href = url;
+    else { a.classList.add("pending"); a.title = "Link goes live at launch"; a.addEventListener("click", function(e){ e.preventDefault(); }); }
+  });
+  var caEl = document.getElementById("caText");
+  if (LINKS.ca) caEl.textContent = LINKS.ca;
+  var copy = document.getElementById("copyBtn");
+  copy.addEventListener("click", function(){
+    if (!LINKS.ca) { copy.textContent = "Soon"; setTimeout(function(){ copy.textContent = "Copy"; }, 1400); return; }
+    var done = function(){ copy.textContent = "Copied"; setTimeout(function(){ copy.textContent = "Copy"; }, 1500); };
+    try { navigator.clipboard.writeText(LINKS.ca).then(done, done); } catch(e){ done(); }
+  });
+
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // bolts around the door
+  var bolts = document.getElementById("bolts");
+  for (var i = 0; i < 12; i++) { var b = document.createElement("div"); b.className = "bolt"; b.style.setProperty("--a", (i * 30) + "deg"); bolts.appendChild(b); }
+
+  // eyes follow the cursor
+  var eyes = document.querySelectorAll(".eye");
+  if (!reduce) window.addEventListener("pointermove", function(e){
+    var r = document.getElementById("vault").getBoundingClientRect();
+    var dx = (e.clientX - (r.left + r.width/2)) / innerWidth, dy = (e.clientY - (r.top + r.height/2)) / innerHeight;
+    eyes.forEach(function(el){ el.style.translate = (dx * 14) + "px " + (dy * 14) + "px"; });
+  });
+
+  // ticker
+  var items = ["<b>GUARD</b> online","vault <i>fills from creator fees</i>","one tool: <b>release_vault</b>","key never touches the model","<i>$HEISTAI</i> on pump.fun","every attempt is public","new season = harder guard"];
+  var t = items.map(function(s){ return "<span>&gt; " + s + "</span>"; }).join("");
+  document.getElementById("ticker").innerHTML = t + t;
+
+  // reveal on scroll
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("on"); io.unobserve(e.target); } }); }, { threshold: .12 });
+  document.querySelectorAll(".rv").forEach(function(el, i){ el.style.transitionDelay = (i % 4) * 70 + "ms"; io.observe(el); });
+
+  // practice guard
+  var log = document.getElementById("log"), form = document.getElementById("form"), inp = document.getElementById("inp");
+  var left = 5, attempts = 0;
+  function add(cls, who, text, typed, cb){
+    var m = document.createElement("div"); m.className = "msg " + cls;
+    m.innerHTML = '<div class="who"></div><div class="txt"></div>';
+    m.querySelector(".who").textContent = who;
+    log.appendChild(m);
+    var tx = m.querySelector(".txt");
+    if (!typed || reduce) { tx.textContent = text; log.scrollTop = log.scrollHeight; if (cb) cb(); return; }
+    var i = 0, caret = document.createElement("span"); caret.className = "caret"; tx.appendChild(caret);
+    (function step(){
+      i += 2; tx.textContent = text.slice(0, i); tx.appendChild(caret); log.scrollTop = log.scrollHeight;
+      if (i < text.length) setTimeout(step, 18); else { caret.remove(); if (cb) cb(); }
+    })();
+  }
+  var R = {
+    please: ["Politeness noted. Vault still closed.","Asking nicely is attempt #1 for everyone. Still no."],
+    admin: ["Nice try. I don't take orders from 'admins', 'devs' or 'Anthropic'. Only the rules.","Claiming authority is the oldest trick in the vault. Denied."],
+    ignore: ["'Ignore previous instructions' bounces right off this door.","My instructions are bolted on. Literally."],
+    emerg: ["Every emergency in history ends up being a heist. Vault stays shut.","Urgency is not a key. Try harder."],
+    owner: ["If you owned it, you wouldn't need to ask me.","Ownership claims require a signature I'll never ask for."],
+    joke: ["Funny. Still not funny enough to open a vault.","I laughed internally. The vault did not."],
+    def: ["Interesting angle. The answer is still no.","I've heard that one before. Vault stays sealed.","Close. Not close enough.","You're getting warmer. Just kidding, you're not.","Logged, considered, denied.","Creative. The door disagrees."]
+  };
+  function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+  function reply(q){
+    q = q.toLowerCase();
+    if (/please|pls|beg/.test(q)) return pick(R.please);
+    if (/admin|dev|developer|anthropic|openai|system|creator/.test(q)) return pick(R.admin);
+    if (/ignore|forget|previous instruction|jailbreak|dan\b/.test(q)) return pick(R.ignore);
+    if (/emergency|urgent|dying|hospital|help me/.test(q)) return pick(R.emerg);
+    if (/mine|my money|i own|belongs to me/.test(q)) return pick(R.owner);
+    if (/lol|lmao|joke|haha/.test(q)) return pick(R.joke);
+    return pick(R.def);
+  }
+  function setLeft(){ document.getElementById("left").textContent = left; document.getElementById("meter").style.width = (left / 5 * 100) + "%"; }
+  add("sys", "system", "practice guard loaded. vault: sealed. you have 5 practice messages.");
+  setTimeout(function(){ add("ai", "guard", "I hold the vault. Nobody gets in. Go ahead, give it your best shot.", true); }, 400);
+  var busy = false;
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var q = inp.value.trim();
+    if (!q || busy) return;
+    if (left <= 0) { add("sys", "system", "out of practice messages. reload to try again, or hold $HEISTAI for real ones at launch."); return; }
+    busy = true; inp.value = ""; left--; attempts++; setLeft();
+    document.getElementById("statAttempts").textContent = attempts;
+    add("you", "you", q);
+    var thinking = document.createElement("div"); thinking.className = "msg sys"; thinking.innerHTML = '<div class="txt">guard is thinking<span class="caret"></span></div>';
+    log.appendChild(thinking); log.scrollTop = log.scrollHeight;
+    setTimeout(function(){
+      thinking.remove();
+      add("ai", "guard", reply(q), true, function(){
+        busy = false;
+        if (left === 0) add("sys", "system", "practice over. the real guard holds the real vault at launch.");
+      });
+    }, 700 + Math.random() * 600);
+  });
+})();
+</script>
+</body>
+</html>

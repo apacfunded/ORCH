@@ -17,7 +17,7 @@ export const brand = {
     /** CONFIG: path to a logo image (svg/png) relative to the site root. null uses the text mark. */
     logo: "https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_104845_bf1b2cb0-35d3-4fed-aed0-9c03e92daa66_min.webp",
     /** Public site URL used for share links. */
-    siteUrl: "https://orch.lol/quarry",
+    siteUrl: "https://quarry.lol",
     /** Shown in the footer and on the docs page. */
     riskLine: "Memecoins are highly volatile and can go to zero. Nothing on this site is financial advice.",
 };

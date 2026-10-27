@@ -13,7 +13,7 @@ export function playIntro() {
             s.innerHTML = commodityIcon(c.icon);
             return s;
         });
-        const el = h("div", { class: "intro", role: "dialog", "aria-label": "Intro" }, h("div", { class: "floor" }), h("div", { class: "ingots" }, ingots), h("div", { class: "stamp" }, h("span", { class: "stamp-mark", html: LOGO }), brand.name.slice(0, 1), h("i", null, brand.name.slice(1))), h("div", { class: "skip" }, "CLICK OR PRESS ANY KEY TO SKIP"));
+        const el = h("div", { class: "intro", role: "dialog", "aria-label": "Intro" }, h("div", { class: "floor" }), h("div", { class: "ingots" }, ingots), h("div", { class: "stamp" }, brand.logo ? h("img", { class: "stamp-mark", src: brand.logo, alt: "", style: "border-radius:22%;object-fit:cover" }) : h("span", { class: "stamp-mark", html: LOGO }), brand.name.slice(0, 1), h("i", null, brand.name.slice(1))), h("div", { class: "skip" }, "CLICK OR PRESS ANY KEY TO SKIP"));
         let done = false;
         const finish = () => {
             if (done)

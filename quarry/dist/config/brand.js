@@ -15,7 +15,7 @@ export const brand = {
     /** CONFIG: Telegram invite URL. null hides the link. */
     telegram: null,
     /** CONFIG: path to a logo image (svg/png) relative to the site root. null uses the text mark. */
-    logo: null,
+    logo: "https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_104226_0ca018c2-cb8a-44ad-bff8-f027c7975352_min.webp",
     /** Public site URL used for share links. */
     siteUrl: "https://orch.lol/quarry",
     /** Shown in the footer and on the docs page. */

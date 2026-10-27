@@ -4,7 +4,6 @@ import { boardCommodities, byId, categoryLabel, liveCommodities, soonCommodities
 import { market, mockMarket } from "../data/index.js";
 import { applyFilter } from "../data/CodexMarketData.js";
 import { activityRail } from "../components/ActivityRail.js";
-import { tierBadge } from "../components/Badge.js";
 import { coinCard } from "../components/CoinCard.js";
 import { commodityTile, unlockTile } from "../components/CommodityTile.js";
 import { UI, commodityIcon } from "../components/Icons.js";
@@ -13,12 +12,14 @@ import { toast } from "../components/Toasts.js";
 import { h, onRemove, svg } from "../lib/dom.js";
 import { fmtPct, fmtUsd, pctArrow } from "../lib/format.js";
 import { reducedMotion, storage } from "../lib/motion.js";
+import { heroFeed as heroFeedConfig } from "../config/hero.js";
+import { heroSource } from "../data/heroFeed.js";
 import { href } from "../lib/router.js";
 export async function homePage(ctx) {
     const coins = await market().listCoins({ limit: 400 });
     // ---------- hero ----------
-    const heroChart = liveHeroChart(coins);
-    const featured = featuredCard(coins);
+    const featured = featuredCard();
+    const heroChart = liveHeroChart(heroSource());
     const hero = h("section", { class: "hero hero-art" }, artImg(art.hero, "hero-img"), h("div", { class: "hero-shade", "aria-hidden": "true" }), h("div", { class: "hero-copy" }, h("div", { class: "eyebrow" }, "Commodity-paired launchpad · Solana"), h("h1", { style: "margin-top:12px" }, "Launch coins paired with ", h("span", { class: "glow" }, "the real world"), "."), h("p", { class: "sub" }, brand.subline), h("div", { class: "ctas" }, h("a", { class: "btn primary", href: href("/launch") }, svg(UI.rocket), "Launch a coin"), h("a", { class: "btn", href: href("/boards") }, "Browse boards", svg(UI.arrow)))), h("div", { class: "hero-right" }, heroChart, featured));
     // ---------- boards ----------
     const volOf = (id) => coins.filter((x) => x.commodityId === id).reduce((s, x) => s + x.volume24hUsd, 0);
@@ -90,19 +91,17 @@ function curveArt() {
     return c;
 }
 // ---------- live hero chart (pure canvas, Catmull-Rom, glow, particle trail) ----------
-function liveHeroChart(coins) {
-    const top = [...coins].sort((a, b) => b.marketCapUsd - a.marketCapUsd)[0];
+// Tracks real data from data/heroFeed.ts: live gold spot now, your coin once config/hero.ts has its CA.
+function liveHeroChart(feed) {
     const canvas = h("canvas");
-    const price = h("div", { class: "price num" }, top ? fmtUsd(top.marketCapUsd) : "—");
-    const el = h("div", { class: "card hero-chart" }, canvas, h("div", { class: "lbl" }, top ? `$${top.ticker} · MARKET CAP · LIVE` : "LIVE"), price);
-    if (!top)
-        return el;
-    const ratio = top.priceUsd > 0 ? top.marketCapUsd / top.priceUsd : 1;
-    const pts = top.spark.map((p) => p * ratio);
+    const lbl = h("div", { class: "lbl" }, "LOADING LIVE PRICE");
+    const price = h("div", { class: "price num" }, "—");
+    const el = h("div", { class: "card hero-chart" }, canvas, lbl, price);
+    const pts = [];
     const particles = [];
     let raf = 0;
-    const com = byId(top.commodityId);
-    const color = com?.color ?? "#e6b84a";
+    let timer = 0;
+    const color = heroFeedConfig.coinMint ? "#e0344a" : (byId("gold")?.color ?? "#e6b84a");
     const draw = () => {
         const dpr = Math.min(2, devicePixelRatio || 1);
         const w = canvas.clientWidth, hgt = canvas.clientHeight;
@@ -115,13 +114,6 @@ function liveHeroChart(coins) {
             return;
         c.setTransform(dpr, 0, 0, dpr, 0, 0);
         c.clearRect(0, 0, w, hgt);
-        const n = pts.length;
-        if (n < 2)
-            return;
-        const min = Math.min(...pts), max = Math.max(...pts), span = max - min || 1;
-        const X = (i) => 20 + (i / (n - 1)) * (w - 60);
-        const Y = (v) => 48 + (1 - (v - min) / span) * (hgt - 70);
-        // grid
         c.strokeStyle = "rgba(246,233,234,.05)";
         c.lineWidth = 1;
         for (let i = 1; i < 5; i++) {
@@ -130,18 +122,26 @@ function liveHeroChart(coins) {
             c.lineTo(w, (hgt / 5) * i);
             c.stroke();
         }
-        // catmull-rom spline
-        const P = pts.map((v, i) => ({ x: X(i), y: Y(v) }));
-        c.beginPath();
-        c.moveTo(P[0].x, P[0].y);
-        for (let i = 0; i < P.length - 1; i++) {
-            const p0 = P[i - 1] ?? P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] ?? p2;
-            const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6, c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
-            c.bezierCurveTo(c1x, c1y, c2x, c2y, p2.x, p2.y);
-        }
+        const series = pts.length === 1 ? [pts[0], pts[0]] : pts;
+        const n = series.length;
+        if (n < 2)
+            return;
+        const min = Math.min(...series), max = Math.max(...series), span = max - min || Math.max(1e-9, max * 0.001);
+        const X = (i) => 20 + (i / (n - 1)) * (w - 60);
+        const Y = (v) => 48 + (1 - (v - min) / span) * (hgt - 70);
+        const P = series.map((v, i) => ({ x: X(i), y: max === min ? hgt / 2 : Y(v) }));
+        const path = () => {
+            c.beginPath();
+            c.moveTo(P[0].x, P[0].y);
+            for (let i = 0; i < P.length - 1; i++) {
+                const p0 = P[i - 1] ?? P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] ?? p2;
+                c.bezierCurveTo(p1.x + (p2.x - p0.x) / 6, p1.y + (p2.y - p0.y) / 6, p2.x - (p3.x - p1.x) / 6, p2.y - (p3.y - p1.y) / 6, p2.x, p2.y);
+            }
+        };
         const g = c.createLinearGradient(0, 0, 0, hgt);
         g.addColorStop(0, color + "44");
         g.addColorStop(1, color + "00");
+        path();
         c.save();
         c.lineTo(P[P.length - 1].x, hgt);
         c.lineTo(P[0].x, hgt);
@@ -149,19 +149,13 @@ function liveHeroChart(coins) {
         c.fillStyle = g;
         c.fill();
         c.restore();
-        c.beginPath();
-        c.moveTo(P[0].x, P[0].y);
-        for (let i = 0; i < P.length - 1; i++) {
-            const p0 = P[i - 1] ?? P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] ?? p2;
-            c.bezierCurveTo(p1.x + (p2.x - p0.x) / 6, p1.y + (p2.y - p0.y) / 6, p2.x - (p3.x - p1.x) / 6, p2.y - (p3.y - p1.y) / 6, p2.x, p2.y);
-        }
+        path();
         c.strokeStyle = color;
         c.lineWidth = 2;
         c.shadowColor = color;
         c.shadowBlur = 14;
         c.stroke();
         c.shadowBlur = 0;
-        // head + particles
         const head = P[P.length - 1];
         if (!reducedMotion() && particles.length < 40)
             particles.push({ x: head.x, y: head.y, vx: -Math.random() * 1.2 - 0.3, vy: (Math.random() - 0.5) * 0.8, a: 1 });
@@ -187,7 +181,6 @@ function liveHeroChart(coins) {
         c.globalAlpha = .5;
         c.stroke();
         c.globalAlpha = 1;
-        // moving price label
         price.style.top = `${Math.max(8, Math.min(hgt - 30, head.y - 12))}px`;
     };
     const loop = () => { if (!document.contains(el))
@@ -196,29 +189,71 @@ function liveHeroChart(coins) {
         draw();
     else
         loop(); });
-    let lastMcap = top.marketCapUsd;
-    const off = market().subscribeCoin(top.mint, (c) => {
-        pts.push(c.marketCapUsd);
-        if (pts.length > 60)
-            pts.shift();
-        price.textContent = fmtUsd(c.marketCapUsd);
-        price.style.color = c.marketCapUsd >= lastMcap ? "var(--up)" : "var(--down)";
-        lastMcap = c.marketCapUsd;
+    let last = 0;
+    const show = (q) => {
+        lbl.textContent = q.label;
+        price.textContent = fmtHero(q.value);
+        if (last)
+            price.style.color = q.value >= last ? "var(--up)" : "var(--down)";
+        last = q.value;
+        heroBus.dispatchEvent(new CustomEvent("quote", { detail: q }));
+    };
+    const tick = async () => {
+        const q = await feed.poll();
+        if (!document.contains(el))
+            return;
+        if (q) {
+            pts.push(q.value);
+            if (pts.length > 80)
+                pts.shift();
+            show(q);
+        }
+        timer = window.setTimeout(tick, feed.intervalMs);
+    };
+    void feed.initial().then((r) => {
+        if (r) {
+            pts.push(...r.history.slice(-79));
+            show(r.quote);
+        }
+        else
+            lbl.textContent = "LIVE PRICE UNAVAILABLE · RETRYING";
+        timer = window.setTimeout(tick, feed.intervalMs);
     });
-    onRemove(el, () => { off(); if (raf)
-        cancelAnimationFrame(raf); });
+    onRemove(el, () => { if (raf)
+        cancelAnimationFrame(raf); window.clearTimeout(timer); });
     return el;
 }
-function featuredCard(coins) {
-    const top = [...coins].sort((a, b) => b.marketCapUsd - a.marketCapUsd)[0];
-    if (!top)
-        return h("div");
-    const com = byId(top.commodityId);
-    const mcap = odometer(fmtUsd(top.marketCapUsd));
-    const pct = h("span", { class: `num ${top.change24hPct >= 0 ? "up" : "down"}` }, `${pctArrow(top.change24hPct)} ${fmtPct(top.change24hPct)}`);
-    const el = h("a", { class: "card pad", href: href(`/coin/${top.mint}`), style: "display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center" }, h("img", { src: top.image, alt: "", style: "width:44px;height:44px;border-radius:50%" }), h("div", null, h("div", { style: "font-weight:600" }, `$${top.ticker} `, h("span", { class: "muted", style: "font-weight:400" }, top.name)), h("div", { class: "num", style: "font-size:12px;color:var(--text-2);display:flex;gap:6px;align-items:center;margin-top:4px" }, "Paired with", svg(commodityIcon(com?.icon ?? ""), "ico"), h("b", null, com?.symbol ?? ""), com ? tierBadge(com, { tooltip: false }) : null)), h("div", { style: "text-align:right" }, h("div", { style: "font-size:18px;font-weight:600" }, mcap.el), pct));
-    const off = market().subscribeCoin(top.mint, (c) => { mcap.set(fmtUsd(c.marketCapUsd)); pct.textContent = `${pctArrow(c.change24hPct)} ${fmtPct(c.change24hPct)}`; pct.className = `num ${c.change24hPct >= 0 ? "up" : "down"}`; });
-    onRemove(el, off);
+const fmtGold = (v) => `$${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const fmtHero = (v) => (heroFeedConfig.coinMint ? fmtUsd(v) : fmtGold(v));
+/** Lets the featured card reuse the chart's quotes instead of fetching twice. */
+const heroBus = new EventTarget();
+function featuredCard() {
+    const gold = byId("gold");
+    const isCoin = !!heroFeedConfig.coinMint;
+    const icon = h("span", { style: "width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface-3);color:" + (gold?.color ?? "#e6b84a") });
+    if (!isCoin)
+        icon.appendChild(svg(commodityIcon(gold?.icon ?? ""), "ico"));
+    const title = h("span", null, isCoin ? "Loading…" : "Gold ");
+    const sub = h("span", { class: "muted", style: "font-weight:400" }, isCoin ? "" : "XAU");
+    const value = odometer("—");
+    const pct = h("span", { class: "num muted" }, "");
+    const el = h("a", { class: "card pad", href: isCoin ? `https://pump.fun/coin/${heroFeedConfig.coinMint}` : href("/board/gold"), target: isCoin ? "_blank" : undefined, rel: isCoin ? "noopener" : undefined, style: "display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center" }, icon, h("div", null, h("div", { style: "font-weight:600" }, title, " ", sub), h("div", { class: "num", style: "font-size:12px;color:var(--text-2);margin-top:4px" }, isCoin ? "Live on pump.fun" : "Live spot price per troy ounce")), h("div", { style: "text-align:right" }, h("div", { style: "font-size:18px;font-weight:600" }, value.el), pct));
+    const on = (e) => {
+        const q = e.detail;
+        value.set(fmtHero(isCoin ? q.value : q.priceUsd));
+        if (isCoin) {
+            title.textContent = q.title;
+            sub.textContent = q.subtitle;
+            if (q.image && !icon.firstChild)
+                icon.appendChild(h("img", { src: q.image, alt: "", style: "width:44px;height:44px;border-radius:50%;object-fit:cover" }));
+        }
+        if (q.change24h !== null) {
+            pct.textContent = `${pctArrow(q.change24h)} ${fmtPct(q.change24h)}`;
+            pct.className = `num ${q.change24h >= 0 ? "up" : "down"}`;
+        }
+    };
+    heroBus.addEventListener("quote", on);
+    onRemove(el, () => heroBus.removeEventListener("quote", on));
     return el;
 }
 // ---------- explorer ----------

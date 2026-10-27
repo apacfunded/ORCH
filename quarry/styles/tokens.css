@@ -1,0 +1,98 @@
+/* ============================================================
+   DESIGN TOKENS — Pit
+   Palette: "Oxblood" (private vault at night). Light theme via [data-theme="light"].
+   Commodity accents are set per board from config; UI chrome stays neutral.
+   ============================================================ */
+:root {
+  --bg: #120607;
+  --bg-2: #170909;
+  --surface-1: #1e0c0e;
+  --surface-2: #261114;
+  --surface-3: #33171b;
+  --border: rgba(246, 233, 234, 0.09);
+  --border-strong: rgba(246, 233, 234, 0.18);
+  --highlight: rgba(255, 255, 255, 0.04);
+  --text: #f6e9ea;
+  --text-2: #d2bcbf;
+  --text-3: #9a7f83;
+  --accent: #e0344a;
+  --accent-2: #7a1424;
+  --accent-ink: #fff4f5;
+  --accent-rgb: 224, 52, 74;
+  --up: #58d68d;
+  --up-dim: rgba(88, 214, 141, 0.16);
+  --down: #ff8a5c;
+  --down-dim: rgba(255, 138, 92, 0.16);
+  --warn: #f2b84b;
+  --house: #b9a2ff;
+  --backed: #e6b84a;
+  --backed-ink: #1a1304;
+
+  --font-ui: "Familjen Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 50px rgba(0, 0, 0, 0.5);
+
+  --header-h: 60px;
+  --tape-h: 34px;
+  --maxw: 1360px;
+  --gutter: 16px;
+
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f8eff0;
+  --bg-2: #f2e6e7;
+  --surface-1: #fffafa;
+  --surface-2: #f8eced;
+  --surface-3: #eedcde;
+  --border: rgba(42, 14, 18, 0.1);
+  --border-strong: rgba(42, 14, 18, 0.2);
+  --highlight: rgba(255, 255, 255, 0.5);
+  --text: #2a0e12;
+  --text-2: #5e3a3f;
+  --text-3: #8f6a6f;
+  --accent: #b3203a;
+  --accent-2: #6e1020;
+  --accent-ink: #fff7f8;
+  --accent-rgb: 179, 32, 58;
+  --up: #1e9e5a;
+  --up-dim: rgba(30, 158, 90, 0.14);
+  --down: #d4552a;
+  --down-dim: rgba(212, 85, 42, 0.14);
+  --house: #6b4fd8;
+  --backed: #b8860b;
+  --backed-ink: #fffaf2;
+  --shadow-1: 0 8px 24px rgba(42, 14, 18, 0.08);
+  --shadow-2: 0 18px 50px rgba(42, 14, 18, 0.14);
+  color-scheme: light;
+}
+
+@media (min-width: 768px) {
+  :root { --gutter: 24px; }
+}
+@media (min-width: 1024px) {
+  :root { --gutter: 32px; }
+}

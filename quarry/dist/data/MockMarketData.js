@@ -85,13 +85,13 @@ export class MockMarketData {
     seedCoins() {
         const live = commodities.filter((c) => c.status === "live");
         const ageSpread = 1000 * 60 * 60 * 36;
-        for (let i = 0; i < 220; i++) {
+        for (let i = 0; i < (flags.mockCoins ? 220 : 0); i++) {
             // first three passes give every board coins, the rest land randomly
             const com = i < live.length * 3 ? live[i % live.length] : this.rng.pick(live);
             this.createCoin(com, Date.now() - this.rng.range(60000, ageSpread), false);
         }
         // House tokens on their own pre-unlock curves.
-        for (const com of commodities.filter((c) => c.status === "locked")) {
+        for (const com of commodities.filter((c) => flags.mockCoins && c.status === "locked")) {
             const coin = this.createCoin(com, Date.now() - this.rng.range(3600000, 36000000), true);
             coin.bondingProgress = com.unlockProgress;
             coin.status = coin.bondingProgress > 0.9 ? "graduating" : "curve";
@@ -247,7 +247,8 @@ export class MockMarketData {
                 this.simulateReconnectBlip();
         };
         this.timer = window.setInterval(step, 250);
-        this.scheduleLaunch();
+        if (flags.mockCoins)
+            this.scheduleLaunch();
     }
     simulateReconnectBlip() {
         if (this.rng.chance(0.08)) {
@@ -282,6 +283,8 @@ export class MockMarketData {
         }, this.rng.range(a, b));
     }
     whaleEvent() {
+        if (!this.order.length)
+            return;
         const mint = this.rng.pick(this.order.slice(0, 30));
         const coin = this.coins.get(mint);
         if (!coin)

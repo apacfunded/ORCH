@@ -11,6 +11,8 @@ export const flags = {
     proxyUrl: w.proxyUrl ?? "",
     /** CONFIG: Solana RPC used only for the connected wallet's SOL balance. */
     rpcUrl: w.rpcUrl ?? "https://api.mainnet-beta.solana.com",
+    /** false = no test coins at all (boards start empty until real coins exist). */
+    mockCoins: false,
     /** Fake coins are launched this often in mock mode (ms range). */
     mockLaunchEveryMs: [8000, 20000],
     /** Fake trades stream this often in mock mode (ms range). */

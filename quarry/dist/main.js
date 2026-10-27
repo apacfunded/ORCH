@@ -80,4 +80,4 @@ function titleFor(path) {
 window.addEventListener("hashchange", () => void render());
 void render();
 if (isDemo())
-    window.setTimeout(() => toast("Demo mode: every coin and price on this site is simulated.", { icon: "info", color: "#f2b84b", ms: 5000 }), 1500);
+    window.setTimeout(() => toast("Board prices are simulated until live data is connected. The front chart shows the real gold price.", { icon: "info", color: "#f2b84b", ms: 5000 }), 1500);

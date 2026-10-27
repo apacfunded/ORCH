@@ -46,8 +46,8 @@ export async function launchPage(ctx) {
     const preview = h("div", { class: "preview" }, h("div", { class: "pcap" }, "Live preview"));
     const previewCard = h("div");
     preview.appendChild(previewCard);
-    const header = h("div", { class: "art-header" }, artImg(art.foundry, "art-header-img"), h("div", { class: "art-header-shade", "aria-hidden": "true" }), h("div", { class: "art-header-copy" }, h("div", { class: "eyebrow" }, "Launch a coin"), h("h1", null, "Pick a commodity, name your coin, go."), h("p", null, "Your coin launches on pump.fun. It gets its own board and commodity price here.")));
-    const el = h("div", { class: "page" }, header, h("div", { class: "wizard" }, h("div", { style: "display:grid;gap:14px" }, steps, stage), preview));
+    const header = h("div", { class: "art-header" }, artImg(art.foundry, "art-header-img"), h("div", { class: "art-header-shade", "aria-hidden": "true" }), h("div", { class: "art-header-copy" }, h("div", { class: "eyebrow" }, "Launch a coin · pump.fun"), h("h1", null, "SEND ", h("span", { class: "loud-hot" }, "IT."), h("br"), "PRICE IT IN ", h("span", { class: "loud-gold" }, "GOLD.")), h("p", null, "Name it. Pick a commodity. Launch on pump.fun. Your coin gets its own board and commodity price here.")));
+    const el = h("div", { class: "page launch-loud" }, header, h("div", { class: "wizard" }, h("div", { style: "display:grid;gap:14px" }, steps, stage), preview));
     const renderPreview = () => {
         const com = d.commodityId ? byId(d.commodityId) : null;
         const fake = {
@@ -82,11 +82,11 @@ export async function launchPage(ctx) {
             file.addEventListener("change", () => { const f = file.files?.[0]; if (!f)
                 return; const r = new FileReader(); r.onload = () => { d.image = String(r.result); img.src = d.image; img.style.display = ""; circ.querySelector(".svgwrap")?.remove(); renderPreview(); }; r.readAsDataURL(f); });
             const err = h("div", { class: "err" });
-            return h("div", { class: "card wstep" }, h("h2", null, "Coin details"), h("p", { class: "hint" }, "Name, ticker and image. Socials are optional."), field("Name", name), field("Ticker", ticker, "letters and numbers"), h("div", { class: "field" }, h("label", { for: "f-img" }, h("span", null, "Image"), h("span", { class: "muted" }, "cropped to a circle")), h("label", { class: "upload", for: "f-img" }, circ, h("span", { class: "btn sm" }, "Choose image"), file)), field("Description", desc), h("div", { class: "twocol" }, field("X link", txt("f-x", "x", "https://x.com/…")), field("Website", txt("f-web", "website", "https://…")), field("Telegram", txt("f-tg", "telegram", "https://t.me/…"))), err, h("div", { class: "wnav" }, h("span"), h("button", { class: "btn primary", onclick: () => { if (!d.name.trim() || d.ticker.length < 2) {
+            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 1/4"), h("h2", null, "NAME YOUR COIN."), h("p", { class: "hint" }, "Name, ticker, image. Socials optional. Make it loud."), field("Name", name), field("Ticker", ticker, "letters and numbers"), h("div", { class: "field" }, h("label", { for: "f-img" }, h("span", null, "Image"), h("span", { class: "muted" }, "cropped to a circle")), h("label", { class: "upload", for: "f-img" }, circ, h("span", { class: "btn sm" }, "Choose image"), file)), field("Description", desc), h("div", { class: "twocol" }, field("X link", txt("f-x", "x", "https://x.com/…")), field("Website", txt("f-web", "website", "https://…")), field("Telegram", txt("f-tg", "telegram", "https://t.me/…"))), err, h("div", { class: "wnav" }, h("span"), h("button", { class: "btn primary", onclick: () => { if (!d.name.trim() || d.ticker.length < 2) {
                     err.textContent = "Add a name and a ticker of at least 2 characters to continue.";
                     name.focus();
                     return;
-                } err.textContent = ""; go(1); } }, "Pick a pair", svg(UI.arrow))));
+                } err.textContent = ""; go(1); } }, "PICK A COMMODITY", svg(UI.arrow))));
         },
         // 2 — pair
         () => {
@@ -99,13 +99,13 @@ export async function launchPage(ctx) {
                 return b;
             });
             const err = h("div", { class: "err" });
-            return h("div", { class: "card wstep" }, h("h2", null, "Pick your pair"), h("p", { class: "hint" }, "Your coin goes on this board and is priced in this commodity on our site. On pump.fun it trades in SOL like any coin."), pickerSearch(allBoards, tiles), Object.keys(categoryLabel).map((cat) => {
+            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 2/4"), h("h2", null, "PICK YOUR COMMODITY."), h("p", { class: "hint" }, "Your coin lives on this board and gets priced in this commodity here. On pump.fun it trades in SOL like any coin."), pickerSearch(allBoards, tiles), Object.keys(categoryLabel).map((cat) => {
                 const idx = allBoards.map((c, i) => (c.category === cat ? i : -1)).filter((i) => i >= 0);
                 return idx.length ? h("div", { class: "pick-group" }, h("h3", { class: "group-title" }, categoryLabel[cat]), h("div", { class: "picker" }, idx.map((i) => tiles[i]))) : null;
             }), h("p", { class: "hint" }, pairNote), disc, err, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(0) }, svg(UI.back), "Back"), h("button", { class: "btn primary", onclick: () => { if (!d.commodityId) {
                     err.textContent = "Choose a commodity to continue.";
                     return;
-                } go(2); } }, "Settings", svg(UI.arrow))));
+                } go(2); } }, "SETTINGS", svg(UI.arrow))));
         },
         // 3 — settings
         () => {
@@ -113,7 +113,7 @@ export async function launchPage(ctx) {
             const dev = h("input", { type: "number", id: "f-dev", inputmode: "decimal", min: "0", step: "any", placeholder: "0", value: d.devBuy });
             dev.addEventListener("input", () => { d.devBuy = dev.value; });
             const tog = h("button", { class: `toggle ${d.rewards ? "on" : ""}`, role: "switch", "aria-checked": d.rewards ? "true" : "false", "aria-label": "Holder rewards", disabled: !fees.holderRewardsAvailable, onclick: () => { d.rewards = !d.rewards; tog.classList.toggle("on", d.rewards); tog.setAttribute("aria-checked", d.rewards ? "true" : "false"); renderPreview(); } });
-            return h("div", { class: "card wstep" }, h("h2", null, "Settings"), h("p", { class: "hint" }, "Shares are placeholders until the owner sets them (TBD). pump.fun charges its own trading fee; this is how the coin's creator fees get split."), h("div", { class: "field" }, h("label", { for: "f-dev" }, h("span", null, "Dev buy (optional)"), h("span", { class: "muted" }, "in SOL")), h("div", { class: "inp" }, dev, h("span", { class: "unit" }, "SOL"))), h("p", { class: "hint" }, "A dev buy goes in the same transaction as the launch, so snipers can't buy before you."), h("div", { class: "feegrid" }, h("div", null, h("span", null, "Creator fees → launchpad wallet"), h("b", null, fmtFee(fees.launchpadSharePct))), h("div", null, h("span", null, "Creator fees → your wallet"), h("b", null, fmtFee(fees.creatorSharePct))), h("div", null, h("span", null, `Holder rewards → fees buy ${com.symbol} for holders (${fmtFee(fees.holderRewardsPct)})`), tog)), com.tier === "house" ? h("div", { class: "disc-box" }, h("b", null, "House pair · "), houseDisclaimer) : null, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(1) }, svg(UI.back), "Back"), h("button", { class: "btn primary", onclick: () => go(3) }, "Review", svg(UI.arrow))));
+            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 3/4"), h("h2", null, "LOAD IT UP."), h("p", { class: "hint" }, "Shares are placeholders until the owner sets them (TBD). pump.fun charges its own trading fee; this is how the coin's creator fees get split."), h("div", { class: "field" }, h("label", { for: "f-dev" }, h("span", null, "Dev buy (optional)"), h("span", { class: "muted" }, "in SOL")), h("div", { class: "inp" }, dev, h("span", { class: "unit" }, "SOL"))), h("p", { class: "hint" }, "A dev buy goes in the same transaction as the launch, so snipers can't buy before you."), h("div", { class: "feegrid" }, h("div", null, h("span", null, "Creator fees → launchpad wallet"), h("b", null, fmtFee(fees.launchpadSharePct))), h("div", null, h("span", null, "Creator fees → your wallet"), h("b", null, fmtFee(fees.creatorSharePct))), h("div", null, h("span", null, `Holder rewards → fees buy ${com.symbol} for holders (${fmtFee(fees.holderRewardsPct)})`), tog)), com.tier === "house" ? h("div", { class: "disc-box" }, h("b", null, "House pair · "), houseDisclaimer) : null, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(1) }, svg(UI.back), "Back"), h("button", { class: "btn primary", onclick: () => go(3) }, "REVIEW", svg(UI.arrow))));
         },
         // 4 — review & launch
         () => {
@@ -124,7 +124,7 @@ export async function launchPage(ctx) {
                         return;
                     }
                     btn.setAttribute("disabled", "");
-                    btn.textContent = "Launching…";
+                    btn.textContent = "SENDING IT…";
                     try {
                         const coin = await launchCoin(d);
                         stage.replaceChildren(successScreen(coin, com));
@@ -133,10 +133,10 @@ export async function launchPage(ctx) {
                     catch (e) {
                         toast(e.message, { color: "#ff8a5c" });
                         btn.removeAttribute("disabled");
-                        btn.textContent = "Launch";
+                        btn.textContent = "SEND IT";
                     }
-                } }, svg(UI.rocket), isDemo() ? "Launch (demo)" : "Launch on pump.fun");
-            return h("div", { class: "card wstep" }, h("h2", null, "Review & launch"), h("p", { class: "hint" }, isDemo() ? "Demo mode: this creates a simulated coin on this site only. Nothing is sent to pump.fun." : "This launches your coin on pump.fun and lists it on the board you picked."), h("div", { class: "kv" }, h("div", null, h("span", null, "Name"), h("span", null, d.name)), h("div", null, h("span", null, "Ticker"), h("span", null, `$${d.ticker}`)), h("div", null, h("span", null, "Launches on"), h("span", null, "pump.fun (trades in SOL)")), h("div", null, h("span", null, "Shown here as"), h("span", null, `${d.ticker} / ${com.symbol} (${com.tier})`)), h("div", null, h("span", null, "Dev buy"), h("span", null, d.devBuy ? `${d.devBuy} SOL` : "None")), h("div", null, h("span", null, "Holder rewards"), h("span", null, d.rewards ? "On" : "Off")), h("div", null, h("span", null, "Site fee"), h("span", null, fees.launchCostSol === null ? "TBD" : `${fees.launchCostSol} SOL`))), isDemo() ? h("span", { class: "demo-tag" }, "DEMO") : null, btn, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(2) }, svg(UI.back), "Back"), h("span")));
+                } }, svg(UI.rocket), isDemo() ? "SEND IT (DEMO)" : "SEND IT ON PUMP.FUN");
+            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 4/4"), h("h2", null, "LAST LOOK. THEN SEND IT."), h("p", { class: "hint" }, isDemo() ? "Demo mode: this creates a simulated coin on this site only. Nothing is sent to pump.fun." : "This launches your coin on pump.fun and lists it on the board you picked."), h("div", { class: "kv" }, h("div", null, h("span", null, "Name"), h("span", null, d.name)), h("div", null, h("span", null, "Ticker"), h("span", null, `$${d.ticker}`)), h("div", null, h("span", null, "Launches on"), h("span", null, "pump.fun (trades in SOL)")), h("div", null, h("span", null, "Shown here as"), h("span", null, `${d.ticker} / ${com.symbol} (${com.tier})`)), h("div", null, h("span", null, "Dev buy"), h("span", null, d.devBuy ? `${d.devBuy} SOL` : "None")), h("div", null, h("span", null, "Holder rewards"), h("span", null, d.rewards ? "On" : "Off")), h("div", null, h("span", null, "Site fee"), h("span", null, fees.launchCostSol === null ? "TBD" : `${fees.launchCostSol} SOL`))), isDemo() ? h("span", { class: "demo-tag" }, "DEMO") : null, btn, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(2) }, svg(UI.back), "Back"), h("span")));
         },
     ];
     const successScreen = (coin, com) => {

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZEC Miner</title>
+<meta name="description" content="$ZECMINER — trading fees rent Equihash hashpower, the rigs mine Zcash, and the ZEC goes to holders every day.">
+<meta name="theme-color" content="#0d0b06">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230d0b06'/%3E%3Cpath d='M32 9 52 17v14c0 12-8.5 21-20 24C20.5 52 12 43 12 31V17Z' fill='none' stroke='%23e6b84a' stroke-width='4'/%3E%3Cpath d='M23 23h18L24 41h17' fill='none' stroke='%23e6b84a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Template: Bento Board · Palette: Gold leaf · Type: Sora + Geist Mono */
+:root{
+  --bg:#0d0b06;--surface:#18140b;--surface-2:#211b0f;--line:#2e2615;--line-2:#3d331d;
+  --ink:#f5efdf;--muted:#b3a88f;--dim:#8a8069;
+  --gold:#e6b84a;--gold-soft:rgba(230,184,74,.12);--live:#5fd39a;
+  --display:"Sora",system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;
+  --r:18px;--shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--display);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+img,svg,canvas{display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+@media(min-width:720px){.wrap{padding:0 28px}}
+.mono{font-family:var(--mono)}
+.k{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ico{width:18px;height:18px;fill:currentColor}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:20;background:rgba(13,11,6,.92);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:17px}
+.brand svg{width:32px;height:32px}
+.nav nav{display:none;gap:24px;margin-left:auto}
+.nav nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.nav nav a:hover{color:var(--ink)}
+@media(min-width:860px){.nav nav{display:flex}}
+.nav .cta{margin-left:auto}
+@media(min-width:860px){.nav .cta{margin-left:0}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font:500 14px var(--display);text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--gold)}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.btn-gold:hover{background:#efc560}
+.btn[aria-disabled=true]{opacity:.55;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:8px}
+
+/* bento */
+.bento{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:900px){.bento{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);min-width:0;position:relative;overflow:hidden}
+.span2{grid-column:span 2}
+.span4{grid-column:span 2}
+@media(min-width:900px){.span4{grid-column:span 4}.row2{grid-row:span 2}}
+
+/* hero */
+.hero{padding:28px 0 12px}
+@media(min-width:900px){.hero{padding:44px 0 16px}}
+.head{display:flex;flex-direction:column;justify-content:space-between;gap:22px}
+.pill{display:inline-flex;align-items:center;gap:8px;font:500 12px var(--mono);color:var(--live);background:rgba(95,211,154,.1);border:1px solid rgba(95,211,154,.25);padding:6px 10px;border-radius:99px;width:max-content}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 0 0 rgba(95,211,154,.6);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(95,211,154,0)}100%{box-shadow:0 0 0 0 rgba(95,211,154,0)}}
+h1{font-weight:600;font-size:clamp(34px,7vw,64px);line-height:1.02;letter-spacing:-.03em;margin:14px 0 0}
+h1 em{font-style:normal;color:var(--gold)}
+.lead{color:var(--muted);font-size:17px;max-width:46ch;margin:14px 0 0}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+
+.ca{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;padding:6px 6px 6px 14px;min-width:0}
+.ca code{font:400 13px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.ca .btn{min-height:36px;padding:0 14px;font-size:13px;border-radius:9px}
+
+/* equihash rig */
+.rig{display:flex;flex-direction:column;gap:14px;min-height:340px}
+.rig-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rig canvas{width:100%;flex:1;min-height:220px;border-radius:12px;background:#0a0804;border:1px solid var(--line)}
+.rig-log{font:400 12px/1.6 var(--mono);color:var(--dim);height:58px;overflow:hidden;mask-image:linear-gradient(to bottom,transparent,#000 40%)}
+.rig-log b{color:var(--gold);font-weight:500}
+.rig-log .ok{color:var(--live)}
+
+.stat b{display:block;font:600 clamp(26px,3.4vw,34px)/1.1 var(--display);letter-spacing:-.02em;margin-top:14px;font-variant-numeric:tabular-nums}
+.stat b small{font:500 14px var(--mono);color:var(--muted);margin-left:6px;letter-spacing:0}
+.stat .sub{display:block;margin-top:6px;color:var(--dim);font-size:13px}
+.bar{height:6px;border-radius:9px;background:var(--surface-2);margin-top:14px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--gold);border-radius:9px;transition:width .6s}
+
+/* sections */
+section{padding:56px 0 8px}
+@media(min-width:900px){section{padding:84px 0 12px}}
+.sec-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:22px}
+h2{font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.08;letter-spacing:-.025em;margin:10px 0 0}
+.sec-head p{color:var(--muted);max-width:44ch;margin:0}
+
+.step .n{font:500 13px var(--mono);color:var(--gold)}
+.step h3{font-weight:600;font-size:19px;margin:28px 0 6px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+.step svg.big{width:44px;height:44px;fill:none;stroke:var(--gold);stroke-width:1.6;position:absolute;right:18px;top:18px;opacity:.85}
+
+/* fee split */
+.split{display:flex;height:14px;border-radius:9px;overflow:hidden;gap:3px;margin:18px 0 18px}
+.split span:nth-child(1){flex:85;background:var(--gold)}
+.split span:nth-child(2){flex:10;background:#a88633}
+.split span:nth-child(3){flex:5;background:#6b5a2c}
+.legend{display:grid;gap:14px}
+@media(min-width:620px){.legend{grid-template-columns:repeat(3,1fr)}}
+.legend>div{display:flex;gap:10px}
+.legend i{width:10px;height:10px;border-radius:3px;margin-top:6px;flex:none}
+.legend b{display:block;font-weight:600}
+.legend p{margin:2px 0 0;color:var(--muted);font-size:14px}
+
+/* shield claim */
+.shield h3{font-weight:600;font-size:22px;margin:12px 0 6px;letter-spacing:-.01em}
+.shield p{color:var(--muted);margin:0 0 18px;font-size:15px;max-width:52ch}
+.field label{display:block;font-size:14px;font-weight:500;margin-bottom:8px}
+.field .row{display:flex;gap:8px;flex-wrap:wrap}
+.field input{flex:1 1 240px;min-width:0;min-height:44px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;color:var(--ink);font:400 14px var(--mono);padding:0 14px}
+.field input:focus{outline:none;border-color:var(--gold)}
+.field .hint{font-size:13px;color:var(--dim);margin-top:8px}
+.field .err{font-size:13px;color:#f0a07a;margin-top:8px;min-height:18px}
+.tx{display:grid;gap:8px;font:400 13px var(--mono)}
+.tx div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px}
+.tx .amt{color:var(--gold)}
+.tx .hid{color:var(--dim);letter-spacing:.1em}
+
+/* payouts table */
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table th{text-align:left;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 10px 10px;border-bottom:1px solid var(--line)}
+.table td{padding:12px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.table td.mono{font-size:13px}
+.table tr:last-child td{border-bottom:0}
+.table .r{text-align:right}
+.hide-sm{display:none}
+@media(min-width:620px){.hide-sm{display:table-cell}}
+
+.wallet h3{font-weight:600;font-size:17px;margin:12px 0 4px}
+.wallet p{color:var(--muted);font-size:14px;margin:0 0 14px}
+.wallet code{display:block;font:400 12.5px var(--mono);color:var(--dim);background:var(--surface-2);border:1px dashed var(--line-2);border-radius:10px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* faq */
+details{border-bottom:1px solid var(--line)}
+details:first-of-type{border-top:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 2px;font-weight:500;font-size:16px;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary span.plus{font:400 20px var(--mono);color:var(--gold);transition:transform .2s}
+details[open] summary span.plus{transform:rotate(45deg)}
+details p{margin:0 2px 18px;color:var(--muted);max-width:68ch}
+
+.note{font-size:13px;color:var(--dim);margin:14px 0 0}
+
+/* cta + footer */
+.final{display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+@media(min-width:760px){.final{flex-direction:row;align-items:center;justify-content:space-between}}
+.final h2{margin:0}
+.final p{color:var(--muted);margin:6px 0 0}
+footer{padding:48px 0 40px;margin-top:72px;border-top:1px solid var(--line);color:var(--dim);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px 24px;justify-content:space-between}
+footer nav{display:flex;gap:18px}
+footer a{text-decoration:none;color:var(--muted)}
+footer a:hover{color:var(--ink)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);font:500 14px var(--display);padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body id="top">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.3 22H3.2l7.3-8.3L2.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L8.3 3.9H6.5L17.8 20Z"/></symbol>
+  <symbol id="mark" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#18140b"/><path d="M32 9 52 17v14c0 12-8.5 21-20 24C20.5 52 12 43 12 31V17Z" fill="none" stroke="#e6b84a" stroke-width="4"/><path d="M23 23h18L24 41h17" fill="none" stroke="#e6b84a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ZEC Miner home"><svg aria-hidden="true"><use href="#mark"/></svg>ZEC Miner</a>
+    <nav aria-label="Sections"><a href="#how">How it works</a><a href="#claim">Claim</a><a href="#payouts">Payouts</a><a href="#faq">FAQ</a></nav>
+    <a class="btn btn-gold cta js-buy" href="https://pump.fun" target="_blank" rel="noopener">Buy $ZECMINER</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap hero">
+  <div class="bento">
+    <div class="tile span2 row2 head">
+      <div>
+        <span class="pill"><i></i><span class="js-status">Rigs online · mining now</span></span>
+        <h1>Hold the coin.<br>Mine <em>Zcash.</em></h1>
+        <p class="lead">Every $ZECMINER trade pays for Equihash hashpower. The rigs mine ZEC around the clock, and the coins go to holders every day.</p>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="actions">
+          <a class="btn btn-gold js-buy" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a>
+          <a class="btn" href="#claim">Set your ZEC address</a>
+        </div>
+        <div class="ca"><span class="k">CA</span><code class="js-ca">Drops at launch</code><button type="button" class="btn js-copy">Copy</button><a class="btn js-x" href="#" target="_blank" rel="noopener" aria-label="ZEC Miner on X"><svg class="ico"><use href="#i-x"/></svg></a></div>
+      </div>
+    </div>
+
+    <div class="tile span2 row2 rig">
+      <div class="rig-top"><span class="k">Equihash solver · live</span><span class="k mono js-nonce">nonce 0x000000</span></div>
+      <canvas id="rig" aria-label="Animated view of the miner searching for an Equihash solution" role="img"></canvas>
+      <div class="rig-log js-log" aria-hidden="true"></div>
+    </div>
+
+    <div class="tile stat"><span class="k">Hashrate</span><b><span class="js-hash">412.6</span><small>kSol/s</small></b><span class="sub">Rented Equihash power</span></div>
+    <div class="tile stat"><span class="k">Mined today</span><b><span class="js-mined">0.3184</span><small>ZEC</small></b><span class="sub">Resets 00:00 UTC</span></div>
+    <div class="tile stat"><span class="k">Next payout</span><b class="js-countdown">--:--:--</b><div class="bar"><span class="js-daybar" style="width:0"></span></div></div>
+    <div class="tile stat"><span class="k">Paid to holders</span><b>27.92<small>ZEC</small></b><span class="sub">Since launch</span></div>
+  </div>
+  <p class="note">Example data until launch. Real numbers depend on trading volume and Zcash network difficulty.</p>
+</div>
+
+<section id="how" class="wrap">
+  <div class="sec-head reveal">
+    <div><span class="k">How it works</span><h2>Fees in. Zcash out.</h2></div>
+    <p>No staking, no lockups. Hold $ZECMINER and your share of the mined ZEC comes to you.</p>
+  </div>
+  <div class="bento">
+    <div class="tile span2 step reveal" style="grid-column:span 2">
+      <svg class="big" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M24 14v20M18 20h9a4 4 0 0 1 0 8h-6"/></svg>
+      <span class="n">01</span><h3>Buy and hold</h3><p>Pick up $ZECMINER on pump.fun and keep it in your wallet. Every trade creates creator fees.</p>
+    </div>
+    <div class="tile step reveal">
+      <svg class="big" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="13" width="30" height="22" rx="3"/><path d="M15 20h6M15 26h12M33 13V9M15 13V9M33 39v-4M15 39v-4"/></svg>
+      <span class="n">02</span><h3>Fees rent rigs</h3><p>85% of fees buys Equihash hashpower pointed at a Zcash pool.</p>
+    </div>
+    <div class="tile step reveal">
+      <svg class="big" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8 38 13v10c0 9-6 15-14 17-8-2-14-8-14-17V13Z"/><path d="m18 24 4 4 8-8"/></svg>
+      <span class="n">03</span><h3>ZEC hits holders</h3><p>Every day at 00:00 UTC, mined ZEC is split by bag size and sent out.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="bento">
+    <div class="tile span4 reveal">
+      <span class="k">Where every fee goes</span>
+      <h2 style="font-size:clamp(22px,3vw,30px)">Most of it goes to the mine.</h2>
+      <div class="split" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="legend">
+        <div><i style="background:var(--gold)"></i><div><b>85% · Hashpower</b><p>Rents Equihash rigs. Every rental is posted.</p></div></div>
+        <div><i style="background:#a88633"></i><div><b>10% · Buyback</b><p>Buys back $ZECMINER from the market.</p></div></div>
+        <div><i style="background:#6b5a2c"></i><div><b>5% · Ops</b><p>Covers servers, pool fees and gas.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="claim" class="wrap">
+  <div class="sec-head reveal">
+    <div><span class="k">Claim</span><h2>Get paid to a shielded address.</h2></div>
+    <p>Zcash is private by design. Link a shielded z-address and your payouts stay shielded too.</p>
+  </div>
+  <div class="bento">
+    <div class="tile span2 shield reveal">
+      <span class="k">Step 1 · Link your wallets</span>
+      <h3>Where should your ZEC go?</h3>
+      <p>Paste the Zcash address you want paid. You'll sign once with your Solana wallet to prove you hold $ZECMINER.</p>
+      <form class="field js-claim" novalidate>
+        <label for="zaddr">Zcash address</label>
+        <div class="row">
+          <input id="zaddr" name="zaddr" autocomplete="off" spellcheck="false" placeholder="zs1… or u1…">
+          <button class="btn btn-gold" type="submit">Link address</button>
+        </div>
+        <div class="hint">Shielded (zs1, u1) and transparent (t1) addresses both work.</div>
+        <div class="err js-err" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+    <div class="tile span2 reveal">
+      <span class="k">Step 2 · Daily payout</span>
+      <h3 style="font-weight:600;font-size:22px;margin:12px 0 16px">What a payout looks like</h3>
+      <div class="tx">
+        <div><span>From</span><span>Payout wallet</span></div>
+        <div><span>To</span><span class="hid">shielded ••••••</span></div>
+        <div><span>Amount</span><span class="hid">shielded ••••••</span></div>
+        <div><span>Your view</span><span class="amt">+0.0214 ZEC</span></div>
+      </div>
+      <p class="note">Only you see your amount. The total sent each day is posted publicly so anyone can check it.</p>
+    </div>
+  </div>
+</section>
+
+<section id="payouts" class="wrap">
+  <div class="sec-head reveal">
+    <div><span class="k">Payout log</span><h2>Every day, on the record.</h2></div>
+    <p>Daily totals from the payout wallet, with the mining spend that produced them.</p>
+  </div>
+  <div class="tile reveal" style="overflow-x:auto">
+    <table class="table">
+      <thead><tr><th>Day</th><th class="hide-sm">Hashpower spend</th><th class="hide-sm">Avg rate</th><th class="r">ZEC to holders</th></tr></thead>
+      <tbody class="js-rows"></tbody>
+    </table>
+  </div>
+  <p class="note">Example data until launch.</p>
+</section>
+
+<section class="wrap">
+  <div class="bento">
+    <div class="tile wallet reveal"><span class="k">85% of fees</span><h3>Mining wallet</h3><p>Pays for hashpower rentals.</p><code>Address posts at launch</code></div>
+    <div class="tile wallet reveal"><span class="k">Daily</span><h3>Payout wallet</h3><p>Sends mined ZEC to holders.</p><code>Address posts at launch</code></div>
+    <div class="tile wallet reveal"><span class="k">10% of fees</span><h3>Buyback wallet</h3><p>Buys back $ZECMINER.</p><code>Address posts at launch</code></div>
+    <div class="tile wallet reveal"><span class="k">Pool</span><h3>Mining pool</h3><p>Worker stats you can check yourself.</p><code>Link posts at launch</code></div>
+  </div>
+</section>
+
+<section id="faq" class="wrap">
+  <div class="sec-head reveal"><div><span class="k">FAQ</span><h2>Questions</h2></div></div>
+  <div class="reveal">
+    <details><summary>Do I need to do anything to get paid?<span class="plus">+</span></summary><p>Hold $ZECMINER and link a Zcash address once. Payouts go out every day at 00:00 UTC, split by how much you hold at snapshot time.</p></details>
+    <details><summary>Why Zcash?<span class="plus">+</span></summary><p>ZEC is mined with Equihash, which has a deep rental market, and it's one of the few big coins built around privacy. Your payouts can arrive fully shielded.</p></details>
+    <details><summary>Is there a minimum bag?<span class="plus">+</span></summary><p>Payouts below the network's dust limit roll over to the next day instead of getting lost, so small holders still collect over time.</p></details>
+    <details><summary>Can I check the mining is real?<span class="plus">+</span></summary><p>Yes. The mining wallet, payout wallet and pool worker page are all public once we launch, and every rental is posted on X.</p></details>
+    <details><summary>What if I don't have a Zcash wallet?<span class="plus">+</span></summary><p>Grab any wallet that supports shielded addresses, copy your receive address, and paste it above. It takes about a minute.</p></details>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="tile final reveal">
+    <div><h2>The rigs are spinning.</h2><p>Payout posts and mining updates go up on X first.</p></div>
+    <div class="actions"><a class="btn btn-gold js-buy" href="https://pump.fun" target="_blank" rel="noopener">Buy $ZECMINER</a><a class="btn js-x" href="#" target="_blank" rel="noopener"><svg class="ico"><use href="#i-x"/></svg><span class="js-x-label">X</span></a></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>$ZECMINER · Not financial advice. Mining output changes with difficulty and price.</span>
+    <nav aria-label="Links"><a class="js-x" href="#" target="_blank" rel="noopener">X</a><a class="js-buy" href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a><a href="#faq">FAQ</a></nav>
+  </div>
+</footer>
+<div class="toast js-toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== Paste your links here ===== */
+var SITE = {
+  x: "",        // your X/Twitter link, e.g. "https://x.com/zecminer_sol"
+  pumpfun: "",  // your coin's pump.fun page link
+  ca: ""        // your contract address
+};
+/* ================================= */
+
+(function(){
+  var all=function(s){return document.querySelectorAll(s)};
+  var one=function(s){return document.querySelector(s)};
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // toast
+  var tEl=one('.js-toast'),tT;
+  function toast(m){tEl.textContent=m;tEl.classList.add('show');clearTimeout(tT);tT=setTimeout(function(){tEl.classList.remove('show')},2000)}
+
+  // links
+  var handle='';
+  if(SITE.x){var m=SITE.x.match(/(?:x|twitter)\.com\/([A-Za-z0-9_]+)/);handle=m?'@'+m[1]:''}
+  all('.js-x').forEach(function(a){
+    if(SITE.x){a.href=SITE.x}
+    else{a.removeAttribute('href');a.setAttribute('aria-disabled','true');a.title='X account coming soon'}
+  });
+  all('.js-x-label').forEach(function(s){s.textContent=SITE.x?(handle||'X'):'X coming soon'});
+  if(SITE.pumpfun)all('.js-buy').forEach(function(a){a.href=SITE.pumpfun});
+  if(SITE.ca)all('.js-ca').forEach(function(c){c.textContent=SITE.ca});
+
+  // copy CA
+  all('.js-copy').forEach(function(b){b.addEventListener('click',function(){
+    if(!SITE.ca){toast('The CA posts here at launch');return}
+    var fb=function(){var r=document.createRange();r.selectNodeContents(one('.js-ca'));var s=getSelection();s.removeAllRanges();s.addRange(r);toast('Press Ctrl+C to copy')};
+    try{navigator.clipboard.writeText(SITE.ca).then(function(){toast('CA copied')},fb)}catch(e){fb()}
+  })});
+
+  // claim form (demo)
+  var form=one('.js-claim'),err=one('.js-err'),inp=one('#zaddr');
+  inp.addEventListener('input',function(){err.textContent=''});
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=inp.value.trim();
+    if(!v){err.textContent='Paste a Zcash address to link it.';inp.focus();return}
+    if(!/^(zs1[0-9a-z]{70,}|u1[0-9a-z]{60,}|t1[1-9A-HJ-NP-Za-km-z]{33})$/.test(v)){err.textContent='That doesn’t look like a Zcash address. It should start with zs1, u1 or t1.';inp.focus();return}
+    err.textContent='';toast('Linking opens at launch');
+  });
+
+  // countdown to 00:00 UTC
+  var cd=one('.js-countdown'),bar=one('.js-daybar');
+  function tick(){
+    var n=new Date(),next=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1),left=next-n;
+    var h=Math.floor(left/36e5),mi=Math.floor(left%36e5/6e4),s=Math.floor(left%6e4/1e3);
+    cd.textContent=[h,mi,s].map(function(x){return String(x).padStart(2,'0')}).join(':');
+    bar.style.width=(100-left/864e3).toFixed(1)+'%';
+  }
+  tick();setInterval(tick,1000);
+
+  // live-ish stats
+  var hashEl=one('.js-hash'),minedEl=one('.js-mined'),mined=0.3184;
+  if(!reduce)setInterval(function(){
+    hashEl.textContent=(405+Math.random()*16).toFixed(1);
+    mined+=0.00004+Math.random()*0.00006;minedEl.textContent=mined.toFixed(4);
+  },2400);
+
+  // payout rows (example)
+  var rows=one('.js-rows'),d=new Date(),html='';
+  for(var i=1;i<=6;i++){
+    var day=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-i));
+    var spend=(9.8+((i*37)%17)/4).toFixed(2),zec=(3.1+((i*53)%23)/12).toFixed(4),rate=(390+((i*29)%40)).toFixed(0);
+    html+='<tr><td class="mono">'+day.toISOString().slice(0,10)+'</td><td class="hide-sm">'+spend+' SOL</td><td class="hide-sm">'+rate+' kSol/s</td><td class="r mono">'+zec+'</td></tr>';
+  }
+  rows.innerHTML=html;
+
+  // reveal on scroll
+  var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12}):null;
+  all('.reveal').forEach(function(el){io?io.observe(el):el.classList.add('in')});
+
+  // Equihash rig canvas: grid of hash cells searching for colliding pairs
+  var cv=one('#rig'),cx=cv.getContext('2d'),log=one('.js-log'),nonceEl=one('.js-nonce');
+  var W,H,cols,rows2,cell,cells=[],dpr=Math.min(devicePixelRatio||1,2),nonce=0x1a3f00,pairs=[],found=0;
+  var HEX='0123456789abcdef';
+  function size(){
+    var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
+    cell=W<500?22:26;cols=Math.floor((W-16)/cell);rows2=Math.floor((H-16)/cell);cells=[];
+    for(var i=0;i<cols*rows2;i++)cells.push({c:HEX[Math.random()*16|0],a:Math.random()*.3,hot:0});
+  }
+  function line(t){var p=document.createElement('div');p.innerHTML=t;log.appendChild(p);while(log.children.length>4)log.removeChild(log.firstChild)}
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    var ox=(W-cols*cell)/2,oy=(H-rows2*cell)/2;
+    cx.font='500 '+(cell*.5)+'px "Geist Mono",monospace';cx.textAlign='center';cx.textBaseline='middle';
+    for(var i=0;i<cells.length;i++){
+      var c=cells[i],x=ox+(i%cols)*cell+cell/2,y=oy+Math.floor(i/cols)*cell+cell/2;
+      if(c.hot>0){cx.fillStyle='rgba(230,184,74,'+(c.hot*.18)+')';cx.fillRect(x-cell/2+2,y-cell/2+2,cell-4,cell-4);c.hot-=.02}
+      cx.fillStyle=c.hot>0?'rgba(245,239,223,'+(.45+c.hot*.55)+')':'rgba(179,168,143,'+(.12+c.a)+')';
+      cx.fillText(c.c,x,y);
+    }
+    // links between colliding pairs
+    pairs.forEach(function(p){
+      var ax=ox+(p.a%cols)*cell+cell/2,ay=oy+Math.floor(p.a/cols)*cell+cell/2,bx=ox+(p.b%cols)*cell+cell/2,by=oy+Math.floor(p.b/cols)*cell+cell/2;
+      cx.strokeStyle='rgba(230,184,74,'+p.life+')';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(ax,ay);cx.lineTo(bx,by);cx.stroke();p.life-=.012;
+    });
+    pairs=pairs.filter(function(p){return p.life>0});
+  }
+  function step(){
+    for(var k=0;k<14;k++){var c=cells[Math.random()*cells.length|0];c.c=HEX[Math.random()*16|0];c.a=Math.random()*.3}
+    if(Math.random()<.07){
+      var a=Math.random()*cells.length|0,b=Math.random()*cells.length|0;
+      cells[a].hot=cells[b].hot=1;cells[b].c=cells[a].c;pairs.push({a:a,b:b,life:1});found++;
+      if(found%6===0){line('<span class="ok">✓</span> solution found · nonce <b>0x'+nonce.toString(16)+'</b> · share accepted')}
+      else{line('collision '+cells[a].c+cells[b].c+' · row '+(found%9+1)+' of 9')}
+    }
+    nonce+=Math.random()*40|0;nonceEl.textContent='nonce 0x'+nonce.toString(16).padStart(6,'0');
+  }
+  size();addEventListener('resize',size);
+  line('connecting to pool · <b>equihash 200,9</b>');line('<span class="ok">✓</span> rigs online');
+  if(reduce){for(var i=0;i<20;i++)step();draw()}
+  else{(function loop(){step();draw();requestAnimationFrame(loop)})()}
+})();
+</script>
+</body>
+</html>

@@ -397,7 +397,7 @@ var SITE = {
     g.font='500 40px "IBM Plex Mono", monospace';g.fillStyle='rgba(50,50,48,.7)';g.textAlign='center';g.textBaseline='middle';
     var txt='  BTC MINER · PROOF OF WORK · SHA-256 · BLOCK BY BLOCK ·';
     for(var k=0;k<txt.length;k++){var a=k/txt.length*Math.PI*2-Math.PI/2;g.save();g.translate(s/2+Math.cos(a)*s*.465,s/2+Math.sin(a)*s*.465);g.rotate(a+Math.PI/2);g.fillText(txt[k],0,0);g.restore()}
-    g.font='600 560px Archivo, Arial, sans-serif';
+    g.font='700 600px Arial, Helvetica, sans-serif';
     g.fillStyle='rgba(255,255,255,.85)';g.fillText('₿',s/2+8,s/2+38);
     g.fillStyle='#2b2b29';g.fillText('₿',s/2,s/2+30);
     var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t;

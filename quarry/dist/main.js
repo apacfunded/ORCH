@@ -4,7 +4,6 @@
 import { background } from "./components/Background.js";
 import { installPaletteShortcut } from "./components/CommandPalette.js";
 import { footer, header, mobileNav } from "./components/Header.js";
-import { playIntro } from "./components/Intro.js";
 import { tickerTape } from "./components/TickerTape.js";
 import { toast } from "./components/Toasts.js";
 import { brand } from "./config/brand.js";
@@ -79,8 +78,6 @@ function titleFor(path) {
     return "Not found";
 }
 window.addEventListener("hashchange", () => void render());
-void playIntro().then(() => {
-    void render();
-    if (isDemo())
-        window.setTimeout(() => toast("Demo mode: every coin and price on this site is simulated.", { icon: "info", color: "#f2b84b", ms: 5000 }), 1500);
-});
+void render();
+if (isDemo())
+    window.setTimeout(() => toast("Demo mode: every coin and price on this site is simulated.", { icon: "info", color: "#f2b84b", ms: 5000 }), 1500);

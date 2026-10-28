@@ -34,6 +34,7 @@
   --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25); color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
@@ -194,6 +195,83 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:14px;z-index:50;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
 
+/* ===== motion layer ===== */
+.hero{position:relative;overflow:hidden;isolation:isolate}
+#rain{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:120px;z-index:-1;background:linear-gradient(transparent,var(--bg));pointer-events:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.pitch>*{animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) both}
+.pitch>*:nth-child(2){animation-delay:.08s}.pitch>*:nth-child(3){animation-delay:.16s}.pitch>*:nth-child(4){animation-delay:.24s}.pitch>*:nth-child(5){animation-delay:.32s}
+.simple div{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) both}
+.simple div:nth-child(1){animation-delay:.35s}.simple div:nth-child(2){animation-delay:.45s}.simple div:nth-child(3){animation-delay:.55s}
+.app-shell{position:relative;animation:fadeUp .8s .15s cubic-bezier(.2,.7,.2,1) both}
+.app-shell::before{content:"";position:absolute;inset:-40px;z-index:-1;background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 28%,transparent),transparent);filter:blur(30px);animation:breathe 6s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.45;transform:scale(.94)}}
+
+/* liquid headline */
+.liquid{position:relative;display:inline-block;background:linear-gradient(100deg,var(--accent-strong) 0%,var(--accent) 30%,#7ff0da 50%,var(--accent) 70%,var(--accent-strong) 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:flow 5s linear infinite}
+@keyframes flow{to{background-position:-220% 0}}
+.liquid .d{position:absolute;right:.02em;top:58%;width:.16em;height:.22em;background:var(--accent);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;animation:fallDrop 2.6s cubic-bezier(.55,0,1,.45) infinite}
+@keyframes fallDrop{0%,30%{transform:translateY(0) scale(.3);opacity:0}38%{opacity:1;transform:translateY(0) scale(1)}85%{transform:translateY(1.4em) scale(1);opacity:1}100%{transform:translateY(1.6em) scale(.6);opacity:0}}
+
+/* buttons */
+.btn-primary{position:relative;overflow:hidden}
+.btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);transition:transform .6s}
+.btn-primary:hover:not([disabled])::after{transform:translateX(120%)}
+.btn-primary:hover:not([disabled]){transform:translateY(-1px);box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
+.chip{transition:background .15s,border-color .15s,transform .1s}.chip:active{transform:scale(.97)}
+
+/* ticker band */
+.band{border-block:1px solid var(--line);background:var(--surface);overflow:hidden;padding-block:14px;position:relative}
+.band::before,.band::after{content:"";position:absolute;top:0;bottom:0;width:60px;z-index:1;pointer-events:none}
+.band::before{left:0;background:linear-gradient(90deg,var(--surface),transparent)}.band::after{right:0;background:linear-gradient(-90deg,var(--surface),transparent)}
+.band-track{display:flex;gap:40px;width:max-content;animation:scrollX 45s linear infinite}
+.band:hover .band-track{animation-play-state:paused}
+@keyframes scrollX{to{transform:translateX(-50%)}}
+.band-item{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;color:var(--muted);white-space:nowrap}
+.band-item b{color:var(--fg);font-weight:500}.band-item em{font-style:normal;color:var(--accent-strong)}
+.band-item i{width:10px;height:13px;background:var(--accent);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;flex:none}
+.band-note{position:absolute;right:16px;bottom:2px;font-size:11px;color:var(--dim);z-index:2;font-family:var(--mono)}
+
+/* animated charts */
+.vs-card{transition:transform .25s,box-shadow .25s,border-color .25s}
+.vs-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--line-2)}
+.ape-big{transform-box:fill-box;transform-origin:bottom;animation:apeUp 6s cubic-bezier(.2,.8,.2,1) infinite}
+@keyframes apeUp{0%{transform:scaleY(.05)}10%,100%{transform:scaleY(1)}}
+.ape-red rect{transform-box:fill-box;transform-origin:top;animation:redDrop 6s ease-out infinite}
+.ape-red rect:nth-child(1){animation-delay:.0s}.ape-red rect:nth-child(2){animation-delay:.15s}.ape-red rect:nth-child(3){animation-delay:.3s}.ape-red rect:nth-child(4){animation-delay:.45s}
+@keyframes redDrop{0%,14%{transform:scaleY(0)}24%,100%{transform:scaleY(1)}}
+.ape-tag{animation:tagIn 6s ease infinite}
+@keyframes tagIn{0%,22%{opacity:0}30%,100%{opacity:1}}
+#stairs rect{transform-box:fill-box;transform-origin:bottom;animation:stepIn 6s ease-out infinite}
+@keyframes stepIn{0%{transform:scaleY(0);opacity:0}6%,100%{transform:scaleY(1);opacity:1}}
+.drip-line{stroke-dasharray:400;animation:drawLine 6s ease-out infinite}
+@keyframes drawLine{0%{stroke-dashoffset:400}60%,100%{stroke-dashoffset:0}}
+
+/* steps rail */
+.steps{position:relative}
+.rail{position:absolute;left:0;right:0;top:9px;height:2px;background:var(--line);overflow:visible}
+.rail i{position:absolute;top:-5px;width:10px;height:12px;background:var(--accent);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;animation:travel 5s cubic-bezier(.6,0,.4,1) infinite;box-shadow:0 0 12px var(--accent)}
+@keyframes travel{0%{left:0;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(100% - 10px);opacity:0}}
+.step .n{border-bottom:none;padding-top:26px;position:relative}
+.step .n::before{content:"";position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+@media (max-width:900px){.rail{display:none}.step .n::before{display:none}.step .n{padding-top:0;border-bottom:2px solid var(--accent)}}
+.step{transition:transform .25s}.step:hover{transform:translateY(-3px)}
+.safe div{transition:transform .25s,border-color .25s}.safe div:hover{transform:translateY(-3px);border-color:var(--accent)}
+
+/* CTA band */
+.cta{position:relative;overflow:hidden;border-radius:28px;background:var(--fg);color:var(--bg);padding:64px 32px;text-align:center;isolation:isolate}
+.cta h2{font-size:clamp(30px,5vw,52px);line-height:1.05;max-width:16ch;margin:0 auto}
+.cta p{color:color-mix(in srgb,var(--bg) 70%,var(--fg));margin:16px auto 28px;max-width:44ch;font-size:17px}
+.cta .ripple{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border:2px solid var(--accent);border-radius:50%;opacity:0;z-index:-1;animation:ripple 4.5s ease-out infinite}
+.cta .ripple:nth-child(2){animation-delay:1.5s}.cta .ripple:nth-child(3){animation-delay:3s}
+@keyframes ripple{0%{transform:scale(.2);opacity:.7}100%{transform:scale(5);opacity:0}}
+
+/* running view polish */
+.log-row{animation:fadeUp .4s ease both}
+.ring svg circle#ringBar{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 50%,transparent))}
+.coin{animation:fadeUp .35s ease both}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
@@ -215,10 +293,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 </nav>
 
 <header class="hero">
+  <canvas id="rain" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
     <div class="pitch">
       <div class="eyebrow">Slow buys for Solana memecoins</div>
-      <h1>Don't ape.<br><span>Drip.</span></h1>
+      <h1>Don't ape.<br><span class="liquid">Drip.<i class="d" aria-hidden="true"></i></span></h1>
       <p class="lede">Drip turns one big buy into lots of small buys, one every minute. You don't pump the price on yourself, and bots can't snipe you.</p>
       <div class="simple">
         <div><b>1</b><span>Paste the coin you want</span></div>
@@ -229,7 +308,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     </div>
 
     <!-- THE APP -->
-    <div class="app" id="app">
+    <div class="app-shell"><div class="app" id="app">
       <div class="app-head">
         <h2 id="appTitle">Start a drip</h2>
         <div class="wallet-pill" id="walletPill"><i></i><span id="walletText">Not connected</span></div>
@@ -313,9 +392,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
         </div>
         <div id="keyBox" hidden></div>
       </div>
-    </div>
+    </div></div>
   </div>
 </header>
+
+<div class="band" aria-label="Example drips">
+  <div class="band-track" id="bandTrack"></div>
+  <span class="band-note">example data</span>
+</div>
 
 <section id="why">
   <div class="wrap">
@@ -330,10 +414,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
         <svg viewBox="0 0 320 150" role="img" aria-label="One huge green candle, then red candles as bots sell into it">
           <line x1="0" y1="130" x2="320" y2="130" stroke="var(--line)"/>
           <g fill="var(--accent)"><rect x="18" y="118" width="12" height="12" rx="2"/><rect x="40" y="114" width="12" height="16" rx="2"/><rect x="62" y="117" width="12" height="13" rx="2"/></g>
-          <rect x="92" y="22" width="26" height="96" rx="3" fill="var(--accent)"/>
-          <g fill="var(--red)"><rect x="134" y="22" width="12" height="40" rx="2"/><rect x="156" y="56" width="12" height="28" rx="2"/><rect x="178" y="78" width="12" height="20" rx="2"/><rect x="200" y="92" width="12" height="14" rx="2"/></g>
+          <rect class="ape-big" x="92" y="22" width="26" height="96" rx="3" fill="var(--accent)"/>
+          <g class="ape-red" fill="var(--red)"><rect x="134" y="22" width="12" height="40" rx="2"/><rect x="156" y="56" width="12" height="28" rx="2"/><rect x="178" y="78" width="12" height="20" rx="2"/><rect x="200" y="92" width="12" height="14" rx="2"/></g>
           <text x="105" y="14" text-anchor="middle" fill="var(--muted)" font-size="11" font-family="Geist Mono,monospace">your 5 SOL buy</text>
-          <text x="226" y="52" fill="var(--red)" font-size="11" font-family="Geist Mono,monospace">bots sell into you</text>
+          <text class="ape-tag" x="316" y="42" text-anchor="end" fill="var(--red)" font-size="11" font-family="Geist Mono,monospace">bots sell into you</text>
         </svg>
         <p>One giant candle. You buy the top of your own pump.</p>
       </div>
@@ -342,6 +426,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
         <svg viewBox="0 0 320 150" role="img" aria-label="Many small green steps climbing gradually">
           <line x1="0" y1="130" x2="320" y2="130" stroke="var(--line)"/>
           <g id="stairs" fill="var(--accent)"></g>
+          <path id="dripLine" class="drip-line" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
           <text x="306" y="22" text-anchor="end" fill="var(--muted)" font-size="11" font-family="Geist Mono,monospace">30 buys of 0.17 SOL</text>
         </svg>
         <p>A steady climb. Each buy is too small to be worth sniping.</p>
@@ -358,6 +443,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <h2>Set it once. Drip does the rest.</h2>
     </div>
     <div class="steps">
+      <div class="rail" aria-hidden="true"><i></i></div>
       <div class="step"><div class="n">Step 1</div><h3>Connect and set up</h3><p>Connect Phantom, Solflare or Backpack. Paste the coin and choose the amount and time.</p></div>
       <div class="step"><div class="n">Step 2</div><h3>Fund your drip wallet</h3><p>You approve one transfer into a fresh drip wallet made just for this. That's the only popup.</p></div>
       <div class="step"><div class="n">Step 3</div><h3>Drip buys on a timer</h3><p>Every interval it sends one small buy through Jupiter, or pump.fun's own pool if Jupiter has no route yet.</p></div>
@@ -381,13 +467,24 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 </section>
 
 <section id="faq">
-  <div class="wrap faq">
+  <div class="wrap"><div class="faq">
     <div class="sec-head"><div class="eyebrow">FAQ</div><h2>Questions</h2></div>
     <details><summary>What is Drip in one sentence?</summary><p>It's DCA for memecoins: instead of one big buy, it makes many small buys over minutes or hours.</p></details>
     <details><summary>Do I need to keep the page open?</summary><p>Yes, buys are sent from this page. If you close it, your drip pauses. Open the page again on the same device and press Resume.</p></details>
     <details><summary>What if a buy fails?</summary><p>It retries on the next tick. Any SOL that didn't get spent goes back to your wallet when the drip ends.</p></details>
     <details><summary>Which coins work?</summary><p>Any Solana token with a SOL route on Jupiter, plus pump.fun coins still on the bonding curve.</p></details>
     <details><summary>What does $DRIP do?</summary><p>$DRIP is the coin behind the tool. Holder perks like drip-sells and scheduled drips are next on the list.</p></details>
+  </div></div>
+</section>
+
+<section style="border-top:0;padding-top:24px">
+  <div class="wrap">
+    <div class="cta">
+      <span class="ripple"></span><span class="ripple"></span><span class="ripple"></span>
+      <h2>Your next buy doesn't have to be one candle.</h2>
+      <p>Paste a coin, pick a time, and let Drip buy it slowly for you.</p>
+      <a class="btn btn-primary" href="#app">Start a drip</a>
+    </div>
   </div>
 </section>
 
@@ -673,7 +770,30 @@ $("durChips").addEventListener("click",function(e){var b=e.target.closest(".chip
 if(S.rpc)$("rpc").value=S.rpc;
 
 /* stairs illustration */
-(function(){var g=$("stairs"),ns="http://www.w3.org/2000/svg";for(var i=0;i<30;i++){var y=124-i*3.1;var r=document.createElementNS(ns,"rect");r.setAttribute("x",10+i*9.6);r.setAttribute("y",y-5);r.setAttribute("width",6);r.setAttribute("height",5+(i%3));r.setAttribute("rx",1.5);g.appendChild(r);}})();
+(function(){var g=$("stairs"),ns="http://www.w3.org/2000/svg",d="";for(var i=0;i<30;i++){var y=124-i*3.1;var r=document.createElementNS(ns,"rect");r.setAttribute("x",10+i*9.6);r.setAttribute("y",y-5);r.setAttribute("width",6);r.setAttribute("height",5+(i%3));r.setAttribute("rx",1.5);r.style.animationDelay=(i*0.11)+"s";g.appendChild(r);d+=(i?"L":"M")+(13+i*9.6)+" "+(y-8);}$("dripLine").setAttribute("d",d);})();
+
+/* ticker band (example data) */
+(function(){var coins=["$ZECMINER","$GAVEL","$SILLY","$777","$HEISTAI","$LTCMINER","$PAPER","$SEED","$SPCX","$MIRROR"],t=$("bandTrack"),h="";
+  function w(){var c="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789",s="";for(var i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+  for(var i=0;i<14;i++){var n=[10,20,30,45,60,90][i%6],sol=[0.5,1,2,3,5,8,12][i%7];h+='<span class="band-item"><i></i><b>'+w()+'…</b> dripping <em>'+sol+' SOL</em> into '+coins[i%coins.length]+' over '+n+' buys</span>';}
+  t.innerHTML=h+h;})();
+
+/* falling drops behind the hero */
+(function(){var cv=$("rain");if(!cv||!cv.getContext)return;var ctx=cv.getContext("2d"),drops=[],rips=[],W2=0,H=0,dpr=Math.min(2,window.devicePixelRatio||1),col="#0d9e86";
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function readCol(){col=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||col;}
+  function size(){var r=cv.getBoundingClientRect();W2=r.width;H=r.height;cv.width=W2*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+  function spawn(){drops.push({x:Math.random()*W2,y:-20,v:1.2+Math.random()*1.8,l:10+Math.random()*16,floor:H*(0.55+Math.random()*0.4)});}
+  function frame(){ctx.clearRect(0,0,W2,H);ctx.strokeStyle=col;ctx.fillStyle=col;
+    if(Math.random()<0.18&&drops.length<40)spawn();
+    for(var i=drops.length-1;i>=0;i--){var d=drops[i];d.y+=d.v;d.v+=0.035;var g=ctx.createLinearGradient(d.x,d.y-d.l,d.x,d.y);g.addColorStop(0,"transparent");g.addColorStop(1,col);ctx.globalAlpha=.35;ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(d.x,d.y-d.l);ctx.lineTo(d.x,d.y);ctx.stroke();
+      if(d.y>=d.floor){rips.push({x:d.x,y:d.floor,r:1,a:.45});drops.splice(i,1);}}
+    ctx.lineWidth=1;ctx.strokeStyle=col;
+    for(var k=rips.length-1;k>=0;k--){var p=rips[k];p.r+=0.7;p.a-=0.008;if(p.a<=0){rips.splice(k,1);continue;}ctx.globalAlpha=p.a;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r*2.2,p.r*.6,0,0,Math.PI*2);ctx.stroke();}
+    ctx.globalAlpha=1;if(!reduce&&!document.hidden)requestAnimationFrame(frame);else if(!reduce)setTimeout(function(){requestAnimationFrame(frame);},500);}
+  size();readCol();window.addEventListener("resize",size);
+  try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readCol);}catch(e){}
+  if(reduce){for(var j=0;j<8;j++){rips.push({x:Math.random()*W2,y:H*(0.6+Math.random()*.35),r:6+Math.random()*10,a:.25});}frame();}else frame();})();
 
 /* restore */
 if(!W){showMsg("setupMsg","err","Couldn't load the Solana library. Refresh the page.");}

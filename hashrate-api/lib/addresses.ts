@@ -1,4 +1,4 @@
-import type { Chain } from './targets';
+import type { Chain } from './targets.js';
 
 // Format checks for payout addresses. They catch typos and wrong-chain pastes;
 // the node still has the final say when it sends.

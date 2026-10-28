@@ -1,5 +1,5 @@
-import { wrap, param, clientError } from '../../lib/http';
-import { launchStatus } from '../../lib/launches';
+import { wrap, param, clientError } from '../../lib/http.js';
+import { launchStatus } from '../../lib/launches.js';
 
 export default wrap(async (req, res) => {
   const id = param(req, 'id');

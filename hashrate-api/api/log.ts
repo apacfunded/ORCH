@@ -1,5 +1,5 @@
-import { wrap, param } from '../lib/http';
-import { list, getJson } from '../lib/store';
+import { wrap, param } from '../lib/http.js';
+import { list, getJson } from '../lib/store.js';
 
 export default wrap(async (req) => {
   const limit = Math.min(200, Number(param(req, 'limit') || 50) || 50);

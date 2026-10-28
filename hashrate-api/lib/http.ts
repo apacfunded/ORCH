@@ -1,5 +1,5 @@
 // Shared helpers for the Node-style Vercel function handlers.
-import { CFG } from './config';
+import { CFG } from './config.js';
 
 export type Req = { method?: string; url?: string; query: Record<string, string | string[] | undefined>; body?: unknown; headers: Record<string, string | string[] | undefined> };
 export type Res = { status: (n: number) => Res; setHeader: (k: string, v: string) => void; json: (b: unknown) => void; end: (s?: string) => void };

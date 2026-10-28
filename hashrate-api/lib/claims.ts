@@ -1,11 +1,11 @@
 // Claim each coin's pump.fun creator fees and forward the SOL (holding mode).
-import { CFG } from './config';
-import { allCoins } from './launches';
-import { creatorFor } from './wallets';
-import { signSerializedTx } from './keys';
-import { SolanaRpc } from './rpc';
-import { sendSol } from './tx';
-import { logLine, putJson, list } from './store';
+import { CFG } from './config.js';
+import { allCoins } from './launches.js';
+import { creatorFor } from './wallets.js';
+import { signSerializedTx } from './keys.js';
+import { SolanaRpc } from './rpc.js';
+import { sendSol } from './tx.js';
+import { logLine, putJson, list } from './store.js';
 
 const PUMPPORTAL = 'https://pumpportal.fun/api/trade-local';
 

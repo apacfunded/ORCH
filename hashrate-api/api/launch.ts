@@ -1,5 +1,5 @@
-import { wrap, clientError } from '../lib/http';
-import { createLaunch } from '../lib/launches';
+import { wrap, clientError } from '../lib/http.js';
+import { createLaunch } from '../lib/launches.js';
 
 export default wrap(async (req) => {
   if (req.method !== 'POST') throw clientError('POST a launch request.');

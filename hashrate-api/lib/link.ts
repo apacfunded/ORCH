@@ -1,7 +1,7 @@
-import { verifyMessage } from './keys';
-import { b58decode } from './base58';
-import { isValidAddress } from './addresses';
-import { clientError } from './http';
+import { verifyMessage } from './keys.js';
+import { b58decode } from './base58.js';
+import { isValidAddress } from './addresses.js';
+import { clientError } from './http.js';
 
 export function linkMessage(wallet: string, chain: string, address: string, issuedAt: number): string {
   return ['Hashrate payout address', `Wallet: ${wallet}`, `Chain: ${chain}`, `Address: ${address}`, `Issued: ${new Date(issuedAt).toISOString()}`].join('\n');

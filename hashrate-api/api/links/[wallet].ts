@@ -1,5 +1,5 @@
-import { wrap, param, clientError } from '../../lib/http';
-import { readAll } from '../../lib/store';
+import { wrap, param, clientError } from '../../lib/http.js';
+import { readAll } from '../../lib/store.js';
 
 export default wrap(async (req) => {
   const wallet = param(req, 'wallet');

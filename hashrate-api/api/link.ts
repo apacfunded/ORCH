@@ -1,6 +1,6 @@
-import { wrap, clientError } from '../lib/http';
-import { verifyLink } from '../lib/link';
-import { putJson } from '../lib/store';
+import { wrap, clientError } from '../lib/http.js';
+import { verifyLink } from '../lib/link.js';
+import { putJson } from '../lib/store.js';
 
 export default wrap(async (req) => {
   if (req.method !== 'POST') throw clientError('POST a signed link.');

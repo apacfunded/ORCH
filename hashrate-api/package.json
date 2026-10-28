@@ -2,5 +2,8 @@
   "name": "hashrate-api",
   "private": true,
   "version": "1.0.0",
-  "engines": { "node": "22.x" }
+  "engines": {
+    "node": "22.x"
+  },
+  "type": "module"
 }

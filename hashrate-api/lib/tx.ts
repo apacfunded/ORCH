@@ -1,8 +1,8 @@
 // Hand-built legacy Solana transactions (no dependencies): SOL transfers from a wallet we hold.
 import { sign } from 'node:crypto';
-import { b58decode } from './base58';
-import type { Keypair } from './keys';
-import { SolanaRpc, SYSTEM_PROGRAM, LAMPORTS } from './rpc';
+import { b58decode } from './base58.js';
+import type { Keypair } from './keys.js';
+import { SolanaRpc, SYSTEM_PROGRAM, LAMPORTS } from './rpc.js';
 
 function compactU16(n: number): number[] {
   const out: number[] = [];

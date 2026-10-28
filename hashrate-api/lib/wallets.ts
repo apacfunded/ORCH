@@ -1,8 +1,8 @@
 // Deterministic wallets: every key is derived from MASTER_SEED, so the store never holds a secret.
 import { createHmac, createPrivateKey, createPublicKey } from 'node:crypto';
-import { CFG } from './config';
-import { b58encode } from './base58';
-import { keypairFromSecret, type Keypair } from './keys';
+import { CFG } from './config.js';
+import { b58encode } from './base58.js';
+import { keypairFromSecret, type Keypair } from './keys.js';
 
 const PKCS8_PREFIX = Buffer.from('302e020100300506032b657004220420', 'hex');
 

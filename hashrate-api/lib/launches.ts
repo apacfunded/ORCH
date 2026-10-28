@@ -1,11 +1,11 @@
 // Launch pipeline on Vercel: request → wait for SOL → create on pump.fun (PumpPortal) → register coin.
 import { randomUUID } from 'node:crypto';
-import { CFG } from './config';
-import { list, putJson, readAll, getJson, logLine } from './store';
-import { creatorFor, mintFor } from './wallets';
-import { signSerializedTx } from './keys';
-import { SolanaRpc } from './rpc';
-import { getTarget } from './targets';
+import { CFG } from './config.js';
+import { list, putJson, readAll, getJson, logLine } from './store.js';
+import { creatorFor, mintFor } from './wallets.js';
+import { signSerializedTx } from './keys.js';
+import { SolanaRpc } from './rpc.js';
+import { getTarget } from './targets.js';
 
 export interface LaunchReq {
   id: string; ts: number; name: string; ticker: string; description: string; target: string; rentShare: number;

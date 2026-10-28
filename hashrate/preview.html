@@ -1,0 +1,2965 @@
+<title>Hashrate</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Rig design tokens — "a deep mine at night". Dark first; light follows the OS or the toggle. */
+:root {
+  --bg: #07090c;
+  --bg-2: #0b0e13;
+  --surface: #10141a;
+  --surface-2: #161b23;
+  --line: #1f2630;
+  --line-2: #2b3542;
+  --fg: #e8edf3;
+  --muted: #8b97a8;
+  --faint: #5b6676;
+  --accent: #5ad1ff;
+  --accent-ink: #04111a;
+  --gold: #f2c14e;
+  --gold-ink: #1a1304;
+  --up: #3ee58f;
+  --down: #ff5470;
+  --warn: #e3b341;
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 28px color-mix(in srgb, var(--accent) 22%, transparent);
+  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  --inner-top: inset 0 1px 0 rgba(255, 255, 255, .05);
+
+  /* mine identity colors — chips, glyphs, LEDs, headers; never money */
+  --m-ltc-doge: #aebccc;
+  --m-zec: #e6e15a;
+  --m-kas: #49eacb;
+  --m-btc: #7b9cff;
+  --m-xmr: #b48cff;
+
+  --display: "Archivo", "Archivo Fallback", "Helvetica Neue", Arial, sans-serif;
+  --body: "Archivo", "Archivo Fallback", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, Menlo, Consolas, monospace;
+
+  --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-20: 20px; --fs-28: 28px; --fs-40: 40px; --fs-64: 64px; --fs-96: 96px;
+
+  --r-sm: 8px;
+  --r: 12px;
+  --d-1: 160ms; --d-2: 240ms; --d-3: 400ms; --d-4: 700ms;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --rise: 12px;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f6f9;
+  --bg-2: #eceff4;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --line: #dfe4ea;
+  --line-2: #c9d1da;
+  --fg: #0c1118;
+  --muted: #4f5b6b;
+  --faint: #7d8899;
+  --accent: #0a84c6;
+  --accent-ink: #ffffff;
+  --gold: #a87a12;
+  --gold-ink: #ffffff;
+  --up: #0f8a4f;
+  --down: #c8233f;
+  --warn: #8a6300;
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 24px color-mix(in srgb, var(--accent) 16%, transparent);
+  --shadow: 0 8px 24px rgba(20, 30, 45, .08);
+  --inner-top: inset 0 1px 0 rgba(255, 255, 255, .9);
+  --m-ltc-doge: #5f6f80;
+  --m-zec: #8f8a00;
+  --m-kas: #0f8f7c;
+  --m-btc: #3457d5;
+  --m-xmr: #7a4fd6;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f6f9;
+    --bg-2: #eceff4;
+    --surface: #ffffff;
+    --surface-2: #f3f5f8;
+    --line: #dfe4ea;
+    --line-2: #c9d1da;
+    --fg: #0c1118;
+    --muted: #4f5b6b;
+    --faint: #7d8899;
+    --accent: #0a84c6;
+    --accent-ink: #ffffff;
+    --gold: #a87a12;
+    --gold-ink: #ffffff;
+    --up: #0f8a4f;
+    --down: #c8233f;
+    --warn: #8a6300;
+    --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 24px color-mix(in srgb, var(--accent) 16%, transparent);
+    --shadow: 0 8px 24px rgba(20, 30, 45, .08);
+    --inner-top: inset 0 1px 0 rgba(255, 255, 255, .9);
+    --m-ltc-doge: #5f6f80;
+    --m-zec: #8f8a00;
+    --m-kas: #0f8f7c;
+    --m-btc: #3457d5;
+    --m-xmr: #7a4fd6;
+    color-scheme: light;
+  }
+}
+
+/* Metric-matched fallbacks so the font swap doesn't move the layout. */
+@font-face { font-family: "Archivo Fallback"; src: local("Arial"); size-adjust: 97%; ascent-override: 92%; descent-override: 22%; }
+@font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("Consolas"), local("Courier New"); size-adjust: 103%; }
+
+/* ============ base ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+html { scroll-behavior: auto; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 var(--fs-16)/1.55 var(--body);
+  font-variation-settings: "wdth" 100;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: clip;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+img, svg { max-width: 100%; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; font-variation-settings: "wdth" 125; margin: 0; line-height: .95; letter-spacing: -.015em; text-wrap: balance; }
+h1 { font-size: var(--fs-64); } h2 { font-size: var(--fs-40); } h3 { font-size: var(--fs-20); letter-spacing: 0; }
+p { margin: 0; }
+.mono, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); } .faint { color: var(--faint); }
+.up { color: var(--up); } .down { color: var(--down); } .gold { color: var(--gold); }
+.label { font: 500 var(--fs-12)/1.2 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ico { width: 18px; height: 18px; flex: none; }
+.wrap { max-width: 1360px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.narrow { max-width: 760px; }
+.prose-w { max-width: 65ch; }
+
+/* grain + body top band */
+#grain { position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: .035; background-repeat: repeat; background-size: 180px 180px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 31; background: var(--bg); }
+
+/* ============ motion ============ */
+.motion-ok .reveal { opacity: 0; transform: translateY(var(--rise)); transition: opacity var(--d-3) var(--ease), transform var(--d-3) var(--ease); transition-delay: calc(var(--i, 0) * 40ms); }
+.motion-ok .reveal.in { opacity: 1; transform: none; }
+.motion-ok .h-mask { overflow: hidden; }
+.motion-ok .h-mask > .h-line { display: block; transform: translateY(110%); transition: transform var(--d-4) var(--ease); transition-delay: calc(var(--i, 0) * 70ms); }
+.motion-ok .h-mask.in > .h-line { transform: none; }
+.flash-up { animation: fu .6s; } .flash-down { animation: fd .6s; }
+@keyframes fu { 0% { color: var(--up); } } @keyframes fd { 0% { color: var(--down); } }
+.row-flash { animation: rf .6s; }
+@keyframes rf { 0% { background: color-mix(in srgb, var(--accent) 14%, transparent); } }
+.spot { position: relative; }
+.motion-ok .spot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity var(--d-2);
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%); }
+.motion-ok .spot:hover::after { opacity: 1; }
+.btn.magnetic { transition: transform var(--d-1) var(--ease), filter var(--d-1); will-change: transform; }
+
+/* ============ buttons / pills ============ */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--r-sm);
+  border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); font: 500 var(--fs-14)/1 var(--body); white-space: nowrap; transition: filter var(--d-1), box-shadow var(--d-2), transform var(--d-1); }
+.btn:hover { filter: brightness(1.06); box-shadow: var(--glow); }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line-2); }
+.btn.ghost:hover { border-color: var(--muted); filter: none; box-shadow: none; }
+.btn.gold { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); }
+.btn.sm { min-height: 36px; padding: 0 12px; font-size: 13px; }
+.btn.block { width: 100%; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.iconbtn { width: 40px; height: 40px; display: inline-grid; place-items: center; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+.iconbtn:hover { color: var(--fg); border-color: var(--line-2); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font: 500 var(--fs-12)/1 var(--mono); padding: 5px 8px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--muted); white-space: nowrap; }
+.pill.live { color: var(--up); border-color: color-mix(in srgb, var(--up) 45%, transparent); }
+.pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 55%, transparent); border-style: dashed; }
+.pill.gold { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 50%, transparent); }
+.pill.accent { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font: 500 var(--fs-12)/1 var(--mono); padding: 4px 8px; border-radius: var(--r-sm); white-space: nowrap;
+  color: var(--mc); background: color-mix(in srgb, var(--mc) 12%, transparent); border: 1px solid color-mix(in srgb, var(--mc) 35%, transparent); }
+.chip .ico { width: 13px; height: 13px; }
+.quick { display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 0 9px; border-radius: var(--r-sm); border: 1px solid var(--line-2); background: var(--surface-2); font: 500 var(--fs-12)/1 var(--mono); color: var(--fg); }
+.quick:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============ surfaces ============ */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--inner-top); }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.panel-body { padding: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--inner-top); transition: border-color var(--d-2), box-shadow var(--d-2), transform var(--d-2) var(--ease); }
+.card:hover { border-color: var(--line-2); }
+a.card:hover, .card.hoverable:hover { box-shadow: var(--inner-top), var(--glow); transform: translateY(-2px); }
+.band { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+/* ============ header ============ */
+.hdr { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); border-bottom: 1px solid var(--line); }
+.hdr-row { display: flex; align-items: center; gap: 14px; min-height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 600 22px/1 var(--display); font-variation-settings: "wdth" 125; letter-spacing: -.01em; }
+.brand .mark { width: 28px; height: 28px; }
+.nav { display: flex; gap: 2px; }
+.nav a { padding: 10px 12px; border-radius: var(--r-sm); color: var(--muted); font: 500 var(--fs-14)/1 var(--body); min-height: 40px; display: inline-flex; align-items: center; }
+.nav a:hover { color: var(--fg); background: var(--surface); }
+.nav a[aria-current="page"] { color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); }
+.hdr .spacer { flex: 1; }
+.search-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px 0 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); color: var(--muted); min-width: 220px; font-size: var(--fs-14); }
+.search-btn kbd { margin-left: auto; font: 500 11px/1 var(--mono); border: 1px solid var(--line-2); border-radius: 4px; padding: 3px 5px; color: var(--muted); font-size: 12px; }
+.menu-btn { display: none; }
+.mobile-nav { display: none; }
+
+/* ============ ticker ============ */
+.ticker { border-bottom: 1px solid var(--line); background: var(--bg-2); overflow: hidden; }
+.ticker-track { display: flex; width: max-content; }
+.motion-ok .ticker-track { animation: tick 70s linear infinite; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+.ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; font: 500 var(--fs-12)/1 var(--mono); color: var(--muted); border-right: 1px solid var(--line); white-space: nowrap; }
+.ticker-item b { color: var(--fg); font-weight: 500; }
+.ticker-item .gold { color: var(--gold); }
+@keyframes tick { to { transform: translateX(-50%); } }
+
+/* ============ layout ============ */
+main { padding-block: 0 72px; }
+.page { display: flex; flex-direction: column; gap: 56px; padding-top: 28px; }
+.page.tight { gap: 28px; }
+.sec { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sec-head p { color: var(--muted); max-width: 60ch; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font: 500 var(--fs-12)/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+.eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; }
+.with-rail { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+.page-title h1 { font-size: clamp(40px, 6vw, var(--fs-96)); }
+.page-title p { color: var(--muted); margin-top: 12px; max-width: 60ch; font-size: var(--fs-16); }
+
+/* ============ hero ============ */
+.hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 32px; align-items: center; padding-block: 40px 24px; }
+.hero-copy { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 22px; }
+.hero h1 { font-size: clamp(48px, 7.2vw, var(--fs-96)); }
+.hero h1 .h-line { display: block; }
+.hero .lede { color: var(--muted); font-size: var(--fs-20); max-width: 40ch; }
+.hero .ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+.readout { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.readout div { border: 1px solid var(--line); border-radius: var(--r-sm); background: color-mix(in srgb, var(--surface) 80%, transparent); padding: 8px 10px; min-width: 0; }
+.readout .label { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.readout .label i { width: 7px; height: 7px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 8px var(--mc); }
+.readout b { display: block; font: 500 var(--fs-14)/1.2 var(--mono); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ============ console ============ */
+.console { display: flex; flex-direction: column; overflow: hidden; }
+.con-rows { display: flex; flex-direction: column; }
+.con-row { display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--line); text-decoration: none; }
+.con-row:hover:not(.con-head) { background: var(--surface-2); }
+.con-head { font: 500 var(--fs-12)/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--faint); padding-block: 9px; }
+.con-id { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--mc); }
+.con-id .ico { width: 16px; height: 16px; flex: none; }
+.con-id b { font: 500 var(--fs-14)/1.1 var(--body); color: var(--fg); white-space: nowrap; }
+.con-id small { font: 500 var(--fs-12)/1 var(--mono); color: var(--faint); white-space: nowrap; }
+.con-bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; display: block; }
+.con-bar i { display: block; height: 100%; background: var(--mc); box-shadow: 0 0 10px color-mix(in srgb, var(--mc) 60%, transparent); transition: width var(--d-4) var(--ease); }
+.con-rate { font: 500 var(--fs-14)/1 var(--mono); text-align: right; white-space: nowrap; min-width: 92px; }
+.con-mined { font: 500 var(--fs-12)/1.2 var(--mono); color: var(--gold); text-align: right; white-space: nowrap; }
+.con-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+.con-totals { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-right: 1px solid var(--line); background: var(--bg-2); }
+.con-totals div { display: flex; flex-direction: column; gap: 3px; }
+.con-totals b { font: 500 var(--fs-20)/1 var(--mono); }
+.con-feed { list-style: none; margin: 0; padding: 6px 0; display: flex; flex-direction: column; }
+.con-feed li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 6px 14px; font-size: 13px; }
+.con-feed .con-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.con-feed .con-text a:hover { color: var(--accent); }
+.con-feed time { font: 500 var(--fs-12)/1 var(--mono); }
+
+/* ============ stat band ============ */
+.strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); overflow: hidden; box-shadow: var(--inner-top); }
+.strip > div { padding: 18px 20px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.strip > div:last-child { border-right: 0; }
+.strip strong { font: 500 var(--fs-28)/1 var(--mono); font-variant-numeric: tabular-nums; }
+.strip strong.gold { color: var(--gold); }
+
+/* ============ deepest rig ============ */
+.deep { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 0; overflow: hidden; }
+.deep-main { padding: 24px; display: flex; flex-direction: column; gap: 18px; border-right: 1px solid var(--line); }
+.deep-main h2 { font-size: clamp(32px, 4vw, 56px); }
+.deep-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.deep-stats b { display: block; font: 500 var(--fs-20)/1.1 var(--mono); }
+.deep-side { padding: 24px; display: flex; flex-direction: column; gap: 14px; justify-content: space-between; background: var(--bg-2); }
+.deep-side .big { font: 500 clamp(36px, 4vw, 56px)/1 var(--mono); color: var(--gold); letter-spacing: -.02em; }
+.spark-lg { width: 100%; height: 90px; }
+
+/* ============ pulse ============ */
+.pulse { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.pulse-col { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); min-width: 0; display: flex; flex-direction: column; box-shadow: var(--inner-top); }
+.pulse-col header { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.pulse-col header h3 { font-size: var(--fs-16); display: flex; align-items: center; gap: 8px; }
+.pulse-col header .count { font: 500 var(--fs-12)/1 var(--mono); color: var(--faint); }
+.pulse-list { display: flex; flex-direction: column; max-height: 620px; overflow: auto; overscroll-behavior: contain; }
+.pulse-tabs { display: none; }
+.prow { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); text-decoration: none; }
+.prow:last-child { border-bottom: 0; }
+.prow:hover { background: var(--surface-2); }
+.prow .av { width: 34px; height: 34px; border-radius: 8px; font-size: 14px; }
+.prow .pname { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.prow .pname b { font: 500 var(--fs-14)/1.2 var(--body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.prow .pname span { flex: none; }
+.prow .pname span { font: 500 var(--fs-12)/1 var(--mono); color: var(--muted); white-space: nowrap; }
+.prow .pmeta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px; font: 500 var(--fs-12)/1 var(--mono); color: var(--faint); }
+.prow .pmeta .chip { padding: 2px 6px; }
+.prow .pmeta .soc { display: inline-flex; gap: 4px; }
+.prow .pmeta .soc .ico { width: 12px; height: 12px; color: var(--muted); }
+.prow .pmeta .mined { color: var(--gold); display: inline-flex; align-items: center; gap: 3px; } .prow .pmeta .mined .ico { width: 12px; height: 12px; }
+.prow .pright { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font: 500 var(--fs-12)/1.2 var(--mono); }
+.prow .pright b { font-size: var(--fs-14); font-weight: 500; }
+.prow .pright .quick { min-height: 26px; padding: 0 7px; }
+.prow .mini { position: absolute; right: 12px; bottom: 100%; width: 150px; height: 54px; padding: 6px; background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--r-sm); box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity var(--d-1); z-index: 3; }
+.prow:hover .mini, .prow:focus-visible .mini { opacity: 1; }
+.pfeed { display: none; }
+
+/* ============ coin card ============ */
+.grid-coins { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
+.coin-card { display: flex; flex-direction: column; gap: 12px; padding: 14px; min-width: 0; }
+.cc-top { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.av { width: 44px; height: 44px; border-radius: 10px; flex: none; display: grid; place-items: center; font: 500 16px/1 var(--mono); color: #fff;
+  background: linear-gradient(135deg, hsl(var(--h) 45% 48%), hsl(calc(var(--h) + 30) 45% 28%)); }
+.av.lg { width: 64px; height: 64px; font-size: 24px; border-radius: 14px; }
+.cc-name { min-width: 0; flex: 1; }
+.cc-name b { display: block; font: 500 var(--fs-16)/1.2 var(--body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc-name span { font: 500 var(--fs-12)/1.4 var(--mono); color: var(--muted); }
+.cc-row { display: flex; justify-content: space-between; align-items: end; gap: 10px; }
+.cc-mcap { font: 500 var(--fs-20)/1 var(--mono); }
+.spark { width: 110px; height: 34px; }
+.bond { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.bond i { display: block; height: 100%; background: var(--accent); }
+.cc-foot { display: flex; justify-content: space-between; gap: 8px; font: 500 var(--fs-12)/1.3 var(--mono); color: var(--muted); flex-wrap: wrap; align-items: center; }
+
+/* ============ mines ============ */
+.mines-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.mcard { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px; min-width: 0; overflow: hidden; }
+.mcard::before { content: ""; position: absolute; inset: -40% 0 auto; height: 60%; background: radial-gradient(50% 60% at 50% 100%, color-mix(in srgb, var(--mc) 18%, transparent), transparent 70%); pointer-events: none; }
+.mcard .glyph { width: 36px; height: 36px; color: var(--mc); }
+.mcard h3 { font-size: var(--fs-28); font-variation-settings: "wdth" 125; }
+.mcard .algo { font: 500 var(--fs-12)/1 var(--mono); color: var(--mc); text-transform: uppercase; letter-spacing: .08em; }
+.mcard p { color: var(--muted); font-size: var(--fs-14); }
+.mcard dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: auto 0 0; font: 500 var(--fs-12)/1.4 var(--mono); }
+.mcard dt { color: var(--faint); } .mcard dd { margin: 0; text-align: right; }
+.mpanels { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
+.mpanel { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 16px; padding: 20px; }
+.mpanel .glyph { width: 44px; height: 44px; color: var(--mc); }
+.mpanel h3 { font-size: var(--fs-40); font-variation-settings: "wdth" 125; }
+.mpanel .spark { width: 100%; height: 60px; }
+.mine-hero { position: relative; padding: 36px 0 12px; }
+.mine-hero::before { content: ""; position: absolute; inset: -80px 0 auto; height: 260px; background: radial-gradient(40% 70% at 30% 0%, color-mix(in srgb, var(--mc) 22%, transparent), transparent 70%); pointer-events: none; }
+
+/* ============ activity rail ============ */
+.rail { position: sticky; top: 132px; max-height: calc(100vh - 150px); display: flex; flex-direction: column; }
+.rail-list { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; }
+.rail-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.rail-list li a:hover { color: var(--accent); }
+.rail-list time { display: block; font: 500 var(--fs-12)/1.3 var(--mono); color: var(--faint); }
+.kind { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); background: var(--surface-2); }
+.kind .ico { width: 13px; height: 13px; }
+.kind.buy { color: var(--up); } .kind.sell { color: var(--down); } .kind.rent, .kind.launch { color: var(--accent); } .kind.mined, .kind.payout, .kind.block { color: var(--gold); }
+
+/* ============ leaderboards ============ */
+.boards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.board ol { list-style: none; margin: 0; padding: 0; counter-reset: lb; }
+.board li { display: grid; grid-template-columns: 24px 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+.board li:last-child { border-bottom: 0; }
+.board li::before { counter-increment: lb; content: counter(lb, decimal-leading-zero); font: 500 var(--fs-12)/1 var(--mono); color: var(--faint); }
+.board .av { width: 30px; height: 30px; border-radius: 7px; font-size: 12px; }
+.board b { font: 500 var(--fs-14)/1.2 var(--body); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board small { font: 500 var(--fs-12)/1.3 var(--mono); color: var(--muted); }
+.board .val { font: 500 var(--fs-14)/1 var(--mono); text-align: right; }
+
+/* ============ fees flow ============ */
+.flow-sec { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 32px; align-items: start; }
+.flow-steps { display: flex; flex-direction: column; gap: 14px; }
+.motion-ok .flow-sec.pinned .flow-steps { gap: 0; }
+.motion-ok .flow-sec.pinned .flow-step { min-height: 46vh; display: flex; flex-direction: column; justify-content: center; }
+.motion-ok .flow-sec.pinned .flow-step:first-child { min-height: 30vh; }
+.flow-step { padding: 16px; border-left: 2px solid var(--line); transition: border-color var(--d-2), opacity var(--d-2); }
+.flow-step.on { border-color: var(--accent); }
+.motion-ok .flow-sec.pinned .flow-step:not(.on) { opacity: .4; }
+.flow-step h3 { font-size: var(--fs-20); margin-bottom: 6px; }
+.flow-step p { color: var(--muted); font-size: var(--fs-14); }
+.flow-art { position: sticky; top: calc(var(--chrome, 96px) + 16px); }
+.flow-art svg { width: 100%; height: auto; display: block; }
+.flow-art .node rect { fill: var(--surface); stroke: var(--line-2); }
+.flow-art .node text { fill: var(--fg); font-family: var(--body); font-size: 14px; font-weight: 500; }
+.flow-art .node .sub { fill: var(--muted); font-family: var(--mono); font-size: 12px; }
+.flow-art .node.gold rect { stroke: color-mix(in srgb, var(--gold) 60%, var(--line-2)); }
+.flow-art .node.accent rect { stroke: color-mix(in srgb, var(--accent) 60%, var(--line-2)); }
+.flow-art .edge { fill: none; stroke: var(--line-2); stroke-width: 1.6; }
+.flow-art .edge.lit { stroke: var(--accent); }
+.flow-art .edge.gold.lit { stroke: var(--gold); }
+.motion-ok .flow-sec.pinned .edge { stroke-dasharray: 400; stroke-dashoffset: 400; transition: stroke-dashoffset var(--d-4) var(--ease), stroke var(--d-2); }
+.motion-ok .flow-sec.pinned .edge.lit { stroke-dashoffset: 0; }
+.motion-ok .flow-sec.pinned .node { opacity: .35; transition: opacity var(--d-2); }
+.motion-ok .flow-sec.pinned .node.lit { opacity: 1; }
+
+/* ============ faq ============ */
+details.faq { border-bottom: 1px solid var(--line); padding: 16px 0; }
+details.faq summary { cursor: pointer; font: 500 var(--fs-20)/1.2 var(--display); list-style: none; display: flex; justify-content: space-between; gap: 12px; min-height: 28px; }
+details.faq summary::after { content: "+"; font-family: var(--mono); color: var(--accent); }
+details.faq[open] summary::after { content: "−"; }
+details.faq p { color: var(--muted); margin-top: 8px; max-width: 65ch; }
+
+/* ============ tables ============ */
+.tablewrap { overflow-x: auto; }
+table.t { width: 100%; border-collapse: collapse; font-size: var(--fs-14); min-width: 640px; }
+.t th, .t td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.t th { font: 500 var(--fs-12)/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); background: var(--surface); position: sticky; top: 0; z-index: 1; }
+.t td.r, .t th.r { text-align: right; }
+.t td { font-variant-numeric: tabular-nums; }
+.t tr:hover td { background: var(--surface-2); }
+.t tr.payout td { background: color-mix(in srgb, var(--gold) 6%, transparent); }
+.t .mono { font-size: 13px; }
+
+/* ============ controls ============ */
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; background: var(--surface); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 0 12px; min-height: 36px; font: 500 var(--fs-12)/1 var(--mono); color: var(--muted); }
+.seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--surface-2); color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label, .field .lbl { font: 500 var(--fs-14)/1.2 var(--body); color: var(--muted); }
+.input, select.input, textarea.input { min-height: 44px; border: 1px solid var(--line-2); background: var(--bg); border-radius: var(--r-sm); padding: 10px 12px; width: 100%; }
+textarea.input { min-height: 90px; resize: vertical; }
+.input:focus { border-color: var(--accent); outline: none; box-shadow: var(--glow); }
+.hint { font-size: var(--fs-12); color: var(--faint); }
+.err { font-size: 13px; color: var(--down); }
+input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 32px; }
+.skeleton { background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%); background-size: 200% 100%; border-radius: var(--r-sm); min-height: 14px; }
+.motion-ok .skeleton { animation: sk 1.2s linear infinite; }
+@keyframes sk { to { background-position: -200% 0; } }
+.empty { padding: 28px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; color: var(--muted); }
+
+/* ============ coin page ============ */
+.coin-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.coin-head h1 { font-size: clamp(36px, 5vw, 56px); }
+.coin-head .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.coin-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+.coin-stats div { display: flex; flex-direction: column; gap: 4px; }
+.coin-stats b { font: 500 var(--fs-20)/1 var(--mono); }
+.coin-grid { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 16px; align-items: start; }
+.side { display: flex; flex-direction: column; gap: 16px; }
+.chart-box { height: 420px; position: relative; }
+.chart-box canvas.fallback { width: 100%; height: 100%; }
+.chart-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: var(--fs-14); }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.rig-panel { border-color: color-mix(in srgb, var(--mc) 40%, var(--line)); }
+.rig-panel .panel-head { background: color-mix(in srgb, var(--mc) 6%, transparent); }
+.countdown { font: 500 clamp(32px, 3vw, 40px)/1 var(--mono); letter-spacing: -.01em; }
+.split-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); }
+.split-bar i { background: var(--faint); transition: width var(--d-3) var(--ease); } .split-bar u { background: var(--accent); transition: width var(--d-3) var(--ease); } .split-bar s { background: var(--gold); transition: width var(--d-3) var(--ease); }
+.legend { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font: 500 var(--fs-12)/1.3 var(--mono); color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; background: var(--c); }
+.trade-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.trade-tabs button { min-height: 40px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--bg); font-weight: 500; }
+.trade-tabs button[aria-pressed="true"].buy { background: color-mix(in srgb, var(--up) 14%, transparent); border-color: var(--up); color: var(--up); }
+.trade-tabs button[aria-pressed="true"].sell { background: color-mix(in srgb, var(--down) 14%, transparent); border-color: var(--down); color: var(--down); }
+.quicks { display: flex; gap: 6px; flex-wrap: wrap; }
+.note { font-size: var(--fs-12); color: var(--faint); line-height: 1.45; }
+.stub { border: 1px dashed color-mix(in srgb, var(--warn) 60%, transparent); color: var(--warn); border-radius: var(--r-sm); padding: 8px 10px; font-size: var(--fs-12); }
+.mobile-bar { display: none; }
+
+/* ============ launch ============ */
+.wizard { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; min-height: 60vh; }
+.stepper { display: flex; gap: 6px; flex-wrap: wrap; list-style: none; padding: 0; margin: 0 0 20px; }
+.stepper li { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--r-sm); border: 1px solid var(--line); font: 500 var(--fs-12)/1 var(--mono); color: var(--faint); }
+.stepper li[aria-current="step"] { color: var(--fg); border-color: var(--accent); }
+.stepper li.done { color: var(--up); }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.pick { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); cursor: pointer; }
+.pick input { position: absolute; opacity: 0; pointer-events: none; }
+.pick .glyph { width: 40px; height: 40px; color: var(--mc); }
+.motion-ok .pick:hover .glyph, .motion-ok .pick:has(input:checked) .glyph { animation: gl 2.4s var(--ease) infinite; }
+@keyframes gl { 50% { transform: rotate(180deg) scale(1.06); } }
+.pick:has(input:checked) { border-color: var(--mc); box-shadow: inset 0 0 0 1px var(--mc), 0 0 24px color-mix(in srgb, var(--mc) 18%, transparent); }
+.pick:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pick b { font: 600 var(--fs-20)/1 var(--display); font-variation-settings: "wdth" 125; }
+.pick small { color: var(--muted); font-size: 13px; }
+.estimate { display: flex; flex-direction: column; gap: 10px; }
+.est-row { display: flex; justify-content: space-between; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); font-size: var(--fs-14); }
+.est-row span { color: var(--muted); } .est-row b { font-family: var(--mono); font-weight: 500; text-align: right; }
+.est-row.total b { color: var(--gold); }
+.preview-card { pointer-events: none; }
+.success { text-align: center; padding: 40px 16px; display: flex; flex-direction: column; align-items: center; gap: 16px; position: relative; overflow: hidden; }
+.success canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.success h2 { font-size: clamp(36px, 5vw, 64px); }
+.unit-svg { width: min(360px, 100%); height: auto; }
+.unit-svg .led { fill: var(--line-2); transition: fill var(--d-2); }
+.unit-svg .led.on { fill: var(--mc); filter: drop-shadow(0 0 4px var(--mc)); }
+.unit-svg .streak { fill: var(--mc); opacity: 0; transition: opacity var(--d-4); }
+.unit-svg.on .streak { opacity: .8; }
+
+/* ============ palette / modal / toast ============ */
+.overlay { position: fixed; inset: 0; z-index: 60; background: rgba(4, 6, 9, .66); display: grid; place-items: start center;
+  padding: calc(10vh + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); }
+.dialog { width: min(620px, 100%); background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.dialog.sm { width: min(480px, 100%); }
+.dialog header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.dialog header h2 { font-size: var(--fs-20); }
+.dialog .body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.palette-input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: 16px; font-size: 17px; outline: none; }
+.palette-list { max-height: 50vh; overflow: auto; list-style: none; margin: 0; padding: 6px; }
+.palette-list li a { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--r-sm); }
+.palette-list li a[aria-selected="true"], .palette-list li a:hover { background: var(--surface-2); }
+.palette-list .av { width: 32px; height: 32px; font-size: 13px; border-radius: 8px; }
+.toasts { position: fixed; z-index: 70; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; max-width: min(380px, calc(100vw - 32px)); }
+.toast { background: var(--fg); color: var(--bg); padding: 12px 14px; border-radius: var(--r-sm); font-size: var(--fs-14); box-shadow: var(--shadow); }
+.toast.bad { background: var(--down); color: #fff; }
+
+/* ============ footer ============ */
+.ftr { border-top: 1px solid var(--line); padding-block: 28px calc(28px + env(safe-area-inset-bottom, 0px)); color: var(--muted); font-size: 13px; }
+.ftr-row { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ftr nav { display: flex; gap: 16px; flex-wrap: wrap; }
+.ftr .risk { margin-top: 14px; color: var(--faint); max-width: 90ch; }
+
+/* ============ docs ============ */
+.docs { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
+.toc { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 4px; }
+.toc a { padding: 6px 10px; border-radius: var(--r-sm); color: var(--muted); font-size: var(--fs-14); }
+.toc a:hover { color: var(--fg); background: var(--surface); }
+.prose { display: flex; flex-direction: column; gap: 14px; max-width: 65ch; }
+.prose h2 { font-size: var(--fs-28); margin-top: 18px; scroll-margin-top: 140px; }
+.prose p, .prose li { color: var(--muted); }
+.prose strong { color: var(--fg); }
+.prose code { font: 400 13px/1 var(--mono); background: var(--surface-2); padding: 2px 5px; border-radius: 4px; }
+
+/* ============ responsive ============ */
+@media (max-width: 1180px) {
+  .with-rail { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; max-height: 420px; }
+  .mines-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .search-btn { min-width: 0; } .search-btn .txt { display: none; }
+  .boards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .coin-grid, .wizard, .docs, .flow-sec, .deep { grid-template-columns: minmax(0, 1fr); }
+  .deep-main { border-right: 0; border-bottom: 1px solid var(--line); }
+  .flow-art { position: static; }
+  .nav { display: none; }
+  .menu-btn { display: inline-grid; }
+  .mobile-nav[data-open="true"] { display: flex; flex-direction: column; padding-block: 8px; border-top: 1px solid var(--line); }
+  .mobile-nav a { padding: 12px 4px; min-height: 44px; border-bottom: 1px solid var(--line); }
+  .toc { position: static; flex-direction: row; flex-wrap: wrap; }
+  .hdr .connect-txt { display: none; }
+  .pulse { grid-template-columns: minmax(0, 1fr); }
+  .pulse-col[data-active="false"] { display: none; }
+  .pulse-tabs { display: inline-flex; }
+  .pulse-list { max-height: none; }
+  .prow .mini { display: none; }
+  .mobile-bar { display: flex; gap: 8px; position: sticky; bottom: 0; z-index: 20; padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--bg) 94%, transparent); border-top: 1px solid var(--line); margin-top: 8px; }
+  .mobile-bar .btn { flex: 1; }
+  .side-trade { display: none; }
+  .mpanel { grid-template-columns: minmax(0, 1fr); }
+  .mpanels { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .strip > div:nth-child(2) { border-right: 0; }
+  .strip > div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+  .mines-grid, .row2, .deep-stats { grid-template-columns: minmax(0, 1fr); }
+  .hdr .demo-pill { display: none; }
+  .search-btn kbd { display: none; } .search-btn { padding: 0 10px; }
+  .chart-box { height: 320px; }
+  .hdr-row { gap: 8px; }
+  .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .con-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .con-bar, .con-head { display: none; }
+  .con-mined { grid-column: 1 / -1; text-align: left; }
+  .con-split { grid-template-columns: minmax(0, 1fr); }
+  .con-totals { flex-direction: row; justify-content: space-between; border-right: 0; border-bottom: 1px solid var(--line); }
+  /* ledger rows become cards */
+  table.t.cards { min-width: 0; }
+  .t.cards thead { display: none; }
+  .t.cards tr { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .t.cards td { display: block; padding: 0; border: 0; white-space: normal; text-align: left; }
+  .t.cards td::before { content: attr(data-l); display: block; font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--faint); }
+  .t.cards td[data-l="Ref"] { display: none; }
+  .t.cards tr:hover td { background: transparent; }
+}
+@media (pointer: coarse) { .spot::after { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: var(--d-1) !important; }
+  .ticker-track { animation: none !important; }
+}
+
+</style>
+<script>window.RIG_CONFIG = { dataSource: "mock", apiUrl: "" }; try { var t = localStorage.getItem("rig-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<div id="app"></div>
+<script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+(function () {
+"use strict";
+// ---- dist/lib/dom.js
+/** Tiny element helper: h('div', {class:'x', onclick: fn}, 'text', child) */
+function h(tag, attrs = null, ...children) {
+    const el = document.createElement(tag);
+    if (attrs) {
+        for (const [k, v] of Object.entries(attrs)) {
+            if (v === undefined || v === null || v === false)
+                continue;
+            if (k.startsWith('on') && typeof v === 'function')
+                el.addEventListener(k.slice(2).toLowerCase(), v);
+            else if (k === 'html')
+                el.innerHTML = String(v);
+            else if (v === true)
+                el.setAttribute(k, '');
+            else
+                el.setAttribute(k, String(v));
+        }
+    }
+    append(el, children);
+    return el;
+}
+function append(el, children) {
+    for (const c of children) {
+        if (c === null || c === undefined || c === false)
+            continue;
+        if (Array.isArray(c))
+            append(el, c);
+        else
+            el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+    }
+}
+/** SVG helper for icons and small drawings. */
+function svg(markup, cls = 'ico') {
+    const t = document.createElement('template');
+    t.innerHTML = markup.trim();
+    const s = t.content.firstElementChild;
+    s.setAttribute('class', cls);
+    s.setAttribute('aria-hidden', 'true');
+    return s;
+}
+const $ = (sel, root = document) => root.querySelector(sel);
+/** Runs cleanup functions when a page is replaced. */
+const cleanups = [];
+function onUnmount(fn) { cleanups.push(fn); }
+function runCleanups() { while (cleanups.length) {
+    try {
+        cleanups.pop()();
+    }
+    catch { /* ignore */ }
+} }
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---- dist/lib/router.js
+// Hash routing: #/coin/<mint>, #/mine/<slug>, … so deep links work on GitHub Pages subpaths.
+const PATTERNS = [
+    ['home', /^\/?$/, []],
+    ['mines', /^\/mines\/?$/, []],
+    ['mine', /^\/mine\/([a-z0-9-]+)\/?$/, ['slug']],
+    ['coin', /^\/coin\/([1-9A-HJ-NP-Za-km-z]{20,48})\/?$/, ['mint']],
+    ['launch', /^\/launch\/?$/, []],
+    ['ledger', /^\/ledger\/?$/, []],
+    ['link', /^\/link\/?$/, []],
+    ['docs', /^\/docs\/?$/, []],
+];
+function parse(hash) {
+    const path = hash.replace(/^#/, '') || '/';
+    for (const [name, re, keys] of PATTERNS) {
+        const m = path.match(re);
+        if (m)
+            return { name, params: Object.fromEntries(keys.map((k, i) => [k, decodeURIComponent(m[i + 1])])) };
+    }
+    return { name: '404', params: {} };
+}
+function startRouter(handler) {
+    const go = () => handler(parse(location.hash));
+    addEventListener('hashchange', go);
+    go();
+}
+const href = (path) => `#${path}`;
+const navigate = (path) => { location.hash = path; };
+
+// ---- dist/lib/motion.js
+
+/** True once JS confirmed motion is OK; CSS reveals are gated on html.motion-ok. */
+const motionOk = () => document.documentElement.classList.contains('motion-ok');
+function initMotion() {
+    if (!reducedMotion())
+        document.documentElement.classList.add('motion-ok');
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => document.documentElement.classList.toggle('motion-ok', !e.matches));
+}
+/** Rolling number: animates from the shown value to the new one, with an up/down flash. */
+function rollTo(el, to, fmt, ms = 700) {
+    const from = Number(el.dataset.v ?? to);
+    el.dataset.v = String(to);
+    if (!motionOk() || from === to || !Number.isFinite(from) || !Number.isFinite(to)) {
+        el.textContent = fmt(to);
+        return;
+    }
+    const start = performance.now();
+    const step = (t) => {
+        const k = Math.min(1, (t - start) / ms);
+        const e = 1 - Math.pow(1 - k, 3);
+        el.textContent = fmt(from + (to - from) * e);
+        if (k < 1)
+            requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    el.classList.remove('flash-up', 'flash-down');
+    void el.offsetWidth;
+    el.classList.add(to > from ? 'flash-up' : 'flash-down');
+}
+/** Fade + rise for newly added rows. */
+function enter(el) {
+    if (!motionOk())
+        return;
+    el.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2,.7,.2,1)' });
+}
+function flashRow(el) {
+    if (!motionOk())
+        return;
+    el.classList.remove('row-flash');
+    void el.offsetWidth;
+    el.classList.add('row-flash');
+}
+/* ---- reveal on scroll (IntersectionObserver; content is visible without JS) ---- */
+let io = null;
+function observeReveals(root = document) {
+    if (!motionOk())
+        return;
+    io ?? (io = new IntersectionObserver((entries) => {
+        for (const e of entries)
+            if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+            }
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }));
+    root.querySelectorAll('.reveal:not(.in), .h-mask:not(.in)').forEach((el) => io.observe(el));
+    // Safety net: nothing stays hidden for long, whatever the scroll position (thumbnails, print, odd viewports).
+    window.setTimeout(() => root.querySelectorAll('.reveal:not(.in), .h-mask:not(.in)').forEach((el) => el.classList.add('in')), 1500);
+    if (!scrollBound) {
+        scrollBound = true;
+        // A jump scroll (End key, anchor) can skip past elements before the observer sees them: reveal anything already above the fold.
+        let t = 0;
+        addEventListener('scroll', () => { if (t)
+            return; t = window.setTimeout(() => { t = 0; document.querySelectorAll('.reveal:not(.in), .h-mask:not(.in)').forEach((el) => { if (el.getBoundingClientRect().top < innerHeight)
+            el.classList.add('in'); }); }, 120); }, { passive: true });
+    }
+}
+let scrollBound = false;
+/** Split a heading's text into masked lines (pass the lines explicitly so wrapping stays predictable). */
+function maskedLines(el, lines) {
+    el.classList.add('h-mask');
+    el.replaceChildren(...lines.map((l, i) => { const s = document.createElement('span'); s.className = 'h-line'; s.style.setProperty('--i', String(i)); s.append(l); return s; }));
+    return el;
+}
+/* ---- pointer effects (desktop only) ---- */
+function bindPointerEffects(root = document) {
+    if (!motionOk() || matchMedia('(pointer: coarse)').matches)
+        return;
+    root.querySelectorAll('.btn.magnetic').forEach((b) => {
+        if (b.dataset.mag)
+            return;
+        b.dataset.mag = '1';
+        b.addEventListener('pointermove', (e) => { const r = b.getBoundingClientRect(); const dx = (e.clientX - r.left - r.width / 2) / r.width, dy = (e.clientY - r.top - r.height / 2) / r.height; b.style.transform = `translate(${dx * 8}px, ${dy * 8}px)`; });
+        b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+    });
+    root.querySelectorAll('.spot').forEach((c) => {
+        if (c.dataset.spot)
+            return;
+        c.dataset.spot = '1';
+        c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', `${e.clientX - r.left}px`); c.style.setProperty('--my', `${e.clientY - r.top}px`); });
+    });
+}
+
+// ---- dist/config/brand.js
+// Everything about the brand lives here. Rename the site by editing this file
+// and the <title> in index.html, then rebuild.
+const BRAND = {
+    name: 'Hashrate',
+    ticker: 'HASH',
+    tagline: 'Every coin runs its own mine.',
+    pitch: 'Launch a coin on pump.fun and pick what its creator fees mine. Fees rent real hashpower, and the mined coins are paid out to holders.',
+    siteUrl: 'https://orch.lol/hashrate',
+    x: null, // CONFIG: e.g. 'https://x.com/rig_pad'
+    telegram: null, // CONFIG
+    rigMint: null, // CONFIG: $HASH mint once live
+    riskLine: 'Memecoins are high risk and can go to zero. Rented hashpower usually mines a little less than it costs. Nothing here is financial advice.',
+};
+
+// ---- dist/config/targets.js
+// What a coin's fees can mine. Must match TARGETS in the Rig backend.
+const TARGETS = [
+    { id: 'LTC_DOGE', slug: 'ltc-doge', label: 'LTC + DOGE', algo: 'Scrypt', chains: ['LTC', 'DOGE'], unit: 'GH/s', accent: '--m-ltc-doge',
+        blurb: 'Merged mining: one Scrypt rental earns Litecoin and Dogecoin at the same time.', tag: '2 payouts, 1 rental', autoTracked: true },
+    { id: 'ZEC', slug: 'zec', label: 'ZEC', algo: 'Equihash', chains: ['ZEC'], unit: 'kSol/s', accent: '--m-zec',
+        blurb: 'Private money, mined for holders. Pays to transparent, shielded or unified addresses.', tag: 'privacy coin', autoTracked: true },
+    { id: 'KAS', slug: 'kas', label: 'KAS', algo: 'kHeavyHash', chains: ['KAS'], unit: 'TH/s', accent: '--m-kas',
+        blurb: 'Kaspa makes ten blocks a second, so mined coins arrive steadily.', tag: 'fast blocks', autoTracked: false },
+    { id: 'BTC', slug: 'btc', label: 'BTC', algo: 'SHA-256', chains: ['BTC'], unit: 'PH/s', accent: '--m-btc',
+        blurb: 'The original chain. Rent in bursts and share whatever the pool pays.', tag: 'the classic', autoTracked: true },
+    { id: 'XMR', slug: 'xmr', label: 'XMR', algo: 'RandomX', chains: ['XMR'], unit: 'kH/s', accent: '--m-xmr',
+        blurb: 'Monero is private by default and mined on CPUs.', tag: 'CPU mined', autoTracked: false },
+];
+const targetById = (id) => TARGETS.find((t) => t.id === id);
+const targetBySlug = (s) => TARGETS.find((t) => t.slug === s);
+/** Format checks for payout addresses (same rules as the backend). */
+const ADDRESS_RULES = {
+    BTC: [/^(1|3)[1-9A-HJ-NP-Za-km-z]{25,34}$/, /^bc1[02-9ac-hj-np-z]{11,87}$/],
+    LTC: [/^[LM3][1-9A-HJ-NP-Za-km-z]{26,33}$/, /^ltc1[02-9ac-hj-np-z]{11,87}$/],
+    DOGE: [/^[DA9][1-9A-HJ-NP-Za-km-z]{25,34}$/],
+    ZEC: [/^t[13][1-9A-HJ-NP-Za-km-z]{33}$/, /^zs1[02-9ac-hj-np-z]{75}$/, /^u1[02-9ac-hj-np-z]{100,}$/],
+    KAS: [/^kaspa:[02-9ac-hj-np-z]{61,63}$/],
+    XMR: [/^[48][1-9A-HJ-NP-Za-km-z]{94}$/, /^4[1-9A-HJ-NP-Za-km-z]{105}$/],
+};
+const ADDRESS_HINT = {
+    BTC: 'Starts with 1, 3 or bc1', LTC: 'Starts with L, M or ltc1', DOGE: 'Starts with D',
+    ZEC: 'Starts with t1, zs1 or u1', KAS: 'Starts with kaspa:', XMR: 'Starts with 4 or 8',
+};
+function isValidAddress(chain, a) {
+    return (ADDRESS_RULES[chain] ?? []).some((r) => r.test(a.trim()));
+}
+
+// ---- dist/config/fees.js
+// Creator-fee settings. null = shown as "TBD" on the site.
+const FEES = {
+    /** pump.fun creator fee as a share of volume, used only for estimates. */
+    creatorFeeRate: 0.0005, // CONFIG: confirm pump.fun's current rate before launch
+    /** Share of every coin's fees that goes to $HASH (matches PLATFORM_CUT in the backend). */
+    rigCut: 0.1,
+    /** Share that covers running costs (RPC, nodes, tx fees). */
+    opsCut: null, // CONFIG
+    /** Default rent share in the launch wizard. */
+    defaultRentShare: 0.3,
+    /** Average loss on rented hashpower, used in estimates. */
+    rentalLoss: 0.1,
+    /** Site launch fee in SOL, if any. */
+    launchFeeSol: null, // CONFIG
+    payoutEveryHours: 6,
+};
+const pct = (n) => (n === null ? 'TBD' : `${parseFloat((n * 100).toFixed(n < 0.01 ? 3 : 1))}%`);
+
+// ---- dist/lib/prng.js
+/** Seeded random numbers so demo data looks the same on every load. */
+function mulberry32(seed) {
+    let a = seed >>> 0;
+    return () => {
+        a = (a + 0x6d2b79f5) >>> 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+const pick = (r, arr) => arr[Math.floor(r() * arr.length)];
+const between = (r, a, b) => a + r() * (b - a);
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+/** Fake addresses: always start with "Demo" (valid base58, unlike "DEMO") so they're never mistaken for real ones. */
+function demoAddress(r, len = 44) {
+    let s = 'Demo';
+    while (s.length < len)
+        s += B58[Math.floor(r() * 58)];
+    return s;
+}
+
+// ---- dist/data/MockMarketData.js
+
+
+
+// Simulated launchpad. Fixed seed, fake names, every mint starts with "Demo".
+const NAMES = [
+    ['Doge Digger', 'DIGGER'], ['Shovel Inu', 'SHOVEL'], ['Pickaxe Pepe', 'PICKAXE'], ['Hash Hound', 'HOUND'], ['Kas Pup', 'KASPUP'],
+    ['Z Mole', 'ZMOLE'], ['Ghost Shaft', 'SHAFT'], ['Canary', 'CANARY'], ['Ore Cat', 'ORECAT'], ['Lode Frog', 'LODE'],
+    ['Nonce', 'NONCE'], ['Block Bro', 'BLOCKBRO'], ['Drill Sergeant', 'DRILL'], ['Tunnel Rat', 'TUNNEL'], ['Coal Cat', 'COAL'],
+    ['Deep Core', 'CORE'], ['Sluice', 'SLUICE'], ['Fan Noise', 'FANS'], ['Overclock', 'OC'], ['Hashbrown', 'HASHBROWN'],
+    ['Kilowatt', 'KWH'], ['Lamp Moth', 'MOTH'], ['Helmet Hamster', 'HELMET'], ['Shielded Ghost', 'GHOST'], ['Merge Mutt', 'MERGE'],
+    ['Pool Party', 'POOL'], ['Difficulty', 'DIFF'], ['Rig Rat', 'RIGRAT'], ['Bit Badger', 'BADGER'], ['Vein', 'VEIN'],
+];
+// Hashrate per $/day rented, rough demo scale per target unit.
+const HASH_PER_USD = { LTC_DOGE: 0.06, ZEC: 1.4, KAS: 0.32, BTC: 0.004, XMR: 9 };
+const BASE_PRICES = { SOL: 182, BTC: 104000, LTC: 96, DOGE: 0.19, ZEC: 268, KAS: 0.09, XMR: 214 };
+class MockMarketData {
+    constructor() {
+        this.isDemo = true;
+        this.r = mulberry32(20261027);
+        this.list = [];
+        this.act = [];
+        this.led = [];
+        this.subs = new Set();
+        this.px = { ...BASE_PRICES };
+        this.nextId = 1;
+        this.blockCount = { LTC_DOGE: 23, ZEC: 9, KAS: 4, BTC: 0, XMR: 6 };
+        this.blockList = [];
+        this.hashHist = {};
+        this.totalsBase = { feesRoutedUsd: 0, paidUsd: 0 };
+        this.timers = [];
+        this.nameIdx = 0;
+        this.tickN = 0;
+        this.demoLinks = new Map();
+        for (let i = 0; i < 22; i++)
+            this.list.push(this.makeCoin(Date.now() - between(this.r, 0.2, 72) * 3600000));
+        this.list.sort((a, b) => b.createdAt - a.createdAt);
+        this.totalsBase.feesRoutedUsd = this.list.reduce((s, c) => s + c.volume24h * 0.0005 * 3.2, 0) + 18400;
+        this.totalsBase.paidUsd = this.totalsBase.feesRoutedUsd * 0.71;
+        for (const [t, n] of Object.entries(this.blockCount))
+            for (let i = 0; i < Math.min(n, 6); i++) {
+                const c = pick(this.r, this.list.filter((x) => x.target === t)) ?? this.list[0];
+                this.blockList.push({ ts: Date.now() - between(this.r, 0.5, 48) * 3600000, target: t, mint: c.mint, ticker: c.ticker });
+            }
+        this.blockList.sort((a, b) => b.ts - a.ts);
+        for (const t of TARGETS) {
+            const base = this.list.filter((c) => c.target === t.id).reduce((s, c) => s + c.hashrate, 0);
+            this.hashHist[t.id] = Array.from({ length: 24 }, () => base * between(this.r, 0.8, 1.15));
+        }
+        // Seed history.
+        for (let i = 0; i < 40; i++)
+            this.event(Date.now() - (40 - i) * between(this.r, 40, 160) * 1000, false);
+        this.timers.push(window.setInterval(() => this.tick(), 1500));
+        this.timers.push(window.setInterval(() => this.event(Date.now(), true), 2600));
+        const launchLoop = () => {
+            const t = window.setTimeout(() => { this.spawn(); launchLoop(); }, between(this.r, 8000, 20000));
+            this.timers.push(t);
+        };
+        launchLoop();
+    }
+    async ready() { }
+    makeCoin(createdAt, name, ticker, target, rentShare) {
+        const r = this.r;
+        const [n, t] = name && ticker ? [name, ticker] : NAMES[this.nameIdx++ % NAMES.length];
+        const tg = target ?? pick(r, ['LTC_DOGE', 'LTC_DOGE', 'LTC_DOGE', 'ZEC', 'ZEC', 'KAS', 'BTC', 'XMR']);
+        const age = (Date.now() - createdAt) / 3600000;
+        const graduated = !name && r() < Math.min(0.55, age / 60);
+        const mcap = graduated ? between(r, 90000, 2400000) : between(r, 4000, 70000);
+        const priceUsd = mcap / 1e9;
+        const volume24h = mcap * between(r, 0.4, 3.5);
+        const rs = rentShare ?? pick(r, [0.2, 0.3, 0.3, 0.4, 0.5]);
+        const dailyFeesUsd = volume24h * (FEES.creatorFeeRate ?? 0.0005) * (1 - (FEES.rigCut ?? 0));
+        const rentUsd = dailyFeesUsd * rs;
+        const target0 = targetById(tg);
+        const hashrate = name ? 0 : rentUsd * HASH_PER_USD[tg];
+        const mined = {}, pots = {}, paid = {};
+        for (const ch of target0.chains) {
+            const share = 1 / target0.chains.length;
+            const minedUsd = name ? 0 : rentUsd * (1 - FEES.rentalLoss) * share + dailyFeesUsd * (1 - rs) * share;
+            mined[ch] = minedUsd / BASE_PRICES[ch];
+            pots[ch] = mined[ch] * between(r, 0.1, 0.9);
+            paid[ch] = mined[ch] * Math.max(0, age / 24) * between(r, 0.6, 1);
+        }
+        const spark = [];
+        let p = priceUsd * between(r, 0.6, 1.1);
+        for (let i = 0; i < 32; i++) {
+            p *= 1 + between(r, -0.06, 0.07);
+            spark.push(p);
+        }
+        spark[spark.length - 1] = priceUsd;
+        const mint = demoAddress(r);
+        const c = {
+            mint, ticker: t, name: n, target: tg, rentShare: rs, creatorWallet: demoAddress(r), createdAt,
+            priceUsd, mcapUsd: mcap, change24h: between(r, -38, 160), volume24h, holders: Math.round(mcap / between(r, 180, 900)) + 12,
+            bonding: graduated ? 100 : Math.min(99, (mcap / 69000) * 100), graduated, spark, hashrate, mined24h: mined, pots, paidOut: paid,
+            nextPayoutAt: this.nextPayoutTime(), hue: Math.floor(r() * 360), vol: between(r, 0.006, 0.03),
+            top10Pct: between(r, 8, 34), devPct: name ? 0 : between(r, 0, 6),
+            socials: { x: r() < 0.8 ? 'https://x.com/demo' : undefined, tg: r() < 0.5 ? 'https://t.me/demo' : undefined, web: r() < 0.3 ? 'https://example.com' : undefined },
+            feesEarnedUsd: name ? 0 : volume24h * (FEES.creatorFeeRate ?? 0.0005) * Math.max(0.3, age / 24) * between(r, 0.8, 1.6),
+            paidUsd24h: 0, paidUsdTotal: 0,
+            candles1m: [], trades: [], holderList: [],
+        };
+        c.paidUsd24h = name ? 0 : Object.entries(c.mined24h).reduce((s, [ch, a]) => s + a * BASE_PRICES[ch], 0) * between(r, 0.5, 0.95);
+        c.paidUsdTotal = Object.entries(c.paidOut).reduce((s, [ch, a]) => s + a * BASE_PRICES[ch], 0);
+        c.candles1m = this.seedCandles(c);
+        c.trades = Array.from({ length: 30 }, (_, i) => this.fakeTrade(c, Date.now() - i * between(r, 10, 120) * 1000));
+        c.holderList = this.fakeHolders(c);
+        return c;
+    }
+    nextPayoutTime() {
+        const every = FEES.payoutEveryHours * 3600000;
+        return Math.ceil(Date.now() / every) * every;
+    }
+    seedCandles(c) {
+        const r = mulberry32(c.mint.length * 7919 + c.hue);
+        const out = [];
+        const n = 600;
+        let p = c.priceUsd / Math.max(0.2, 1 + c.change24h / 100);
+        const now = Math.floor(Date.now() / 60000) * 60;
+        for (let i = n; i > 0; i--) {
+            const open = p;
+            const drift = (Math.log(c.priceUsd) - Math.log(p)) / Math.max(1, i);
+            const close = Math.max(1e-12, open * Math.exp(drift + (r() - 0.5) * c.vol * 2));
+            const high = Math.max(open, close) * (1 + r() * c.vol);
+            const low = Math.min(open, close) * (1 - r() * c.vol);
+            out.push({ time: now - i * 60, open, high, low, close });
+            p = close;
+        }
+        out[out.length - 1].close = c.priceUsd;
+        return out;
+    }
+    fakeTrade(c, ts) {
+        const side = this.r() < 0.56 ? 'buy' : 'sell';
+        const sol = Math.round(between(this.r, 0.05, 6) * 100) / 100;
+        const usd = sol * this.px.SOL;
+        return { ts, side, wallet: demoAddress(this.r), sol, usd, tokens: usd / c.priceUsd };
+    }
+    fakeHolders(c) {
+        const out = [];
+        let left = 100;
+        const chains = targetById(c.target).chains;
+        for (let i = 0; i < 14; i++) {
+            const pct = i === 13 ? left : Math.min(left, between(this.r, 0.4, i < 3 ? 6 : 2.5));
+            left -= pct;
+            out.push({ wallet: demoAddress(this.r), pct, linked: this.r() < 0.6 ? chains.slice(0, this.r() < 0.5 ? 1 : chains.length) : [] });
+        }
+        out.sort((a, b) => b.pct - a.pct);
+        return out;
+    }
+    tick() {
+        for (const k of Object.keys(this.px))
+            if (k !== 'SOL')
+                this.px[k] *= 1 + between(this.r, -0.0015, 0.0015);
+        this.px.SOL *= 1 + between(this.r, -0.001, 0.001);
+        const now = Math.floor(Date.now() / 60000) * 60;
+        for (const c of this.list) {
+            if (this.r() < 0.55) {
+                const m = 1 + between(this.r, -c.vol, c.vol * 1.08);
+                c.priceUsd *= m;
+                c.mcapUsd = c.priceUsd * 1e9;
+                c.change24h = (c.change24h + 100) * m - 100;
+                c.spark.push(c.priceUsd);
+                c.spark.shift();
+                if (!c.graduated) {
+                    c.bonding = Math.min(100, (c.mcapUsd / 69000) * 100);
+                    if (c.bonding >= 100)
+                        c.graduated = true;
+                }
+                const last = c.candles1m[c.candles1m.length - 1];
+                if (last.time === now) {
+                    last.close = c.priceUsd;
+                    last.high = Math.max(last.high, c.priceUsd);
+                    last.low = Math.min(last.low, c.priceUsd);
+                }
+                else
+                    c.candles1m.push({ time: now, open: last.close, high: Math.max(last.close, c.priceUsd), low: Math.min(last.close, c.priceUsd), close: c.priceUsd });
+            }
+            // Hashrate jitter and slowly filling pots.
+            c.hashrate *= 1 + between(this.r, -0.02, 0.02);
+            for (const ch of Object.keys(c.pots))
+                c.pots[ch] += (c.mined24h[ch] / 57600) * between(this.r, 0.5, 1.5);
+            if (Date.now() >= c.nextPayoutAt)
+                this.payout(c);
+            c.feesEarnedUsd += c.volume24h * 0.0005 / 57600;
+        }
+        if (++this.tickN % 20 === 0)
+            for (const t of TARGETS) {
+                const h = this.hashHist[t.id];
+                h.push(this.list.filter((c) => c.target === t.id).reduce((s, c) => s + c.hashrate, 0));
+                if (h.length > 24)
+                    h.shift();
+            }
+        this.emit();
+    }
+    payout(c) {
+        for (const [ch, amt] of Object.entries(c.pots)) {
+            if (amt <= 0)
+                continue;
+            c.paidOut[ch] += amt;
+            c.paidUsd24h += amt * this.px[ch];
+            c.paidUsdTotal += amt * this.px[ch];
+            this.totalsBase.paidUsd += amt * this.px[ch];
+            this.ledgerAdd({ ts: Date.now(), mint: c.mint, ticker: c.ticker, kind: 'payout', chain: ch, amount: amt, unit: ch, status: 'done',
+                note: `${Math.round(c.holders * 0.4)} holders paid` });
+            c.pots[ch] = 0;
+        }
+        c.nextPayoutAt = this.nextPayoutTime() + FEES.payoutEveryHours * 3600000;
+    }
+    event(ts, live) {
+        const c = pick(this.r, this.list);
+        const t = targetById(c.target);
+        const roll = this.r();
+        let a;
+        if (roll < 0.42) {
+            const tr = this.fakeTrade(c, ts);
+            if (live)
+                c.trades.unshift(tr), c.trades.length = Math.min(c.trades.length, 60);
+            a = { ts, kind: tr.side, mint: c.mint, ticker: c.ticker, text: `${tr.side === 'buy' ? 'bought' : 'sold'} ${tr.sol} SOL of $${c.ticker}` };
+        }
+        else if (roll < 0.62) {
+            const usd = between(this.r, 30, 420);
+            this.totalsBase.feesRoutedUsd += usd / Math.max(0.1, c.rentShare);
+            a = { ts, kind: 'rent', mint: c.mint, ticker: c.ticker, text: `$${c.ticker} rented ${(usd * HASH_PER_USD[c.target]).toFixed(2)} ${t.unit} of ${t.algo}` };
+            this.ledgerAdd({ ts, mint: c.mint, ticker: c.ticker, kind: 'rent', chain: c.target, amount: usd, unit: 'USD', status: 'done', note: `${t.label} · 6h order` });
+        }
+        else if (roll < 0.84) {
+            const ch = pick(this.r, t.chains);
+            const amt = (c.mined24h[ch] || 1) * between(this.r, 0.03, 0.12);
+            a = { ts, kind: 'mined', mint: c.mint, ticker: c.ticker, text: `$${c.ticker} mined ${fmtAmt(amt)} ${ch}` };
+            this.ledgerAdd({ ts, mint: c.mint, ticker: c.ticker, kind: 'mined', chain: ch, amount: amt, unit: ch, status: t.autoTracked ? 'done' : 'pending',
+                note: t.autoTracked ? 'from pool payout' : 'recorded by hand' });
+        }
+        else if (roll < 0.94) {
+            const ch = pick(this.r, t.chains);
+            const amt = (c.mined24h[ch] || 1) * between(this.r, 0.2, 0.5);
+            a = { ts, kind: 'payout', mint: c.mint, ticker: c.ticker, text: `$${c.ticker} paid ${fmtAmt(amt)} ${ch} to ${Math.round(between(this.r, 20, 260))} holders` };
+            this.ledgerAdd({ ts, mint: c.mint, ticker: c.ticker, kind: 'payout', chain: ch, amount: amt, unit: ch, status: 'done' });
+        }
+        else {
+            this.blockCount[c.target] = (this.blockCount[c.target] ?? 0) + 1;
+            this.blockList.unshift({ ts, target: c.target, mint: c.mint, ticker: c.ticker });
+            this.blockList.length = Math.min(this.blockList.length, 40);
+            a = { ts, kind: 'block', mint: c.mint, ticker: c.ticker, text: `Block hit on ${t.label} by renters incl. $${c.ticker}` };
+        }
+        this.pushActivity(a, live);
+    }
+    spawn(name, ticker, target, rentShare) {
+        const c = this.makeCoin(Date.now(), name, ticker, target, rentShare);
+        if (!name) {
+            c.mcapUsd = between(this.r, 3800, 6500);
+            c.priceUsd = c.mcapUsd / 1e9;
+            c.bonding = (c.mcapUsd / 69000) * 100;
+            c.graduated = false;
+            c.change24h = 0;
+            c.holders = 3;
+        }
+        this.list.unshift(c);
+        this.pushActivity({ ts: Date.now(), kind: 'launch', mint: c.mint, ticker: c.ticker, text: `$${c.ticker} launched · mines ${targetById(c.target).label}` }, true);
+        return c;
+    }
+    addDemoCoin(x) {
+        return this.spawn(x.name, x.ticker, x.target, x.rentShare);
+    }
+    pushActivity(a, live) {
+        const full = { ...a, id: this.nextId++ };
+        this.act.unshift(full);
+        if (this.act.length > 200)
+            this.act.length = 200;
+        if (live)
+            for (const s of this.subs)
+                s(full);
+    }
+    ledgerAdd(e) {
+        this.led.unshift(e);
+        if (this.led.length > 300)
+            this.led.length = 300;
+    }
+    emit() { for (const s of this.subs)
+        s(); }
+    // ---- MarketData ----
+    coins() { return this.list; }
+    coin(mint) { return this.list.find((c) => c.mint === mint); }
+    prices() { return this.px; }
+    activity(limit = 50) { return this.act.slice(0, limit); }
+    ledger(limit = 100) { return this.led.slice(0, limit); }
+    trades(mint) { return this.coin(mint) ? this.coin(mint).trades : []; }
+    holders(mint) { return this.coin(mint) ? this.coin(mint).holderList : []; }
+    candles(mint, resSec) {
+        const c = this.coin(mint);
+        if (!c)
+            return [];
+        const base = c.candles1m;
+        if (resSec <= 60) {
+            if (resSec === 60)
+                return base.map((x) => ({ ...x }));
+            // Sub-minute: split the last 40 minutes into finer candles.
+            const out = [];
+            const r = mulberry32(c.hue + resSec);
+            for (const m of base.slice(-40)) {
+                const parts = 60 / resSec;
+                let p = m.open;
+                for (let i = 0; i < parts; i++) {
+                    const close = i === parts - 1 ? m.close : p * (1 + (r() - 0.5) * c.vol);
+                    out.push({ time: m.time + i * resSec, open: p, close, high: Math.max(p, close) * (1 + r() * c.vol * 0.3), low: Math.min(p, close) * (1 - r() * c.vol * 0.3) });
+                    p = close;
+                }
+            }
+            return out;
+        }
+        const out = [];
+        for (const m of base) {
+            const t = Math.floor(m.time / resSec) * resSec;
+            const last = out[out.length - 1];
+            if (last && last.time === t) {
+                last.high = Math.max(last.high, m.high);
+                last.low = Math.min(last.low, m.low);
+                last.close = m.close;
+            }
+            else
+                out.push({ ...m, time: t });
+        }
+        return out;
+    }
+    targets() {
+        return TARGETS.map((t) => {
+            const cs = this.list.filter((c) => c.target === t.id);
+            const mined = {};
+            for (const ch of t.chains)
+                mined[ch] = cs.reduce((s, c) => s + (c.mined24h[ch] ?? 0), 0);
+            const hashrate = cs.reduce((s, c) => s + c.hashrate, 0);
+            return { id: t.id, hashrate, mined24h: mined, coins: cs.length, blocksHit: this.blockCount[t.id] ?? 0, rentedUsd24h: hashrate / HASH_PER_USD[t.id], hashSeries: this.hashHist[t.id] ?? [] };
+        });
+    }
+    totals() {
+        return {
+            feesRoutedUsd: this.totalsBase.feesRoutedUsd,
+            paidUsd: this.totalsBase.paidUsd,
+            blocksHit: Object.values(this.blockCount).reduce((a, b) => a + b, 0),
+            coinsMining: this.list.length,
+        };
+    }
+    blocks(limit = 20) { return this.blockList.slice(0, limit); }
+    subscribe(fn) { this.subs.add(fn); return () => { this.subs.delete(fn); }; }
+    async linkMessage(wallet, chain, address) {
+        const issuedAt = Date.now();
+        const message = ['Hashrate payout address', `Wallet: ${wallet}`, `Chain: ${chain}`, `Address: ${address}`, `Issued: ${new Date(issuedAt).toISOString()}`].join('\n');
+        return { message, issuedAt };
+    }
+    async link(req) {
+        await new Promise((r) => setTimeout(r, 500));
+        const info = this.demoLinks.get(req.wallet) ?? { links: [], owed: [] };
+        info.links = info.links.filter((l) => l.chain !== req.chain).concat({ chain: req.chain, address: req.address, signed_at: Date.now() });
+        this.demoLinks.set(req.wallet, info);
+    }
+    async links(wallet) {
+        return this.demoLinks.get(wallet) ?? { links: [], owed: [] };
+    }
+}
+function fmtAmt(n) {
+    return n.toLocaleString('en-US', { maximumFractionDigits: n >= 100 ? 0 : n >= 1 ? 2 : 5 });
+}
+
+// ---- dist/data/RigApiData.js
+
+
+/**
+ * Live adapter (Phase 2). Mining data comes from the Rig backend:
+ *   GET /api/coins, GET /api/log, GET /api/link-message, POST /api/link, GET /api/links/:wallet
+ * Market data (price, mcap, candles, trades, holders) needs a market data source;
+ * wire Codex (or another indexer) in the marked spots. Until then those fields show "—".
+ */
+class RigApiData {
+    constructor(apiUrl) {
+        this.isDemo = false;
+        this.list = [];
+        this.log = [];
+        this.act = [];
+        this.subs = new Set();
+        this.seen = new Set();
+        this.id = 1;
+        this.base = apiUrl.replace(/\/$/, '');
+        window.setInterval(() => this.refresh().catch(() => { }), 15000);
+    }
+    async ready() { await this.refresh(); }
+    async get(path) {
+        const r = await fetch(this.base + path);
+        if (!r.ok)
+            throw new Error(`The Rig API returned ${r.status} for ${path}.`);
+        return r.json();
+    }
+    async refresh() {
+        const [coins, log] = await Promise.all([this.get('/api/coins'), this.get('/api/log?limit=200')]);
+        const tickerOf = new Map(coins.map((c) => [c.mint, c.ticker]));
+        this.list = coins.map((c) => ({
+            mint: c.mint, ticker: c.ticker, name: c.name, target: c.target, rentShare: c.rent_share, creatorWallet: '', createdAt: c.created_at,
+            // CONFIG: market fields come from Codex filterTokens / getTokenPrices.
+            priceUsd: NaN, mcapUsd: NaN, change24h: NaN, volume24h: NaN, holders: NaN, bonding: NaN, graduated: false, spark: [],
+            hashrate: NaN, mined24h: {}, pots: c.pots ?? {}, paidOut: {}, nextPayoutAt: nextPayout(), hue: hashHue(c.mint),
+            top10Pct: NaN, devPct: NaN, socials: {},
+            feesEarnedUsd: log.filter((e) => e.kind === 'split' && e.mint === c.mint).reduce((s, e) => s + e.amount, 0),
+            paidUsd24h: NaN, paidUsdTotal: NaN,
+        }));
+        this.log = log.map((e) => ({ ...e, ticker: e.mint ? tickerOf.get(e.mint) : undefined }));
+        for (const e of [...this.log].reverse()) {
+            const key = `${e.ts}:${e.kind}:${e.mint}:${e.amount}`;
+            if (this.seen.has(key))
+                continue;
+            this.seen.add(key);
+            const a = { id: this.id++, ts: e.ts, kind: e.kind === 'claim' || e.kind === 'split' || e.kind === 'buy' ? 'rent' : e.kind, mint: e.mint, ticker: e.ticker,
+                text: `${e.ticker ? '$' + e.ticker + ' ' : ''}${e.kind} ${e.amount.toLocaleString('en-US', { maximumFractionDigits: 6 })} ${e.unit}` };
+            this.act.unshift(a);
+            for (const s of this.subs)
+                s(a);
+        }
+        for (const s of this.subs)
+            s();
+    }
+    coins() { return this.list; }
+    coin(mint) { return this.list.find((c) => c.mint === mint); }
+    targets() {
+        return TARGETS.map((t) => ({ id: t.id, hashrate: NaN, mined24h: {}, coins: this.list.filter((c) => c.target === t.id).length,
+            blocksHit: 0, rentedUsd24h: this.log.filter((e) => e.kind === 'rent' && e.chain === t.id && Date.now() - e.ts < 86400000).reduce((s, e) => s + e.amount, 0), hashSeries: [] }));
+    }
+    totals() {
+        return { feesRoutedUsd: this.log.filter((e) => e.kind === 'split').reduce((s, e) => s + e.amount, 0), paidUsd: NaN, blocksHit: 0, coinsMining: this.list.length };
+    }
+    blocks() { return []; } // CONFIG: read from the pool API
+    activity(limit = 50) { return this.act.slice(0, limit); }
+    ledger(limit = 100) { return this.log.slice(0, limit); }
+    candles(_mint, _res) { return []; } // CONFIG: Codex getBars
+    trades() { return []; } // CONFIG: Codex getTokenEvents
+    holders() { return []; } // CONFIG: Codex holders or the backend snapshot
+    prices() { return {}; }
+    subscribe(fn) { this.subs.add(fn); return () => { this.subs.delete(fn); }; }
+    async linkMessage(wallet, chain, address) {
+        const q = new URLSearchParams({ wallet, chain, address });
+        return this.get(`/api/link-message?${q}`);
+    }
+    async link(req) {
+        const r = await fetch(this.base + '/api/link', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(req) });
+        const j = (await r.json().catch(() => ({})));
+        if (!r.ok)
+            throw new Error(j.error ?? `Linking failed (${r.status}). Try again.`);
+    }
+    links(wallet) { return this.get(`/api/links/${wallet}`); }
+    async launch(req) {
+        const r = await fetch(this.base + '/api/launch', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(req) });
+        const j = (await r.json().catch(() => ({})));
+        if (!r.ok)
+            throw new Error(j.error ?? `Launch request failed (${r.status}).`);
+        return j;
+    }
+    launchStatus(id) { return this.get(`/api/launch/${id}`); }
+}
+function nextPayout() { const e = FEES.payoutEveryHours * 3600000; return Math.ceil(Date.now() / e) * e; }
+function hashHue(s) { let h = 0; for (const c of s)
+    h = (h * 31 + c.charCodeAt(0)) % 360; return h; }
+
+// ---- dist/data/index.js
+
+
+let instance = null;
+/** The site's single data source. window.RIG_CONFIG.dataSource = "live" + apiUrl switches to the backend. */
+function data() {
+    if (instance)
+        return instance;
+    const cfg = window.RIG_CONFIG ?? {};
+    instance = cfg.dataSource === 'live' && cfg.apiUrl ? new RigApiData(cfg.apiUrl) : new MockMarketData();
+    return instance;
+}
+
+// ---- dist/lib/format.js
+function usd(n, compact = false) {
+    if (!Number.isFinite(n))
+        return '—';
+    if (compact && Math.abs(n) >= 1000)
+        return '$' + Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
+    if (Math.abs(n) < 0.01 && n !== 0)
+        return '$' + n.toPrecision(2);
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+/** Tiny memecoin prices: $0.0₅4213 style. */
+function price(n) {
+    if (!Number.isFinite(n))
+        return '—';
+    if (n >= 0.01)
+        return '$' + n.toFixed(4);
+    const s = n.toFixed(12);
+    const m = s.match(/^0\.(0+)(\d{4})/);
+    if (!m)
+        return '$' + n.toPrecision(4);
+    const subs = '₀₁₂₃₄₅₆₇₈₉';
+    const z = String(m[1].length).split('').map((d) => subs[+d]).join('');
+    return `$0.0${z}${m[2]}`;
+}
+function amount(n, unit) {
+    const digits = n >= 1000 ? 0 : n >= 1 ? 2 : n >= 0.01 ? 4 : 6;
+    return `${n.toLocaleString('en-US', { maximumFractionDigits: digits })} ${unit}`;
+}
+function num(n, digits = 1) {
+    return n.toLocaleString('en-US', { maximumFractionDigits: digits });
+}
+function pctChange(n) {
+    const up = n >= 0;
+    return { text: `${up ? '▲' : '▼'} ${Math.abs(n).toFixed(1)}%`, up };
+}
+function ago(ts) {
+    const s = Math.max(1, Math.round((Date.now() - ts) / 1000));
+    if (s < 60)
+        return `${s}s ago`;
+    if (s < 3600)
+        return `${Math.floor(s / 60)}m ago`;
+    if (s < 86400)
+        return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}d ago`;
+}
+function countdown(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+    return `${h}h ${String(m).padStart(2, '0')}m ${String(r).padStart(2, '0')}s`;
+}
+const short = (a, n = 4) => (a.length > n * 2 + 1 ? `${a.slice(0, n)}…${a.slice(-n)}` : a);
+
+// ---- dist/components/Icons.js
+
+// One 1.5px-stroke line set, inlined. No emoji anywhere.
+const P = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICONS = {
+    search: P('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'),
+    menu: P('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    close: P('<path d="M6 6l12 12M18 6 6 18"/>'),
+    sun: P('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    moon: P('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/>'),
+    wallet: P('<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h2M3 9h14a2 2 0 0 0 2-2V5"/>'),
+    link: P('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
+    arrow: P('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+    back: P('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
+    ext: P('<path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>'),
+    copy: P('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/>'),
+    bolt: P('<path d="M13 2 4 14h7l-1 8 9-12h-7Z"/>'),
+    pick: P('<path d="M14 4c3 0 6 3 6 6M4 20 14 10M12 8l4 4"/><path d="M9 3c-3 0-6 3-6 6"/>'),
+    up: P('<path d="M12 19V5M6 11l6-6 6 6"/>'),
+    down: P('<path d="M12 5v14M6 13l6 6 6-6"/>'),
+    coins: P('<circle cx="9" cy="9" r="6"/><path d="M14.5 6.5A6 6 0 1 1 6.5 14.5"/>'),
+    cube: P('<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="M12 12 4 7.5M12 12l8-4.5M12 12v9"/>'),
+    plus: P('<path d="M12 5v14M5 12h14"/>'),
+    x: P('<path d="M4 4l16 16M20 4 4 20"/>'),
+    send: P('<path d="M22 2 11 13M22 2l-7 20-4-9-9-4Z"/>'),
+    globe: P('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
+    check: P('<path d="m5 12 5 5L20 7"/>'),
+    info: P('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>'),
+};
+function icon(name, cls = 'ico') { return svg(ICONS[name], cls); }
+/** The Rig mark: a rack unit with two lit LEDs. */
+function rigMark(cls = 'mark') {
+    return svg(`<svg viewBox="0 0 32 32"><rect x="3" y="4" width="26" height="24" rx="5" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <rect x="8" y="9" width="16" height="3" rx="1.5" fill="var(--accent)"/><rect x="8" y="15" width="16" height="3" rx="1.5" fill="var(--accent)" opacity=".55"/>
+    <circle cx="10" cy="23" r="1.6" fill="var(--gold)"/><circle cx="14.5" cy="23" r="1.6" fill="var(--gold)"/><circle cx="19" cy="23" r="1.6" fill="var(--line-2)"/></svg>`, cls);
+}
+/** Custom glyph per mine. Each draws from its algorithm: merged rings, shielded hex, a fast lattice, a block, and a ringed core. */
+const GLYPHS = {
+    LTC_DOGE: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/><path d="M12 7.5v9"/>',
+    ZEC: '<path d="M12 3 20 7v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4Z"/><path d="M9 9h6l-6 6h6"/>',
+    KAS: '<path d="m12 3 7.8 4.5v9L12 21l-7.8-4.5v-9Z"/><path d="M12 7v10M8 9l8 6M16 9l-8 6"/>',
+    BTC: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="M12 12 4 7.5M12 12l8-4.5M12 12v9"/><path d="M9 10v4M15 10v4"/>',
+    XMR: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>',
+};
+function mineGlyph(id, cls = 'glyph') { return svg(P(GLYPHS[id]), cls); }
+
+// ---- dist/components/Bits.js
+
+
+
+/** Colored chip naming what a coin mines. */
+function mineChip(id, opts = {}) {
+    const t = targetById(id);
+    if (!t)
+        return h('span', { class: 'pill' }, id);
+    const el = h(opts.href ? 'a' : 'span', { class: 'chip', style: `--mc: var(${t.accent})`, href: opts.href, title: `${t.algo} · pays ${t.chains.join(' + ')}` }, mineGlyph(t.id, 'ico'), t.label);
+    return el;
+}
+function avatar(c, size = '') {
+    return h('span', { class: `av ${size}`, style: `--h:${c.hue}`, 'aria-hidden': 'true' }, c.ticker.slice(0, 1));
+}
+/** Inline sparkline; color follows the overall move, or a fixed CSS color. */
+function sparkline(values, cls = 'spark', color) {
+    const w = 110, ht = 34;
+    if (values.length < 2 || values.some((v) => !Number.isFinite(v)))
+        return h('span', { class: cls });
+    const min = Math.min(...values), max = Math.max(...values), span = max - min || 1;
+    const pts = values.map((v, i) => `${((i / (values.length - 1)) * w).toFixed(1)},${(ht - 3 - ((v - min) / span) * (ht - 6)).toFixed(1)}`);
+    const up = values[values.length - 1] >= values[0];
+    const col = color ?? (up ? 'var(--up)' : 'var(--down)');
+    const last = pts[pts.length - 1].split(',');
+    return svg(`<svg viewBox="0 0 ${w} ${ht}" preserveAspectRatio="none">
+    <polygon points="0,${ht} ${pts.join(' ')} ${w},${ht}" fill="${col}" opacity=".1"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+    <circle cx="${last[0]}" cy="${last[1]}" r="2.2" fill="${col}"/></svg>`, cls);
+}
+function change(n) {
+    if (!Number.isFinite(n))
+        return h('span', { class: 'muted' }, '—');
+    const up = n >= 0;
+    return h('span', { class: up ? 'up' : 'down' }, `${up ? '▲' : '▼'} ${Math.abs(n).toFixed(1)}%`);
+}
+function pctText(n) { return Number.isFinite(n) ? `${n.toFixed(1)}%` : '—'; }
+/** Section heading with an eyebrow, used everywhere for one consistent rhythm. */
+function sectionHead(eyebrow, title, sub, action) {
+    return h('div', { class: 'sec-head reveal' }, h('div', null, h('span', { class: 'eyebrow' }, eyebrow), h('h2', { style: 'margin-top:8px' }, title), sub ? h('p', { style: 'margin-top:8px' }, sub) : null), action ?? null);
+}
+function emptyState(text, action) {
+    return h('div', { class: 'empty' }, h('p', null, text), action ?? null);
+}
+function skeletonRows(n = 6) {
+    return h('div', { style: 'display:flex;flex-direction:column;gap:10px;padding:14px' }, Array.from({ length: n }, () => h('div', { class: 'skeleton', style: 'height:38px' })));
+}
+
+// ---- dist/components/CommandPalette.js
+
+
+
+
+
+
+
+/** Cmd/Ctrl+K search over coins, mine targets and pages. */
+function openPalette() {
+    if (document.querySelector('.overlay.palette'))
+        return;
+    const prevFocus = document.activeElement;
+    const input = h('input', { class: 'palette-input', type: 'search', placeholder: 'Search coins, tickers, mines or pages', 'aria-label': 'Search', autocomplete: 'off', id: 'palette-q' });
+    const list = h('ul', { class: 'palette-list', role: 'listbox', id: 'palette-list' });
+    let sel = 0;
+    let items = [];
+    const pages = [
+        { label: 'Launch a coin', sub: 'Page', path: '/launch' }, { label: 'All mines', sub: 'Page', path: '/mines' },
+        { label: 'Ledger', sub: 'Page', path: '/ledger' }, { label: 'Link payout address', sub: 'Page', path: '/link' }, { label: 'Docs', sub: 'Page', path: '/docs' },
+    ];
+    const render = () => {
+        const q = input.value.trim().toLowerCase().replace(/^\$/, '');
+        const coins = data().coins().filter((c) => !q || c.name.toLowerCase().includes(q) || c.ticker.toLowerCase().includes(q) || c.mint.toLowerCase().startsWith(q)).slice(0, 8)
+            .map((c) => ({ label: `${c.name} · $${c.ticker}`, sub: usd(c.mcapUsd, true), path: `/coin/${c.mint}`, node: avatar(c) }));
+        const mines = TARGETS.filter((t) => !q || t.label.toLowerCase().includes(q) || t.algo.toLowerCase().includes(q)).map((t) => ({ label: `Mine: ${t.label}`, sub: t.algo, path: `/mine/${t.slug}` }));
+        const pg = pages.filter((p) => !q || p.label.toLowerCase().includes(q));
+        items = [...coins, ...mines, ...pg];
+        sel = Math.min(sel, Math.max(0, items.length - 1));
+        list.replaceChildren(...(items.length ? items.map((it, i) => h('li', null, h('a', { href: href(it.path), role: 'option', 'aria-selected': String(i === sel), id: `pal-${i}`, onclick: close }, it.node ?? h('span', { class: 'kind rent' }, icon('arrow')), h('span', { style: 'flex:1' }, it.label), h('span', { class: 'muted mono' }, it.sub)))) :
+            [h('li', { class: 'muted', style: 'padding:14px' }, 'Nothing matches. Try a ticker like DIGGER or a mine like ZEC.')]));
+        input.setAttribute('aria-activedescendant', `pal-${sel}`);
+    };
+    const close = () => { overlay.remove(); prevFocus?.focus(); };
+    const overlay = h('div', { class: 'overlay palette', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Search',
+        onclick: (e) => { if (e.target === overlay)
+            close(); } }, h('div', { class: 'dialog' }, input, list));
+    input.addEventListener('input', () => { sel = 0; render(); });
+    overlay.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            close();
+        }
+        else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            sel = Math.min(items.length - 1, sel + 1);
+            render();
+        }
+        else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            sel = Math.max(0, sel - 1);
+            render();
+        }
+        else if (e.key === 'Enter' && items[sel]) {
+            e.preventDefault();
+            navigate(items[sel].path);
+            close();
+        }
+        else if (e.key === 'Tab') {
+            e.preventDefault();
+            input.focus();
+        } // focus stays in the palette
+    });
+    document.body.append(overlay);
+    render();
+    input.focus();
+}
+function bindPaletteShortcut() {
+    addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            openPalette();
+        }
+        else if (e.key === '/' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+            e.preventDefault();
+            openPalette();
+        }
+    });
+}
+
+// ---- dist/components/Wallet.js
+// Injected wallet (Phantom / Solflare / Backpack). Reads the address and signs messages; never sends transactions.
+let current = null;
+const listeners = new Set();
+function findProvider() {
+    return window.phantom?.solana ?? window.solflare ?? window.backpack ?? window.solana ?? null;
+}
+const walletAddress = () => current?.address ?? null;
+function onWallet(fn) { listeners.add(fn); return () => { listeners.delete(fn); }; }
+async function connectWallet() {
+    const p = findProvider();
+    if (!p)
+        throw new Error('No Solana wallet found. Install Phantom, Solflare or Backpack, then reload.');
+    const r = await p.connect();
+    current = { provider: p, address: r.publicKey.toString() };
+    listeners.forEach((f) => f(current.address));
+    return current.address;
+}
+async function disconnectWallet() {
+    try {
+        await current?.provider.disconnect?.();
+    }
+    catch { /* ignore */ }
+    current = null;
+    listeners.forEach((f) => f(null));
+}
+const WALLET_B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function toB58(bytes) {
+    let n = 0n;
+    for (const b of bytes)
+        n = n * 256n + BigInt(b);
+    let s = '';
+    while (n > 0n) {
+        s = WALLET_B58[Number(n % 58n)] + s;
+        n /= 58n;
+    }
+    for (const b of bytes) {
+        if (b === 0)
+            s = '1' + s;
+        else
+            break;
+    }
+    return s;
+}
+/** Signs a text message with the connected wallet; returns the base58 signature. */
+async function signText(text) {
+    if (!current)
+        throw new Error('Connect your wallet first.');
+    const r = await current.provider.signMessage(new TextEncoder().encode(text), 'utf8');
+    const sig = r instanceof Uint8Array ? r : r.signature;
+    return toB58(sig);
+}
+
+// ---- dist/components/Toasts.js
+
+let host = null;
+function toast(msg, bad = false, ms = 3600) {
+    if (!host) {
+        host = h('div', { class: 'toasts', role: 'status', 'aria-live': 'polite' });
+        document.body.append(host);
+    }
+    const t = h('div', { class: `toast${bad ? ' bad' : ''}` }, msg);
+    host.append(t);
+    t.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 200 });
+    setTimeout(() => { t.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200 }).onfinish = () => t.remove(); }, ms);
+}
+async function copyText(text, label = 'Copied') {
+    try {
+        await navigator.clipboard.writeText(text);
+        toast(label);
+    }
+    catch {
+        toast('Copy failed. Select the text and copy it by hand.', true);
+    }
+}
+
+// ---- dist/components/Header.js
+
+
+
+
+
+
+
+
+
+const NAV = [['Mines', '/mines'], ['Launch', '/launch'], ['Ledger', '/ledger'], ['Docs', '/docs']];
+function isDark() {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === 'dark' : !matchMedia('(prefers-color-scheme: light)').matches;
+}
+function header() {
+    const navLinks = NAV.map(([label, path]) => h('a', { href: href(path), 'data-path': path }, label));
+    const mobile = h('nav', { class: 'mobile-nav wrap', 'aria-label': 'Menu', 'data-open': 'false', id: 'mobile-nav' }, NAV.map(([label, path]) => h('a', { href: href(path), onclick: () => closeMenu() }, label)), h('a', { href: href('/link'), onclick: () => closeMenu() }, 'Link payout address'));
+    const menuBtn = h('button', { class: 'iconbtn menu-btn', 'aria-label': 'Open menu', 'aria-expanded': 'false', 'aria-controls': 'mobile-nav', type: 'button' }, icon('menu'));
+    const closeMenu = () => { mobile.setAttribute('data-open', 'false'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.replaceChildren(icon('menu')); };
+    menuBtn.addEventListener('click', () => {
+        const open = mobile.getAttribute('data-open') !== 'true';
+        if (!open)
+            return closeMenu();
+        mobile.setAttribute('data-open', 'true');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        menuBtn.replaceChildren(icon('close'));
+    });
+    const themeBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Switch theme' }, isDark() ? icon('sun') : icon('moon'));
+    themeBtn.addEventListener('click', () => {
+        const next = isDark() ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try {
+            localStorage.setItem('rig-theme', next);
+        }
+        catch { /* storage blocked */ }
+        themeBtn.replaceChildren(next === 'dark' ? icon('sun') : icon('moon'));
+        dispatchEvent(new CustomEvent('rig:theme'));
+    });
+    const walletTxt = h('span', { class: 'connect-txt' }, 'Connect');
+    const walletBtn = h('button', { class: 'btn sm ghost', type: 'button', 'aria-label': 'Connect wallet' }, icon('wallet'), walletTxt);
+    const paint = (a) => { walletTxt.textContent = a ? short(a, 4) : 'Connect'; walletBtn.setAttribute('aria-label', a ? `Wallet ${a}. Click to disconnect.` : 'Connect wallet'); };
+    walletBtn.addEventListener('click', async () => {
+        try {
+            if (walletAddress())
+                await disconnectWallet();
+            else
+                await connectWallet();
+        }
+        catch (e) {
+            toast(e.message, true);
+        }
+    });
+    onWallet(paint);
+    const el = h('header', { class: 'hdr' }, h('div', { class: 'wrap hdr-row' }, h('a', { class: 'brand', href: href('/'), 'aria-label': `${BRAND.name} home` }, rigMark(), BRAND.name), h('nav', { class: 'nav', 'aria-label': 'Main' }, navLinks), h('span', { class: 'spacer' }), h('button', { class: 'search-btn', type: 'button', onclick: openPalette, 'aria-label': 'Search (Ctrl K)' }, icon('search'), h('span', { class: 'txt' }, 'Search coins'), h('kbd', null, '⌘K')), data().isDemo ? h('span', { class: 'pill warn demo-pill', title: 'All coins, prices and payouts on this site are simulated until launch.' }, 'DEMO DATA') : null, themeBtn, walletBtn, menuBtn), mobile);
+    const mark = () => {
+        const path = '/' + (location.hash.replace(/^#\/?/, '').split('/')[0] || '');
+        navLinks.forEach((a) => {
+            const p = a.getAttribute('data-path');
+            const on = path === p || (p === '/mines' && path === '/mine');
+            if (on)
+                a.setAttribute('aria-current', 'page');
+            else
+                a.removeAttribute('aria-current');
+        });
+        closeMenu();
+    };
+    addEventListener('hashchange', mark);
+    mark();
+    return el;
+}
+function footer() {
+    return h('footer', { class: 'ftr' }, h('div', { class: 'wrap' }, h('div', { class: 'ftr-row' }, h('div', { class: 'brand', style: 'font-size:18px' }, rigMark(), BRAND.name), h('nav', { 'aria-label': 'Footer' }, NAV.map(([l, p]) => h('a', { href: href(p) }, l)), h('a', { href: href('/link') }, 'Link payout'), BRAND.x ? h('a', { href: BRAND.x, target: '_blank', rel: 'noopener' }, 'X') : null, BRAND.telegram ? h('a', { href: BRAND.telegram, target: '_blank', rel: 'noopener' }, 'Telegram') : null)), h('p', { class: 'risk' }, BRAND.riskLine, data().isDemo ? ' This site is showing demo data: every coin, price and payout is simulated.' : '')));
+}
+
+// ---- dist/components/TickerTape.js
+
+
+
+
+/** Ticker: hashrate per mine, blocks hit, recent payouts (gold). The moving track is aria-hidden; the rail carries the accessible list. */
+function tickerTape() {
+    const d = data();
+    const track = h('div', { class: 'ticker-track', 'aria-hidden': 'true' });
+    const build = () => {
+        const stats = d.targets();
+        const items = [];
+        for (const s of stats) {
+            const t = TARGETS.find((x) => x.id === s.id);
+            items.push(h('span', { class: 'ticker-item' }, h('span', { style: `color:var(${t.accent})` }, '■'), t.label, h('b', null, Number.isFinite(s.hashrate) ? `${num(s.hashrate, s.hashrate >= 100 ? 0 : 2)} ${t.unit}` : '—'), `${s.blocksHit} blocks`));
+        }
+        for (const a of d.activity(40).filter((x) => x.kind === 'payout' || x.kind === 'block').slice(0, 6)) {
+            items.push(h('span', { class: 'ticker-item' }, h('span', { class: 'gold' }, '●'), h('b', { class: a.kind === 'payout' ? 'gold' : '' }, a.text)));
+        }
+        const px = d.prices();
+        for (const k of ['DOGE', 'LTC', 'ZEC', 'KAS', 'BTC', 'XMR'])
+            if (px[k])
+                items.push(h('span', { class: 'ticker-item' }, k, h('b', null, `$${num(px[k], px[k] < 1 ? 4 : 2)}`)));
+        track.replaceChildren(...items, ...items.map((n) => n.cloneNode(true)));
+    };
+    build();
+    window.setInterval(build, 20000);
+    return h('div', { class: 'ticker' }, track);
+}
+
+// ---- dist/components/Background.js
+/** A ~3% film grain over the whole page: one small tiled SVG noise texture (static, cheap to composite), never an image file. */
+function mountGrain() {
+    const c = document.createElement('div');
+    c.id = 'grain';
+    c.setAttribute('aria-hidden', 'true');
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1 0'/></filter><rect width='180' height='180' filter='url(#n)'/></svg>`;
+    c.style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    document.body.append(c);
+}
+/** Height of the sticky header, as a CSS variable the sticky sections offset by. */
+function trackChromeHeight() {
+    const set = () => {
+        const hdr = document.querySelector('.hdr');
+        document.documentElement.style.setProperty('--chrome', `${hdr?.offsetHeight ?? 61}px`);
+    };
+    set();
+    addEventListener('resize', set, { passive: true });
+}
+
+// ---- dist/components/CoinCard.js
+
+
+
+
+
+function fmtSmall(n) {
+    if (!Number.isFinite(n))
+        return '—';
+    return n.toLocaleString('en-US', { maximumFractionDigits: n >= 100 ? 0 : n >= 1 ? 2 : 4 });
+}
+function minedText(c) {
+    const t = targetById(c.target);
+    const has = t.chains.some((ch) => Number.isFinite(c.mined24h[ch]));
+    return has ? t.chains.map((ch) => `${fmtSmall(c.mined24h[ch] ?? NaN)} ${ch}`).join(' + ') : '—';
+}
+function coinCard(c) {
+    return h('a', { class: 'card coin-card spot', href: href(`/coin/${c.mint}`), 'aria-label': `${c.name}, $${c.ticker}` }, h('div', { class: 'cc-top' }, avatar(c), h('div', { class: 'cc-name' }, h('b', null, c.name), h('span', null, `$${c.ticker} · ${ago(c.createdAt)}`)), mineChip(c.target)), h('div', { class: 'cc-row' }, h('div', null, h('div', { class: 'label' }, 'Market cap'), h('div', { class: 'cc-mcap' }, usd(c.mcapUsd, true)), change(c.change24h)), sparkline(c.spark)), c.graduated ? h('span', { class: 'pill live' }, h('span', { class: 'dot' }), 'Graduated')
+        : h('div', null, h('div', { class: 'bond', title: `${(c.bonding || 0).toFixed(0)}% of the bonding curve` }, h('i', { style: `width:${Math.min(100, c.bonding || 0)}%` })), h('div', { class: 'cc-foot', style: 'margin-top:6px' }, h('span', null, 'Bonding curve'), h('span', null, `${(c.bonding || 0).toFixed(0)}%`))), h('div', { class: 'cc-foot' }, h('span', null, 'Mined + bought 24h'), h('span', { class: 'gold' }, minedText(c))));
+}
+
+// ---- dist/components/Console.js
+
+
+
+
+
+
+
+
+/** Hero panel: live hashrate per mine, the last few events, and the totals. Plain HTML, no scroll tricks. */
+function consolePanel() {
+    const d = data();
+    const refs = new Map();
+    const rows = TARGETS.map((t) => {
+        const bar = h('i', { style: 'width:0%' }), rate = h('span', { class: 'con-rate num' }, '—'), mined = h('span', { class: 'con-mined num' }, '—');
+        refs.set(t.id, { bar, rate, mined });
+        return h('a', { class: 'con-row', href: href(`/mine/${t.slug}`), style: `--mc: var(${t.accent})` }, h('span', { class: 'con-id' }, mineGlyph(t.id, 'ico'), h('b', null, t.label), h('small', null, t.algo)), h('span', { class: 'con-bar' }, bar), rate, mined);
+    });
+    const feed = h('ul', { class: 'con-feed', 'aria-live': 'polite' });
+    const tots = { fees: h('b', { class: 'num' }), paid: h('b', { class: 'num gold' }), blocks: h('b', { class: 'num' }) };
+    const live = h('span', { class: 'pill live' }, h('span', { class: 'dot' }), 'live');
+    const paint = () => {
+        const stats = d.targets();
+        const max = Math.max(1, ...stats.map((s) => (Number.isFinite(s.rentedUsd24h) ? s.rentedUsd24h : 0)));
+        for (const s of stats) {
+            const t = targetById(s.id), r = refs.get(s.id);
+            r.bar.style.width = `${Number.isFinite(s.rentedUsd24h) ? Math.max(4, (s.rentedUsd24h / max) * 100) : 4}%`;
+            rollTo(r.rate, s.hashrate, (n) => (Number.isFinite(n) ? `${num(n, n >= 100 ? 0 : 2)} ${t.unit}` : '—'));
+            r.mined.textContent = t.chains.map((ch) => `${fmtSmall(s.mined24h[ch] ?? NaN)} ${ch}`).join(' + ');
+        }
+        const tt = d.totals();
+        rollTo(tots.fees, tt.feesRoutedUsd, (n) => (Number.isFinite(n) ? usd(n, true) : '—'));
+        rollTo(tots.paid, tt.paidUsd, (n) => (Number.isFinite(n) ? usd(n, true) : '—'));
+        rollTo(tots.blocks, tt.blocksHit, (n) => num(Math.round(n), 0));
+    };
+    const feedRow = (a) => h('li', null, h('span', { class: `kind ${a.kind}` }, icon(a.kind === 'block' ? 'cube' : a.kind === 'payout' || a.kind === 'mined' ? 'coins' : a.kind === 'rent' ? 'pick' : a.kind === 'launch' ? 'plus' : a.kind === 'buy' ? 'up' : 'down')), h('span', { class: 'con-text' }, a.mint ? h('a', { href: href(`/coin/${a.mint}`) }, a.text) : a.text), h('time', { class: 'faint' }, ago(a.ts)));
+    feed.append(...d.activity(6).map(feedRow));
+    paint();
+    const off = d.subscribe((a) => {
+        if (!a) {
+            paint();
+            return;
+        }
+        const r = feedRow(a);
+        feed.prepend(r);
+        enter(r);
+        while (feed.children.length > 6)
+            feed.lastChild.remove();
+    });
+    onUnmount(off);
+    return h('div', { class: 'console panel', 'aria-label': 'Live mining console' }, h('div', { class: 'panel-head' }, h('span', { class: 'label' }, 'Rack 01 · rented hashpower'), live), h('div', { class: 'con-rows' }, h('div', { class: 'con-row con-head' }, h('span', null, 'Mine'), h('span', null, 'Share of rentals'), h('span', { style: 'text-align:right' }, 'Hashrate'), h('span', { style: 'text-align:right' }, 'Mined + bought 24h')), rows), h('div', { class: 'con-split' }, h('div', { class: 'con-totals' }, h('div', null, h('span', { class: 'label' }, 'Fees routed'), tots.fees), h('div', null, h('span', { class: 'label' }, 'Paid to holders'), tots.paid), h('div', null, h('span', { class: 'label' }, 'Blocks hit'), tots.blocks)), feed));
+}
+
+// ---- dist/components/ActivityRail.js
+
+
+
+
+
+
+const GLYPH = { buy: 'up', sell: 'down', rent: 'pick', launch: 'plus', mined: 'coins', payout: 'coins', block: 'cube' };
+function railRow(a) {
+    const text = a.mint ? h('a', { href: href(`/coin/${a.mint}`) }, a.text) : h('span', null, a.text);
+    return h('li', null, h('span', { class: `kind ${a.kind}`, title: a.kind }, icon(GLYPH[a.kind] ?? 'info')), h('div', null, text, h('time', { datetime: new Date(a.ts).toISOString(), 'data-ts': a.ts }, ago(a.ts))));
+}
+function activityRail(filter, title = 'Live activity') {
+    const d = data();
+    const list = h('ul', { class: 'rail-list', 'aria-live': 'polite' });
+    list.append(...d.activity(40).filter((a) => !filter || filter(a)).slice(0, 30).map(railRow));
+    const off = d.subscribe((a) => {
+        if (!a || (filter && !filter(a)))
+            return;
+        const row = railRow(a);
+        list.prepend(row);
+        enter(row);
+        while (list.children.length > 40)
+            list.lastChild.remove();
+    });
+    const clock = window.setInterval(() => list.querySelectorAll('time[data-ts]').forEach((t) => { t.textContent = ago(Number(t.dataset.ts)); }), 5000);
+    onUnmount(() => { off(); clearInterval(clock); });
+    return h('aside', { class: 'panel rail', 'aria-label': title }, h('div', { class: 'panel-head' }, h('h3', null, title), h('span', { class: 'pill live' }, h('span', { class: 'dot' }), 'live')), list);
+}
+
+// ---- dist/components/PulseRow.js
+
+
+
+
+
+
+
+
+
+function minedUsd(c) {
+    const px = data().prices();
+    const v = Object.entries(c.mined24h).reduce((s, [ch, a]) => s + a * (px[ch] ?? NaN), 0);
+    return Number.isFinite(v) && Object.keys(c.mined24h).length ? usd(v, true) : '—';
+}
+const QUICK_SOL = 0.5;
+/** Axiom-dense token row: identity, age, mcap, vol, holders, top-10 %, dev %, socials, mine chip, mined 24h, quick-buy. */
+function pulseRow(c) {
+    const t = targetById(c.target);
+    const socials = h('span', { class: 'soc', 'aria-label': 'Links' }, c.socials.x ? h('a', { href: c.socials.x, target: '_blank', rel: 'noopener', 'aria-label': 'X', onclick: (e) => e.stopPropagation() }, icon('x')) : null, c.socials.tg ? h('a', { href: c.socials.tg, target: '_blank', rel: 'noopener', 'aria-label': 'Telegram', onclick: (e) => e.stopPropagation() }, icon('send')) : null, c.socials.web ? h('a', { href: c.socials.web, target: '_blank', rel: 'noopener', 'aria-label': 'Website', onclick: (e) => e.stopPropagation() }, icon('globe')) : null);
+    const quick = h('button', { class: 'quick', type: 'button', 'aria-label': `Quick buy ${QUICK_SOL} SOL of ${c.ticker} (demo)`,
+        onclick: (e) => { e.preventDefault(); e.stopPropagation(); toast(`Quick buy is a demo. Trade $${c.ticker} on pump.fun.`); } }, icon('bolt'), `${QUICK_SOL}`);
+    const row = h('a', { class: 'prow', href: href(`/coin/${c.mint}`), 'data-mint': c.mint }, avatar(c), h('div', { style: 'min-width:0' }, h('div', { class: 'pname' }, h('b', null, c.name), h('span', null, `$${c.ticker}`)), h('div', { class: 'pmeta' }, h('span', { class: 'faint' }, ago(c.createdAt)), h('span', { title: 'Volume 24h' }, `V ${usd(c.volume24h, true)}`), h('span', { title: 'Holders' }, `H ${Number.isFinite(c.holders) ? num(c.holders, 0) : '—'}`), h('span', { title: 'Top 10 wallets' }, `T10 ${pctText(c.top10Pct)}`), h('span', { title: 'Creator holds' }, `DEV ${pctText(c.devPct)}`), socials, mineChip(c.target), h('span', { class: 'mined', title: `Mined + bought 24h: ${minedText(c)}` }, icon('pick'), ' ', minedUsd(c)))), h('div', { class: 'pright' }, h('b', { class: 'num', 'data-mcap': '' }, usd(c.mcapUsd, true)), h('span', { class: c.change24h >= 0 ? 'up' : 'down' }, Number.isFinite(c.change24h) ? `${c.change24h >= 0 ? '▲' : '▼'} ${Math.abs(c.change24h).toFixed(0)}%` : '—'), quick), h('div', { class: 'mini', 'aria-hidden': 'true' }, sparkline(c.spark, 'spark', undefined)));
+    row.querySelector('.mini .spark')?.setAttribute('style', 'width:100%;height:100%');
+    return row;
+}
+/** Update the numbers in place so the row can flash instead of re-rendering. */
+function updatePulseRow(row, c) {
+    const m = row.querySelector('[data-mcap]');
+    if (m)
+        m.textContent = usd(c.mcapUsd, true);
+}
+
+// ---- dist/components/FeesFlow.js
+
+
+
+/**
+ * "How fees flow": a diagram whose edges draw node by node as five steps light up.
+ * Desktop with motion: the diagram sticks while the steps scroll past and light it up. Otherwise: static diagram with numbered steps.
+ */
+const STEPS = [
+    ['Trades pay fees', 'Every buy and sell on the coin earns creator fees on pump.fun, into a wallet that belongs to that coin alone.'],
+    ['Hashrate takes its cut', `${pct(FEES.rigCut)} of every coin’s fees goes to $HASH, which runs a mine of its own for $HASH holders.`],
+    ['Fees rent hashpower', 'The rent share set at launch buys real hashpower on the coin’s mine. Every coin on the same mine is pooled into one order.'],
+    ['The rest buys the coin', 'The remainder buys the mined coin directly. Rented hashpower usually mines a little less than it costs, so this part carries most of the payout.'],
+    ['Holders get paid', `Mined and bought coins land in the pot. Every ${FEES.payoutEveryHours} hours it’s paid to holders who linked an address, by bag size.`],
+];
+function feesFlowDiagram() {
+    const node = (id, x, y, w, label, sub, cls = '') => `<g class="node ${cls}" data-n="${id}"><rect x="${x}" y="${y}" width="${w}" height="54" rx="8"/><text x="${x + w / 2}" y="${y + 23}" text-anchor="middle">${label}</text><text class="sub" x="${x + w / 2}" y="${y + 41}" text-anchor="middle">${sub}</text></g>`;
+    const edge = (id, d, cls = '') => `<path class="edge ${cls}" data-e="${id}" d="${d}"/>`;
+    const svgText = `<svg viewBox="0 0 640 310" role="img" aria-label="Fees flow from trades to the creator wallet, then to $HASH, rentals and direct buys, then into the pot and to holders">
+    ${edge('e1', 'M150 47 L250 47')}${edge('e2', 'M390 47 L490 47')}${edge('e3', 'M320 74 L320 120')}${edge('e4', 'M390 60 L490 120')}
+    ${edge('e5', 'M320 174 L320 220', 'gold')}${edge('e6', 'M560 174 L400 226', 'gold')}${edge('e7', 'M390 247 L490 247', 'gold')}
+    ${node('n1', 10, 20, 140, 'Trades', 'on pump.fun')}${node('n2', 250, 20, 140, 'Creator wallet', 'one per coin')}${node('n3', 490, 20, 140, '$HASH', pct(FEES.rigCut))}
+    ${node('n4', 250, 120, 140, 'Rent hashpower', 'pooled order', 'accent')}${node('n5', 490, 120, 140, 'Buy directly', 'the mined coin', 'accent')}
+    ${node('n6', 250, 220, 140, 'Pot', 'per coin, per chain', 'gold')}${node('n7', 490, 220, 140, 'Holders', `every ${FEES.payoutEveryHours}h, by bag`, 'gold')}
+  </svg>`;
+    const el = h('div', { class: 'flow-art panel', style: 'padding:12px' });
+    el.innerHTML = svgText;
+    const lit = {
+        0: { n: ['n1', 'n2'], e: ['e1'] }, 1: { n: ['n3'], e: ['e2'] }, 2: { n: ['n4'], e: ['e3'] }, 3: { n: ['n5'], e: ['e4'] }, 4: { n: ['n6', 'n7'], e: ['e5', 'e6', 'e7'] },
+    };
+    const light = (step) => {
+        el.querySelectorAll('.node, .edge').forEach((x) => x.classList.remove('lit'));
+        for (let i = 0; i <= step; i++) {
+            for (const n of lit[i].n)
+                el.querySelector(`[data-n="${n}"]`)?.classList.add('lit');
+            for (const e of lit[i].e)
+                el.querySelector(`[data-e="${e}"]`)?.classList.add('lit');
+        }
+    };
+    return { el, light };
+}
+function feesFlowSection() {
+    const art = feesFlowDiagram();
+    const steps = STEPS.map(([t, p], i) => h('div', { class: 'flow-step', 'data-step': i }, h('span', { class: 'label' }, `Step ${i + 1}`), h('h3', { style: 'margin-top:6px' }, t), h('p', null, p)));
+    const sec = h('div', { class: 'flow-sec' }, h('div', { class: 'flow-steps' }, steps), art.el);
+    const setStep = (i) => { steps.forEach((s, k) => s.classList.toggle('on', k === i)); art.light(i); };
+    setStep(4); // complete at rest: everything lit until motion takes over
+    const desktop = matchMedia('(min-width: 961px)').matches;
+    if (motionOk() && desktop) {
+        sec.classList.add('pinned');
+        let raf = 0;
+        const update = () => {
+            raf = 0;
+            const mid = innerHeight * 0.55;
+            let best = 0, bestD = Infinity;
+            steps.forEach((el, i) => { const r = el.getBoundingClientRect(); const d = Math.abs(r.top + r.height / 2 - mid); if (d < bestD) {
+                bestD = d;
+                best = i;
+            } });
+            const last = steps[steps.length - 1].getBoundingClientRect();
+            if (last.bottom < mid)
+                best = 4;
+            setStep(best);
+        };
+        const onScroll = () => { if (!raf)
+            raf = requestAnimationFrame(update); };
+        addEventListener('scroll', onScroll, { passive: true });
+        update();
+        onUnmount(() => { removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); });
+    }
+    return sec;
+}
+
+// ---- dist/pages/Home.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function homePage() {
+    const d = data();
+    const px = d.prices();
+    const earnedUsd = (c) => Object.entries(c.mined24h).reduce((s, [ch, a]) => s + a * (px[ch] ?? 0), 0);
+    // ---- hero ----
+    const title = maskedLines(h('h1', { id: 'hero-h' }), ['Every coin', 'runs its', 'own mine.']);
+    const hero = h('section', { class: 'hero', 'aria-labelledby': 'hero-h' }, h('div', { class: 'hero-copy' }, h('span', { class: 'eyebrow' }, `pump.fun launchpad · $${BRAND.ticker}`), title, h('p', { class: 'lede' }, 'Launch on pump.fun. Fees rent real hashpower. Holders get paid in what’s mined.'), h('div', { class: 'ctas' }, h('a', { class: 'btn magnetic', href: href('/launch') }, 'Launch a coin', icon('arrow')), h('a', { class: 'btn ghost magnetic', href: href('/mines') }, 'Explore mines'))), consolePanel());
+    requestAnimationFrame(() => title.classList.add('in'));
+    // ---- totals ----
+    const tFees = h('strong', null), tPaid = h('strong', { class: 'gold' }), tBlocks = h('strong', null), tCoins = h('strong', null);
+    const paintTotals = () => {
+        const t = d.totals();
+        rollTo(tFees, t.feesRoutedUsd, (n) => (Number.isFinite(n) ? usd(n, true) : '—'));
+        rollTo(tPaid, t.paidUsd, (n) => (Number.isFinite(n) ? usd(n, true) : '—'));
+        rollTo(tBlocks, t.blocksHit, (n) => num(Math.round(n), 0));
+        rollTo(tCoins, t.coinsMining, (n) => num(Math.round(n), 0));
+    };
+    paintTotals();
+    // ---- deepest rig ----
+    const deep = h('section', { class: 'panel deep reveal', 'aria-label': 'Deepest rig' });
+    const paintDeep = () => {
+        const best = [...d.coins()].filter((c) => Number.isFinite(c.paidUsd24h)).sort((a, b) => b.paidUsd24h - a.paidUsd24h)[0];
+        if (!best) {
+            deep.replaceChildren(emptyState('No payouts yet. The first coin to pay its holders shows up here.'));
+            return;
+        }
+        const t = targetById(best.target);
+        deep.replaceChildren(h('div', { class: 'deep-main' }, h('span', { class: 'eyebrow' }, 'Deepest rig · paid the most in 24h'), h('div', { style: 'display:flex;align-items:center;gap:14px;flex-wrap:wrap' }, avatar(best, 'lg'), h('div', null, h('h2', null, best.name), h('div', { class: 'mono muted', style: 'margin-top:6px' }, `$${best.ticker} · ${ago(best.createdAt)}`))), h('div', { class: 'deep-stats' }, h('div', null, h('span', { class: 'label' }, 'Market cap'), h('b', null, usd(best.mcapUsd, true))), h('div', null, h('span', { class: 'label' }, 'Hashrate now'), h('b', null, Number.isFinite(best.hashrate) ? `${num(best.hashrate, 2)} ${t.unit}` : '—')), h('div', null, h('span', { class: 'label' }, 'Mined + bought 24h'), h('b', { class: 'gold' }, t.chains.map((ch) => `${fmtSmall(best.mined24h[ch] ?? NaN)} ${ch}`).join(' + ')))), h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;align-items:center' }, h('a', { class: 'btn magnetic', href: href(`/coin/${best.mint}`) }, 'Open rig', icon('arrow')), mineChip(best.target, { href: href(`/mine/${t.slug}`) }))), h('div', { class: 'deep-side' }, h('div', null, h('span', { class: 'label' }, 'Paid to holders, 24h'), h('div', { class: 'big' }, usd(best.paidUsd24h, true))), sparkline(best.spark, 'spark-lg', 'var(--gold)'), h('p', { class: 'note' }, `Paid in ${t.chains.join(' + ')} to holders who linked an address, by bag size.`)));
+    };
+    paintDeep();
+    // ---- pulse ----
+    const cols = { fresh: h('div', { class: 'pulse-list' }), soon: h('div', { class: 'pulse-list' }), grad: h('div', { class: 'pulse-list' }) };
+    const counts = { fresh: h('span', { class: 'count' }), soon: h('span', { class: 'count' }), grad: h('span', { class: 'count' }) };
+    const bucket = (c) => (c.graduated ? 'grad' : c.bonding >= 60 ? 'soon' : 'fresh');
+    const paintPulse = () => {
+        const all = d.coins();
+        const lists = {
+            fresh: all.filter((c) => bucket(c) === 'fresh').sort((a, b) => b.createdAt - a.createdAt).slice(0, 14),
+            soon: all.filter((c) => bucket(c) === 'soon').sort((a, b) => b.bonding - a.bonding).slice(0, 14),
+            grad: all.filter((c) => bucket(c) === 'grad').sort((a, b) => b.mcapUsd - a.mcapUsd).slice(0, 14),
+        };
+        for (const k of Object.keys(lists)) {
+            const want = lists[k];
+            const have = new Map([...cols[k].querySelectorAll('.prow')].map((r) => [r.dataset.mint, r]));
+            const next = want.map((c) => { const r = have.get(c.mint); if (r) {
+                updatePulseRow(r, c);
+                return r;
+            } return pulseRow(c); });
+            cols[k].replaceChildren(...(next.length ? next : [emptyState(k === 'fresh' ? 'No new coins right now.' : k === 'soon' ? 'Nothing close to graduating yet.' : 'No graduated coins yet.')]));
+            counts[k].textContent = String(want.length);
+        }
+    };
+    paintPulse();
+    const pulseCol = (key, title, sub) => h('section', { class: 'pulse-col', 'data-col': key, 'data-active': key === 'fresh' ? 'true' : 'false', 'aria-label': title }, h('header', null, h('h3', null, title, counts[key]), h('span', { class: 'label' }, sub)), cols[key]);
+    const pulseTabs = h('div', { class: 'seg pulse-tabs', role: 'tablist', 'aria-label': 'Pulse columns' });
+    const tabs = [['fresh', 'New'], ['soon', 'Final stretch'], ['grad', 'Graduated']];
+    const pulseGrid = h('div', { class: 'pulse' }, pulseCol('fresh', 'New', 'just launched'), pulseCol('soon', 'Final stretch', 'bonding 60%+'), pulseCol('grad', 'Graduated', 'on PumpSwap'));
+    pulseTabs.append(...tabs.map(([k, l], i) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(i === 0), onclick: (e) => {
+            pulseTabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b === e.currentTarget)));
+            pulseGrid.querySelectorAll('.pulse-col').forEach((c) => c.setAttribute('data-active', String(c.dataset.col === k)));
+        } }, l)));
+    // ---- mine cards ----
+    const mineCards = () => d.targets().map((s) => {
+        const t = targetById(s.id);
+        return h('a', { class: 'card mcard spot reveal', href: href(`/mine/${t.slug}`), style: `--mc: var(${t.accent})` }, mineGlyph(t.id), h('span', { class: 'algo' }, t.algo), h('h3', null, t.label), h('p', null, t.blurb), h('dl', null, h('dt', null, 'Coins'), h('dd', null, String(s.coins)), h('dt', null, 'Hashrate'), h('dd', null, Number.isFinite(s.hashrate) ? `${num(s.hashrate, s.hashrate >= 100 ? 0 : 2)} ${t.unit}` : '—'), h('dt', null, 'Blocks'), h('dd', null, String(s.blocksHit))));
+    });
+    const minesGrid = h('div', { class: 'mines-grid' }, mineCards().map((c, i) => { c.style.setProperty('--i', String(i)); return c; }));
+    // ---- leaderboards ----
+    const boardRow = (c, val, sub) => h('li', null, avatar(c), h('div', { style: 'min-width:0' }, h('b', null, h('a', { href: href(`/coin/${c.mint}`) }, c.name)), h('small', null, sub)), h('span', { class: 'val gold' }, val));
+    const bEarn = h('ol'), bPaid = h('ol'), bBlocks = h('ol');
+    const paintBoards = () => {
+        const all = d.coins();
+        bEarn.replaceChildren(...[...all].sort((a, b) => earnedUsd(b) - earnedUsd(a)).slice(0, 6).map((c) => boardRow(c, usd(earnedUsd(c), true), `$${c.ticker} · ${targetById(c.target).label}`)));
+        bPaid.replaceChildren(...[...all].filter((c) => Number.isFinite(c.paidUsdTotal)).sort((a, b) => b.paidUsdTotal - a.paidUsdTotal).slice(0, 6).map((c) => boardRow(c, usd(c.paidUsdTotal, true), `$${c.ticker} · all time`)));
+        const blocks = d.blocks(6);
+        bBlocks.replaceChildren(...(blocks.length ? blocks.map((b) => {
+            const t = targetById(b.target);
+            const c = b.mint ? d.coin(b.mint) : undefined;
+            return h('li', null, h('span', { class: 'kind block' }, icon('cube')), h('div', { style: 'min-width:0' }, h('b', null, `${t.label} block`), h('small', null, c ? `with $${c.ticker} · ${ago(b.ts)}` : ago(b.ts))), h('span', { class: 'val', style: `color:var(${t.accent})` }, t.algo));
+        })
+            : [h('li', { class: 'muted', style: 'display:block;padding:14px' }, 'No blocks hit yet.')]));
+    };
+    paintBoards();
+    const board = (title, sub, ol, i) => h('section', { class: 'panel board reveal', style: `--i:${i}` }, h('div', { class: 'panel-head' }, h('h3', null, title), h('span', { class: 'label' }, sub)), ol);
+    // ---- live updates ----
+    let n = 0;
+    const off = d.subscribe((a) => {
+        if (a) {
+            if (a.kind === 'launch') {
+                paintPulse();
+                const r = cols.fresh.querySelector('.prow');
+                if (r)
+                    enter(r);
+            }
+            else if (a.mint && (a.kind === 'buy' || a.kind === 'sell')) {
+                const r = pulseGrid.querySelector(`.prow[data-mint="${a.mint}"]`);
+                if (r)
+                    flashRow(r);
+            }
+            return;
+        }
+        paintTotals();
+        if (++n % 4 === 0)
+            paintPulse();
+        if (n % 10 === 0) {
+            paintDeep();
+            paintBoards();
+            minesGrid.replaceChildren(...mineCards().map((c) => { c.classList.add('in'); return c; }));
+        }
+    });
+    onUnmount(off);
+    return h('div', { class: 'page', style: 'padding-top:0' }, hero, h('div', { class: 'strip reveal', 'aria-label': 'Totals' }, h('div', null, h('span', { class: 'label' }, 'Fees routed'), tFees), h('div', null, h('span', { class: 'label' }, 'Paid to holders'), tPaid), h('div', null, h('span', { class: 'label' }, 'Blocks hit'), tBlocks), h('div', null, h('span', { class: 'label' }, 'Coins mining'), tCoins)), deep, h('div', { class: 'with-rail' }, h('div', { class: 'page', style: 'padding-top:0' }, h('section', { class: 'sec', 'aria-labelledby': 'pulse-h' }, sectionHead('Pulse', 'Every rig, live', 'New launches, coins about to graduate, and the ones already on PumpSwap. Quick-buy chips are demo stubs.', pulseTabs), pulseGrid), h('section', { class: 'sec', 'aria-labelledby': 'mines-h' }, sectionHead('Mines', 'Pick what your fees mine', 'Each coin mines one target, chosen at launch.', h('a', { class: 'btn ghost sm', href: href('/mines') }, 'All mines', icon('arrow'))), minesGrid)), activityRail()), h('section', { class: 'sec', 'aria-labelledby': 'flow-h' }, sectionHead('How fees flow', 'From a trade to a payout', 'Five steps, every one of them on the public ledger.'), feesFlowSection()), h('section', { class: 'sec', 'aria-labelledby': 'boards-h' }, sectionHead('Leaderboards', 'Who earned what'), h('div', { class: 'boards' }, board('Top earners', 'mined + bought, 24h', bEarn, 0), board('Most paid out', 'all time', bPaid, 1), board('Latest blocks', 'across all mines', bBlocks, 2))), h('section', { class: 'sec', 'aria-labelledby': 'faq-h' }, sectionHead('Straight answers', 'Before you launch'), h('div', { class: 'reveal' }, faq('Is renting hashpower profitable?', 'Not by itself. Rental markets price hashpower close to what it mines, so it usually runs at a small loss. That’s why part of every coin’s fees buys the mined coin directly, and the split is set at launch.'), faq('How do I get paid in DOGE or ZEC?', 'Link a payout address for that chain by signing a message with the Solana wallet that holds the coin. It’s free and sends no transaction. Holders who never link don’t receive that chain’s payout.'), faq('Why do LTC and DOGE come together?', 'Both use the Scrypt algorithm and support merged mining, so one rental earns both coins at once.'), faq('What does $HASH get?', `${pct(FEES.rigCut)} of every coin’s fees goes to $HASH, which runs its own mine for $HASH holders.`), faq('Is any of this live yet?', d.isDemo ? 'Not yet. Everything on this page is demo data until launch, and no button sends a transaction.' : 'Yes. Figures on this page come from the Rig backend and the public ledger.'))));
+}
+const faq = (q, a) => h('details', { class: 'faq' }, h('summary', null, q), h('p', null, a));
+
+// ---- dist/pages/NotFound.js
+
+
+/** An empty rack unit: no LEDs lit. */
+function emptyUnit() {
+    return svg(`<svg viewBox="0 0 320 90" class="unit-svg" style="--mc: var(--faint)">
+    <rect x="1" y="1" width="318" height="88" rx="10" fill="var(--surface)" stroke="var(--line-2)"/>
+    <rect x="22" y="22" width="150" height="9" rx="4.5" fill="var(--line-2)"/><rect x="22" y="40" width="110" height="9" rx="4.5" fill="var(--line-2)"/><rect x="22" y="58" width="180" height="9" rx="4.5" fill="var(--line)"/>
+    <circle class="led" cx="270" cy="30" r="5"/><circle class="led" cx="290" cy="30" r="5"/><circle class="led" cx="270" cy="52" r="5"/><circle class="led" cx="290" cy="52" r="5"/>
+  </svg>`, 'unit-svg');
+}
+function notFoundPage() {
+    return h('div', { class: 'page', style: 'align-items:flex-start;padding-block:60px' }, emptyUnit(), h('span', { class: 'eyebrow' }, 'Error 404'), h('h1', { style: 'font-size:clamp(48px,8vw,96px)' }, 'Nothing mined here'), h('p', { class: 'muted', style: 'max-width:50ch' }, 'This page doesn’t exist, or the coin isn’t listed on Hashrate. Check the link, or search with ⌘K.'), h('a', { class: 'btn', href: href('/') }, 'Back to the rack'));
+}
+
+// ---- dist/pages/Mines.js
+
+
+
+
+
+
+
+
+
+
+function minesPage() {
+    const d = data();
+    const panels = () => d.targets().map((s, i) => {
+        const t = TARGETS.find((x) => x.id === s.id);
+        return h('a', { class: 'card mpanel spot reveal', href: href(`/mine/${t.slug}`), style: `--mc: var(${t.accent}); --i:${i}` }, h('div', { style: 'display:flex;flex-direction:column;gap:10px;min-width:0' }, h('div', { style: 'display:flex;align-items:center;gap:12px' }, mineGlyph(t.id), h('div', null, h('h3', null, t.label), h('span', { class: 'label', style: 'color:var(--mc)' }, t.algo))), h('p', { class: 'muted', style: 'font-size:14px' }, t.blurb), h('dl', { class: 'kv', style: 'max-width:320px' }, h('dt', null, 'Coins mining'), h('dd', null, String(s.coins)), h('dt', null, 'Hashrate now'), h('dd', null, Number.isFinite(s.hashrate) ? `${num(s.hashrate, 2)} ${t.unit}` : '—'), h('dt', null, 'Mined + bought 24h'), h('dd', { class: 'gold' }, t.chains.map((ch) => `${fmtSmall(s.mined24h[ch] ?? NaN)} ${ch}`).join(' + ')), h('dt', null, 'Blocks hit'), h('dd', null, String(s.blocksHit))), t.autoTracked ? h('span', { class: 'pill live', style: 'align-self:flex-start' }, 'tracked automatically') : h('span', { class: 'pill warn', style: 'align-self:flex-start' }, 'recorded by hand for now')), h('div', { style: 'display:flex;flex-direction:column;gap:6px;justify-content:center' }, h('span', { class: 'label' }, 'Hashrate, last 24 samples'), sparkline(s.hashSeries, 'spark', `var(${t.accent})`)));
+    });
+    const grid = h('div', { class: 'mpanels' }, panels());
+    let n = 0;
+    const off = d.subscribe((a) => { if (!a && ++n % 6 === 0)
+        grid.replaceChildren(...panels().map((p) => { p.classList.add('in'); return p; })); });
+    onUnmount(off);
+    return h('div', { class: 'page' }, h('div', { class: 'page-title' }, h('span', { class: 'eyebrow' }, 'Mines'), h('h1', { style: 'margin-top:10px' }, 'Five rigs, one rack'), h('p', null, 'Every coin mines one target. Rentals for the same target are pooled into one order, and what’s mined is shared back by what each coin spent.')), grid);
+}
+function minePage(slug) {
+    const t = targetBySlug(slug);
+    if (!t)
+        return notFoundPage();
+    const d = data();
+    let sort = 'mcap';
+    const grid = h('div', { class: 'grid-coins' });
+    const statsBox = h('div', { class: 'strip' });
+    const paint = () => {
+        const s = d.targets().find((x) => x.id === t.id);
+        const px = d.prices();
+        const earned = (c) => t.chains.reduce((v, ch) => v + (c.mined24h[ch] ?? 0) * (px[ch] ?? 0), 0);
+        const cs = d.coins().filter((c) => c.target === t.id);
+        cs.sort((a, b) => sort === 'new' ? b.createdAt - a.createdAt : sort === 'earned' ? earned(b) - earned(a) : (b.mcapUsd || 0) - (a.mcapUsd || 0));
+        grid.replaceChildren(...(cs.length ? cs.map(coinCard) : [emptyState(`No coins mine ${t.label} yet.`, h('a', { class: 'btn sm', href: href('/launch') }, `Launch the first ${t.label} coin`))]));
+        statsBox.replaceChildren(h('div', null, h('span', { class: 'label' }, 'Hashrate now'), h('strong', null, Number.isFinite(s.hashrate) ? `${num(s.hashrate, 2)} ${t.unit}` : '—')), h('div', null, h('span', { class: 'label' }, 'Rented 24h'), h('strong', null, usd(s.rentedUsd24h, true))), h('div', null, h('span', { class: 'label' }, 'Mined + bought 24h'), h('strong', { class: 'gold', style: 'font-size:20px' }, t.chains.map((ch) => `${fmtSmall(s.mined24h[ch] ?? NaN)} ${ch}`).join(' + '))), h('div', null, h('span', { class: 'label' }, 'Blocks hit'), h('strong', null, String(s.blocksHit))));
+    };
+    paint();
+    const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Sort coins' }, ['mcap', 'earned', 'new'].map((k) => h('button', { type: 'button', 'aria-pressed': String(k === sort), onclick: (e) => {
+            sort = k;
+            seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === e.currentTarget)));
+            paint();
+        } }, k === 'mcap' ? 'Market cap' : k === 'earned' ? 'Top earners' : 'Newest')));
+    let n = 0;
+    const off = d.subscribe((a) => { if (!a && ++n % 3 === 0)
+        paint(); if (a?.kind === 'launch')
+        paint(); });
+    onUnmount(off);
+    return h('div', { class: 'page', style: `--mc: var(${t.accent})` }, h('div', { class: 'mine-hero' }, h('a', { href: href('/mines'), class: 'label', style: 'display:inline-flex;gap:6px;align-items:center' }, icon('back'), 'All mines'), h('div', { class: 'sec-head', style: 'margin-top:14px' }, h('div', { style: 'display:flex;gap:16px;align-items:center' }, mineGlyph(t.id, 'glyph'), h('div', null, h('span', { class: 'label', style: 'color:var(--mc)' }, `${t.algo} · pays ${t.chains.join(' + ')}`), h('h1', { style: 'font-size:clamp(48px,7vw,96px);margin-top:4px' }, t.label), h('p', { class: 'muted', style: 'margin-top:10px;max-width:60ch' }, t.blurb))), h('a', { class: 'btn magnetic', href: href('/launch') }, `Launch a ${t.label} coin`, icon('arrow')))), statsBox, t.autoTracked ? null : h('p', { class: 'stub' }, `${t.label} mined amounts are recorded by hand for now, so figures can lag a few hours.`), h('div', { class: 'with-rail' }, h('section', { class: 'sec' }, h('div', { class: 'sec-head' }, h('h2', null, `Coins mining ${t.label}`), seg), grid), activityRail((a) => !!a.mint && d.coin(a.mint)?.target === t.id, `${t.label} activity`)));
+}
+
+// ---- dist/components/Chart.js
+
+function themeColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function candleChart() {
+    const box = h('div', { class: 'chart-box', role: 'img', 'aria-label': 'Price chart' });
+    const LWC = window.LightweightCharts;
+    let lastScaled = [];
+    if (LWC) {
+        const chart = LWC.createChart(box, {
+            autoSize: true,
+            layout: { background: { color: 'transparent' }, textColor: themeColor('--muted'), fontFamily: 'JetBrains Mono, monospace' },
+            grid: { vertLines: { color: themeColor('--line') }, horzLines: { color: themeColor('--line') } },
+            rightPriceScale: { borderColor: themeColor('--line') }, timeScale: { borderColor: themeColor('--line'), timeVisible: true, secondsVisible: true },
+            crosshair: { mode: 1 },
+        });
+        const series = chart.addCandlestickSeries({
+            upColor: themeColor('--up'), downColor: themeColor('--down'), wickUpColor: themeColor('--up'), wickDownColor: themeColor('--down'), borderVisible: false,
+            priceFormat: { type: 'custom', minMove: 1e-12, formatter: (p) => fmtAxis(p) },
+        });
+        const retheme = () => {
+            chart.applyOptions({ layout: { textColor: themeColor('--muted') }, grid: { vertLines: { color: themeColor('--line') }, horzLines: { color: themeColor('--line') } }, rightPriceScale: { borderColor: themeColor('--line') }, timeScale: { borderColor: themeColor('--line') } });
+            series.applyOptions({ upColor: themeColor('--up'), downColor: themeColor('--down'), wickUpColor: themeColor('--up'), wickDownColor: themeColor('--down') });
+        };
+        addEventListener('rig:theme', retheme);
+        onUnmount(() => { removeEventListener('rig:theme', retheme); chart.remove(); });
+        return {
+            el: box,
+            setData(cs, scale) { series.setData(cs.map((c) => sc(c, scale))); chart.timeScale().fitContent(); },
+            update(c, scale) { series.update(sc(c, scale)); },
+        };
+    }
+    // Fallback canvas chart.
+    const cv = h('canvas', { class: 'fallback' });
+    box.append(cv);
+    const draw = () => {
+        const ctx = cv.getContext('2d');
+        if (!ctx)
+            return;
+        const W = cv.clientWidth, H = cv.clientHeight, dpr = devicePixelRatio || 1;
+        cv.width = W * dpr;
+        cv.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        const cs = lastScaled.slice(-120);
+        if (!cs.length)
+            return;
+        const lo = Math.min(...cs.map((c) => c.low)), hi = Math.max(...cs.map((c) => c.high)), span = hi - lo || 1;
+        const y = (v) => H - 24 - ((v - lo) / span) * (H - 40);
+        const w = (W - 70) / cs.length;
+        cs.forEach((c, i) => {
+            const x = i * w + w / 2;
+            ctx.strokeStyle = ctx.fillStyle = c.close >= c.open ? themeColor('--up') : themeColor('--down');
+            ctx.beginPath();
+            ctx.moveTo(x, y(c.high));
+            ctx.lineTo(x, y(c.low));
+            ctx.stroke();
+            ctx.fillRect(x - w * 0.35, Math.min(y(c.open), y(c.close)), w * 0.7, Math.max(1, Math.abs(y(c.open) - y(c.close))));
+        });
+        ctx.fillStyle = themeColor('--muted');
+        ctx.font = '11px JetBrains Mono, monospace';
+        ctx.fillText(fmtAxis(hi), W - 66, 14);
+        ctx.fillText(fmtAxis(lo), W - 66, H - 8);
+    };
+    const ro = new ResizeObserver(draw);
+    ro.observe(box);
+    onUnmount(() => ro.disconnect());
+    return {
+        el: box,
+        setData(cs, scale) { lastScaled = cs.map((c) => sc(c, scale)); draw(); },
+        update(c, scale) { const s = sc(c, scale); const l = lastScaled[lastScaled.length - 1]; if (l && l.time === s.time)
+            lastScaled[lastScaled.length - 1] = s;
+        else
+            lastScaled.push(s); draw(); },
+    };
+}
+function sc(c, k) { return { time: c.time, open: c.open * k, high: c.high * k, low: c.low * k, close: c.close * k }; }
+function fmtAxis(p) {
+    if (p >= 1000)
+        return p.toLocaleString('en-US', { notation: 'compact', maximumFractionDigits: 2 });
+    if (p >= 1)
+        return p.toFixed(2);
+    return p.toPrecision(3);
+}
+
+// ---- dist/components/RigPanel.js
+
+
+
+
+
+
+
+
+
+/** Fee split bar: $HASH cut, rent share, buy share. Returns the element and an updater. */
+function feeSplitBar(rentShare) {
+    const cut = FEES.rigCut ?? 0;
+    const bar = h('div', { class: 'split-bar', 'aria-hidden': 'true' });
+    const legend = h('div', { class: 'legend' });
+    const set = (rs) => {
+        const rent = (1 - cut) * rs, buy = (1 - cut) * (1 - rs);
+        bar.replaceChildren(h('i', { style: `width:${cut * 100}%` }), h('u', { style: `width:${rent * 100}%` }), h('s', { style: `width:${buy * 100}%` }));
+        legend.replaceChildren(h('span', { style: '--c: var(--faint)' }, `$HASH ${pct(FEES.rigCut)}`), h('span', { style: '--c: var(--accent)' }, `Rent ${Math.round(rent * 100)}%`), h('span', { style: '--c: var(--gold)' }, `Buy direct ${Math.round(buy * 100)}%`));
+    };
+    set(rentShare);
+    return { el: h('div', { style: 'display:flex;flex-direction:column;gap:8px' }, bar, legend), set };
+}
+/** The coin's mine: payout countdown as the hero number, hashrate, earned, pot, split, link CTA. */
+function rigPanel(c) {
+    const t = targetById(c.target);
+    const cd = h('div', { class: 'countdown', 'aria-live': 'off' }, countdown(c.nextPayoutAt - Date.now()));
+    const rate = h('dd', null, Number.isFinite(c.hashrate) ? `${num(c.hashrate, 2)} ${t.unit}` : '—');
+    const potsEl = h('dd', { class: 'gold' });
+    const drawPots = () => { potsEl.textContent = t.chains.map((ch) => `${fmtSmall(c.pots[ch] ?? NaN)} ${ch}`).join(' + '); };
+    drawPots();
+    const timer = window.setInterval(() => {
+        cd.textContent = countdown(c.nextPayoutAt - Date.now());
+        rate.textContent = Number.isFinite(c.hashrate) ? `${num(c.hashrate, 2)} ${t.unit}` : '—';
+        drawPots();
+    }, 1000);
+    onUnmount(() => clearInterval(timer));
+    const px = data().prices();
+    const earnedUsd = t.chains.reduce((s, ch) => s + (c.mined24h[ch] ?? NaN) * (px[ch] ?? NaN), 0);
+    return h('section', { class: 'panel rig-panel', style: `--mc: var(${t.accent})`, 'aria-labelledby': 'rig-h' }, h('div', { class: 'panel-head' }, h('h3', { id: 'rig-h' }, 'Rig'), h('a', { class: 'chip', style: `--mc: var(${t.accent})`, href: href(`/mine/${t.slug}`) }, mineGlyph(t.id, 'ico'), `${t.label} · ${t.algo}`)), h('div', { class: 'panel-body', style: 'display:flex;flex-direction:column;gap:16px' }, h('div', null, h('div', { class: 'label' }, 'Next payout'), cd, h('p', { class: 'note', style: 'margin-top:6px' }, `Every ${FEES.payoutEveryHours}h to holders who linked a ${t.chains.join(' / ')} address.`)), h('dl', { class: 'kv' }, h('dt', null, 'Hashrate rented now'), rate, h('dt', null, 'Mined + bought, 24h'), h('dd', { class: 'gold' }, t.chains.map((ch) => `${fmtSmall(c.mined24h[ch] ?? NaN)} ${ch}`).join(' + ')), h('dt', null, '≈ value, 24h'), h('dd', null, Number.isFinite(earnedUsd) ? usd(earnedUsd) : '—'), h('dt', null, 'Waiting in the pot'), potsEl, h('dt', null, 'Paid out, all time'), h('dd', { class: 'gold' }, t.chains.map((ch) => `${fmtSmall(c.paidOut[ch] ?? NaN)} ${ch}`).join(' + ')), h('dt', null, 'Fees routed, all time'), h('dd', null, Number.isFinite(c.feesEarnedUsd) ? usd(c.feesEarnedUsd) : '—')), h('div', null, h('div', { class: 'label', style: 'margin-bottom:8px' }, 'Where creator fees go'), feeSplitBar(c.rentShare).el), c.creatorWallet ? h('dl', { class: 'kv' }, h('dt', null, 'Creator wallet'), h('dd', null, h('button', { class: 'btn ghost sm', onclick: () => copyText(c.creatorWallet, 'Creator wallet copied'), title: c.creatorWallet }, short(c.creatorWallet, 5), icon('copy')))) : null, t.autoTracked ? null : h('p', { class: 'stub' }, `${t.label} mined amounts are recorded by hand for now, so they can lag a few hours.`), h('a', { class: 'btn block', href: href('/link') }, icon('link'), `Link a ${t.chains.join(' / ')} payout address`)));
+}
+
+// ---- dist/components/TradePanel.js
+
+
+
+
+
+/**
+ * SOL trade panel. Stub: sends nothing. To go live, request a transaction from PumpPortal trade-local
+ * ({ publicKey, action: "buy"|"sell", mint, amount, denominatedInSol, slippage, priorityFee, pool: "auto" }),
+ * have the wallet sign and send it, then refresh balances.
+ */
+function tradePanel(c) {
+    let side = 'buy';
+    const amt = h('input', { class: 'input mono', id: 'trade-amt', inputmode: 'decimal', value: '0.5', 'aria-describedby': 'trade-est' });
+    const est = h('p', { class: 'note', id: 'trade-est' });
+    const buyBtn = h('button', { class: 'buy', 'aria-pressed': 'true', type: 'button' }, 'Buy');
+    const sellBtn = h('button', { class: 'sell', 'aria-pressed': 'false', type: 'button' }, 'Sell');
+    const unit = h('span', { class: 'mono muted' }, 'SOL');
+    const go = h('button', { class: 'btn block', type: 'submit' }, `Buy $${c.ticker}`);
+    const calc = () => {
+        const v = Number(amt.value);
+        const sol = data().prices().SOL ?? NaN;
+        if (!(v > 0)) {
+            est.textContent = 'Enter an amount above 0.';
+            return;
+        }
+        if (!Number.isFinite(sol) || !Number.isFinite(c.priceUsd)) {
+            est.textContent = 'Live prices aren’t connected yet.';
+            return;
+        }
+        est.textContent = side === 'buy'
+            ? `≈ ${num((v * sol) / c.priceUsd, 0)} $${c.ticker} at the current price, before slippage.`
+            : `≈ ${num((v * c.priceUsd) / sol, 4)} SOL at the current price, before slippage.`;
+    };
+    const setSide = (s) => {
+        side = s;
+        buyBtn.setAttribute('aria-pressed', String(s === 'buy'));
+        sellBtn.setAttribute('aria-pressed', String(s === 'sell'));
+        unit.textContent = s === 'buy' ? 'SOL' : `$${c.ticker}`;
+        amt.value = s === 'buy' ? '0.5' : '100000';
+        go.textContent = `${s === 'buy' ? 'Buy' : 'Sell'} $${c.ticker}`;
+        calc();
+    };
+    buyBtn.addEventListener('click', () => setSide('buy'));
+    sellBtn.addEventListener('click', () => setSide('sell'));
+    amt.addEventListener('input', calc);
+    calc();
+    const quicks = h('div', { class: 'quicks', role: 'group', 'aria-label': 'Quick amounts' }, ['0.1', '0.5', '1', '5'].map((v) => h('button', { class: 'quick', type: 'button', onclick: () => { if (side === 'buy') {
+            amt.value = v;
+            calc();
+        } } }, icon('bolt'), `${v} SOL`)));
+    return h('form', { class: 'panel', id: 'trade', onsubmit: (e) => { e.preventDefault(); toast('Trading from this site isn’t live yet. Use the pump.fun link to trade.'); } }, h('div', { class: 'panel-head' }, h('h3', null, 'Trade'), h('span', { class: 'pill' }, 'Settles in SOL')), h('div', { class: 'panel-body', style: 'display:flex;flex-direction:column;gap:12px' }, h('div', { class: 'trade-tabs', role: 'group', 'aria-label': 'Buy or sell' }, buyBtn, sellBtn), h('div', { class: 'field' }, h('label', { for: 'trade-amt' }, 'Amount'), h('div', { style: 'display:flex;gap:8px;align-items:center' }, amt, unit)), quicks, est, go, h('p', { class: 'stub' }, 'Demo panel: this button doesn’t send a transaction.'), h('a', { class: 'btn ghost block', href: `https://pump.fun/coin/${c.mint}`, target: '_blank', rel: 'noopener' }, 'Trade on pump.fun', icon('ext'))));
+}
+
+// ---- dist/pages/Coin.js
+
+
+
+
+
+
+
+
+
+
+
+
+const RES = [['1s', 1], ['15s', 15], ['1m', 60], ['5m', 300], ['15m', 900], ['1h', 3600], ['4h', 14400], ['1D', 86400]];
+function coinPage(mint) {
+    const d = data();
+    const c = d.coin(mint);
+    if (!c)
+        return notFoundPage();
+    const t = targetById(c.target);
+    // ---- header + stats ----
+    const sPrice = h('b', null), sMcap = h('b', null), sChg = h('b', null), sVol = h('b', null), sHold = h('b', null), sTop = h('b', null);
+    const paintStats = () => {
+        sPrice.textContent = price(c.priceUsd);
+        sMcap.textContent = usd(c.mcapUsd, true);
+        sChg.replaceChildren(change(c.change24h));
+        sVol.textContent = usd(c.volume24h, true);
+        sHold.textContent = Number.isFinite(c.holders) ? num(c.holders, 0) : '—';
+        sTop.textContent = `${pctText(c.top10Pct)} · dev ${pctText(c.devPct)}`;
+    };
+    paintStats();
+    // ---- chart ----
+    let res = 60, mode = 'price', unit = 'USD';
+    const chart = candleChart();
+    const scale = () => { const base = mode === 'mcap' ? 1e9 : 1; if (unit === 'USD')
+        return base; const p = d.prices()[unit]; return p ? base / p : base; };
+    const load = () => chart.setData(d.candles(c.mint, res), scale());
+    const segBtn = (label, on, fn, group) => h('button', { type: 'button', 'aria-pressed': String(on), onclick: (e) => {
+            group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === e.currentTarget)));
+            fn();
+        } }, label);
+    const resSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Candle size' });
+    resSeg.append(...RES.map(([l, s]) => segBtn(l, s === res, () => { res = s; load(); }, resSeg)));
+    const modeSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Price or market cap' });
+    modeSeg.append(segBtn('Price', true, () => { mode = 'price'; load(); }, modeSeg), segBtn('Market cap', false, () => { mode = 'mcap'; load(); }, modeSeg));
+    const unitNote = h('p', { class: 'note', hidden: true });
+    const unitSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Show in USD or the mined coin' });
+    unitSeg.append(segBtn('USD', true, () => { unit = 'USD'; load(); unitNote.hidden = true; }, unitSeg), ...t.chains.map((ch) => segBtn(`in ${ch}`, false, () => { unit = ch; load(); unitNote.hidden = false; unitNote.textContent = `Shown in ${ch} on this site only (USD ÷ ${ch} price). Trades settle in SOL on pump.fun.`; }, unitSeg)));
+    const noData = h('p', { class: 'note', hidden: true }, 'Charts need a market data source. Connect Codex in the live adapter to show candles.');
+    // ---- tabs ----
+    const tabNames = ['Trades', 'Holders', 'Payouts', 'Info'];
+    let tab = 'Trades';
+    const tabBody = h('div', { class: 'tablewrap', role: 'tabpanel', id: 'coin-tabpanel' });
+    const tabBar = h('div', { class: 'seg', role: 'tablist', 'aria-label': 'Coin details' });
+    const paintTab = () => {
+        if (tab === 'Trades') {
+            const tr = d.trades(c.mint);
+            tabBody.replaceChildren(tr.length ? h('table', { class: 't' }, h('thead', null, h('tr', null, ['Time', 'Side', 'Wallet', 'SOL', 'USD', `$${c.ticker}`].map((x, i) => h('th', { class: i >= 3 ? 'r' : '' }, x)))), h('tbody', null, tr.slice(0, 40).map((x) => h('tr', null, h('td', { class: 'mono muted' }, ago(x.ts)), h('td', { class: x.side === 'buy' ? 'up' : 'down' }, x.side === 'buy' ? 'Buy' : 'Sell'), h('td', { class: 'mono' }, short(x.wallet, 4)), h('td', { class: 'r mono' }, num(x.sol, 2)), h('td', { class: 'r mono' }, usd(x.usd)), h('td', { class: 'r mono' }, num(x.tokens, 0))))))
+                : emptyState('No trades to show yet.'));
+        }
+        else if (tab === 'Holders') {
+            const hs = d.holders(c.mint);
+            tabBody.replaceChildren(hs.length ? h('table', { class: 't' }, h('thead', null, h('tr', null, ['#', 'Wallet', 'Share', 'Payout address'].map((x, i) => h('th', { class: i === 2 ? 'r' : '' }, x)))), h('tbody', null, hs.map((x, i) => h('tr', null, h('td', { class: 'mono muted' }, String(i + 1)), h('td', { class: 'mono' }, short(x.wallet, 5)), h('td', { class: 'r mono' }, `${x.pct.toFixed(2)}%`), h('td', null, x.linked.length ? h('span', { class: 'pill live' }, `linked ${x.linked.join(' + ')}`) : h('span', { class: 'pill' }, 'not linked · paid nothing'))))))
+                : emptyState('Holder data appears once the market data source is connected.'));
+        }
+        else if (tab === 'Payouts') {
+            const rows = d.ledger(300).filter((e) => e.mint === c.mint && (e.kind === 'payout' || e.kind === 'mined' || e.kind === 'rent'));
+            tabBody.replaceChildren(rows.length ? h('table', { class: 't' }, h('thead', null, h('tr', null, ['Time', 'What', 'Amount', 'Status', 'Note'].map((x, i) => h('th', { class: i === 2 ? 'r' : '' }, x)))), h('tbody', null, rows.slice(0, 50).map((e) => h('tr', { class: e.kind === 'payout' ? 'payout' : '' }, h('td', { class: 'mono muted' }, ago(e.ts)), h('td', null, e.kind === 'payout' ? 'Paid holders' : e.kind === 'mined' ? 'Mined' : 'Rented hashpower'), h('td', { class: `r mono ${e.kind !== 'rent' ? 'gold' : ''}` }, amount(e.amount, e.unit)), h('td', null, h('span', { class: `pill ${e.status === 'done' ? 'live' : 'warn'}` }, e.status)), h('td', { class: 'muted' }, e.note ?? '')))))
+                : emptyState('No payouts yet. The first one goes out at the next payout time.'));
+        }
+        else {
+            tabBody.replaceChildren(h('dl', { class: 'kv panel-body' }, h('dt', null, 'Mint'), h('dd', null, h('button', { class: 'btn ghost sm', onclick: () => copyText(c.mint, 'Mint copied') }, short(c.mint, 6), icon('copy'))), h('dt', null, 'Mines'), h('dd', null, `${t.label} (${t.algo})`), h('dt', null, 'Pays holders in'), h('dd', null, t.chains.join(' + ')), h('dt', null, 'Rent share'), h('dd', null, `${Math.round(c.rentShare * 100)}% of fees after the $HASH cut`), h('dt', null, 'Launched'), h('dd', null, new Date(c.createdAt).toLocaleString()), h('dt', null, 'Trades on'), h('dd', null, c.graduated ? 'PumpSwap (graduated)' : 'pump.fun bonding curve'), h('dt', null, 'Links'), h('dd', null, [c.socials.x && h('a', { href: c.socials.x, target: '_blank', rel: 'noopener' }, 'X '), c.socials.tg && h('a', { href: c.socials.tg, target: '_blank', rel: 'noopener' }, 'Telegram '), c.socials.web && h('a', { href: c.socials.web, target: '_blank', rel: 'noopener' }, 'Website')].filter(Boolean), !c.socials.x && !c.socials.tg && !c.socials.web ? '—' : '')));
+        }
+    };
+    tabBar.append(...tabNames.map((n) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(n === tab), 'aria-controls': 'coin-tabpanel', onclick: (e) => {
+            tab = n;
+            tabBar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b === e.currentTarget)));
+            paintTab();
+        } }, n)));
+    paintTab();
+    const bondFill = h('i', { style: `width:${Math.min(100, c.bonding || 0)}%` });
+    const bondTxt = h('span', null);
+    const paintBond = () => { bondFill.style.width = `${Math.min(100, c.bonding || 0)}%`; bondTxt.textContent = c.graduated ? 'Graduated to PumpSwap' : Number.isFinite(c.bonding) ? `${c.bonding.toFixed(1)}% · graduates at about $69k market cap` : '—'; };
+    paintBond();
+    let n = 0;
+    const off = d.subscribe((a) => {
+        if (a) {
+            if (a.mint === c.mint && tab === 'Trades' && (a.kind === 'buy' || a.kind === 'sell'))
+                paintTab();
+            return;
+        }
+        paintStats();
+        paintBond();
+        const cs = d.candles(c.mint, Math.max(60, res));
+        if (res >= 60 && cs.length)
+            chart.update(cs[cs.length - 1], scale());
+        if (++n % 10 === 0 && tab !== 'Trades')
+            paintTab();
+    });
+    onUnmount(off);
+    const page = h('div', { class: 'page tight', style: `--mc: var(${t.accent})` }, h('div', { style: 'display:flex;flex-direction:column;gap:18px' }, h('a', { href: href(`/mine/${t.slug}`), class: 'label', style: 'display:inline-flex;gap:6px;align-items:center' }, icon('back'), `${t.label} mine`), h('div', { class: 'coin-head' }, avatar(c, 'lg'), h('div', { style: 'display:flex;flex-direction:column;gap:8px;min-width:0' }, h('h1', null, c.name), h('div', { class: 'meta' }, h('span', { class: 'mono muted' }, `$${c.ticker}`), mineChip(c.target, { href: href(`/mine/${t.slug}`) }), h('button', { class: 'btn ghost sm', onclick: () => copyText(c.mint, 'Mint copied'), 'aria-label': 'Copy mint address' }, short(c.mint, 4), icon('copy')), h('a', { class: 'btn ghost sm', href: `https://pump.fun/coin/${c.mint}`, target: '_blank', rel: 'noopener' }, 'pump.fun', icon('ext'))))), h('div', { class: 'coin-stats' }, h('div', null, h('span', { class: 'label' }, 'Price'), sPrice), h('div', null, h('span', { class: 'label' }, 'Market cap'), sMcap), h('div', null, h('span', { class: 'label' }, '24h'), sChg), h('div', null, h('span', { class: 'label' }, 'Volume 24h'), sVol), h('div', null, h('span', { class: 'label' }, 'Holders'), sHold), h('div', null, h('span', { class: 'label' }, 'Top 10'), sTop))), h('div', { class: 'coin-grid' }, h('div', { class: 'page tight', style: 'padding-top:0;gap:16px' }, h('section', { class: 'panel', 'aria-label': 'Chart' }, h('div', { class: 'panel-head chart-tools' }, resSeg, h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, modeSeg, unitSeg)), h('div', { class: 'panel-body', style: 'padding:8px' }, chart.el, unitNote, noData)), h('section', { class: 'panel' }, h('div', { class: 'panel-body', style: 'display:flex;flex-direction:column;gap:8px' }, h('div', { class: 'cc-foot' }, h('span', { class: 'label' }, 'Bonding curve'), bondTxt), h('div', { class: 'bond' }, bondFill))), h('section', { class: 'panel' }, h('div', { class: 'panel-head' }, tabBar), tabBody)), h('div', { class: 'side' }, rigPanel(c), h('div', { class: 'side-trade' }, tradePanel(c)))), h('div', { class: 'mobile-bar' }, h('a', { class: 'btn', href: `https://pump.fun/coin/${c.mint}`, target: '_blank', rel: 'noopener' }, 'Buy on pump.fun'), h('a', { class: 'btn ghost', href: href('/link') }, icon('link'), 'Link payout')));
+    requestAnimationFrame(() => { load(); if (!d.candles(c.mint, 60).length)
+        noData.hidden = false; });
+    return page;
+}
+
+// ---- dist/pages/Launch.js
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Launch wizard: details → mine → fee split → review.
+ * launchCoin() below is a demo. The real flow, step by step:
+ *  1. The backend makes a fresh creator wallet for the coin (each coin needs its own; pump.fun claims a wallet's fees all at once).
+ *  2. Upload image + metadata to pump.fun IPFS (https://pump.fun/api/ipfs) → metadata URI.
+ *  3. Request a create transaction from PumpPortal trade-local: { publicKey: creatorWallet, action: "create",
+ *     tokenMetadata: { name, symbol, uri }, mint: <new mint keypair pubkey>, denominatedInSol: "true", amount: devBuy, slippage, priorityFee, pool: "pump" }.
+ *  4. Sign with the mint keypair + creator wallet on the backend, send, confirm.
+ *  5. Register with the backend (add-coin: mint, ticker, name, target, rent share) so fees start routing to the rig.
+ */
+function launchPage() {
+    const d = data();
+    const draft = { name: '', ticker: '', description: '', target: 'LTC_DOGE', rentShare: FEES.defaultRentShare, x: '', tg: '', site: '', devBuy: 0 };
+    let step = 0;
+    let volume = 50000;
+    const names = ['Details', 'Mine', 'Fee split', 'Review'];
+    const stepper = h('ol', { class: 'stepper', 'aria-label': 'Launch steps' });
+    const body = h('div', { class: 'form' });
+    const preview = h('div', { class: 'preview-card' });
+    const estimate = h('div', { class: 'estimate' });
+    const split = feeSplitBar(draft.rentShare);
+    const paintStepper = () => stepper.replaceChildren(...names.map((n, i) => h('li', { 'aria-current': i === step ? 'step' : null, class: i < step ? 'done' : '' }, i < step ? icon('check') : `${i + 1}`, n)));
+    const paintPreview = () => {
+        const fake = {
+            mint: 'DemoPreview', ticker: draft.ticker || 'TICKER', name: draft.name || 'Your coin', target: draft.target, rentShare: draft.rentShare, creatorWallet: '', createdAt: Date.now(),
+            priceUsd: 4.2e-6, mcapUsd: 4200, change24h: 0, volume24h: 0, holders: 1, bonding: 6, graduated: false, spark: [1, 1.02, 1.01, 1.04, 1.06],
+            hashrate: 0, mined24h: {}, pots: {}, paidOut: {}, nextPayoutAt: Date.now(), hue: [...(draft.ticker || 'X')].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) % 360, 7),
+            top10Pct: NaN, devPct: 0, socials: { x: draft.x || undefined, tg: draft.tg || undefined, web: draft.site || undefined }, feesEarnedUsd: 0, paidUsd24h: 0, paidUsdTotal: 0,
+        };
+        const card = coinCard(fake);
+        card.removeAttribute('href');
+        card.setAttribute('aria-hidden', 'true');
+        preview.replaceChildren(h('span', { class: 'label', style: 'display:block;margin-bottom:8px' }, 'Live preview'), card);
+    };
+    const paintEstimate = () => {
+        const t = targetById(draft.target);
+        const fees = volume * (FEES.creatorFeeRate ?? 0);
+        const cut = fees * (FEES.rigCut ?? 0);
+        const net = fees - cut;
+        const rent = net * draft.rentShare;
+        const mined = rent * (1 - FEES.rentalLoss);
+        const buy = net - rent;
+        const active = document.activeElement?.id === 'est-vol';
+        estimate.replaceChildren(h('div', { class: 'field' }, h('label', { for: 'est-vol' }, 'If the coin trades this much a day (USD)'), h('input', { class: 'input mono', id: 'est-vol', inputmode: 'numeric', value: String(volume), oninput: (e) => { volume = Math.max(0, Number(e.target.value.replace(/[^0-9.]/g, '')) || 0); paintEstimate(); } })), row('Creator fees / day', FEES.creatorFeeRate === null ? 'TBD' : usd(fees)), row(`To $HASH (${pct(FEES.rigCut)})`, usd(cut)), row('Rents hashpower', `${usd(rent)} → ≈ ${usd(mined)} mined`), row('Buys directly', usd(buy)), row('To holders / day', `≈ ${usd(mined + buy)} in ${t.chains.join(' + ')}`, true), h('p', { class: 'note' }, `Estimate only. Assumes a ${pct(FEES.creatorFeeRate)} creator fee and that rented hashpower mines ${Math.round((1 - FEES.rentalLoss) * 100)}% of its cost. Real results depend on prices and pool luck.`));
+        if (active) {
+            const v = estimate.querySelector('#est-vol');
+            v?.focus();
+            v?.setSelectionRange(v.value.length, v.value.length);
+        }
+    };
+    const field = (id, label, opts = {}) => {
+        const err = h('p', { class: 'err', id: `${id}-err`, hidden: true });
+        const attrs = { class: 'input', id: `f-${id}`, value: String(draft[id]), placeholder: opts.placeholder ?? '', maxlength: opts.max, 'aria-describedby': `${id}-err` };
+        const input = opts.area ? h('textarea', { ...attrs, value: undefined }, String(draft[id])) : h('input', attrs);
+        input.addEventListener('input', () => {
+            let v = input.value;
+            if (id === 'ticker') {
+                v = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                input.value = v;
+            }
+            draft[id] = v;
+            err.hidden = true;
+            paintPreview();
+        });
+        return { el: h('div', { class: 'field' }, h('label', { for: `f-${id}` }, label), input, opts.hint ? h('p', { class: 'hint' }, opts.hint) : null, err), err, input };
+    };
+    const render = () => {
+        paintStepper();
+        if (step === 0) {
+            const n = field('name', 'Coin name', { placeholder: 'Doge Digger', max: 32 });
+            const t = field('ticker', 'Ticker', { placeholder: 'DIGGER', max: 10, hint: '2–10 letters or numbers.' });
+            const ds = field('description', 'Description', { area: true, max: 280, placeholder: 'What your coin is about. Optional.' });
+            const imgIn = h('input', { class: 'input', id: 'f-img', type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp' });
+            imgIn.addEventListener('change', () => {
+                const f = imgIn.files?.[0];
+                if (!f)
+                    return;
+                if (f.size > 3000000) {
+                    toast('Image must be under 3 MB.', true);
+                    imgIn.value = '';
+                    return;
+                }
+                const rd = new FileReader();
+                rd.onload = () => { draft.imageBase64 = String(rd.result).split(',')[1]; draft.imageType = f.type; };
+                rd.readAsDataURL(f);
+            });
+            const img = h('div', { class: 'field' }, h('label', { for: 'f-img' }, 'Image'), imgIn, h('p', { class: 'hint' }, 'Square, at least 500 × 500. Uploaded to IPFS when you launch.'));
+            body.replaceChildren(h('div', { class: 'row2' }, n.el, t.el), ds.el, img, h('div', { class: 'row2' }, field('x', 'X link', { placeholder: 'https://x.com/…' }).el, field('tg', 'Telegram link', { placeholder: 'https://t.me/…' }).el), nav(() => {
+                let ok = true;
+                if (draft.name.trim().length < 2) {
+                    n.err.textContent = 'Give your coin a name (2+ characters).';
+                    n.err.hidden = false;
+                    ok = false;
+                }
+                if (!/^[A-Z0-9]{2,10}$/.test(draft.ticker)) {
+                    t.err.textContent = 'Use 2–10 letters or numbers for the ticker.';
+                    t.err.hidden = false;
+                    ok = false;
+                }
+                if (!ok)
+                    body.querySelector('.err:not([hidden])')?.previousElementSibling?.focus?.();
+                return ok;
+            }));
+        }
+        else if (step === 1) {
+            body.replaceChildren(h('fieldset', { class: 'field', style: 'border:0;padding:0;margin:0' }, h('legend', { class: 'lbl', style: 'margin-bottom:8px' }, 'What should your fees mine?'), h('div', { class: 'pick-grid' }, TARGETS.map((t) => h('label', { class: 'pick', style: `--mc: var(${t.accent})` }, h('input', { type: 'radio', name: 'target', value: t.id, checked: draft.target === t.id ? true : null, onchange: () => { draft.target = t.id; paintPreview(); paintEstimate(); } }), mineGlyph(t.id), h('span', { class: 'label', style: 'color:var(--mc)' }, t.algo), h('b', null, t.label), h('small', null, t.blurb), h('small', { class: 'mono' }, `Pays ${t.chains.join(' + ')}${t.autoTracked ? '' : ' · recorded by hand for now'}`))))), nav(() => true));
+        }
+        else if (step === 2) {
+            const out = h('output', { for: 'f-split', class: 'mono', style: 'font-size:14px' });
+            const paintSplit = () => { out.textContent = `${Math.round(draft.rentShare * 100)}% rents hashpower · ${100 - Math.round(draft.rentShare * 100)}% buys directly`; split.set(draft.rentShare); };
+            const slider = h('input', { type: 'range', id: 'f-split', min: '0', max: '100', step: '5', value: String(Math.round(draft.rentShare * 100)), 'aria-describedby': 'split-help' });
+            slider.addEventListener('input', () => { draft.rentShare = Number(slider.value) / 100; paintSplit(); paintEstimate(); paintPreview(); });
+            paintSplit();
+            body.replaceChildren(h('div', { class: 'field' }, h('label', { for: 'f-split' }, 'Split your creator fees'), slider, split.el, out, h('p', { class: 'hint', id: 'split-help' }, 'More rent = more real mining and more show on the rack. More direct buys = bigger payouts, since rented hashpower usually mines a little less than it costs.')), h('p', { class: 'note' }, `Fixed for every coin: ${pct(FEES.rigCut)} to $HASH${FEES.opsCut !== null ? `, ${pct(FEES.opsCut)} to running costs` : ''}. Site launch fee: ${FEES.launchFeeSol === null ? 'TBD' : FEES.launchFeeSol + ' SOL'}.`), nav(() => true));
+        }
+        else {
+            const t = targetById(draft.target);
+            body.replaceChildren(h('dl', { class: 'kv panel panel-body' }, h('dt', null, 'Name'), h('dd', null, draft.name), h('dt', null, 'Ticker'), h('dd', null, `$${draft.ticker}`), h('dt', null, 'Mines'), h('dd', null, `${t.label} (${t.algo})`), h('dt', null, 'Holders paid in'), h('dd', null, t.chains.join(' + ')), h('dt', null, 'Fee split'), h('dd', null, `${Math.round(draft.rentShare * 100)}% rent · ${100 - Math.round(draft.rentShare * 100)}% buy`), h('dt', null, 'Launches on'), h('dd', null, 'pump.fun, from a fresh creator wallet')), d.isDemo ? '' : h('div', { class: 'field' }, h('label', { for: 'f-devbuy' }, 'Dev buy (SOL, optional)'), h('input', { class: 'input mono', id: 'f-devbuy', inputmode: 'decimal', value: String(draft.devBuy), oninput: (e) => { draft.devBuy = Math.max(0, Number(e.target.value) || 0); } }), h('p', { class: 'hint' }, 'Bought for the creator wallet in the create transaction. You fund it along with the create fee in the next step.')), h('p', { class: 'note' }, 'Each coin launches from its own new creator wallet, because pump.fun claims all of a wallet’s creator fees in one go. Separate wallets keep each coin’s fees and payouts apart.'), d.isDemo ? h('p', { class: 'stub' }, 'Demo: launching adds a simulated coin to this site. Nothing is created on pump.fun.') : '', h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => { step--; render(); } }, 'Back'), h('button', { class: 'btn magnetic', type: 'button', onclick: launchCoin }, icon('bolt'), d.isDemo ? 'Launch (demo)' : 'Launch on pump.fun')));
+        }
+        body.querySelector('input, textarea, select')?.focus();
+    };
+    const nav = (valid) => h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap' }, step > 0 ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { step--; render(); } }, 'Back') : null, h('button', { class: 'btn', type: 'button', onclick: () => { if (valid()) {
+            step++;
+            render();
+        } } }, 'Continue', icon('arrow')));
+    const launchLive = async () => {
+        if (!d.launch || !d.launchStatus) {
+            toast('Launching isn’t connected to a backend yet.', true);
+            return;
+        }
+        let ticket;
+        try {
+            ticket = await d.launch({ name: draft.name, ticker: draft.ticker, description: draft.description, target: draft.target, rentShare: draft.rentShare, devBuySol: draft.devBuy,
+                imageBase64: draft.imageBase64, imageType: draft.imageType, socials: { x: draft.x || undefined, tg: draft.tg || undefined, web: draft.site || undefined } });
+        }
+        catch (e) {
+            toast(e.message, true);
+            return;
+        }
+        const status = h('p', { class: 'muted' }, 'Waiting for the SOL to arrive…');
+        const addr = h('code', { class: 'mono', style: 'overflow-wrap:anywhere;font-size:14px' }, ticket.wallet);
+        wrap.replaceChildren(h('div', { class: 'panel panel-body', style: 'display:flex;flex-direction:column;gap:14px;max-width:640px' }, h('span', { class: 'eyebrow' }, 'Step 5 · Fund the coin’s wallet'), h('h2', null, `Send ${ticket.needSol} SOL`), h('p', { class: 'muted' }, `This is $${draft.ticker}’s own creator wallet, made just now. It covers the pump.fun create fee, your dev buy and network fees. Once the SOL lands, Hashrate creates the coin and starts routing its fees to the mine.`), h('div', { class: 'panel', style: 'padding:12px;background:var(--bg);display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, addr, h('button', { class: 'btn ghost sm', type: 'button', onclick: () => copyText(ticket.wallet, 'Address copied') }, icon('copy'), 'Copy')), h('p', { class: 'note' }, 'Send from any Solana wallet. Only send SOL. Launches that aren’t funded within 7 days expire.'), status));
+        const poll = window.setInterval(async () => {
+            try {
+                const st = await d.launchStatus(ticket.id);
+                if (st.status === 'launching')
+                    status.textContent = 'Funded. Creating the coin on pump.fun…';
+                else if (st.status === 'live' && st.mint) {
+                    clearInterval(poll);
+                    const t = targetById(draft.target);
+                    const unit = rackUnit(t.accent);
+                    wrap.replaceChildren(h('div', { class: 'panel success' }, unit, h('span', { class: 'eyebrow' }, 'Live on pump.fun'), h('h2', null, `$${st.ticker} is mining`), h('p', { class: 'muted', style: 'max-width:46ch' }, `${draft.name} now mines ${t.label}. Its first rental goes out once fees reach the minimum order.`), h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;justify-content:center' }, h('a', { class: 'btn', href: `https://pump.fun/coin/${st.mint}`, target: '_blank', rel: 'noopener' }, 'Open on pump.fun', icon('ext')), h('a', { class: 'btn ghost', href: href(`/coin/${st.mint}`) }, 'Coin page'))));
+                    powerOn(unit);
+                }
+                else if (st.status === 'failed') {
+                    clearInterval(poll);
+                    status.textContent = `Launch failed: ${st.error ?? 'unknown error'}. The SOL stays in that wallet; contact support with the address.`;
+                    status.className = 'err';
+                }
+            }
+            catch { /* keep polling */ }
+        }, 5000);
+    };
+    const launchCoin = () => {
+        if (!d.isDemo) {
+            void launchLive();
+            return;
+        }
+        if (!d.addDemoCoin) {
+            toast('Launching isn’t connected yet.', true);
+            return;
+        }
+        const coin = d.addDemoCoin({ name: draft.name, ticker: draft.ticker, target: draft.target, rentShare: draft.rentShare });
+        const t = targetById(coin.target);
+        const cv = h('canvas', { 'aria-hidden': 'true' });
+        const unit = rackUnit(t.accent);
+        wrap.replaceChildren(h('div', { class: 'panel success' }, cv, unit, h('span', { class: 'eyebrow' }, 'Demo launch'), h('h2', null, `$${coin.ticker} is mining`), h('p', { class: 'muted', style: 'max-width:46ch' }, `${coin.name} now mines ${t.label}. Its first rental goes out once fees reach the minimum order.`), h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;justify-content:center' }, h('a', { class: 'btn', href: href(`/coin/${coin.mint}`) }, 'Open coin page'), h('button', { class: 'btn ghost', type: 'button', onclick: () => dispatchEvent(new HashChangeEvent('hashchange')) }, 'Launch another'))));
+        powerOn(unit);
+        burst(cv, t.accent);
+    };
+    const wrap = h('div', { class: 'wizard' }, h('section', { class: 'panel panel-body' }, stepper, body), h('aside', { class: 'side' }, h('div', { class: 'panel panel-body' }, preview), h('div', { class: 'panel panel-body' }, h('h3', { style: 'margin-bottom:12px' }, 'Daily estimate'), estimate)));
+    paintPreview();
+    paintEstimate();
+    render();
+    return h('div', { class: 'page tight' }, h('div', { class: 'page-title' }, h('span', { class: 'eyebrow' }, 'Launch'), h('h1', { style: 'margin-top:10px' }, 'Launch a coin that mines'), h('p', null, 'Your coin trades on pump.fun like any other. Hashrate points its creator fees at a mine and pays the output to holders.')), wrap);
+}
+const row = (k, v, total = false) => h('div', { class: `est-row ${total ? 'total' : ''}` }, h('span', null, k), h('b', null, v));
+/** A rack unit that powers on: LEDs light in sequence, then the hash streak. */
+function rackUnit(accentVar) {
+    return svg(`<svg viewBox="0 0 320 90" style="--mc: var(${accentVar})">
+    <rect x="1" y="1" width="318" height="88" rx="10" fill="var(--surface)" stroke="var(--line-2)"/>
+    <rect class="streak" x="22" y="22" width="150" height="9" rx="4.5"/><rect x="22" y="40" width="110" height="9" rx="4.5" fill="var(--line-2)"/><rect x="22" y="58" width="180" height="9" rx="4.5" fill="var(--line)"/>
+    <circle class="led" cx="270" cy="30" r="5"/><circle class="led" cx="290" cy="30" r="5"/><circle class="led" cx="270" cy="52" r="5"/><circle class="led" cx="290" cy="52" r="5"/>
+  </svg>`, 'unit-svg');
+}
+function powerOn(unit) {
+    const leds = [...unit.querySelectorAll('.led')];
+    const delay = motionOk() ? 180 : 0;
+    leds.forEach((l, i) => setTimeout(() => l.classList.add('on'), delay * (i + 1)));
+    setTimeout(() => unit.classList.add('on'), delay * (leds.length + 1));
+}
+/** Particle burst in the mine's color. */
+function burst(cv, accentVar) {
+    if (!motionOk())
+        return;
+    const ctx = cv.getContext('2d');
+    if (!ctx)
+        return;
+    const W = cv.clientWidth || 600, H = cv.clientHeight || 300;
+    cv.width = W;
+    cv.height = H;
+    const col = getComputedStyle(document.documentElement).getPropertyValue(accentVar).trim() || '#5ad1ff';
+    const ps = Array.from({ length: 140 }, () => ({ x: W / 2, y: H / 2, vx: (Math.random() - 0.5) * 9, vy: (Math.random() - 0.8) * 9, life: 1 }));
+    const step = () => {
+        ctx.clearRect(0, 0, W, H);
+        let alive = false;
+        for (const p of ps) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.18;
+            p.life -= 0.012;
+            if (p.life > 0) {
+                alive = true;
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = col;
+                ctx.fillRect(p.x, p.y, 3, 3);
+            }
+        }
+        if (alive)
+            requestAnimationFrame(step);
+    };
+    step();
+}
+
+// ---- dist/pages/Ledger.js
+
+
+
+
+
+const KIND_LABEL = { claim: 'Fees claimed', split: 'Fees split', rent: 'Hashpower rented', mined: 'Mined', buy: 'Bought directly', payout: 'Paid holders' };
+function ledgerPage() {
+    const d = data();
+    let kind = 'all';
+    const tbody = h('tbody');
+    const fmtTime = (ts) => new Date(ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const cell = (label, cls, ...kids) => h('td', { class: cls, 'data-l': label }, ...kids);
+    const ledgerRow = (e) => h('tr', { class: e.kind === 'payout' ? 'payout' : '' }, cell('Time', 'mono muted', fmtTime(e.ts)), cell('What', '', h('span', { class: `pill ${e.kind === 'payout' ? 'gold' : e.kind === 'mined' ? 'gold' : ''}` }, KIND_LABEL[e.kind] ?? e.kind)), cell('Coin', '', e.mint ? h('a', { href: href(`/coin/${e.mint}`), class: 'mono' }, e.ticker ? `$${e.ticker}` : short(e.mint, 4)) : h('span', { class: 'muted' }, '—')), cell('Chain', 'mono', e.chain ?? ''), cell('Amount', `r mono ${e.kind === 'payout' || e.kind === 'mined' ? 'gold' : ''}`, amount(e.amount, e.unit)), cell('Status', '', h('span', { class: `pill ${e.status === 'done' ? 'live' : 'warn'}` }, e.status)), cell('Note', 'muted', e.note ?? ''), cell('Ref', 'mono faint', e.ref ? short(e.ref, 5) : ''));
+    const paint = () => {
+        const rows = d.ledger(300).filter((e) => kind === 'all' || e.kind === kind);
+        tbody.replaceChildren(...(rows.length ? rows.slice(0, 150).map(ledgerRow) : [h('tr', null, h('td', { colspan: '8' }, emptyState('Nothing logged yet for this filter.')))]));
+    };
+    paint();
+    const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Filter the ledger' }, ['all', 'rent', 'mined', 'buy', 'payout'].map((k) => h('button', { type: 'button', 'aria-pressed': String(k === kind), onclick: (ev) => {
+            kind = k;
+            seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === ev.currentTarget)));
+            paint();
+        } }, k === 'all' ? 'All' : KIND_LABEL[k])));
+    let n = 0;
+    const off = d.subscribe((a) => { if (a && ++n % 2 === 0)
+        paint(); });
+    onUnmount(off);
+    return h('div', { class: 'page tight' }, h('div', { class: 'sec-head' }, h('div', { class: 'page-title' }, h('span', { class: 'eyebrow' }, 'Ledger'), h('h1', { style: 'margin-top:10px' }, 'Every SOL, every satoshi'), h('p', null, 'The public log of fees claimed, hashpower rented, coins mined, direct buys and payouts. “Pending” rows are recorded by hand or waiting to be sent.')), seg), h('div', { class: 'panel tablewrap' }, h('table', { class: 't cards' }, h('thead', null, h('tr', null, ['Time', 'What', 'Coin', 'Chain', 'Amount', 'Status', 'Note', 'Ref'].map((x, i) => h('th', { class: i === 4 ? 'r' : '' }, x)))), tbody)));
+}
+
+// ---- dist/components/LinkFlow.js
+
+
+
+
+
+
+
+const CHAINS = ['DOGE', 'LTC', 'ZEC', 'KAS', 'BTC', 'XMR'];
+/**
+ * Link a payout address: connect → pick chain → paste address → sign → save.
+ * Talks to GET /api/link-message and POST /api/link through the data adapter.
+ */
+function linkFlow(defaultChain = 'DOGE') {
+    const d = data();
+    const steps = h('ol', { class: 'stepper', 'aria-label': 'Steps' });
+    const body = h('div', { class: 'form' });
+    const linked = h('div', { class: 'panel', hidden: true });
+    let chain = defaultChain;
+    const stepNames = ['Connect wallet', 'Payout address', 'Sign'];
+    const setStep = (i) => steps.replaceChildren(...stepNames.map((n, k) => h('li', { 'aria-current': k === i ? 'step' : null, class: k < i ? 'done' : '' }, `${k + 1}. ${n}`)));
+    const showLinked = async (addr) => {
+        try {
+            const info = await d.links(addr);
+            linked.hidden = false;
+            linked.replaceChildren(h('div', { class: 'panel-head' }, h('h3', null, 'Your payout addresses'), h('span', { class: 'pill' }, short(addr, 5))), h('div', { class: 'panel-body' }, info.links.length
+                ? h('dl', { class: 'kv' }, info.links.flatMap((l) => [h('dt', null, l.chain), h('dd', null, short(l.address, 8))]))
+                : h('p', { class: 'muted' }, 'No addresses linked yet. Coins you hold pay nothing until you link one.'), info.owed.length ? h('p', { class: 'note', style: 'margin-top:10px' }, 'Carried to the next payout: ' + info.owed.map((o) => amount(o.amount, o.chain)).join(', ')) : null));
+        }
+        catch (e) {
+            toast(e.message, true);
+        }
+    };
+    const renderConnect = () => {
+        setStep(0);
+        body.replaceChildren(h('p', { class: 'muted' }, 'Payouts are sent on other chains, so tell us where to send yours. You sign a message with the Solana wallet that holds your coins. Signing is free and doesn’t send a transaction.'), h('button', { class: 'btn', type: 'button', onclick: async () => {
+                try {
+                    await connectWallet();
+                    renderAddress();
+                }
+                catch (e) {
+                    toast(e.message, true);
+                }
+            } }, icon('wallet'), 'Connect wallet'), d.isDemo ? h('button', { class: 'btn ghost', type: 'button', onclick: () => renderAddress('DemoWa11etXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') }, 'Try it with a demo wallet') : '');
+    };
+    const renderAddress = (demoWallet) => {
+        const wallet = demoWallet ?? walletAddress();
+        if (!wallet)
+            return renderConnect();
+        setStep(1);
+        const sel = h('select', { class: 'input', id: 'link-chain' }, CHAINS.map((c) => h('option', { value: c, selected: c === chain ? true : null }, c)));
+        const addr = h('input', { class: 'input mono', id: 'link-addr', placeholder: ADDRESS_HINT[chain], autocomplete: 'off', spellcheck: 'false', 'aria-describedby': 'link-hint link-err' });
+        const hint = h('p', { class: 'hint', id: 'link-hint' }, ADDRESS_HINT[chain]);
+        const err = h('p', { class: 'err', id: 'link-err', hidden: true });
+        sel.addEventListener('change', () => { chain = sel.value; hint.textContent = ADDRESS_HINT[chain]; addr.placeholder = ADDRESS_HINT[chain]; err.hidden = true; });
+        addr.addEventListener('input', () => { err.hidden = true; });
+        addr.addEventListener('blur', () => { if (addr.value && !isValidAddress(chain, addr.value)) {
+            err.textContent = `That doesn’t look like a ${chain} address. ${ADDRESS_HINT[chain]}.`;
+            err.hidden = false;
+        } });
+        body.replaceChildren(h('p', { class: 'muted' }, 'Connected: ', h('span', { class: 'mono' }, short(wallet, 6))), h('div', { class: 'row2' }, h('div', { class: 'field' }, h('label', { for: 'link-chain' }, 'Chain'), sel), h('div', { class: 'field' }, h('label', { for: 'link-addr' }, `Your ${chain} address`), addr, hint, err)), h('button', { class: 'btn', type: 'button', onclick: async () => {
+                const a = addr.value.trim();
+                if (!isValidAddress(chain, a)) {
+                    err.textContent = `That doesn’t look like a ${chain} address. ${ADDRESS_HINT[chain]}.`;
+                    err.hidden = false;
+                    addr.focus();
+                    return;
+                }
+                await renderSign(wallet, a, Boolean(demoWallet));
+            } }, 'Continue', icon('arrow')));
+        addr.focus();
+    };
+    const renderSign = async (wallet, address, demo) => {
+        setStep(2);
+        let msg;
+        try {
+            msg = await d.linkMessage(wallet, chain, address);
+        }
+        catch (e) {
+            toast(e.message, true);
+            return;
+        }
+        const btn = h('button', { class: 'btn', type: 'button' }, demo ? 'Save (demo)' : 'Sign and save');
+        btn.addEventListener('click', async () => {
+            btn.setAttribute('disabled', '');
+            btn.textContent = 'Saving…';
+            try {
+                const signature = demo ? 'demo' : await signText(msg.message);
+                await d.link({ wallet, chain, address, issuedAt: msg.issuedAt, signature });
+                toast(`${chain} payouts will go to ${short(address, 6)}`);
+                await showLinked(wallet);
+                renderAddress(demo ? wallet : undefined);
+            }
+            catch (e) {
+                toast(e.message || 'Signing was cancelled.', true);
+                btn.removeAttribute('disabled');
+                btn.textContent = demo ? 'Save (demo)' : 'Sign and save';
+            }
+        });
+        body.replaceChildren(h('p', { class: 'muted' }, 'Your wallet will ask you to sign this exact text:'), h('pre', { class: 'panel mono', style: 'padding:14px;margin:0;white-space:pre-wrap;font-size:13px;overflow-wrap:anywhere;background:var(--bg)' }, msg.message), h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap' }, btn, h('button', { class: 'btn ghost', type: 'button', onclick: () => renderAddress(demo ? wallet : undefined) }, 'Back')));
+    };
+    if (walletAddress()) {
+        renderAddress();
+        showLinked(walletAddress());
+    }
+    else
+        renderConnect();
+    onWallet((a) => { if (a)
+        showLinked(a); });
+    return h('div', { style: 'display:flex;flex-direction:column;gap:16px' }, steps, body, linked);
+}
+
+// ---- dist/pages/Link.js
+
+
+function linkPage() {
+    return h('div', { class: 'page tight narrow' }, h('div', { class: 'page-title' }, h('span', { class: 'eyebrow' }, 'Payouts'), h('h1', { style: 'margin-top:10px' }, 'Link a payout address'), h('p', null, 'Hashrate pays holders in the coin their mine produces: DOGE, LTC, ZEC, KAS, BTC or XMR. Add an address for each chain you want to be paid on. You can change it any time.')), h('section', { class: 'panel panel-body' }, linkFlow()), h('p', { class: 'note' }, 'Payouts go to linked holders by bag size. If your share is under the chain’s minimum, it carries to the next payout. Holders who never link an address aren’t paid on that chain. The coin’s creator wallet and the bonding curve are never paid.'));
+}
+
+// ---- dist/pages/Docs.js
+
+
+
+
+
+function docsPage() {
+    const diagram = feesFlowDiagram();
+    diagram.light(4);
+    const sections = [
+        ['flow', 'How fees flow', [
+                para('Every coin on Hashrate is a normal pump.fun coin that trades in SOL. pump.fun pays the coin’s creator wallet a fee on every trade. Hashrate claims those fees and splits them:'),
+                list([`${pct(FEES.rigCut)} to $HASH, which runs its own mine for $HASH holders.`, 'Of the rest, the share set at launch rents hashpower on the coin’s chosen mine.', 'Everything else buys the mined coin directly.']),
+                para('Payouts only send out what was mined or bought. The rental budget is set aside first, so payouts never eat the mining money.'),
+                diagram.el,
+            ]],
+        ['wallets', 'One wallet per coin', [para('pump.fun pays out all of a creator wallet’s fees in a single claim. If two coins shared a wallet, there’d be no way to tell whose fees were whose. So every coin on Hashrate launches from its own fresh creator wallet.')]],
+        ['economics', 'Rental economics', [
+                para('Hashpower is rented on NiceHash or MiningRigRentals. These markets price hashpower close to what it mines, so renting usually returns a little less than it costs. Hashrate’s estimates assume a ', strong(`${Math.round(FEES.rentalLoss * 100)}% loss`), '.'),
+                para('That’s why direct buys exist: they carry most of the payout, and the rented mining is what makes it a real mine. Pick a higher rent share for more mining, or a lower one for bigger payouts.'),
+                para('Rentals from every coin on the same mine are pooled into one order, which clears marketplace minimums. Mined coins are shared back in proportion to what each coin spent over the last three days.'),
+            ]],
+        ['mines', 'The mines', [...TARGETS.map((t) => para(strong(`${t.label} · ${t.algo}.`), ` ${t.blurb} Holders are paid in ${t.chains.join(' and ')}.${t.autoTracked ? '' : ' Mined amounts are recorded by hand for now.'}`))]],
+        ['merged', 'Merged mining', [para('Litecoin and Dogecoin share the Scrypt algorithm, and Dogecoin accepts proof of work from Litecoin miners. One Scrypt rental earns both coins, so LTC + DOGE coins pay holders twice from one rental.')]],
+        ['linking', 'Linking a payout address', [
+                para('Payouts happen on other chains, so holders tell Hashrate where to send them. You sign a short message with the Solana wallet that holds the coin. Signing is free, sends no transaction and moves no funds. The signature proves the address belongs to the holder.'),
+                para('Holders who never link an address aren’t paid on that chain. Their share stays in the pot for the next round. ', h('a', { href: href('/link'), style: 'color:var(--accent)' }, 'Link an address →')),
+            ]],
+        ['payouts', 'Payout rules', [list([`Payouts run every ${FEES.payoutEveryHours} hours.`, 'Each pot is split across linked holders by bag size, read from the chain at payout time.', 'Shares under the chain’s minimum carry to the next payout instead of being lost.', 'The coin’s creator wallet, the bonding curve and AMM pools are never paid.', 'Every claim, rental, mined amount, buy and payout is logged on the public Ledger.'])]],
+        ['risks', 'Risks', [para('Memecoins can go to zero. Mining output depends on coin prices, difficulty and pool luck. Rental markets can change their prices or rules. Nothing on this site is financial advice.')]],
+    ];
+    return h('div', { class: 'page tight' }, h('div', { class: 'page-title' }, h('span', { class: 'eyebrow' }, 'Docs'), h('h1', { style: 'margin-top:10px' }, 'How Hashrate works')), h('div', { class: 'docs' }, h('nav', { class: 'toc', 'aria-label': 'On this page' }, sections.map(([id, title]) => h('a', { href: '#/docs', onclick: (e) => { e.preventDefault(); document.getElementById(`doc-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, title))), h('article', { class: 'prose' }, sections.flatMap(([id, title, kids]) => [h('h2', { id: `doc-${id}` }, title), ...kids]))));
+}
+function para(...kids) { return h('p', null, ...kids); }
+function strong(t) { return h('strong', null, t); }
+function list(items) { return h('ul', null, items.map((i) => h('li', null, i))); }
+
+// ---- dist/main.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const TITLES = { mines: 'Mines', launch: 'Launch', ledger: 'Ledger', link: 'Link payout address', docs: 'Docs', '404': 'Not found' };
+async function boot() {
+    initMotion();
+    const app = document.getElementById('app');
+    const main = h('main', { class: 'wrap', id: 'main', tabindex: '-1' });
+    // Skeleton only if the data source takes longer than 300ms (the live adapter).
+    const d = data();
+    const sk = setTimeout(() => { if (!main.hasChildNodes())
+        main.append(h('div', { class: 'page' }, h('div', { class: 'skeleton', style: 'height:48px;width:40%' }), skeletonRows(5))); }, 300);
+    app.replaceChildren(h('a', { href: '#main', class: 'sr-only' }, 'Skip to content'), header(), tickerTape(), main, footer());
+    mountGrain();
+    trackChromeHeight();
+    bindPaletteShortcut();
+    await d.ready().catch(() => { });
+    clearTimeout(sk);
+    startRouter((r) => {
+        runCleanups();
+        let page;
+        switch (r.name) {
+            case 'home':
+                page = homePage();
+                break;
+            case 'mines':
+                page = minesPage();
+                break;
+            case 'mine':
+                page = minePage(r.params.slug);
+                break;
+            case 'coin':
+                page = coinPage(r.params.mint);
+                break;
+            case 'launch':
+                page = launchPage();
+                break;
+            case 'ledger':
+                page = ledgerPage();
+                break;
+            case 'link':
+                page = linkPage();
+                break;
+            case 'docs':
+                page = docsPage();
+                break;
+            default: page = notFoundPage();
+        }
+        main.replaceChildren(page);
+        const c = r.name === 'coin' ? d.coin(r.params.mint) : undefined;
+        document.title = c ? `$${c.ticker} · ${BRAND.name}` : TITLES[r.name] ? `${TITLES[r.name]} · ${BRAND.name}` : BRAND.name;
+        scrollTo({ top: 0 });
+        observeReveals(main);
+        bindPointerEffects(main);
+        // Anything already in view on arrival reveals at once; late-added rows handle themselves.
+        requestAnimationFrame(() => observeReveals(main));
+    });
+}
+boot();
+
+})();
+</script>

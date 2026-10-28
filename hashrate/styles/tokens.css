@@ -1,0 +1,104 @@
+/* Rig design tokens — "a deep mine at night". Dark first; light follows the OS or the toggle. */
+:root {
+  --bg: #07090c;
+  --bg-2: #0b0e13;
+  --surface: #10141a;
+  --surface-2: #161b23;
+  --line: #1f2630;
+  --line-2: #2b3542;
+  --fg: #e8edf3;
+  --muted: #8b97a8;
+  --faint: #5b6676;
+  --accent: #5ad1ff;
+  --accent-ink: #04111a;
+  --gold: #f2c14e;
+  --gold-ink: #1a1304;
+  --up: #3ee58f;
+  --down: #ff5470;
+  --warn: #e3b341;
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 28px color-mix(in srgb, var(--accent) 22%, transparent);
+  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  --inner-top: inset 0 1px 0 rgba(255, 255, 255, .05);
+
+  /* mine identity colors — chips, glyphs, LEDs, headers; never money */
+  --m-ltc-doge: #aebccc;
+  --m-zec: #e6e15a;
+  --m-kas: #49eacb;
+  --m-btc: #7b9cff;
+  --m-xmr: #b48cff;
+
+  --display: "Archivo", "Archivo Fallback", "Helvetica Neue", Arial, sans-serif;
+  --body: "Archivo", "Archivo Fallback", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, Menlo, Consolas, monospace;
+
+  --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-20: 20px; --fs-28: 28px; --fs-40: 40px; --fs-64: 64px; --fs-96: 96px;
+
+  --r-sm: 8px;
+  --r: 12px;
+  --d-1: 160ms; --d-2: 240ms; --d-3: 400ms; --d-4: 700ms;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --rise: 12px;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f6f9;
+  --bg-2: #eceff4;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --line: #dfe4ea;
+  --line-2: #c9d1da;
+  --fg: #0c1118;
+  --muted: #4f5b6b;
+  --faint: #7d8899;
+  --accent: #0a84c6;
+  --accent-ink: #ffffff;
+  --gold: #a87a12;
+  --gold-ink: #ffffff;
+  --up: #0f8a4f;
+  --down: #c8233f;
+  --warn: #8a6300;
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 24px color-mix(in srgb, var(--accent) 16%, transparent);
+  --shadow: 0 8px 24px rgba(20, 30, 45, .08);
+  --inner-top: inset 0 1px 0 rgba(255, 255, 255, .9);
+  --m-ltc-doge: #5f6f80;
+  --m-zec: #8f8a00;
+  --m-kas: #0f8f7c;
+  --m-btc: #3457d5;
+  --m-xmr: #7a4fd6;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f6f9;
+    --bg-2: #eceff4;
+    --surface: #ffffff;
+    --surface-2: #f3f5f8;
+    --line: #dfe4ea;
+    --line-2: #c9d1da;
+    --fg: #0c1118;
+    --muted: #4f5b6b;
+    --faint: #7d8899;
+    --accent: #0a84c6;
+    --accent-ink: #ffffff;
+    --gold: #a87a12;
+    --gold-ink: #ffffff;
+    --up: #0f8a4f;
+    --down: #c8233f;
+    --warn: #8a6300;
+    --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 24px color-mix(in srgb, var(--accent) 16%, transparent);
+    --shadow: 0 8px 24px rgba(20, 30, 45, .08);
+    --inner-top: inset 0 1px 0 rgba(255, 255, 255, .9);
+    --m-ltc-doge: #5f6f80;
+    --m-zec: #8f8a00;
+    --m-kas: #0f8f7c;
+    --m-btc: #3457d5;
+    --m-xmr: #7a4fd6;
+    color-scheme: light;
+  }
+}
+
+/* Metric-matched fallbacks so the font swap doesn't move the layout. */
+@font-face { font-family: "Archivo Fallback"; src: local("Arial"); size-adjust: 97%; ascent-override: 92%; descent-override: 22%; }
+@font-face { font-family: "JetBrains Mono Fallback"; src: local("Menlo"), local("Consolas"), local("Courier New"); size-adjust: 103%; }

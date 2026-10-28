@@ -4,402 +4,286 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Drip</title>
-<meta name="description" content="Drip is a time-weighted buy tool for Solana. Split one order into small scheduled buys so your entry follows the market instead of moving it.">
+<meta name="description" content="Drip buys any Solana token slowly for you: one order, split into small buys over time, for a better average price.">
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta property="og:title" content="Drip — Time-weighted buys for Solana">
-<meta property="og:description" content="Split one order into small scheduled buys. One approval. Settles to your wallet.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23083d36'/%3E%3Cpath d='M16 6c-3 4.6-6.2 8-6.2 11.6a6.2 6.2 0 0 0 12.4 0C22.2 14 19 10.6 16 6z' fill='%2353e3c6'/%3E%3C/svg%3E">
+<meta property="og:title" content="Drip — Buy slowly. Pay less.">
+<meta property="og:description" content="Split one buy into small buys over time. One approval. Settles to your wallet.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232b5cff'/%3E%3Cpath d='M16 6c-3 4.6-6.2 8-6.2 11.6a6.2 6.2 0 0 0 12.4 0C22.2 14 19 10.6 16 6z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: official fintech product page. Nav → split hero (headline, sub, trust row | order ticket card) → spec strip → execution comparison table + chart → feature grid → execution timeline → security model → FAQ → CTA → multi-column footer. Light-first with full dark theme. */
+/* Layout: app-first, single centered column. Minimal nav → one-line headline → the order card (fill-in-the-sentence form) → three tiny steps → one comparison → short FAQ → one-line footer. Calm blue on soft paper; matching dark theme. */
 :root{
-  --bg:#fbfcfc; --bg-2:#f3f6f6; --surface:#ffffff; --surface-2:#f7f9f9; --line:#e3e9e8; --line-2:#d2dbda;
-  --fg:#0a1615; --fg-2:#24332f; --muted:#5d6e6b; --dim:#8a9a97;
-  --accent:#0b8f7a; --accent-strong:#06705f; --accent-soft:#e3f5f1; --accent-ink:#ffffff; --brand:#083d36; --brand-2:#53e3c6;
-  --red:#c93a4e; --red-soft:#fbeaec; --amber:#a86a12; --amber-soft:#fbf1df;
-  --shadow-sm:0 1px 2px rgba(10,22,21,.06);
-  --shadow:0 1px 2px rgba(10,22,21,.04),0 12px 32px -8px rgba(10,22,21,.12);
-  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --bg:#f6f7fb; --surface:#ffffff; --soft:#f1f3f9; --line:#e6e9f2; --line-2:#d6dbe8;
+  --fg:#0e1324; --muted:#5b6478; --dim:#9099ad;
+  --accent:#2b5cff; --accent-2:#1f47d6; --accent-soft:#eaf0ff; --on-accent:#ffffff;
+  --good:#11a36b; --bad:#d6455a; --bad-soft:#fdecee; --warn:#a86a12; --warn-soft:#fbf1df;
+  --shadow:0 1px 2px rgba(14,19,36,.04),0 20px 50px -20px rgba(14,19,36,.18);
+  --sans:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
   --mono:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#070b0b; --bg-2:#0b1111; --surface:#0e1515; --surface-2:#121b1a; --line:#1c2726; --line-2:#283634;
-  --fg:#edf3f2; --fg-2:#cfdad8; --muted:#8fa19e; --dim:#62736f;
-  --accent:#3fd9bb; --accent-strong:#6ae6cd; --accent-soft:#0f2d28; --accent-ink:#04201b; --brand:#0f2d28; --brand-2:#53e3c6;
-  --red:#ff7d8c; --red-soft:#33151a; --amber:#f0b45a; --amber-soft:#2d2110;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 16px 40px -10px rgba(0,0,0,.6); color-scheme:dark}}
+  --bg:#0a0c14; --surface:#12151f; --soft:#181c28; --line:#222736; --line-2:#2e3446;
+  --fg:#eef1f8; --muted:#9aa3b8; --dim:#677089;
+  --accent:#5b82ff; --accent-2:#7d9cff; --accent-soft:#1a2347; --on-accent:#ffffff;
+  --good:#3ccf92; --bad:#ff7d8c; --bad-soft:#341820; --warn:#f0b45a; --warn-soft:#2d2110;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 24px 60px -20px rgba(0,0,0,.7); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#070b0b; --bg-2:#0b1111; --surface:#0e1515; --surface-2:#121b1a; --line:#1c2726; --line-2:#283634;
-  --fg:#edf3f2; --fg-2:#cfdad8; --muted:#8fa19e; --dim:#62736f;
-  --accent:#3fd9bb; --accent-strong:#6ae6cd; --accent-soft:#0f2d28; --accent-ink:#04201b; --brand:#0f2d28; --brand-2:#53e3c6;
-  --red:#ff7d8c; --red-soft:#33151a; --amber:#f0b45a; --amber-soft:#2d2110;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 16px 40px -10px rgba(0,0,0,.6); color-scheme:dark}
+  --bg:#0a0c14; --surface:#12151f; --soft:#181c28; --line:#222736; --line-2:#2e3446;
+  --fg:#eef1f8; --muted:#9aa3b8; --dim:#677089;
+  --accent:#5b82ff; --accent-2:#7d9cff; --accent-soft:#1a2347; --on-accent:#ffffff;
+  --good:#3ccf92; --bad:#ff7d8c; --bad-soft:#341820; --warn:#f0b45a; --warn-soft:#2d2110;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 24px 60px -20px rgba(0,0,0,.7); color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"ss01","cv11"}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
-.wrap{max-width:1160px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-h1,h2,h3,h4{margin:0;font-weight:600;text-wrap:balance;color:var(--fg)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.03em;text-wrap:balance}
 p{margin:0}
 a{color:inherit}
 button{font:inherit;color:inherit}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--accent-strong);letter-spacing:0}
-.kicker .pill{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent-strong);border-radius:6px;padding:3px 7px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
 
-/* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid transparent;font-weight:500;font-size:15px;letter-spacing:-.005em;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s,box-shadow .15s,color .15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid transparent;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s,transform .1s;white-space:nowrap}
+.btn:active:not([disabled]){transform:scale(.98)}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
-.btn-primary{background:var(--fg);color:var(--bg)}
-.btn-primary:hover:not([disabled]){background:var(--fg-2)}
-.btn-accent{background:var(--accent);color:var(--accent-ink)}
-.btn-accent:hover:not([disabled]){background:var(--accent-strong)}
-.btn-line{background:var(--surface);border-color:var(--line-2);color:var(--fg)}
-.btn-line:hover:not([disabled]){border-color:var(--dim)}
-.btn-danger{background:var(--surface);border-color:var(--line-2);color:var(--red)}
-.btn-danger:hover{border-color:var(--red)}
-.btn-block{width:100%;min-height:50px;font-size:16px}
-.btn-sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn-accent{background:var(--accent);color:var(--on-accent)}
+.btn-accent:hover:not([disabled]){background:var(--accent-2)}
+.btn-ghost{background:var(--surface);border-color:var(--line-2);color:var(--fg)}
+.btn-ghost:hover:not([disabled]){border-color:var(--dim)}
+.btn-danger{background:var(--surface);border-color:var(--line-2);color:var(--bad)}
+.btn-big{width:100%;min-height:56px;font-size:17px;border-radius:14px}
+.btn-sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:9px;font-weight:500}
 .btn svg{width:16px;height:16px}
 
 /* nav */
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font-weight:600;font-size:18px;letter-spacing:-.02em}
-.mark{width:30px;height:30px;flex:none}
-.nav-links{display:flex;align-items:center;gap:4px}
-.nav-links a.t{color:var(--muted);text-decoration:none;font-size:14px;padding:8px 12px;border-radius:8px}
-.nav-links a.t:hover{color:var(--fg);background:var(--bg-2)}
-.nav-links .btn{margin-left:8px}
-.x-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:9px;border:1px solid var(--line-2);color:var(--fg);text-decoration:none;margin-left:6px;transition:border-color .15s,background .15s}
-.x-btn:hover{border-color:var(--dim);background:var(--bg-2)}
-.x-btn svg{width:16px;height:16px}
-.x-row{display:inline-flex;align-items:center;gap:8px}
-.x-row svg{width:14px;height:14px}
-@media (max-width:760px){.nav-links a.t{display:none}}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:19px;letter-spacing:-.02em}
+.brand svg{width:30px;height:30px}
+.nav-r{display:flex;align-items:center;gap:8px}
+.icon-btn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:11px;border:1px solid var(--line-2);background:var(--surface);color:var(--fg);text-decoration:none}
+.icon-btn:hover{border-color:var(--dim)}
+.icon-btn svg{width:16px;height:16px}
+#navConnect{min-height:40px;border-radius:11px;font-size:14px}
 
 /* hero */
-.hero{position:relative;padding-block:72px 88px;overflow:hidden;isolation:isolate}
-.hero-bg{position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;
-  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 70% 30%,#000 10%,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 70% 30%,#000 10%,transparent 75%);opacity:.7}
-.hero-glow{position:absolute;z-index:-1;right:-10%;top:-20%;width:60%;height:90%;background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 16%,transparent),transparent);pointer-events:none}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:64px;align-items:center}
-@media (max-width:960px){.hero-grid{grid-template-columns:1fr;gap:44px}}
-.pitch{min-width:0}
-.pitch h1{font-size:clamp(40px,5.6vw,66px);line-height:1.04;letter-spacing:-.04em;margin-top:20px;max-width:13ch}
-.pitch h1 .hl{color:var(--accent)}
-.pitch .lede{font-size:clamp(17px,1.6vw,19px);line-height:1.6;color:var(--muted);margin-top:22px;max-width:46ch}
-.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
-.trust{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);max-width:520px}
-.trust div{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
-.trust svg{width:16px;height:16px;color:var(--accent);flex:none}
+.hero{text-align:center;padding-block:36px 24px}
+.hero h1{font-size:clamp(36px,6vw,60px);line-height:1.04}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);font-size:clamp(16px,1.8vw,19px);margin:14px auto 0;max-width:40ch}
 
-/* order ticket */
-.ticket{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;min-width:0;position:relative}
-.ticket-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
-.tabs{display:flex;gap:4px;background:var(--bg-2);border-radius:9px;padding:3px}
-.tabs span{font-size:13px;font-weight:500;padding:5px 12px;border-radius:7px;color:var(--muted)}
-.tabs span.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow-sm)}
-.wallet-pill{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+/* card */
+.card-zone{display:flex;justify-content:center;padding-block:28px 72px}
+.card{width:100%;max-width:480px;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 20px 0}
+.card-head h2{font-size:15px;letter-spacing:-.01em}
+.wallet-pill{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--soft);border-radius:999px;padding:5px 10px}
 .wallet-pill i{width:7px;height:7px;border-radius:50%;background:var(--dim)}
-.wallet-pill.on i{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.ticket-body{padding:18px;display:grid;gap:14px}
-.box{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px 14px;transition:border-color .15s}
-.box:focus-within{border-color:var(--accent)}
-.box-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-bottom:6px}
-.box input,.box select{all:unset;box-sizing:border-box;width:100%;font-family:var(--mono);font-size:15px;color:var(--fg);min-height:28px}
-.box input::placeholder{color:var(--dim)}
-.amt-row{display:flex;align-items:center;gap:10px}
-.amt-row input{font-size:26px;font-weight:500;font-family:var(--sans);letter-spacing:-.02em;min-width:0;flex:1}
-.token-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 10px 4px 5px;font-size:14px;font-weight:500;flex:none}
-.token-chip i{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#9945ff,#14f195);display:block}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg-2);border-radius:10px;padding:3px}
-.seg button{min-height:36px;border:0;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow-sm)}
-.coin{display:flex;align-items:center;gap:12px;min-width:0}
-.coin img,.coin .ph{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;background:var(--bg-2);border:1px solid var(--line)}
+.wallet-pill.on i{background:var(--good)}
+.card-body{padding:16px 20px 20px;display:grid;gap:12px}
+
+/* sentence form */
+.sent{background:var(--soft);border-radius:18px;padding:6px}
+.line{display:grid;grid-template-columns:64px 1fr;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;transition:background .15s}
+.line+.line{border-top:1px solid var(--line)}
+.line:focus-within{background:var(--surface)}
+.line>label,.line>span.w{font-size:15px;color:var(--muted);font-weight:500}
+.line input{all:unset;box-sizing:border-box;width:100%;min-width:0;color:var(--fg)}
+.line input::placeholder{color:var(--dim)}
+.amt{display:flex;align-items:baseline;gap:8px;min-width:0}
+.amt input{font-size:30px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.amt b{font-size:17px;font-weight:600;color:var(--muted)}
+.bal{grid-column:2;font-size:12px;color:var(--dim);font-family:var(--mono);margin-top:-2px}
+#mint{font-family:var(--mono);font-size:14px;min-height:28px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pills button{min-height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);transition:all .15s}
+.pills button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.coin{display:flex;align-items:center;gap:10px;min-width:0}
+.coin img,.coin .ph{width:32px;height:32px;border-radius:50%;flex:none;object-fit:cover;background:var(--soft);border:1px solid var(--line)}
 .coin .meta{min-width:0;flex:1}
 .coin .name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coin .sub{font-family:var(--mono);font-size:12px;color:var(--muted)}
-.coin-box{border:1px solid var(--line);border-radius:12px;padding:10px 12px;animation:in .3s ease both}
-.summary{border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.summary .r{display:flex;justify-content:space-between;gap:12px;padding:9px 14px;font-size:13px;border-bottom:1px solid var(--line)}
-.summary .r:last-child{border-bottom:0;background:var(--surface-2);font-weight:500}
-.summary .r span:first-child{color:var(--muted)}
-.summary .r span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
-details.adv summary{cursor:pointer;font-size:13px;color:var(--muted);list-style:none;display:flex;align-items:center;gap:6px;min-height:22px}
+.coin-box{border:1px solid var(--line);border-radius:14px;padding:10px 12px;animation:rise .3s ease both}
+
+.summary{display:flex;gap:12px;align-items:flex-start;padding:4px 4px 0;font-size:15px;color:var(--muted);line-height:1.5}
+.summary svg{width:20px;height:20px;color:var(--accent);flex:none;margin-top:1px}
+.summary strong{color:var(--fg);font-weight:600}
+details.adv summary{cursor:pointer;font-size:13px;color:var(--dim);list-style:none;text-align:center;padding:2px}
 details.adv summary::-webkit-details-marker{display:none}
-details.adv summary svg{width:14px;height:14px;transition:transform .2s}
-details.adv[open] summary svg{transform:rotate(90deg)}
-details.adv .adv-body{display:grid;gap:10px;margin-top:10px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.msg{font-size:13px;border-radius:10px;padding:10px 12px;line-height:1.5}
-.msg.err{background:var(--red-soft);color:var(--red)}
-.msg.warn{background:var(--amber-soft);color:var(--amber)}
-.msg.ok{background:var(--accent-soft);color:var(--accent-strong)}
-.ticket-foot{padding:12px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+details.adv summary:hover{color:var(--muted)}
+.adv-body{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.adv-body .full{grid-column:1/-1}
+.mini{background:var(--soft);border-radius:12px;padding:10px 12px;display:grid;gap:4px}
+.mini label{font-size:12px;color:var(--muted)}
+.mini input,.mini select{all:unset;box-sizing:border-box;width:100%;font-family:var(--mono);font-size:14px;color:var(--fg);min-height:22px}
+.msg{font-size:14px;border-radius:12px;padding:10px 12px;line-height:1.45}
+.msg.err{background:var(--bad-soft);color:var(--bad)}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.msg.ok{background:var(--accent-soft);color:var(--accent-2)}
 
 /* running */
-.run-top{display:flex;gap:18px;align-items:center}
-.ring{position:relative;width:104px;height:104px;flex:none}
-.ring svg{width:104px;height:104px;transform:rotate(-90deg)}
+.run-top{display:flex;gap:18px;align-items:center;padding:4px 0}
+.ring{position:relative;width:108px;height:108px;flex:none}
+.ring svg{width:108px;height:108px;transform:rotate(-90deg)}
 .ring .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
-.ring .center b{font-family:var(--mono);font-size:22px;font-weight:500;display:block;line-height:1.1}
-.ring .center small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;flex:1;min-width:0}
+.ring .center b{font-size:24px;font-weight:600;display:block;line-height:1.1;font-variant-numeric:tabular-nums}
+.ring .center small{font-size:12px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;flex:1;min-width:0}
 .stats div{min-width:0}
 .stats small{display:block;font-size:12px;color:var(--muted)}
-.stats span{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-.status-line{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500}
-.status-line i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite}
-.status-line.paused i{background:var(--amber);animation:none}
+.stats span{font-family:var(--mono);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.status-line{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.status-line i{width:8px;height:8px;border-radius:50%;background:var(--good);animation:pulse 1.5s infinite}
+.status-line.paused i{background:var(--warn);animation:none}
 .status-line.done i{animation:none}
-@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
-.log{max-height:196px;overflow:auto;border:1px solid var(--line);border-radius:12px}
-.log-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:9px 12px;font-size:13px;border-bottom:1px solid var(--line);align-items:center;animation:in .3s ease both}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
+.log{max-height:190px;overflow:auto;background:var(--soft);border-radius:14px}
+.log-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:10px 12px;font-size:14px;border-bottom:1px solid var(--line);align-items:center;animation:rise .3s ease both}
 .log-row:last-child{border-bottom:0}
-.log-row .s{width:7px;height:7px;border-radius:50%;background:var(--accent)}
-.log-row.fail .s{background:var(--red)}
+.log-row .s{width:7px;height:7px;border-radius:50%;background:var(--good)}
+.log-row.fail .s{background:var(--bad)}
 .log-row a,.log-row .tm{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
-.log-row a:hover{color:var(--accent-strong)}
-.log-empty{padding:14px;font-size:13px;color:var(--muted)}
+.log-row a:hover{color:var(--accent)}
+.log-empty{padding:14px;font-size:14px;color:var(--muted)}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap}
 .btn-row .btn{flex:1}
-.dw{border-top:1px solid var(--line);padding:12px 18px;background:var(--surface-2);font-size:12px;color:var(--muted);display:grid;gap:10px}
+.dw{border-top:1px solid var(--line);padding:12px 20px;font-size:12px;color:var(--muted);display:grid;gap:10px}
 .dw-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .dw code{font-family:var(--mono);color:var(--fg)}
-.keybox{font-family:var(--mono);font-size:12px;word-break:break-all;background:var(--surface);border:1px solid var(--line-2);border-radius:10px;padding:10px;color:var(--fg)}
-@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.keybox{font-family:var(--mono);font-size:12px;word-break:break-all;background:var(--soft);border-radius:10px;padding:10px;color:var(--fg)}
+.card-foot{text-align:center;font-size:12px;color:var(--dim);padding:0 20px 16px}
 
-/* spec strip */
-.specs{border-block:1px solid var(--line);background:var(--surface)}
-.specs .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
-.spec{padding:26px 24px;border-left:1px solid var(--line)}
-.spec:first-child{border-left:0;padding-left:0}
-.spec b{display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.spec span{font-size:14px;color:var(--muted)}
-@media (max-width:820px){.specs .wrap{grid-template-columns:1fr 1fr}.spec{padding:20px 16px}.spec:nth-child(3){border-left:0;padding-left:0}.spec:nth-child(n+3){border-top:1px solid var(--line)}}
+/* below the fold */
+.block{padding-block:56px;border-top:1px solid var(--line)}
+.block h2{font-size:clamp(26px,3.4vw,34px);text-align:center}
+.block .sub{text-align:center;color:var(--muted);margin:10px auto 0;max-width:46ch}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+@media (max-width:760px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:8px;align-content:start}
+.step .n{width:32px;height:32px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:600;font-size:15px}
+.step h3{font-size:18px;margin-top:6px}
+.step p{color:var(--muted);font-size:15px}
 
-/* sections */
-section{padding-block:96px}
-section+section{border-top:1px solid var(--line)}
-.sec-head{max-width:640px;display:grid;gap:14px;margin-bottom:48px}
-.sec-head h2{font-size:clamp(30px,3.8vw,44px);line-height:1.08;letter-spacing:-.035em}
-.sec-head p{color:var(--muted);font-size:17px;max-width:56ch}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px;max-width:760px;margin-inline:auto}
+@media (max-width:620px){.vs{grid-template-columns:1fr}}
+.vs-c{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:6px}
+.vs-c small{font-size:14px;color:var(--muted);font-weight:500}
+.vs-c b{font-size:44px;font-weight:600;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums}
+.vs-c.bad b{color:var(--bad)}.vs-c.good b{color:var(--good)}
+.vs-c p{font-size:14px;color:var(--muted)}
+.vs-c svg{width:100%;height:56px;margin-top:8px}
+.fine{text-align:center;font-size:13px;color:var(--dim);margin-top:16px}
 
-/* comparison */
-.cmp{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:stretch}
-@media (max-width:900px){.cmp{grid-template-columns:1fr}}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;min-width:0}
-.chart-panel{padding:20px 20px 12px}
-.chart-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:8px}
-.chart-legend span{display:inline-flex;align-items:center;gap:8px}
-.chart-legend i{width:14px;height:3px;border-radius:2px;display:block}
-.chart-panel svg{width:100%;height:auto;display:block}
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;background:var(--surface-2)}
-th:first-child{border-top-left-radius:16px}th:last-child{border-top-right-radius:16px}
-tr:last-child td{border-bottom:0}
-td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.good{color:var(--accent-strong)}.bad{color:var(--red)}
-.foot-note{font-size:13px;color:var(--dim);margin-top:16px}
-.line-ape{stroke-dasharray:900;stroke-dashoffset:900;animation:draw 2.4s .2s cubic-bezier(.4,0,.2,1) forwards}
-.line-drip{stroke-dasharray:900;stroke-dashoffset:900;animation:draw 3.2s .6s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes draw{to{stroke-dashoffset:0}}
-
-/* features */
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-@media (max-width:900px){.features{grid-template-columns:1fr 1fr}}
-@media (max-width:560px){.features{grid-template-columns:1fr}}
-.feat{background:var(--surface);padding:28px 26px;display:grid;gap:10px;align-content:start;transition:background .2s}
-.feat:hover{background:var(--surface-2)}
-.ico{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;margin-bottom:6px}
-.ico svg{width:20px;height:20px}
-.feat h3{font-size:17px;letter-spacing:-.015em}
-.feat p{color:var(--muted);font-size:15px}
-
-/* timeline */
-.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;position:relative}
-.timeline::before{content:"";position:absolute;left:0;right:0;top:15px;height:1px;background:var(--line-2)}
-.timeline::after{content:"";position:absolute;left:0;top:15px;height:1px;width:100%;background:linear-gradient(90deg,var(--accent),transparent);transform-origin:left;animation:grow 2.4s ease-out both}
-@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@media (max-width:900px){.timeline{grid-template-columns:1fr 1fr;row-gap:36px}.timeline::before,.timeline::after{display:none}}
-@media (max-width:520px){.timeline{grid-template-columns:1fr}}
-.tl{display:grid;gap:10px;align-content:start;position:relative}
-.tl .dot{width:31px;height:31px;border-radius:50%;background:var(--surface);border:1px solid var(--line-2);display:grid;place-items:center;font-family:var(--mono);font-size:13px;color:var(--accent-strong);position:relative;z-index:1}
-.tl h3{font-size:17px;margin-top:6px}
-.tl p{color:var(--muted);font-size:15px}
-
-/* security */
-.sec-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
-@media (max-width:900px){.sec-grid{grid-template-columns:1fr}}
-.checks{display:grid;gap:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
-.check{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}
-.check:last-child{border-bottom:0}
-.check svg{width:20px;height:20px;color:var(--accent);margin-top:2px}
-.check h4{font-size:15px}
-.check p{color:var(--muted);font-size:14px;margin-top:2px}
-.flow{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:22px}
-.flow svg{width:100%;height:auto;display:block}
-
-/* faq */
-.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:start}
-@media (max-width:900px){.faq-grid{grid-template-columns:1fr;gap:8px}}
-.faq details{border-bottom:1px solid var(--line);padding-block:18px}
-.faq details:first-child{border-top:1px solid var(--line)}
-.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;font-weight:500;font-size:16px}
+.faq{max-width:680px;margin:28px auto 0}
+.faq details{border-bottom:1px solid var(--line);padding-block:16px}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;font-weight:600;font-size:16px}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary svg{width:18px;height:18px;color:var(--muted);transition:transform .2s;flex:none}
-.faq details[open] summary svg{transform:rotate(45deg)}
-.faq p{margin-top:10px;color:var(--muted);font-size:15px;max-width:62ch}
+.faq summary::after{content:"+";font-size:20px;color:var(--dim);font-weight:400;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{margin-top:8px;color:var(--muted);font-size:15px}
 
-/* cta */
-.cta{position:relative;overflow:hidden;border-radius:24px;background:var(--brand);color:#eafaf6;padding:72px 32px;text-align:center;isolation:isolate}
-.cta::before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at center,#000,transparent 70%);mask-image:radial-gradient(ellipse at center,#000,transparent 70%)}
-.cta h2{color:#fff;font-size:clamp(30px,4.4vw,48px);letter-spacing:-.035em;line-height:1.08;max-width:18ch;margin:0 auto}
-.cta p{color:#a9d8cf;margin:16px auto 30px;max-width:46ch;font-size:17px}
-.cta .btn-cta{background:#53e3c6;color:#04201b}
-.cta .btn-cta:hover{background:#7aeed6}
+footer{border-top:1px solid var(--line);padding-block:24px 36px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+footer a{text-decoration:none}footer a:hover{color:var(--fg)}
+.x-row{display:inline-flex;align-items:center;gap:6px}.x-row svg{width:13px;height:13px}
 
-/* footer */
-footer{border-top:1px solid var(--line);padding-block:56px 40px;font-size:14px;color:var(--muted)}
-.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
-@media (max-width:760px){.foot-grid{grid-template-columns:1fr 1fr}}
-.foot-grid h4{font-size:13px;font-weight:500;color:var(--fg);margin-bottom:12px}
-.foot-grid a{display:block;text-decoration:none;color:var(--muted);padding-block:4px}
-.foot-grid a:hover{color:var(--fg)}
-.foot-ca{font-family:var(--mono);font-size:12px;margin-top:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;display:inline-block}
-.legal{margin-top:40px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--dim)}
-
-.reveal{animation:in .7s cubic-bezier(.2,.7,.2,1) both}
-.d1{animation-delay:.06s}.d2{animation-delay:.12s}.d3{animation-delay:.18s}.d4{animation-delay:.24s}.d5{animation-delay:.3s}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:10px;font-size:14px;z-index:70;max-width:calc(100% - 32px);box-shadow:var(--shadow);animation:in .25s ease both}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.line-ape,.line-drip{stroke-dashoffset:0}html{scroll-behavior:auto}}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:12px;font-size:14px;z-index:70;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+@media (max-width:420px){.line{grid-template-columns:54px 1fr;padding:12px 10px}.amt input{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-check" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.2l2.4 2.3 4.6-4.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-chev" viewBox="0 0 20 20"><path d="M7.5 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-split" viewBox="0 0 24 24"><path d="M4 12h5m0 0 4-6h7M9 12l4 6h7M13 12h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 6h7a3 3 0 0 1 0 6h-4a3 3 0 0 0 0 6h7" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 9v6M14 9v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z" fill="currentColor"/></symbol>
-  <symbol id="i-mark" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#083d36"/><path d="M16 6c-3 4.6-6.2 8-6.2 11.6a6.2 6.2 0 0 0 12.4 0C22.2 14 19 10.6 16 6z" fill="#53e3c6"/><path d="M12.8 18.2a3.2 3.2 0 0 0 3.2 3" fill="none" stroke="#083d36" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c-2.6 4-5.5 7-5.5 10.3a5.5 5.5 0 0 0 11 0C17.5 10 14.6 7 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mark" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#2b5cff"/><path d="M16 6c-3 4.6-6.2 8-6.2 11.6a6.2 6.2 0 0 0 12.4 0C22.2 14 19 10.6 16 6z" fill="#fff"/></symbol>
 </svg>
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Drip home"><svg class="mark"><use href="#i-mark"/></svg>Drip</a>
-    <div class="nav-links">
-      <a class="t" href="#execution">Execution</a>
-      <a class="t" href="#features">Features</a>
-      <a class="t" href="#security">Security</a>
-      <a class="t" href="#faq">FAQ</a>
-      <a class="x-btn x-link" href="https://x.com/" target="_blank" rel="noopener" aria-label="Drip on X"><svg><use href="#i-x"/></svg></a>
-      <button class="btn btn-primary btn-sm" id="navConnect" type="button">Connect wallet</button>
+    <a class="brand" href="#top"><svg><use href="#i-mark"/></svg>Drip</a>
+    <div class="nav-r">
+      <a class="icon-btn x-link" href="https://x.com/" target="_blank" rel="noopener" aria-label="Drip on X"><svg><use href="#i-x"/></svg></a>
+      <button class="btn btn-accent" id="navConnect" type="button">Connect</button>
     </div>
   </div>
 </nav>
 
-<header class="hero" id="top">
-  <div class="hero-bg" aria-hidden="true"></div>
-  <div class="hero-glow" aria-hidden="true"></div>
-  <div class="wrap hero-grid">
-    <div class="pitch">
-      <div class="kicker reveal"><span class="pill">New</span> Time-weighted buys for Solana</div>
-      <h1 class="reveal d1">Buy over time, <span class="hl">not all at once.</span></h1>
-      <p class="lede reveal d2">Drip splits one order into small buys on a schedule, so your entry follows the market instead of moving it. One approval to start. Everything settles back to your wallet.</p>
-      <div class="hero-ctas reveal d3">
-        <a class="btn btn-accent" href="#ticket">Start a Drip <svg><use href="#i-arrow"/></svg></a>
-        <a class="btn btn-line" href="#execution">How it works</a>
-      </div>
-      <div class="trust reveal d4">
-        <div><svg><use href="#i-check"/></svg>Routed via Jupiter</div>
-        <div><svg><use href="#i-check"/></svg>pump.fun bonding curve supported</div>
-        <div><svg><use href="#i-check"/></svg>No Drip fee</div>
-      </div>
-    </div>
+<main id="top">
+  <header class="hero wrap">
+    <h1>Buy slowly. <span>Pay less.</span></h1>
+    <p>Drip splits your buy into small buys over time, so you don't pump the price on yourself.</p>
+  </header>
 
-    <div class="reveal d2" id="ticket">
-    <div class="ticket" id="app">
-      <div class="ticket-head">
-        <div class="tabs"><span class="on" id="appTitle">Drip order</span></div>
+  <div class="card-zone wrap">
+    <div class="card" id="app">
+      <div class="card-head">
+        <h2 id="appTitle">New order</h2>
         <div class="wallet-pill" id="walletPill"><i></i><span id="walletText">Not connected</span></div>
       </div>
 
-      <div class="ticket-body" id="viewSetup">
-        <div class="box">
-          <div class="box-top"><label for="mint">Token to buy</label><span>Contract address</span></div>
-          <input id="mint" placeholder="Paste token address" autocomplete="off" spellcheck="false">
+      <div class="card-body" id="viewSetup">
+        <div class="sent">
+          <div class="line">
+            <label for="amount">Spend</label>
+            <div class="amt"><input id="amount" type="number" inputmode="decimal" min="0.01" step="0.01" value="1" aria-label="SOL to spend"><b>SOL</b></div>
+            <span class="bal" id="balHint"></span>
+          </div>
+          <div class="line">
+            <label for="mint">On</label>
+            <input id="mint" placeholder="Paste token address" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="line">
+            <span class="w" id="durLabel">Over</span>
+            <div class="pills" role="group" aria-labelledby="durLabel" id="durChips">
+              <button type="button" data-min="10" aria-pressed="false">10 min</button>
+              <button type="button" data-min="30" aria-pressed="true">30 min</button>
+              <button type="button" data-min="60" aria-pressed="false">1 hr</button>
+              <button type="button" data-min="180" aria-pressed="false">3 hr</button>
+            </div>
+          </div>
         </div>
         <div id="coinBox" hidden></div>
-        <div class="box">
-          <div class="box-top"><label for="amount">Total order</label><span id="balHint"></span></div>
-          <div class="amt-row"><input id="amount" type="number" inputmode="decimal" min="0.01" step="0.01" value="1"><span class="token-chip"><i></i>SOL</span></div>
-        </div>
-        <div>
-          <div class="box-top" style="margin-bottom:8px"><span id="durLabel">Duration</span></div>
-          <div class="seg" role="group" aria-labelledby="durLabel" id="durChips">
-            <button type="button" data-min="10" aria-pressed="false">10m</button>
-            <button type="button" data-min="30" aria-pressed="true">30m</button>
-            <button type="button" data-min="60" aria-pressed="false">1h</button>
-            <button type="button" data-min="180" aria-pressed="false">3h</button>
-          </div>
-        </div>
-        <div class="summary" id="plan"></div>
+        <div class="summary"><svg><use href="#i-drop"/></svg><span id="plan"></span></div>
+        <div id="setupMsg" hidden></div>
+        <button class="btn btn-accent btn-big" id="startBtn" type="button">Connect wallet</button>
         <details class="adv">
-          <summary><svg><use href="#i-chev"/></svg>Advanced settings</summary>
+          <summary>Settings</summary>
           <div class="adv-body">
-            <div class="grid2">
-              <div class="box"><div class="box-top"><label for="interval">Frequency</label></div>
-                <select id="interval"><option value="0.5">Every 30 sec</option><option value="1" selected>Every 1 min</option><option value="2">Every 2 min</option><option value="5">Every 5 min</option></select></div>
-              <div class="box"><div class="box-top"><label for="slip">Max slippage</label><span>%</span></div>
-                <input id="slip" type="number" min="1" max="50" step="1" value="15"></div>
-            </div>
-            <div class="box"><div class="box-top"><label for="rpc">Custom RPC</label><span>optional</span></div>
-              <input id="rpc" placeholder="https://solana-rpc.publicnode.com" autocomplete="off" spellcheck="false"></div>
+            <div class="mini"><label for="interval">Buy every</label><select id="interval"><option value="0.5">30 sec</option><option value="1" selected>1 min</option><option value="2">2 min</option><option value="5">5 min</option></select></div>
+            <div class="mini"><label for="slip">Max slippage %</label><input id="slip" type="number" min="1" max="50" step="1" value="15"></div>
+            <div class="mini full"><label for="rpc">Custom RPC (optional)</label><input id="rpc" placeholder="https://solana-rpc.publicnode.com" autocomplete="off" spellcheck="false"></div>
           </div>
         </details>
-        <div id="setupMsg" hidden></div>
-        <button class="btn btn-accent btn-block" id="startBtn" type="button">Connect wallet</button>
       </div>
 
-      <div class="ticket-body" id="viewRun" hidden>
+      <div class="card-body" id="viewRun" hidden>
         <div id="runCoin"></div>
         <div class="run-top">
           <div class="ring" aria-hidden="true">
-            <svg viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="var(--line)" stroke-width="8" fill="none"/><circle id="ringBar" cx="56" cy="56" r="48" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6" style="transition:stroke-dashoffset .6s"/></svg>
-            <div class="center"><div><b id="pct">0%</b><small>filled</small></div></div>
+            <svg viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="var(--soft)" stroke-width="9" fill="none"/><circle id="ringBar" cx="56" cy="56" r="48" stroke="var(--accent)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6" style="transition:stroke-dashoffset .6s"/></svg>
+            <div class="center"><div><b id="pct">0%</b><small>done</small></div></div>
           </div>
           <div class="stats">
             <div><small>Buys</small><span id="sBuys">0 / 0</span></div>
             <div><small>Next buy</small><span id="sNext">–</span></div>
             <div><small>SOL spent</small><span id="sSpent">0</span></div>
-            <div><small>Tokens received</small><span id="sTokens">0</span></div>
+            <div><small>Tokens</small><span id="sTokens">0</span></div>
           </div>
         </div>
-        <div class="status-line" id="statusLine"><i></i><span id="statusText">Executing</span></div>
+        <div class="status-line" id="statusLine"><i></i><span id="statusText">Buying</span></div>
         <div id="runMsg" hidden></div>
-        <div class="log" id="log"><div class="log-empty">The first buy is sent immediately.</div></div>
+        <div class="log" id="log"><div class="log-empty">First buy goes out now.</div></div>
         <div class="btn-row" id="runBtns">
-          <button class="btn btn-line" id="pauseBtn" type="button">Pause</button>
-          <button class="btn btn-danger" id="stopBtn" type="button">End & settle</button>
+          <button class="btn btn-ghost" id="pauseBtn" type="button">Pause</button>
+          <button class="btn btn-danger" id="stopBtn" type="button">Stop & get tokens</button>
         </div>
         <div class="btn-row" id="doneBtns" hidden>
           <button class="btn btn-accent" id="newBtn" type="button">New order</button>
@@ -407,181 +291,65 @@ footer{border-top:1px solid var(--line);padding-block:56px 40px;font-size:14px;c
       </div>
 
       <div class="dw" id="dwBox" hidden>
-        <div class="dw-top"><span>Session wallet <code id="dwAddr"></code></span><span class="mono" id="dwBal"></span></div>
+        <div class="dw-top"><span>Order wallet <code id="dwAddr"></code></span><span class="mono" id="dwBal"></span></div>
         <div class="btn-row">
-          <button class="btn btn-line btn-sm" id="withdrawBtn" type="button">Settle to my wallet</button>
-          <button class="btn btn-line btn-sm" id="exportBtn" type="button">Back up key</button>
+          <button class="btn btn-ghost btn-sm" id="withdrawBtn" type="button">Send all to my wallet</button>
+          <button class="btn btn-ghost btn-sm" id="exportBtn" type="button">Back up key</button>
         </div>
         <div id="keyBox" hidden></div>
       </div>
-      <div class="ticket-foot"><span>Keep this tab open while an order runs.</span><span>Solana mainnet</span></div>
-    </div>
+      <div class="card-foot">Keep this tab open while your order runs.</div>
     </div>
   </div>
-</header>
 
-<div class="specs">
-  <div class="wrap">
-    <div class="spec"><b>1</b><span>approval to start</span></div>
-    <div class="spec"><b>30s–5m</b><span>between buys</span></div>
-    <div class="spec"><b>0%</b><span>Drip fee</span></div>
-    <div class="spec"><b>Auto</b><span>settlement to your wallet</span></div>
-  </div>
-</div>
-
-<section id="execution">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="kicker">Execution</div>
-      <h2>A large market buy pays for its own price impact.</h2>
-      <p>On a thin pump.fun curve, one 5 SOL buy can push the price up before your order even fills. Splitting it lets liquidity recover between each buy.</p>
-    </div>
-    <div class="cmp">
-      <div class="panel chart-panel">
-        <div class="chart-legend"><span><i style="background:var(--red)"></i>Single market buy</span><span><i style="background:var(--accent)"></i>Drip, 30 buys</span></div>
-        <svg viewBox="0 0 520 260" role="img" aria-label="Average entry price over the order: the single buy jumps immediately while Drip rises gradually">
-          <g stroke="var(--line)" stroke-width="1">
-            <line x1="44" y1="30" x2="510" y2="30"/><line x1="44" y1="90" x2="510" y2="90"/><line x1="44" y1="150" x2="510" y2="150"/><line x1="44" y1="210" x2="510" y2="210"/>
-          </g>
-          <g fill="var(--dim)" font-size="11" font-family="Geist Mono,monospace" text-anchor="end">
-            <text x="36" y="34">+12%</text><text x="36" y="94">+8%</text><text x="36" y="154">+4%</text><text x="36" y="214">0%</text>
-          </g>
-          <g fill="var(--dim)" font-size="11" font-family="Geist Mono,monospace" text-anchor="middle">
-            <text x="50" y="236">0m</text><text x="200" y="236">10m</text><text x="355" y="236">20m</text><text x="505" y="236">30m</text>
-          </g>
-          <path class="line-ape" d="M50 210 L62 70 L120 69 L200 68 L280 68 L355 67 L430 67 L505 67" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linejoin="round"/>
-          <path class="line-drip" d="M50 210 C120 205,180 200,240 198 S380 194,505 194" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-          <circle cx="505" cy="67" r="4" fill="var(--red)"/><circle cx="505" cy="194" r="4" fill="var(--accent)"/>
-          <text x="498" y="56" text-anchor="end" fill="var(--red)" font-size="12" font-family="Geist Mono,monospace">+9.4%</text>
-          <text x="498" y="183" text-anchor="end" fill="var(--accent-strong)" font-size="12" font-family="Geist Mono,monospace">+1.1%</text>
-        </svg>
-      </div>
-      <div class="panel tbl-wrap">
-        <table>
-          <thead><tr><th>5 SOL order</th><th>Market buy</th><th>Drip</th></tr></thead>
-          <tbody>
-            <tr><td>Average entry vs. start</td><td class="num bad">+9.4%</td><td class="num good">+1.1%</td></tr>
-            <tr><td>Largest single candle</td><td class="num">5.00 SOL</td><td class="num">0.17 SOL</td></tr>
-            <tr><td>Visible to sniper bots</td><td class="bad">Yes</td><td class="good">Rarely</td></tr>
-            <tr><td>Transactions to sign</td><td class="num">1</td><td class="num">1</td></tr>
-            <tr><td>Time to fill</td><td class="num">Instant</td><td class="num">30 min</td></tr>
-          </tbody>
-        </table>
+  <section class="block">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="sub">Three steps. One approval.</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><h3>Fill in your order</h3><p>How much SOL, which token, and over how long.</p></div>
+        <div class="step"><div class="n">2</div><h3>Approve once</h3><p>Your SOL moves into a fresh order wallet made just for this buy.</p></div>
+        <div class="step"><div class="n">3</div><h3>Drip does the rest</h3><p>It buys a little every minute, then sends all your tokens back to your wallet.</p></div>
       </div>
     </div>
-    <p class="foot-note">Illustrative figures for a 5 SOL order on a ~30k market cap bonding-curve token. Actual results depend on liquidity and market activity.</p>
-  </div>
-</section>
+  </section>
 
-<section id="features">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="kicker">Features</div>
-      <h2>Built for how memecoins actually trade.</h2>
-    </div>
-    <div class="features">
-      <div class="feat"><div class="ico"><svg><use href="#i-split"/></svg></div><h3>Order splitting</h3><p>One order becomes up to 360 equal buys, sized automatically from your amount and duration.</p></div>
-      <div class="feat"><div class="ico"><svg><use href="#i-route"/></svg></div><h3>Best-route execution</h3><p>Each buy is quoted on Jupiter. Tokens still on the pump.fun curve fall back to PumpPortal automatically.</p></div>
-      <div class="feat"><div class="ico"><svg><use href="#i-clock"/></svg></div><h3>Flexible schedule</h3><p>Choose 10 minutes to 3 hours, and a buy every 30 seconds to 5 minutes.</p></div>
-      <div class="feat"><div class="ico"><svg><use href="#i-pause"/></svg></div><h3>Pause or end anytime</h3><p>Pause to wait out a dump, or end early and keep everything that already filled.</p></div>
-      <div class="feat"><div class="ico"><svg><use href="#i-home"/></svg></div><h3>Automatic settlement</h3><p>When the order completes, tokens and unused SOL are sent to your wallet and empty accounts are closed.</p></div>
-      <div class="feat"><div class="ico"><svg><use href="#i-shield"/></svg></div><h3>Retries built in</h3><p>A failed buy is retried. If it keeps failing, that SOL is skipped and returned at settlement.</p></div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="kicker">How it works</div>
-      <h2>Four steps from order to settlement.</h2>
-    </div>
-    <div class="timeline">
-      <div class="tl"><div class="dot">1</div><h3>Configure</h3><p>Connect Phantom, Solflare or Backpack. Enter the token, amount and duration.</p></div>
-      <div class="tl"><div class="dot">2</div><h3>Approve once</h3><p>Fund a session wallet created for this order. This is the only signature you make.</p></div>
-      <div class="tl"><div class="dot">3</div><h3>Execute</h3><p>Drip sends one buy per interval and logs each transaction with a Solscan link.</p></div>
-      <div class="tl"><div class="dot">4</div><h3>Settle</h3><p>Tokens and leftover SOL return to your wallet automatically when the order ends.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="security">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="kicker">Security</div>
-      <h2>Your main wallet never signs a trade.</h2>
-      <p>Drip uses a session wallet that holds only what you fund for the current order.</p>
-    </div>
-    <div class="sec-grid">
-      <div class="checks">
-        <div class="check"><svg><use href="#i-check"/></svg><div><h4>Scoped funding</h4><p>Only the SOL you approve moves to the session wallet. Drip has no access to the rest of your wallet.</p></div></div>
-        <div class="check"><svg><use href="#i-check"/></svg><div><h4>Key stays on your device</h4><p>The session key is created and stored in your browser. It's never sent to a server.</p></div></div>
-        <div class="check"><svg><use href="#i-check"/></svg><div><h4>Exportable and recoverable</h4><p>Back up the key or settle to your wallet at any time, even mid-order.</p></div></div>
-        <div class="check"><svg><use href="#i-check"/></svg><div><h4>On-chain receipts</h4><p>Every buy and the final settlement are standard Solana transactions you can verify on Solscan.</p></div></div>
+  <section class="block">
+    <div class="wrap">
+      <h2>Why buy slowly?</h2>
+      <p class="sub">A big buy pushes the price up before it fills. Small buys don't.</p>
+      <div class="vs">
+        <div class="vs-c bad"><small>Buy 5 SOL at once</small><b>+9.4%</b><p>higher average price</p>
+          <svg viewBox="0 0 200 56" preserveAspectRatio="none" aria-hidden="true"><path d="M0 50 L20 50 L26 8 L200 8" fill="none" stroke="var(--bad)" stroke-width="2.5"/></svg></div>
+        <div class="vs-c good"><small>Drip 5 SOL over 30 min</small><b>+1.1%</b><p>higher average price</p>
+          <svg viewBox="0 0 200 56" preserveAspectRatio="none" aria-hidden="true"><path d="M0 50 C60 47,120 45,200 43" fill="none" stroke="var(--good)" stroke-width="2.5"/></svg></div>
       </div>
-      <div class="flow">
-        <svg viewBox="0 0 420 300" role="img" aria-label="Funds flow: your wallet funds the session wallet, which buys through Jupiter or pump.fun, then settles tokens back to your wallet">
-          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
-          <g font-family="Geist,sans-serif" font-size="13" fill="var(--fg)">
-            <rect x="20" y="24" width="160" height="56" rx="12" fill="var(--surface-2)" stroke="var(--line-2)"/><text x="100" y="49" text-anchor="middle" font-weight="600">Your wallet</text><text x="100" y="67" text-anchor="middle" fill="var(--muted)" font-size="11">Phantom · Solflare</text>
-            <rect x="240" y="24" width="160" height="56" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="320" y="49" text-anchor="middle" font-weight="600">Session wallet</text><text x="320" y="67" text-anchor="middle" fill="var(--muted)" font-size="11">this order only</text>
-            <rect x="240" y="200" width="160" height="56" rx="12" fill="var(--surface-2)" stroke="var(--line-2)"/><text x="320" y="225" text-anchor="middle" font-weight="600">Jupiter / pump.fun</text><text x="320" y="243" text-anchor="middle" fill="var(--muted)" font-size="11">small buys on a timer</text>
-          </g>
-          <g stroke="var(--accent)" stroke-width="1.6" fill="none" marker-end="url(#ah)">
-            <path d="M182 52 H236"/><path d="M335 84 V196"/><path d="M305 196 V84"/><path d="M240 238 C120 238,100 160,100 86"/>
-          </g>
-          <g font-family="Geist Mono,monospace" font-size="11" fill="var(--muted)">
-            <text x="209" y="44" text-anchor="middle">1 · fund</text><text x="343" y="144">2 · buy</text><text x="232" y="144" text-anchor="end">tokens</text><text x="110" y="200">3 · settle</text>
-          </g>
-        </svg>
+      <p class="fine">Example on a ~30k market cap pump.fun coin. Results vary.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <div class="faq">
+        <details><summary>Is my main wallet safe?</summary><p>Yes. Drip never signs anything from your main wallet. It only uses the SOL you approve into the order wallet, and its key stays in your browser.</p></details>
+        <details><summary>Do I have to keep the page open?</summary><p>Yes, buys are sent from this page. If you close it, the order pauses and you can resume when you come back on the same device.</p></details>
+        <details><summary>Which tokens work?</summary><p>Any Solana token with a SOL route on Jupiter, plus pump.fun coins still on the bonding curve.</p></details>
+        <details><summary>What does it cost?</summary><p>Drip is free. You only pay normal Solana network fees, capped at 0.0001 SOL per buy.</p></details>
+        <details><summary>What is $DRIP?</summary><p>The token behind Drip. More features for holders are coming.</p></details>
       </div>
     </div>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="wrap faq-grid">
-    <div class="sec-head" style="margin-bottom:0">
-      <div class="kicker">FAQ</div>
-      <h2>Frequently asked questions</h2>
-    </div>
-    <div class="faq">
-      <details><summary>What is Drip?<svg><use href="#i-plus"/></svg></summary><p>Drip is a time-weighted buy tool (TWAP) for Solana. It turns one order into many smaller buys over a period you choose.</p></details>
-      <details><summary>Do I need to keep the page open?<svg><use href="#i-plus"/></svg></summary><p>Yes. Orders run from your browser. If you close the tab the order pauses, and you can resume it when you return on the same device.</p></details>
-      <details><summary>Which tokens are supported?<svg><use href="#i-plus"/></svg></summary><p>Any SPL token with a SOL route on Jupiter, plus pump.fun tokens still on the bonding curve.</p></details>
-      <details><summary>What does it cost?<svg><use href="#i-plus"/></svg></summary><p>Drip charges no fee. You pay standard Solana network and priority fees, capped at 0.0001 SOL per buy. Buys routed through PumpPortal include their routing fee.</p></details>
-      <details><summary>What happens if a buy fails?<svg><use href="#i-plus"/></svg></summary><p>It's retried after 15 seconds. After three failures that buy is skipped, and its SOL is returned when the order settles.</p></details>
-      <details><summary>What is $DRIP?<svg><use href="#i-plus"/></svg></summary><p>$DRIP is the token behind Drip. Holder features such as scheduled orders and timed sells are planned next.</p></details>
-    </div>
-  </div>
-</section>
-
-<section style="border-top:0;padding-top:16px">
-  <div class="wrap">
-    <div class="cta">
-      <h2>Stop moving the chart against yourself.</h2>
-      <p>Set up a Drip order in under a minute and let it fill on schedule.</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a class="btn btn-cta" href="#ticket">Start a Drip <svg><use href="#i-arrow"/></svg></a>
-        <a class="btn x-link" style="border-color:rgba(255,255,255,.25);color:#fff" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="x-handle">Follow on X</span></a>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
+</main>
 
 <footer>
   <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <a class="brand" href="#top" style="padding:0"><svg class="mark"><use href="#i-mark"/></svg>Drip</a>
-        <p style="margin-top:12px;max-width:30ch">Time-weighted buys for Solana memecoins.</p>
-        <div class="foot-ca">$DRIP · CA launching on pump.fun</div>
-      </div>
-      <div><h4>Product</h4><a href="#ticket">Start an order</a><a href="#execution">Execution</a><a href="#features">Features</a></div>
-      <div><h4>Community</h4><a class="x-link x-row" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="x-handle">Follow on X</span></a><a href="#security">Security</a><a href="#faq">FAQ</a></div>
-      <div><h4>Built on</h4><a href="https://jup.ag" target="_blank" rel="noopener">Jupiter</a><a href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a><a href="https://solana.com" target="_blank" rel="noopener">Solana</a></div>
-    </div>
-    <div class="legal"><span>© 2026 Drip. orch.lol/drip</span><span>Not financial advice. Digital assets are volatile; only use funds you can afford to lose.</span></div>
+    <span>© 2026 Drip · Not financial advice</span>
+    <nav>
+      <a class="x-link x-row" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="x-handle">Follow on X</span></a>
+      <a href="https://jup.ag" target="_blank" rel="noopener">Jupiter</a>
+      <a href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a>
+    </nav>
   </div>
 </footer>
 
@@ -651,7 +419,7 @@ async function walletSend(tx){
   var signed=await provider.signTransaction(tx);var sig2=await c.sendRawTransaction(signed.serialize());await confirmSig(sig2,60000);return sig2;
 }
 
-async function showBal(){if(!owner)return;try{var b=await C().getBalance(owner);$("balHint").textContent="Balance "+fmtSol(b/LAMPORTS)+" SOL";}catch(e){}}
+async function showBal(){if(!owner)return;try{var b=await C().getBalance(owner);$("balHint").textContent="You have "+fmtSol(b/LAMPORTS)+" SOL";}catch(e){}}
 /* ---------- drip wallet ---------- */
 function burner(){if(!S.burner){var k=W.Keypair.generate();S.burner=Array.from(k.secretKey);save();}return W.Keypair.fromSecretKey(Uint8Array.from(S.burner));}
 async function refreshDw(){
@@ -689,16 +457,15 @@ function plan(){
 function durText(m){return m>=60?(m/60)+(m===60?" hour":" hours"):m+" min";}
 function refreshPlan(){
   var p=plan();
-  var who=coin?(coin.symbol?"$"+esc(coin.symbol):"token"):"token";
-  var freq=p.iv<1?"Every 30 sec":p.iv===1?"Every 1 min":"Every "+p.iv+" min";
-  var rows=[["Each buy",fmtSol(p.each)+" SOL → "+who],["Number of buys",String(p.n)],["Frequency",freq],["Duration",durText(durMin)],["Network fees (max)",fmtSol(p.buffer)+" SOL"],["You approve",fmtSol(p.amt+p.buffer)+" SOL"]];
-  $("plan").innerHTML=rows.map(function(r){return '<div class="r"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>';}).join("");
+  var who=coin?(coin.symbol?"$"+esc(coin.symbol):"this token"):"your token";
+  var freq=p.iv<1?"every 30 seconds":p.iv===1?"every minute":"every "+p.iv+" minutes";
+  $("plan").innerHTML='Buys <strong>'+fmtSol(p.each)+' SOL</strong> of '+who+' '+freq+', <strong>'+p.n+' times</strong>. You approve '+fmtSol(p.amt+p.buffer)+' SOL including max network fees; anything unused comes back.';
   var b=$("startBtn");
   if(!owner){b.textContent="Connect wallet";b.disabled=false;return;}
-  if(!coin){b.textContent="Enter a token address";b.disabled=true;return;}
-  if(p.amt<0.01){b.textContent="Minimum order is 0.01 SOL";b.disabled=true;return;}
-  if(p.each<0.001){b.textContent="Order too small for this duration";b.disabled=true;return;}
-  b.textContent="Start order";b.disabled=false;
+  if(!coin){b.textContent="Paste a token address";b.disabled=true;return;}
+  if(p.amt<0.01){b.textContent="Minimum is 0.01 SOL";b.disabled=true;return;}
+  if(p.each<0.001){b.textContent="Too small for this time, pick shorter";b.disabled=true;return;}
+  b.textContent="Start buying";b.disabled=false;
 }
 
 /* ---------- swaps ---------- */
@@ -800,8 +567,8 @@ async function tick(){
 async function finish(){
   var j=S.job;if(!j||j.status==="sending"||j.status==="done")return;
   stopTimer();j.status="sending";save();renderRun();
-  try{await sendHome();j.status="done";showMsg("runMsg","ok","Order settled. Your tokens and unused SOL are in your wallet.");}
-  catch(e){j.status="stopped";showMsg("runMsg","err","Settlement didn't finish ("+(e.message||e)+"). Press Settle to my wallet to retry.");}
+  try{await sendHome();j.status="done";showMsg("runMsg","ok","Done! Your tokens and leftover SOL are in your wallet.");}
+  catch(e){j.status="stopped";showMsg("runMsg","err","Couldn't send your tokens yet ("+(e.message||e)+"). Tap Send all to my wallet to try again.");}
   save();renderRun();refreshDw();
 }
 function renderRun(){
@@ -811,16 +578,16 @@ function renderRun(){
   $("sBuys").textContent=j.done+" / "+j.n;$("sSpent").textContent=fmtSol(j.spent)+" SOL";$("sTokens").textContent=fmtTok(j.tokens||0);
   var sec=Math.max(0,Math.round((j.nextAt-Date.now())/1000));
   $("sNext").textContent=j.status==="running"?(busy?"buying…":sec>0?Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"):"now"):"–";
-  var line=$("statusLine"),txt={running:"Executing",paused:"Paused",sending:"Settling to your wallet…",done:"Order complete",stopped:"Ended, not yet settled"}[j.status]||j.status;
+  var line=$("statusLine"),txt={running:"Buying",paused:"Paused",sending:"Sending tokens to your wallet…",done:"Done",stopped:"Stopped, tokens not sent yet"}[j.status]||j.status;
   line.className="status-line"+(j.status==="paused"||j.status==="stopped"?" paused":j.status==="done"?" done":"");$("statusText").textContent=txt;
   $("pauseBtn").textContent=j.status==="paused"?"Resume":"Pause";
   var active=j.status==="running"||j.status==="paused";
   $("runBtns").hidden=!active;$("doneBtns").hidden=active||j.status==="sending";
-  $("appTitle").textContent=j.status==="done"?"Order complete":"Active order";
+  $("appTitle").textContent=j.status==="done"?"Order done":"Your order";
   if(j.log.length){$("log").innerHTML=j.log.map(function(l){var t=new Date(l.t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"});
-    return '<div class="log-row'+(l.ok?"":" fail")+'"><i class="s"></i><span>'+(l.ok?"Buy "+fmtSol(j.each)+" SOL · "+esc(l.via):"Buy failed · retrying")+'</span>'+(l.ok?'<a target="_blank" rel="noopener" href="https://solscan.io/tx/'+esc(l.sig)+'">'+t+' ↗</a>':'<span class="tm">'+t+'</span>')+'</div>';}).join("");}
+    return '<div class="log-row'+(l.ok?"":" fail")+'"><i class="s"></i><span>'+(l.ok?"Bought "+fmtSol(j.each)+" SOL":"Buy failed, retrying")+'</span>'+(l.ok?'<a target="_blank" rel="noopener" href="https://solscan.io/tx/'+esc(l.sig)+'">'+t+' ↗</a>':'<span class="tm">'+t+'</span>')+'</div>';}).join("");}
 }
-function showView(run){$("viewSetup").hidden=run;$("viewRun").hidden=!run;if(run&&S.job){renderCoin($("runCoin"),S.job.coin);} else $("appTitle").textContent="Drip order";}
+function showView(run){$("viewSetup").hidden=run;$("viewRun").hidden=!run;if(run&&S.job){renderCoin($("runCoin"),S.job.coin);} else $("appTitle").textContent="New order";}
 
 /* ---------- actions ---------- */
 async function start(){
@@ -831,17 +598,17 @@ async function start(){
     var kp=burner(),c=C();
     var have=await c.getBalance(kp.publicKey);var need=Math.ceil((p.amt+p.buffer)*LAMPORTS)-have;
     var mine=await c.getBalance(owner);
-    if(need>0&&mine<need+10000){throw new Error("Insufficient balance. This order needs "+fmtSol((need+10000)/LAMPORTS)+" SOL.");}
+    if(need>0&&mine<need+10000){throw new Error("Not enough SOL. This order needs "+fmtSol((need+10000)/LAMPORTS)+" SOL.");}
     if(need>0){
       var tx=new W.Transaction().add(W.SystemProgram.transfer({fromPubkey:owner,toPubkey:kp.publicKey,lamports:need}));
       b.textContent="Confirming…";await walletSend(tx);
     }
     S.rpc=($("rpc").value||"").trim();
     S.job={mint:coin.mint,coin:coin,owner:owner.toBase58(),n:p.n,each:p.each,iv:p.iv,slip:p.slip,done:0,spent:0,tokens:0,log:[],status:"running",nextAt:0,created:Date.now()};
-    save();$("log").innerHTML='<div class="log-empty">The first buy is sent immediately.</div>';showMsg("runMsg");
+    save();$("log").innerHTML='<div class="log-empty">First buy goes out now.</div>';showMsg("runMsg");
     showView(true);startTimer();refreshDw();toast("Order started");
   }catch(e){
-    var m=String(e.message||e);showMsg("setupMsg","err",/reject|denied|cancel/i.test(m)?"Transfer cancelled. No funds were moved.":/fetch|network/i.test(m)?"Can't reach the Solana network. Check your connection or add a custom RPC under Advanced settings.":m);
+    var m=String(e.message||e);showMsg("setupMsg","err",/reject|denied|cancel/i.test(m)?"You cancelled. Nothing was sent.":/fetch|network/i.test(m)?"Can't reach Solana right now. Check your connection or add a custom RPC in Settings.":m);
     refreshPlan();
   }
 }
@@ -853,13 +620,13 @@ $("stopBtn").onclick=async function(){var j=S.job;if(!j)return;
   this.disabled=true;await finish();this.disabled=false;};
 $("newBtn").onclick=function(){S.job=null;save();showView(false);refreshPlan();showMsg("runMsg");};
 $("withdrawBtn").onclick=async function(){
-  if(S.job&&S.job.status==="running"){toast("End the order first");return;}
+  if(S.job&&S.job.status==="running"){toast("Stop the order first");return;}
   if(!owner){var ok=await connect();if(!ok)return;}
-  this.disabled=true;this.textContent="Settling…";
-  try{await sendHome();toast("Settled to your wallet");}catch(e){toast("Settlement failed: "+(e.message||e));}
-  this.disabled=false;this.textContent="Settle to my wallet";};
+  this.disabled=true;this.textContent="Sending…";
+  try{await sendHome();toast("Sent to your wallet");}catch(e){toast("Couldn't send: "+(e.message||e));}
+  this.disabled=false;this.textContent="Send all to my wallet";};
 $("exportBtn").onclick=function(){var k=$("keyBox");if(!k.hidden){k.hidden=true;this.textContent="Back up key";return;}
-  k.innerHTML='<p style="color:var(--red);margin-bottom:8px">Anyone with this key controls the session wallet. Store it privately. It can be imported into Phantom.</p><div class="keybox">'+b58(Uint8Array.from(S.burner))+'</div>';k.hidden=false;this.textContent="Hide key";};
+  k.innerHTML='<p style="color:var(--red);margin-bottom:8px">Anyone with this key controls the order wallet. Keep it private. You can import it into Phantom.</p><div class="keybox">'+b58(Uint8Array.from(S.burner))+'</div>';k.hidden=false;this.textContent="Hide key";};
 
 $("mint").addEventListener("input",function(){var v=this.value.trim();clearTimeout(lookupT);lookupT=setTimeout(function(){lookup(v);},350);});
 ["amount","interval","slip"].forEach(function(id){$(id).addEventListener("input",refreshPlan);$(id).addEventListener("change",refreshPlan);});
@@ -871,7 +638,7 @@ if(S.rpc)$("rpc").value=S.rpc;
 if(!W){showMsg("setupMsg","err","Couldn't load required scripts. Refresh the page.");}
 if(S.job&&S.job.status!=="done"){
   if(S.job.status==="running"){S.job.status="paused";save();}
-  showView(true);renderRun();showMsg("runMsg","warn","This order paused when the page closed. Connect your wallet and press Resume to continue.");
+  showView(true);renderRun();showMsg("runMsg","warn","Your order paused when the page closed. Connect your wallet and tap Resume.");
 }else if(S.job&&S.job.status==="done"){showView(true);renderRun();}
 refreshPlan();refreshDw();
 // silent reconnect if already trusted

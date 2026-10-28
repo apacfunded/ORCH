@@ -1,0 +1,197 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f6f7fb;font-family:"Hanken Grotesk",Inter,sans-serif;color:#0e1324;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;background:radial-gradient(900px 600px at 85% 10%,rgba(43,92,255,.14),transparent 70%),radial-gradient(700px 500px at 0% 100%,rgba(43,92,255,.08),transparent 70%),#f6f7fb}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(14,19,36,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(14,19,36,.045) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse at 70% 40%,#000 20%,transparent 75%)}
+.top{position:absolute;left:110px;right:110px;top:56px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:16px;font-size:34px;font-weight:700;letter-spacing:-.03em}
+.brand img{width:58px;height:58px;border-radius:16px;box-shadow:0 8px 24px rgba(43,92,255,.3)}
+.url{font-family:"Geist Mono",monospace;font-size:22px;color:#5b6478;background:#fff;border:1px solid #e6e9f2;border-radius:999px;padding:10px 20px}
+.left{position:absolute;left:110px;top:300px;width:620px}
+.step{display:inline-flex;align-items:center;gap:10px;font-size:22px;font-weight:600;color:#2b5cff;background:#eaf0ff;border-radius:999px;padding:9px 18px}
+.left h1{font-size:76px;line-height:1.02;letter-spacing:-.045em;margin:26px 0 0;font-weight:700}
+.left h1 span{color:#2b5cff}
+.left p{font-size:28px;line-height:1.45;color:#5b6478;margin:24px 0 0;max-width:22em}
+.dots{display:flex;gap:10px;margin-top:44px}
+.dots i{width:44px;height:6px;border-radius:3px;background:#dbe1ee;transition:background .4s}
+.dots i.on{background:#2b5cff}
+.swap{transition:opacity .35s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
+.swap.out{opacity:0;transform:translateY(16px)}
+.browser{position:absolute;left:810px;top:150px;width:1000px;height:790px;background:#fff;border-radius:22px;box-shadow:0 2px 4px rgba(14,19,36,.05),0 40px 90px -30px rgba(14,19,36,.35);overflow:hidden;border:1px solid #e3e7f0}
+.bar{height:48px;display:flex;align-items:center;gap:9px;padding:0 18px;border-bottom:1px solid #eceff5;background:#fafbfd}
+.bar b{width:13px;height:13px;border-radius:50%;background:#e1e5ee}
+.bar .addr{margin-left:18px;flex:1;height:30px;border-radius:9px;background:#f0f2f7;display:flex;align-items:center;gap:8px;padding:0 14px;font-family:"Geist Mono",monospace;font-size:15px;color:#5b6478}
+iframe{width:1000px;height:742px;border:0;display:block}
+.cursor{position:absolute;left:1300px;top:700px;width:34px;height:34px;z-index:30;transition:left .8s cubic-bezier(.4,0,.2,1),top .8s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));pointer-events:none}
+.clickfx{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:3px solid #2b5cff;z-index:29;animation:cfx .55s ease-out forwards;pointer-events:none}
+@keyframes cfx{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}
+.caption{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);max-width:1500px;background:rgba(14,19,36,.88);color:#fff;font-size:30px;font-weight:500;line-height:1.35;padding:14px 28px;border-radius:16px;text-align:center;z-index:40;transition:opacity .3s}
+.speed{position:absolute;left:1580px;top:170px;z-index:20;background:#0e1324;color:#fff;font-family:"Geist Mono",monospace;font-size:18px;padding:8px 14px;border-radius:10px;opacity:0;transition:opacity .4s}
+.wallet{position:absolute;left:1370px;top:205px;width:400px;background:#fff;border:1px solid #e3e7f0;border-radius:20px;box-shadow:0 30px 70px -20px rgba(14,19,36,.45);z-index:25;padding:24px;opacity:0;transform:translateY(-14px) scale(.97);transition:all .35s cubic-bezier(.2,.7,.2,1)}
+.wallet.show{opacity:1;transform:none}
+.wallet .wt{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600}
+.wallet .wt i{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#7c5cff,#4f7dff);display:block}
+.wallet .amt{margin-top:22px;font-size:40px;font-weight:700;letter-spacing:-.03em}
+.wallet .sub{font-size:16px;color:#5b6478;margin-top:4px}
+.wallet .row{display:flex;justify-content:space-between;font-size:16px;color:#5b6478;border-top:1px solid #eceff5;margin-top:18px;padding-top:14px}
+.wallet .row span:last-child{font-family:"Geist Mono",monospace;color:#0e1324}
+.wallet .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.wallet .btns div{height:50px;border-radius:13px;display:grid;place-items:center;font-weight:600;font-size:18px}
+.wallet .rej{background:#f1f3f9}.wallet .ok{background:#2b5cff;color:#fff}
+/* intro/outro */
+.cover{position:absolute;inset:0;z-index:50;background:radial-gradient(1100px 700px at 50% 30%,#4f7dff,transparent 70%),linear-gradient(140deg,#2b5cff,#1636b8);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:opacity .6s ease}
+.cover.hide{opacity:0;pointer-events:none}
+.cover img{width:260px;height:260px;border-radius:60px;box-shadow:0 30px 80px rgba(8,20,90,.5)}
+.cover h2{font-size:120px;font-weight:700;letter-spacing:-.05em;margin:34px 0 0;line-height:1}
+.cover p{font-size:40px;color:#dbe5ff;margin:18px 0 0;font-weight:500}
+.cover .u{margin-top:30px;font-family:"Geist Mono",monospace;font-size:30px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:12px 26px;border-radius:999px}
+.pop{animation:pop .9s cubic-bezier(.2,1.3,.3,1) both}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.ripple{position:absolute;left:50%;top:44%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;border:3px solid rgba(255,255,255,.35);animation:rip 3s ease-out infinite}
+.ripple.b{animation-delay:1s}.ripple.c{animation-delay:2s}
+@keyframes rip{from{transform:scale(.6);opacity:.8}to{transform:scale(3.2);opacity:0}}
+</style></head>
+<body>
+<div id="stage">
+  <div class="grid"></div>
+  <div class="top"><div class="brand"><img src="pfp.png" alt="">Drip</div><div class="url">orch.lol/drip</div></div>
+  <div class="left swap" id="left">
+    <div class="step" id="stepPill">How it works</div>
+    <h1 id="h1">Buy slowly.<br><span>Pay less.</span></h1>
+    <p id="ptxt"></p>
+    <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="browser" id="browser">
+    <div class="bar"><b></b><b></b><b></b><div class="addr">orch.lol/drip</div></div>
+    <iframe id="f" src="drip.html"></iframe>
+  </div>
+  <div class="speed" id="speed">⏩ sped up for the video</div>
+  <div class="wallet" id="wallet">
+    <div class="wt"><i></i>Wallet · Approve</div>
+    <div class="amt">2.012 SOL</div>
+    <div class="sub">to your Drip order wallet</div>
+    <div class="row"><span>Network fee</span><span>0.000005 SOL</span></div>
+    <div class="btns"><div class="rej">Reject</div><div class="ok" id="approveBtn">Approve</div></div>
+  </div>
+  <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M4 2l15 10.5-6.6 1.2 3.9 7.3-2.9 1.5-3.9-7.4L4 20z" fill="#0e1324" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div class="caption" id="cap" style="opacity:0"></div>
+</div>
+<div class="cover" id="intro">
+  <div class="ripple"></div><div class="ripple b"></div><div class="ripple c"></div>
+  <img class="pop" src="pfp.png" alt="">
+  <h2 class="rise" style="animation-delay:.25s">Drip</h2>
+  <p class="rise" style="animation-delay:.45s">Buy slowly. Pay less.</p>
+</div>
+<div class="cover hide" id="outro">
+  <div class="ripple"></div><div class="ripple b"></div><div class="ripple c"></div>
+  <img id="oimg" src="pfp.png" alt="">
+  <h2 id="oh">Don't ape. Drip.</h2>
+  <div class="u" id="ou">orch.lol/drip</div>
+</div>
+<script>
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const F=()=>document.getElementById('f');
+const D=()=>F().contentDocument;
+const W=()=>F().contentWindow;
+const q=id=>D().getElementById(id);
+const cur=document.getElementById('cursor');
+function cap(t){const c=document.getElementById('cap');c.style.opacity=t?1:0;if(t)c.textContent=t;}
+async function setLeft(step,h,p,dot){const L=document.getElementById('left');L.classList.add('out');await sleep(330);
+  document.getElementById('stepPill').textContent=step;document.getElementById('h1').innerHTML=h;document.getElementById('ptxt').textContent=p;
+  [...document.querySelectorAll('#dots i')].forEach((d,i)=>d.classList.toggle('on',i<dot));L.classList.remove('out');}
+function elPos(el){const b=document.getElementById('browser').getBoundingClientRect();const r=el.getBoundingClientRect();return{x:b.left+1+r.left+r.width/2,y:b.top+49+r.top+r.height/2};}
+async function moveTo(x,y,ms=800){cur.style.transition=`left ${ms}ms cubic-bezier(.4,0,.2,1),top ${ms}ms cubic-bezier(.4,0,.2,1)`;cur.style.left=(x-6)+'px';cur.style.top=(y-4)+'px';await sleep(ms+60);}
+async function moveToEl(el,ms){const p=elPos(el);await moveTo(p.x,p.y,ms);}
+function click(){const r=cur.getBoundingClientRect();const fx=document.createElement('div');fx.className='clickfx';fx.style.left=(r.left+6)+'px';fx.style.top=(r.top+4)+'px';document.body.appendChild(fx);setTimeout(()=>fx.remove(),600);}
+function scrollF(y,smooth=true){W().scrollTo({top:y,behavior:smooth?'smooth':'auto'});}
+function cardTop(){return q('app').getBoundingClientRect().top+W().scrollY-26;}
+async function typeInto(el,text,cps=14){el.focus();el.value='';for(const ch of text){el.value+=ch;el.dispatchEvent(new Event('input',{bubbles:true}));await sleep(1000/cps);}}
+const BTN=t=>{const b=q('startBtn');b.textContent=t;b.disabled=false;};
+function fmt(n){return n.toFixed(4);}
+
+async function sIntro(d){cap("This is Drip. It buys any Solana coin for you slowly, so you don't pump the price on yourself.");await sleep(d-650);document.getElementById('intro').classList.add('hide');await sleep(650);}
+async function sWhy(d){
+  cap("When you ape in all at once, your own buy pushes the price up. Drip splits it into small buys over time.");
+  await setLeft('Why Drip','Ape in and you<br><span>pump it on yourself.</span>','Small buys over time get you a lower average price.',0);
+  const why=[...D().querySelectorAll('section.block')][1];scrollF(why.getBoundingClientRect().top+W().scrollY-60);
+  await sleep(1200);const cards=D().querySelectorAll('.vs-c');await moveToEl(cards[0],900);await sleep(Math.max(300,d*0.25));await moveToEl(cards[1],900);
+  await sleep(Math.max(0,d-1200-1800-330-d*0.25-200));}
+async function sConnect(d){
+  cap("Go to orch.lol/drip and connect your wallet. Phantom, Solflare and Backpack all work.");
+  await setLeft('Step 1','Connect your <span>wallet.</span>','Phantom, Solflare and Backpack all work.',1);
+  scrollF(0);await sleep(900);await moveToEl(q('navConnect'),900);click();await sleep(250);
+  q('walletPill').classList.add('on');q('walletText').textContent='7xKp…9fQe';q('navConnect').textContent='7xKp…9fQe';
+  q('balHint').textContent='You have 4.218 SOL';BTN('Paste a token address');q('startBtn').disabled=true;
+  await sleep(500);scrollF(cardTop());await sleep(Math.max(0,d-330-900-960-250-500));}
+async function sFill(d){
+  cap("Type how much SOL you want to spend, paste the coin's address, then pick how long to spread it over.");
+  await setLeft('Step 2','Fill in your <span>order.</span>','How much SOL, which coin, and over how long.',2);
+  const t0=performance.now();
+  await moveToEl(q('amount'),700);click();await typeInto(q('amount'),'2',4);
+  await sleep(300);await moveToEl(q('mint'),700);click();
+  q('mint').value='DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263';q('mint').dispatchEvent(new Event('input',{bubbles:true}));
+  await sleep(1400);
+  const box=q('coinBox');if(!box.querySelector('.coin-box')||/Looking/.test(box.textContent)){box.hidden=false;box.innerHTML='<div class="coin coin-box"><div class="ph"></div><div class="meta"><div class="name">Bonk <span style="color:var(--muted);font-weight:500">$Bonk</span></div><div class="sub">DezX…B263</div></div></div>';}
+  const btn=[...q('durChips').querySelectorAll('button')][2];await moveToEl(btn,700);click();btn.click();
+  BTN('Start buying');const left=d-(performance.now()-t0)-330;await sleep(Math.max(0,left));}
+async function sStart(d){
+  cap("Tap Start buying and approve once. That's the only popup you'll see.");
+  await setLeft('Step 3','Approve <span>once.</span>',"That's the only popup you'll see.",3);
+  const t0=performance.now();
+  await moveToEl(q('startBtn'),800);click();q('startBtn').textContent='Approve in your wallet…';
+  await sleep(350);document.getElementById('wallet').classList.add('show');await sleep(900);
+  const a=document.getElementById('approveBtn').getBoundingClientRect();await moveTo(a.left+a.width/2,a.top+a.height/2,700);click();
+  await sleep(300);document.getElementById('wallet').classList.remove('show');q('startBtn').textContent='Confirming…';
+  await sleep(Math.max(300,d-(performance.now()-t0)-330-50));}
+let runTimer=null;
+function showRun(){
+  q('viewSetup').hidden=true;q('viewRun').hidden=false;q('appTitle').textContent='Your order';
+  q('runCoin').innerHTML=q('coinBox').innerHTML;q('dwBox').hidden=false;q('dwAddr').textContent='4Fq2…Lm8T';q('dwBal').textContent='1.341 SOL';
+  q('log').innerHTML='';q('statusText').textContent='Buying';q('statusLine').className='status-line';
+}
+async function sRun(d){
+  cap("Now Drip buys a little every minute. You can watch every buy, pause, or stop whenever you want.");
+  await setLeft('Step 4','Drip buys <span>for you.</span>','A small buy every minute. Pause or stop anytime.',4);
+  showRun();scrollF(cardTop(),false);document.getElementById('speed').style.opacity=1;
+  const n=60,each=2/60;let k=0;const steps=Math.floor((d-600)/200);const per=Math.max(1,Math.ceil(n*0.85/steps));
+  const t0=new Date(2026,9,28,11,2,0);
+  for(let s=0;s<steps&&k<n*0.85;s++){k=Math.min(Math.floor(n*0.85),k+per);upd(k,n,each);
+    if(s%2===0){const tm=new Date(t0.getTime()+k*60000).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+      const row=D().createElement('div');row.className='log-row';row.innerHTML='<i class="s"></i><span>Bought '+fmt(each)+' SOL</span><a>'+tm+' ↗</a>';q('log').prepend(row);}
+    if(s===Math.floor(steps*0.55)){moveToEl(q('pauseBtn'),700);}
+    await sleep(200);}
+}
+function upd(k,n,each){q('pct').textContent=Math.round(k/n*100)+'%';q('ringBar').style.strokeDashoffset=301.6*(1-k/n);q('sBuys').textContent=k+' / '+n;q('sSpent').textContent=(k*each).toFixed(3)+' SOL';q('sTokens').textContent=(k*each*2.41).toFixed(2)+'M';q('sNext').textContent='0:'+String(60-(k*7)%60).padStart(2,'0');}
+async function sDone(d){
+  cap("When it's finished, all your tokens and any leftover SOL get sent straight back to your wallet.");
+  await setLeft('Done','Tokens land in <span>your wallet.</span>','Everything settles back automatically.',4);
+  const n=60,each=2/60;for(let k=51;k<=60;k++){upd(k,n,each);await sleep(90);}
+  q('sNext').textContent='–';q('statusText').textContent='Sending tokens to your wallet…';await sleep(900);
+  q('statusText').textContent='Done';q('statusLine').className='status-line done';q('appTitle').textContent='Order done';
+  const m=q('runMsg');m.className='msg ok';m.textContent='Done! Your tokens and leftover SOL are in your wallet.';m.hidden=false;
+  q('runBtns').hidden=true;q('doneBtns').hidden=false;q('dwBal').textContent='0 SOL';document.getElementById('speed').style.opacity=0;
+  await moveTo(1500,860,900);await sleep(Math.max(0,d-330-900-900-1000));}
+async function sOutro(d){
+  cap("Don't ape. Drip. Try it now at orch.lol/drip.");
+  const o=document.getElementById('outro');o.classList.remove('hide');
+  ['oimg','oh','ou'].forEach((id,i)=>{const e=document.getElementById(id);e.classList.remove('pop','rise');void e.offsetWidth;e.classList.add(i===0?'pop':'rise');e.style.animationDelay=(i*.2)+'s';});
+  await sleep(d);}
+window.marks=[];
+window.run=async function(durs){
+  const fns=[sIntro,sWhy,sConnect,sFill,sStart,sRun,sDone,sOutro];
+  window.t0=Date.now();
+  for(let i=0;i<fns.length;i++){
+    const start=window.t0+durs.slice(0,i).reduce((a,b)=>a+b,0);
+    const wait=start-Date.now();if(wait>0)await sleep(wait);
+    window.marks.push(Date.now());
+    await fns[i](durs[i]);
+  }
+  window.done=true;
+};
+</script>
+</body></html>

@@ -2,46 +2,80 @@ import { tierBadge } from "../components/Badge.js";
 import { coinCard } from "../components/CoinCard.js";
 import { UI, commodityIcon } from "../components/Icons.js";
 import { toast } from "../components/Toasts.js";
-import { openWalletModal, wallet } from "../components/WalletButton.js";
+import { connectedProvider, openWalletModal, refreshBalance, wallet } from "../components/WalletButton.js";
 import { brand, houseDisclaimer, pairNote } from "../config/brand.js";
 import { fees, fmtFee } from "../config/fees.js";
 import { boardCommodities, byId, categoryLabel } from "../config/commodities.js";
-import { isDemo } from "../config/flags.js";
-import { mockMarket } from "../data/index.js";
+import { flags, isDemo } from "../config/flags.js";
+import { cosign, deserializeTx, newMintKeypair } from "../lib/solana.js";
+import { market, mockMarket } from "../data/index.js";
 import { h, svg } from "../lib/dom.js";
 import { reducedMotion } from "../lib/motion.js";
 import { href } from "../lib/router.js";
 import { art, artImg } from "../config/art.js";
-/**
- * launchCoin() — Phase 2 real flow (left as a documented stub). Coins launch on pump.fun.
- *  1. Upload metadata to pump.fun's IPFS endpoint (multipart form):
- *       POST https://pump.fun/api/ipfs   fields: file, name, symbol, description, twitter, telegram, website, showName
- *     -> { metadataUri }
- *     (Browsers may hit CORS here; if so, route this one call through the /proxy worker.)
- *  2. Generate a fresh mint keypair in the browser (it signs the create transaction too).
- *  3. Ask PumpPortal for an unsigned create transaction:
- *       POST https://pumpportal.fun/api/trade-local
- *       { publicKey: wallet, action: "create", tokenMetadata: { name, symbol, uri: metadataUri },
- *         mint: mintKeypair.publicKey, denominatedInSol: "true", amount: devBuySol, slippage: 10,
- *         priorityFee: 0.0005, pool: "pump" }
- *     Verify the current field names in PumpPortal's "Token Creation" docs before shipping.
- *  4. Deserialize, partially sign with the mint keypair, then wallet.signAndSendTransaction(); confirm.
- *  5. Set creator-fee sharing (pump.fun allows up to 10 recipients) to three wallets:
- *       creator wallet            fees.creatorSharePct  (70%)
- *       fees.buybackWallet        fees.buybackBurnPct   (20%)  -> team buys + burns the main coin
- *       fees.holderRewardsWallet  fees.mainHolderSolPct (10%)  -> paid to main-coin holders in SOL
- *     Use pump.fun's fee-sharing instruction for the coin; verify the current API before shipping.
- *  6. POST { mint, commodityId, signature } to the proxy's /registry so this site lists the coin
- *     on the chosen board. The proxy checks the signature on-chain before accepting it.
- * The commodity choice never touches pump.fun: it lives only in our registry.
- */
-const mainCoin = () => (brand.platformTicker ? `$${brand.platformTicker}` : `$${brand.name.toUpperCase()}`);
-async function launchCoin(d) {
-    const m = mockMarket();
-    if (!m)
-        throw new Error("Launching is not live yet");
-    return m.demoLaunch({ name: d.name, ticker: d.ticker, commodityId: d.commodityId, image: d.image || undefined, description: d.description || undefined });
+async function api(path, init) {
+    const r = await fetch(`${flags.apiUrl}${path}`, { ...init, headers: { "content-type": "application/json", ...(init?.headers ?? {}) } });
+    const j = (await r.json().catch(() => ({})));
+    if (!r.ok && r.status !== 202)
+        throw new Error(j.error || `Request failed (${r.status})`);
+    return j;
 }
+async function shrinkImage(dataUrl) {
+    if (dataUrl.length < 1400000 || dataUrl.startsWith("data:image/gif"))
+        return dataUrl;
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = dataUrl; });
+    const scale = Math.min(1, 1000 / Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.width * scale);
+    c.height = Math.round(img.height * scale);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", 0.9);
+}
+async function launchCoin(d, phase) {
+    const m = mockMarket();
+    if (m)
+        return m.demoLaunch({ name: d.name, ticker: d.ticker, commodityId: d.commodityId, image: d.image || undefined, description: d.description || undefined });
+    const creator = wallet.get().address;
+    const provider = connectedProvider();
+    if (!creator || !provider?.signTransaction)
+        throw new Error("Connect a wallet that can sign transactions (Phantom, Solflare or Backpack).");
+    if (!d.image)
+        throw new Error("Add an image for your coin first (step 1).");
+    phase("UPLOADING…");
+    const up = await api("/upload", { method: "POST", body: JSON.stringify({ name: d.name.trim(), symbol: d.ticker, description: d.description, image: await shrinkImage(d.image), twitter: d.x, telegram: d.telegram, website: d.website, board: d.commodityId }) });
+    phase("BUILDING…");
+    const mintKp = newMintKeypair();
+    const mint = mintKp.publicKey.toBase58();
+    const built = await api("/build", { method: "POST", body: JSON.stringify({ creator, mint, metaId: up.id, devBuySol: Number(d.devBuy) || 0 }) });
+    phase("APPROVE IN WALLET…");
+    let signed;
+    try {
+        signed = await provider.signTransaction(deserializeTx(built.tx));
+    }
+    catch {
+        throw new Error("You cancelled in your wallet. Nothing was sent.");
+    }
+    const tx = cosign(signed, [mintKp]);
+    phase("SENDING IT…");
+    let res = await api("/submit", { method: "POST", body: JSON.stringify({ tx }) });
+    for (let i = 0; res.pending && i < 20; i++) {
+        phase("CONFIRMING…");
+        await new Promise((r) => setTimeout(r, 4000));
+        const prev = res;
+        res = await api("/submit", { method: "POST", body: JSON.stringify({ mint, signature: prev.signature }) }).catch(() => prev);
+    }
+    if (!res.coin)
+        throw new Error(`Your coin was sent (${mint.slice(0, 6)}…) but is still confirming. It will show on its board in a minute.`);
+    void refreshBalance();
+    const live = await market().refresh?.(mint);
+    return live ?? {
+        mint, pairAddress: mint, name: res.coin.name, ticker: res.coin.symbol, image: res.coin.image, commodityId: res.coin.board,
+        status: "curve", bondingProgress: 0, priceUsd: 0, priceQuote: 0, marketCapUsd: 0, volume24hUsd: 0, change24hPct: 0, holders: 1,
+        createdAt: res.coin.createdAt, rewards: true, spark: [1, 1],
+    };
+}
+const mainCoin = () => (brand.platformTicker ? `$${brand.platformTicker}` : `$${brand.name.toUpperCase()}`);
 export async function launchPage(ctx) {
     const d = { name: "", ticker: "", description: "", image: "", x: "", website: "", telegram: "", commodityId: null, devBuy: "", rewards: false };
     let step = 0;
@@ -76,7 +110,7 @@ export async function launchPage(ctx) {
         // 1 — details
         () => {
             const name = txt("f-name", "name", "e.g. Golden Walrus", 32);
-            const ticker = txt("f-ticker", "ticker", "WALRUS", 8);
+            const ticker = txt("f-ticker", "ticker", "WALRUS", 10);
             const desc = h("textarea", { id: "f-desc", placeholder: "What is this coin about?", maxlength: "280" });
             desc.value = d.description;
             desc.addEventListener("input", () => { d.description = desc.value; });
@@ -89,6 +123,9 @@ export async function launchPage(ctx) {
             return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 1/4"), h("h2", null, "NAME YOUR COIN."), h("p", { class: "hint" }, "Name, ticker, image. Socials optional. Make it loud."), field("Name", name), field("Ticker", ticker, "letters and numbers"), h("div", { class: "field" }, h("label", { for: "f-img" }, h("span", null, "Image"), h("span", { class: "muted" }, "cropped to a circle")), h("label", { class: "upload", for: "f-img" }, circ, h("span", { class: "btn sm" }, "Choose image"), file)), field("Description", desc), h("div", { class: "twocol" }, field("X link", txt("f-x", "x", "https://x.com/…")), field("Website", txt("f-web", "website", "https://…")), field("Telegram", txt("f-tg", "telegram", "https://t.me/…"))), err, h("div", { class: "wnav" }, h("span"), h("button", { class: "btn primary", onclick: () => { if (!d.name.trim() || d.ticker.length < 2) {
                     err.textContent = "Add a name and a ticker of at least 2 characters to continue.";
                     name.focus();
+                    return;
+                } if (!d.image && !isDemo()) {
+                    err.textContent = "Add an image. pump.fun needs one for every coin.";
                     return;
                 } err.textContent = ""; go(1); } }, "PICK A COMMODITY", svg(UI.arrow))));
         },
@@ -130,7 +167,7 @@ export async function launchPage(ctx) {
                     btn.setAttribute("disabled", "");
                     btn.textContent = "SENDING IT…";
                     try {
-                        const coin = await launchCoin(d);
+                        const coin = await launchCoin(d, (label) => { btn.textContent = label; });
                         stage.replaceChildren(successScreen(coin, com));
                         steps.querySelectorAll("div").forEach((s) => (s.className = "done"));
                     }
@@ -140,7 +177,16 @@ export async function launchPage(ctx) {
                         btn.textContent = "SEND IT";
                     }
                 } }, svg(UI.rocket), isDemo() ? "SEND IT (DEMO)" : "SEND IT ON PUMP.FUN");
-            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 4/4"), h("h2", null, "LAST LOOK. THEN SEND IT."), h("p", { class: "hint" }, isDemo() ? "Demo mode: this creates a simulated coin on this site only. Nothing is sent to pump.fun." : "This launches your coin on pump.fun and lists it on the board you picked."), h("div", { class: "kv" }, h("div", null, h("span", null, "Name"), h("span", null, d.name)), h("div", null, h("span", null, "Ticker"), h("span", null, `$${d.ticker}`)), h("div", null, h("span", null, "Launches on"), h("span", null, "pump.fun (trades in SOL)")), h("div", null, h("span", null, "Shown here as"), h("span", null, `${d.ticker} / ${com.symbol} (${com.tier})`)), h("div", null, h("span", null, "Dev buy"), h("span", null, d.devBuy ? `${d.devBuy} SOL` : "None")), h("div", null, h("span", null, "Holder rewards"), h("span", null, d.rewards ? "On" : "Off")), h("div", null, h("span", null, "Creator fees"), h("span", null, `${fees.creatorSharePct}% you · ${fees.buybackBurnPct}% burn · ${fees.mainHolderSolPct}% holders`)), h("div", null, h("span", null, "Site fee"), h("span", null, fees.launchCostSol === null ? "None" : `${fees.launchCostSol} SOL`))), isDemo() ? h("span", { class: "demo-tag" }, "DEMO") : null, btn, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(2) }, svg(UI.back), "Back"), h("span")));
+            if (!isDemo()) {
+                btn.setAttribute("disabled", "");
+                void fetch(`${flags.apiUrl}/setup`).then((r) => r.json()).then((st) => {
+                    if (st.ready)
+                        btn.removeAttribute("disabled");
+                    else
+                        btn.replaceChildren(svg(UI.rocket), "LAUNCHING OPENS SOON");
+                }).catch(() => btn.removeAttribute("disabled"));
+            }
+            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 4/4"), h("h2", null, "LAST LOOK. THEN SEND IT."), h("p", { class: "hint" }, isDemo() ? "Demo mode: this creates a simulated coin on this site only. Nothing is sent to pump.fun." : "This launches your coin on pump.fun and lists it on the board you picked."), h("div", { class: "kv" }, h("div", null, h("span", null, "Name"), h("span", null, d.name)), h("div", null, h("span", null, "Ticker"), h("span", null, `$${d.ticker}`)), h("div", null, h("span", null, "Launches on"), h("span", null, "pump.fun (trades in SOL)")), h("div", null, h("span", null, "Shown here as"), h("span", null, `${d.ticker} / ${com.symbol} (${com.tier})`)), h("div", null, h("span", null, "Dev buy"), h("span", null, d.devBuy ? `${d.devBuy} SOL` : "None")), h("div", null, h("span", null, "Creator fees"), h("span", null, `${fees.creatorSharePct}% you · ${fees.buybackBurnPct}% burn · ${fees.mainHolderSolPct}% holders (locked)`)), h("div", null, h("span", null, "You pay"), h("span", null, `${d.devBuy ? `${d.devBuy} SOL dev buy + ` : ""}~0.02 SOL rent & fees`)), h("div", null, h("span", null, "Site fee"), h("span", null, fees.launchCostSol === null ? "None" : `${fees.launchCostSol} SOL`))), isDemo() ? h("span", { class: "demo-tag" }, "DEMO") : null, btn, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(2) }, svg(UI.back), "Back"), h("span")));
         },
     ];
     const successScreen = (coin, com) => {

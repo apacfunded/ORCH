@@ -18,6 +18,7 @@ import { homePage } from "./pages/Home.js";
 import { launchPage } from "./pages/Launch.js";
 import { notFoundPage } from "./pages/NotFound.js";
 import { pairsPage } from "./pages/Pairs.js";
+import { setupPage } from "./pages/Setup.js";
 const bg = background();
 document.body.prepend(bg.el);
 const ctx = { tint: (c) => bg.tint(c) };
@@ -34,6 +35,7 @@ const routes = [
     { path: "/launch", render: () => launchPage(ctx) },
     { path: "/pairs", render: () => pairsPage(ctx) },
     { path: "/docs", render: () => Promise.resolve(docsPage()) },
+    { path: "/setup", render: () => setupPage() },
 ];
 let nav = 0;
 async function render() {
@@ -75,6 +77,8 @@ function titleFor(path) {
         return "Pairs";
     if (path.startsWith("/docs"))
         return "How it works";
+    if (path.startsWith("/setup"))
+        return "Setup";
     return "Not found";
 }
 window.addEventListener("hashchange", () => void render());

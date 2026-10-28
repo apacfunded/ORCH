@@ -5,8 +5,10 @@
 // ============================================================
 const w = globalThis.PIT_CONFIG ?? {};
 export const flags = {
-    /** "mock" = simulated coins (default). "codex" = live data via the proxy. */
-    dataSource: (w.dataSource ?? "mock"),
+    /** "live" = real coins from the Quarry API (default). "mock" = simulated coins. "codex" = legacy Codex proxy. */
+    dataSource: (w.dataSource ?? "live"),
+    /** Quarry API (Vercel functions): uploads, launch transactions, coin registry, prices. */
+    apiUrl: (w.apiUrl ?? "https://quary.lol/api").replace(/\/$/, ""),
     /** CONFIG: URL of the deployed /proxy worker, e.g. https://pit-proxy.yourname.workers.dev */
     proxyUrl: w.proxyUrl ?? "",
     /** CONFIG: Solana RPC used only for the connected wallet's SOL balance. */

@@ -21,13 +21,17 @@
   <script>
     // ---- SITE CONFIG (no bundler, so this replaces VITE_* env vars) ----
     window.PIT_CONFIG = {
-      dataSource: "mock",                 // "mock" (simulated coins) or "codex" (live via the proxy)
-      proxyUrl: "",                       // CONFIG: e.g. "https://pit-proxy.yourname.workers.dev"
-      rpcUrl: "https://api.mainnet-beta.solana.com" // CONFIG: used only to read a connected wallet's SOL balance
+      dataSource: "live",                 // "live" (real coins via the Quarry API) or "mock" (simulated)
+      apiUrl: "https://quary.lol/api",    // Quarry API: uploads, launch transactions, registry, prices
+      proxyUrl: "",
+      rpcUrl: "https://api.mainnet-beta.solana.com"
     };
     // Apply the saved theme before first paint to avoid a flash.
     try { var t = localStorage.getItem("pit:theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
   </script>
+  <!-- @solana/web3.js (MIT) as window.solanaWeb3: used only to make the mint keypair and co-sign the launch transaction. -->
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.99.0/lib/index.iife.min.js" defer
+          onerror="var s=document.createElement('script');s.src='https://unpkg.com/@solana/web3.js@1.99.0/lib/index.iife.min.js';document.head.appendChild(s);"></script>
   <!-- TradingView Lightweight Charts (Apache-2.0). If both CDNs are blocked the coin page falls back to a basic canvas chart. -->
   <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"
           onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';document.head.appendChild(s);"></script>

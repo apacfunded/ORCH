@@ -1,8 +1,8 @@
 // ============================================================
 // WALLET — connects to injected Solana wallets (Phantom, Solflare, Backpack)
 // through their standard `connect()` API. No packages needed. Shows a
-// truncated address and the SOL balance (fetched from the configured RPC).
-// Nothing here ever signs or sends a transaction.
+// truncated address and the SOL balance. Signing happens only in the launch
+// flow, and the wallet always asks the user to approve it.
 // ============================================================
 import { flags } from "../config/flags.js";
 import { h, svg } from "../lib/dom.js";
@@ -33,16 +33,23 @@ function providers() {
 }
 async function fetchBalance(address) {
     try {
-        const res = await fetch(flags.rpcUrl, {
-            method: "POST", headers: { "content-type": "application/json" },
-            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getBalance", params: [address] }),
-        });
+        const res = await fetch(`${flags.apiUrl}/balance?address=${encodeURIComponent(address)}`);
         const j = (await res.json());
-        return j.result ? j.result.value / 1e9 : null;
+        return typeof j.sol === "number" ? j.sol : null;
     }
     catch {
         return null;
     }
+}
+/** The connected wallet's injected provider (for signing). */
+export function connectedProvider() {
+    return providers().find((x) => x.name === state.name)?.w ?? null;
+}
+export async function refreshBalance() {
+    if (!state.address)
+        return;
+    state.balanceSol = await fetchBalance(state.address);
+    emit();
 }
 async function connectWith(name, w) {
     const r = await w.connect();
@@ -86,7 +93,7 @@ export function openWalletModal() {
         : [
             h("p", { class: "muted", style: "font-size:13.5px" }, "No Solana wallet extension was found. Install Phantom, Solflare or Backpack, then try again."),
             h("a", { class: "btn", href: "https://phantom.app", target: "_blank", rel: "noopener" }, "Get Phantom"),
-        ]), h("p", { class: "muted", style: "font-size:12px" }, "Connecting only reads your address and SOL balance. Nothing is signed."));
+        ]), h("p", { class: "muted", style: "font-size:12px" }, "Connecting only reads your address and SOL balance. Every transaction asks for your approval in the wallet."));
     overlay.appendChild(modal);
     overlay.addEventListener("click", (e) => { if (e.target === overlay)
         close(); });

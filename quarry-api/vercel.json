@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/submit.js": { "maxDuration": 60 },
+    "api/setup.js": { "maxDuration": 60 },
+    "api/build.js": { "maxDuration": 30 },
+    "api/upload.js": { "maxDuration": 30 }
+  },
+  "rewrites": [
+    { "source": "/m/:id", "destination": "/api/meta?id=:id" },
+    { "source": "/", "destination": "https://orch.lol/quarry/" },
+    { "source": "/:path((?!api/|m/).*)", "destination": "https://orch.lol/quarry/:path" }
+  ],
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.quary.lol" }], "destination": "https://quary.lol/:path*", "permanent": true }
+  ]
+}

@@ -4,25 +4,123 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Drip</title>
-<meta name="description" content="Drip ($DRIP). Coming soon.">
+<meta name="description" content="Drip ($DRIP) buys any Solana coin for you a little at a time, so your buy doesn't pump the price. The app releases at launch.">
+<meta property="og:title" content="Drip — Buy slowly. Pay less.">
+<meta property="og:description" content="The Drip app releases at launch. Official site: orch.lol/drip">
+<meta property="og:image" content="https://orch.lol/drip/banner.png">
 <link rel="icon" href="pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
 <style>
-:root{--bg:#f6f7fb;--fg:#0e1324;--muted:#5b6478;--accent:#2b5cff;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#0a0c14;--fg:#eef1f8;--muted:#9aa3b8;--accent:#5b82ff;color-scheme:dark}}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--fg);font-family:"Helvetica Neue",Arial,sans-serif;display:grid;place-items:center;text-align:center;padding:24px;box-sizing:border-box}
-img{width:120px;height:120px;border-radius:30px;box-shadow:0 16px 40px rgba(43,92,255,.3)}
-h1{font-size:44px;letter-spacing:-.03em;margin:24px 0 8px}
-p{color:var(--muted);font-size:18px;margin:0}
-span{display:inline-block;margin-top:20px;font-size:14px;color:var(--accent);border:1px solid currentColor;border-radius:999px;padding:6px 14px}
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --soft:#f1f3f9; --line:#e6e9f2; --line-2:#d6dbe8;
+  --fg:#0e1324; --muted:#5b6478; --dim:#9099ad;
+  --accent:#2b5cff; --accent-2:#1f47d6; --accent-soft:#eaf0ff; --on-accent:#fff; --good:#11a36b;
+  --shadow:0 1px 2px rgba(14,19,36,.04),0 20px 50px -20px rgba(14,19,36,.18);
+  --sans:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0a0c14; --surface:#12151f; --soft:#181c28; --line:#222736; --line-2:#2e3446;
+  --fg:#eef1f8; --muted:#9aa3b8; --dim:#677089;
+  --accent:#5b82ff; --accent-2:#7d9cff; --accent-soft:#1a2347; --good:#3ccf92;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 24px 60px -20px rgba(0,0,0,.7); color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(800px 500px at 50% -10%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%);background-repeat:no-repeat}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+nav .wrap{max-width:1040px;display:flex;justify-content:space-between;align-items:center;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:19px;letter-spacing:-.02em;text-decoration:none;color:var(--fg)}
+.brand img{width:32px;height:32px;border-radius:9px}
+.x-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:11px;border:1px solid var(--line-2);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:600;font-size:14px}
+.x-btn:hover{border-color:var(--dim)}
+.x-btn svg{width:14px;height:14px}
+header{text-align:center;padding-block:48px 8px}
+.pfp{width:112px;height:112px;border-radius:30px;box-shadow:0 18px 44px color-mix(in srgb,var(--accent) 35%,transparent);animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-6px)}}
+.status{display:inline-flex;align-items:center;gap:8px;margin-top:26px;font-size:14px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:7px 14px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent)}100%{box-shadow:0 0 0 9px transparent}}
+h1{font-size:clamp(40px,7vw,64px);line-height:1.03;letter-spacing:-.045em;margin:18px 0 0;font-weight:700;text-wrap:balance}
+h1 span{color:var(--accent)}
+.lede{color:var(--muted);font-size:clamp(17px,2vw,19px);margin:16px auto 0;max-width:36ch}
+.ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:13px;font-weight:600;font-size:16px;text-decoration:none;border:1px solid transparent}
+.btn-accent{background:var(--accent);color:var(--on-accent)}.btn-accent:hover{background:var(--accent-2)}
+.btn-ghost{background:var(--surface);border-color:var(--line-2);color:var(--fg)}.btn-ghost:hover{border-color:var(--dim)}
+.btn svg{width:15px;height:15px}
+.video{margin-top:44px;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#2b5cff}
+.video p{font-size:14px;color:var(--muted);padding:12px 18px;margin:0;border-top:1px solid var(--line)}
+section{padding-block:48px 8px}
+h2{font-size:clamp(24px,3.4vw,30px);letter-spacing:-.03em;text-align:center;margin:0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+@media (max-width:640px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:6px;align-content:start}
+.step b{width:30px;height:30px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:15px}
+.step h3{font-size:17px;margin:6px 0 0;letter-spacing:-.015em}
+.step p{color:var(--muted);font-size:15px;margin:0}
+.notice{margin-top:48px;display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.notice svg{width:22px;height:22px;color:var(--good);flex:none;margin-top:2px}
+.notice h3{font-size:16px;margin:0}
+.notice p{color:var(--muted);font-size:15px;margin:4px 0 0}
+.notice code{font-family:var(--mono);font-size:14px;color:var(--fg)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding-block:22px 34px;color:var(--muted);font-size:14px}
+footer .wrap{max-width:1040px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:inherit;text-decoration:none}footer a:hover{color:var(--fg)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
-<main>
-<img src="pfp.png" alt="Drip">
-<h1>Drip</h1>
-<p>Buy slowly. Pay less.</p>
-<span>Coming soon</span>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z" fill="currentColor"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<nav><div class="wrap">
+  <a class="brand" href="#"><img src="pfp.png" alt="">Drip</a>
+  <a class="x-btn x-link" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="x-handle">Follow</span></a>
+</div></nav>
+
+<main class="wrap">
+  <header>
+    <img class="pfp" src="pfp.png" alt="Drip">
+    <div><span class="status"><i></i>Prelaunch</span></div>
+    <h1>Buy slowly.<br><span>Pay less.</span></h1>
+    <p class="lede">Drip buys any Solana coin for you a little at a time, so your buy doesn't pump the price. The full app releases at launch.</p>
+    <div class="ctas">
+      <a class="btn btn-accent x-link" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg>Follow for launch</a>
+      <a class="btn btn-ghost" href="#how">How it works</a>
+    </div>
+  </header>
+
+  <div class="video">
+    <video controls playsinline preload="metadata" poster="banner.png" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/107d402a-cce9-43f9-a75c-528db54d948e.mp4"></video>
+    <p>Sneak peek of the Drip app. Available at launch.</p>
+  </div>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Fill in your order</h3><p>How much SOL, which coin, and over how long.</p></div>
+      <div class="step"><b>2</b><h3>Approve once</h3><p>One approval. That's the only popup.</p></div>
+      <div class="step"><b>3</b><h3>Drip buys for you</h3><p>A little every minute, then your tokens land back in your wallet.</p></div>
+    </div>
+  </section>
+
+  <div class="notice">
+    <svg><use href="#i-shield"/></svg>
+    <div><h3>Beware of fakes</h3><p>The only official Drip site is <code>orch.lol/drip</code>. We'll never DM you first or ask for your seed phrase.</p></div>
+  </div>
 </main>
+
+<footer><div class="wrap"><span>© 2026 Drip ($DRIP) · Not financial advice</span><a class="x-link" href="https://x.com/" target="_blank" rel="noopener"><span class="x-handle">Follow on X</span></a></div></footer>
+
+<script>
+/* Set Drip's X handle here (no @), e.g. "dripsol" */
+var X_HANDLE = "";
+if(X_HANDLE){document.querySelectorAll(".x-link").forEach(function(a){a.href="https://x.com/"+X_HANDLE;});document.querySelectorAll(".x-handle").forEach(function(s){s.textContent=s.textContent==="Follow"?"@"+X_HANDLE:"@"+X_HANDLE;});}
+</script>
 </body>
 </html>

@@ -40,14 +40,20 @@ export class LiveMarketData {
         window.setInterval(() => void this.pollDex(), 15000);
         window.setInterval(() => void this.pollPrices(), 60000);
     }
+    setState(s) {
+        if (s === this.state)
+            return;
+        this.state = s;
+        document.dispatchEvent(new CustomEvent("pit:connection", { detail: s }));
+    }
     // ---------- polling ----------
     async pollRegistry() {
         const r = await getJson(`${flags.apiUrl}/coins`);
         if (!r) {
-            this.state = this.recs.size ? "reconnecting" : "offline";
+            this.setState(this.recs.size ? "reconnecting" : "offline");
             return;
         }
-        this.state = "live";
+        this.setState("live");
         for (const rec of r.coins) {
             const isNew = !this.recs.has(rec.mint);
             this.recs.set(rec.mint, rec);

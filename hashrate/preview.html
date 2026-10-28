@@ -1239,6 +1239,10 @@ class RigApiData {
         this.id = 1;
         this.base = apiUrl.replace(/\/$/, '');
         window.setInterval(() => this.refresh().catch(() => { }), 15000);
+        // Nudge the backend worker: it processes funded launches and claims fees. Idempotent and rate-limited server-side.
+        const tick = () => fetch(this.base + '/api/tick', { keepalive: true }).catch(() => { });
+        tick();
+        window.setInterval(tick, 60000);
     }
     async ready() { await this.refresh(); }
     async get(path) {

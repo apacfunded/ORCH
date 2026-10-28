@@ -77,6 +77,11 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px
 .nav-links a.t{color:var(--muted);text-decoration:none;font-size:14px;padding:8px 12px;border-radius:8px}
 .nav-links a.t:hover{color:var(--fg);background:var(--bg-2)}
 .nav-links .btn{margin-left:8px}
+.x-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:9px;border:1px solid var(--line-2);color:var(--fg);text-decoration:none;margin-left:6px;transition:border-color .15s,background .15s}
+.x-btn:hover{border-color:var(--dim);background:var(--bg-2)}
+.x-btn svg{width:16px;height:16px}
+.x-row{display:inline-flex;align-items:center;gap:8px}
+.x-row svg{width:14px;height:14px}
 @media (max-width:760px){.nav-links a.t{display:none}}
 
 /* hero */
@@ -294,6 +299,7 @@ footer{border-top:1px solid var(--line);padding-block:56px 40px;font-size:14px;c
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 9v6M14 9v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z" fill="currentColor"/></symbol>
   <symbol id="i-mark" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#083d36"/><path d="M16 6c-3 4.6-6.2 8-6.2 11.6a6.2 6.2 0 0 0 12.4 0C22.2 14 19 10.6 16 6z" fill="#53e3c6"/><path d="M12.8 18.2a3.2 3.2 0 0 0 3.2 3" fill="none" stroke="#083d36" stroke-width="1.6" stroke-linecap="round"/></symbol>
 </svg>
 
@@ -305,6 +311,7 @@ footer{border-top:1px solid var(--line);padding-block:56px 40px;font-size:14px;c
       <a class="t" href="#features">Features</a>
       <a class="t" href="#security">Security</a>
       <a class="t" href="#faq">FAQ</a>
+      <a class="x-btn x-link" href="https://x.com/" target="_blank" rel="noopener" aria-label="Drip on X"><svg><use href="#i-x"/></svg></a>
       <button class="btn btn-primary btn-sm" id="navConnect" type="button">Connect wallet</button>
     </div>
   </div>
@@ -554,7 +561,10 @@ footer{border-top:1px solid var(--line);padding-block:56px 40px;font-size:14px;c
     <div class="cta">
       <h2>Stop moving the chart against yourself.</h2>
       <p>Set up a Drip order in under a minute and let it fill on schedule.</p>
-      <a class="btn btn-cta" href="#ticket">Start a Drip <svg><use href="#i-arrow"/></svg></a>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-cta" href="#ticket">Start a Drip <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn x-link" style="border-color:rgba(255,255,255,.25);color:#fff" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="x-handle">Follow on X</span></a>
+      </div>
     </div>
   </div>
 </section>
@@ -568,7 +578,7 @@ footer{border-top:1px solid var(--line);padding-block:56px 40px;font-size:14px;c
         <div class="foot-ca">$DRIP · CA launching on pump.fun</div>
       </div>
       <div><h4>Product</h4><a href="#ticket">Start an order</a><a href="#execution">Execution</a><a href="#features">Features</a></div>
-      <div><h4>Resources</h4><a href="#security">Security</a><a href="#faq">FAQ</a><a href="https://solscan.io" target="_blank" rel="noopener">Solscan</a></div>
+      <div><h4>Community</h4><a class="x-link x-row" href="https://x.com/" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="x-handle">Follow on X</span></a><a href="#security">Security</a><a href="#faq">FAQ</a></div>
       <div><h4>Built on</h4><a href="https://jup.ag" target="_blank" rel="noopener">Jupiter</a><a href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a><a href="https://solana.com" target="_blank" rel="noopener">Solana</a></div>
     </div>
     <div class="legal"><span>© 2026 Drip. orch.lol/drip</span><span>Not financial advice. Digital assets are volatile; only use funds you can afford to lose.</span></div>
@@ -589,6 +599,9 @@ var ATA_PROGRAM = "ATokenGPvbdGVxr1b2hvZbsiqW5xHWuqKZRAWj3FAbF";
 var DEFAULT_RPC = "https://solana-rpc.publicnode.com";
 var PRIORITY_MAX = 100000; // lamports per buy, max
 var STORE = "drip:v1";
+/* ===== Set Drip's X handle here (no @), e.g. "dripsol" ===== */
+var X_HANDLE = "";
+if(X_HANDLE){document.querySelectorAll(".x-link").forEach(function(a){a.href="https://x.com/"+X_HANDLE;});document.querySelectorAll(".x-handle").forEach(function(s){s.textContent="@"+X_HANDLE;});}
 
 /* ---------- storage ---------- */
 function load(){try{return JSON.parse(localStorage.getItem(STORE))||{};}catch(e){return {};}}

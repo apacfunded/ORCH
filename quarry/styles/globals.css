@@ -670,3 +670,7 @@ table.trades tr.sell { background: linear-gradient(90deg, var(--down-dim) var(--
 .launch-loud .kv div span:last-child { word-break: normal; overflow-wrap: anywhere; }
 .launch-loud .kv div span:first-child { white-space: nowrap; }
 @media (max-width: 640px) { .launch-loud .kv div { font-size: 15px; padding: 12px 4px; } .launch-loud .kv div span:last-child { font-size: 15px; } }
+
+/* main coin chip in header */
+.header .main-coin { font-family: var(--font-mono); letter-spacing: .04em; border-color: rgba(230,184,74,.5); color: #f2c94c; }
+@media (max-width: 720px) { .header .main-coin { display: none; } }

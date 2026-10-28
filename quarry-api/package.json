@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Quarry launch API: metadata, pump.fun launch transactions with locked creator-fee split, coin registry, prices.",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "dependencies": {
     "@pump-fun/pump-sdk": "4.3.1",
@@ -12,5 +12,10 @@
     "@vercel/blob": "2.8.2",
     "bn.js": "5.2.5",
     "@solana/spl-token": "0.4.15"
+  },
+  "overrides": {
+    "rpc-websockets": {
+      "uuid": "11.1.0"
+    }
   }
 }

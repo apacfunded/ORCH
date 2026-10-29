@@ -18,7 +18,7 @@ export const fees = {
     mainHolderSolPct,
     buybackWallet: "9pQYauakrr1wfpgNbuydTWnBs2aDGeHLYb8fz121aNbq",
     holderRewardsWallet: "9iUNVGTSfwzgg68NU3a2187zfY2E4j6xCoafQyPMBgbb",
-    mainCoinMint: null,
+    mainCoinMint: "9bwNJ1TwMiaSZjY2dvKpN4JKmDwxp29LwZm8WLdapump",
     // buyback 9pQYauakrr1wfpgNbuydTWnBs2aDGeHLYb8fz121aNbq / holders 9iUNVGTSfwzgg68NU3a2187zfY2E4j6xCoafQyPMBgbb (enforced server-side)
     launchCostSol: null,
     holderRewardsPct: null,

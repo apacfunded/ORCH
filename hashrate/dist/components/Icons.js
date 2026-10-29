@@ -27,11 +27,16 @@ export const ICONS = {
     info: P('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>'),
 };
 export function icon(name, cls = 'ico') { return svg(ICONS[name], cls); }
-/** The Rig mark: a rack unit with two lit LEDs. */
+/** The Hashrate mark: the cartoon hashtag logo. */
 export function rigMark(cls = 'mark') {
-    return svg(`<svg viewBox="0 0 32 32"><rect x="3" y="4" width="26" height="24" rx="5" fill="none" stroke="var(--accent)" stroke-width="2"/>
-    <rect x="8" y="9" width="16" height="3" rx="1.5" fill="var(--accent)"/><rect x="8" y="15" width="16" height="3" rx="1.5" fill="var(--accent)" opacity=".55"/>
-    <circle cx="10" cy="23" r="1.6" fill="var(--gold)"/><circle cx="14.5" cy="23" r="1.6" fill="var(--gold)"/><circle cx="19" cy="23" r="1.6" fill="var(--line-2)"/></svg>`, cls);
+    const img = document.createElement('img');
+    img.src = './assets/logo.webp';
+    img.alt = '';
+    img.width = 28;
+    img.height = 28;
+    img.className = cls;
+    img.decoding = 'async';
+    return img;
 }
 /** Custom glyph per mine. Each draws from its algorithm: merged rings, shielded hex, a fast lattice, a block, and a ringed core. */
 const GLYPHS = {

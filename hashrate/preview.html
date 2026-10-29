@@ -196,7 +196,7 @@ a.card:hover, .card.hoverable:hover { box-shadow: var(--inner-top), var(--glow);
 .hdr { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); border-bottom: 1px solid var(--line); }
 .hdr-row { display: flex; align-items: center; gap: 14px; min-height: 60px; }
 .brand { display: flex; align-items: center; gap: 10px; font: 600 22px/1 var(--display); font-variation-settings: "wdth" 125; letter-spacing: -.01em; }
-.brand .mark { width: 28px; height: 28px; }
+.brand .mark { width: 28px; height: 28px; border-radius: 8px; display: block; flex: none; }
 .nav { display: flex; gap: 2px; }
 .nav a { padding: 10px 12px; border-radius: var(--r-sm); color: var(--muted); font: 500 var(--fs-14)/1 var(--body); min-height: 40px; display: inline-flex; align-items: center; }
 .nav a:hover { color: var(--fg); background: var(--surface); }
@@ -1418,11 +1418,16 @@ const ICONS = {
     info: P('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>'),
 };
 function icon(name, cls = 'ico') { return svg(ICONS[name], cls); }
-/** The Rig mark: a rack unit with two lit LEDs. */
+/** The Hashrate mark: the cartoon hashtag logo. */
 function rigMark(cls = 'mark') {
-    return svg(`<svg viewBox="0 0 32 32"><rect x="3" y="4" width="26" height="24" rx="5" fill="none" stroke="var(--accent)" stroke-width="2"/>
-    <rect x="8" y="9" width="16" height="3" rx="1.5" fill="var(--accent)"/><rect x="8" y="15" width="16" height="3" rx="1.5" fill="var(--accent)" opacity=".55"/>
-    <circle cx="10" cy="23" r="1.6" fill="var(--gold)"/><circle cx="14.5" cy="23" r="1.6" fill="var(--gold)"/><circle cx="19" cy="23" r="1.6" fill="var(--line-2)"/></svg>`, cls);
+    const img = document.createElement('img');
+    img.src = './assets/logo.webp';
+    img.alt = '';
+    img.width = 28;
+    img.height = 28;
+    img.className = cls;
+    img.decoding = 'async';
+    return img;
 }
 /** Custom glyph per mine. Each draws from its algorithm: merged rings, shielded hex, a fast lattice, a block, and a ringed core. */
 const GLYPHS = {

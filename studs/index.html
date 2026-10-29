@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studs</title>
+<meta name="description" content="Launch a Roblox game as a coin. Creator fees pay the AI that builds it, stage by stage, until it's live on Roblox.">
+<meta property="og:title" content="Studs — Launch a Roblox game. Fees build it.">
+<meta property="og:description" content="Every coin is a Roblox game. Creator fees pay AI to script, map and publish it.">
+<link rel="icon" href="pfp.jpg">
+<meta property="og:image" content="pfp.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=Rubik:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#04060c; --surface:#0a0f1b; --soft:#111a2b; --line:#182237; --line-2:#24314d;
+  --fg:#eef3ff; --muted:#97a5c2; --dim:#64728f;
+  --accent:#2f6bff; --accent-2:#4d82ff; --accent-soft:#0f1d3f; --on-accent:#ffffff;
+  --glow:0 0 0 1px rgba(47,107,255,.35),0 0 28px rgba(47,107,255,.35);
+  --live:#3ddc97; --live-soft:#0d2a1f;
+  --b1:#2f6bff; --b2:#e8eeff; --b3:#6f97ff; --b4:#121c33; --b5:#a9c0ff;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 24px 60px -24px rgba(0,0,0,.9);
+  --display:"Chakra Petch","Rubik",system-ui,sans-serif;
+  --sans:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(900px 420px at 70% -80px,rgba(47,107,255,.18),transparent 70%) no-repeat,var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid transparent;font-weight:500;font-size:15px;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s,transform .1s;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-accent{background:var(--accent);color:var(--on-accent);box-shadow:0 0 22px rgba(47,107,255,.45)}
+.btn-accent:hover{background:var(--accent-2)}
+.btn-line{background:var(--surface);border-color:var(--line-2)}
+.btn-line:hover{border-color:var(--dim)}
+
+/* nav */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:600;font-size:21px}
+.logo img{width:34px;height:34px;border-radius:9px;box-shadow:0 0 18px rgba(47,107,255,.45)}
+.tabs{display:flex;gap:4px;margin-left:12px}
+.tabs a{text-decoration:none;font-size:15px;color:var(--muted);padding:8px 12px;border-radius:10px}
+.tabs a:hover{color:var(--fg);background:var(--soft)}
+.top .grow{flex:1}
+.ca-chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);border:1px dashed var(--line-2);border-radius:10px;padding:8px 12px}
+.ca-chip b{font-family:var(--display);color:var(--fg);font-weight:600}
+@media (max-width:860px){.tabs{display:none}.ca-chip{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:center;padding-block:44px 28px}
+@media (max-width:900px){.hero{grid-template-columns:1fr;padding-block:28px 12px}}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--accent);background:var(--accent-soft);padding:6px 12px;border-radius:999px}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.hero h1{font-size:clamp(40px,6.4vw,72px);line-height:1;margin-top:16px}
+.hero h1 em{font-style:normal;color:var(--accent-2);text-shadow:0 0 28px rgba(47,107,255,.55)}
+.hero .lead{font-size:clamp(17px,1.8vw,19px);color:var(--muted);margin-top:18px;max-width:46ch}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.hero .note{margin-top:14px;font-size:13px;color:var(--dim)}
+
+/* baseplate signature */
+.plate-card{background:var(--surface);border:1px solid var(--line-2);border-radius:24px;box-shadow:var(--glow),var(--shadow);padding:18px;position:relative;overflow:hidden}
+.plate-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.plate-head .t{font-family:var(--display);font-weight:600;font-size:16px}
+.plate-head .t small{display:block;font-family:var(--sans);font-weight:400;font-size:13px;color:var(--muted)}
+.pill-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--live);background:var(--live-soft);padding:5px 10px;border-radius:999px}
+.pill-live i{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--live) 55%,transparent)}100%{box-shadow:0 0 0 7px transparent}}
+.stage{height:280px;display:grid;place-items:center;perspective:900px;margin-top:6px}
+@media (max-width:480px){.stage{height:230px}}
+.plate{position:relative;width:260px;height:260px;transform:rotateX(58deg) rotateZ(45deg);transform-style:preserve-3d}
+@media (max-width:480px){.plate{width:210px;height:210px}}
+.plate .base{position:absolute;inset:0;border-radius:6px;background:
+  radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--b4) 80%,#fff) 0 28%,transparent 31%) 0 0/20px 20px,
+  var(--b4);box-shadow:0 0 0 2px color-mix(in srgb,var(--b4) 70%,#000)}
+.brick{position:absolute;transform-style:preserve-3d;opacity:0;transform:translateZ(160px);transition:transform .55s cubic-bezier(.3,1.4,.5,1),opacity .25s}
+.brick.on{opacity:1;transform:translateZ(var(--z))}
+.brick .f{position:absolute;inset:0;border-radius:3px;background:
+  radial-gradient(circle,color-mix(in srgb,var(--c) 75%,#fff) 0 30%,transparent 33%) 0 0/20px 20px,var(--c)}
+.brick .s1,.brick .s2{position:absolute;background:color-mix(in srgb,var(--c) 70%,#000)}
+.brick .s1{left:0;bottom:0;width:100%;height:14px;transform-origin:bottom;transform:rotateX(-90deg)}
+.brick .s2{right:0;top:0;width:14px;height:100%;transform-origin:right;transform:rotateY(90deg);background:color-mix(in srgb,var(--c) 55%,#000)}
+.meter{margin-top:6px}
+.meter-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.meter-row b{font-family:var(--display);font-weight:600;color:var(--fg);font-size:15px}
+.bar{height:10px;border-radius:999px;background:var(--soft);overflow:hidden;margin-top:6px}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:inherit;transition:width .5s}
+.log{margin-top:12px;background:var(--soft);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted);min-height:44px;display:flex;align-items:center;gap:8px}
+.log code{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);font-size:13px}
+.ex{position:absolute;top:18px;right:18px}
+
+/* sections */
+.sec{padding-block:56px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.sec-head h2{font-size:clamp(28px,3.6vw,40px)}
+.sec-head p{color:var(--muted);max-width:52ch;margin-top:6px}
+.fine-ex{margin-top:14px;font-size:13px;color:var(--dim);text-align:center}
+
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:980px){.bento{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.bento{grid-template-columns:1fr 1fr}.bento .game{grid-column:1/-1}.stat b{font-size:26px}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tile.wide{grid-column:span 2}
+@media (max-width:560px){.tile.wide{grid-column:auto}}
+.stat small{font-size:13px;color:var(--muted)}
+.stat b{display:block;font-family:var(--display);font-weight:600;font-size:34px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--live)}
+.game{cursor:pointer;transition:border-color .15s,transform .15s}
+.game:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.game-top{display:flex;gap:12px;align-items:center;min-width:0}
+.thumb{width:52px;height:52px;border-radius:12px;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:19px;color:#ffffff;background:
+  radial-gradient(circle,rgba(255,255,255,.28) 0 26%,transparent 29%) 0 0/13px 13px,var(--c)}
+.game-top .meta{min-width:0}
+.game-top .name{font-family:var(--display);font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-top .sub{font-size:13px;color:var(--muted)}
+.stage-pill{align-self:flex-start;font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-2)}
+.stage-pill.live{background:var(--live-soft);color:var(--live)}
+.game .bar{margin-top:0}
+.game .row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.game .row b{color:var(--fg);font-weight:500}
+.game .commit{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game .commit code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--fg)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{min-height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);cursor:pointer;font-size:14px;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+
+/* stages ladder */
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media (max-width:900px){.ladder{grid-template-columns:1fr}}
+.rung{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:8px;align-content:start;position:relative}
+.rung .lv{display:flex;align-items:center;gap:8px}
+.rung .lv i{width:30px;height:20px;border-radius:4px;background:
+  radial-gradient(circle,rgba(255,255,255,.35) 0 28%,transparent 31%) 0 0/10px 10px,var(--c)}
+.rung .lv b{font-family:var(--display);font-weight:600;font-size:15px}
+.rung .sol{font-family:var(--display);font-weight:600;font-size:26px}
+.rung p{font-size:14px;color:var(--muted)}
+
+/* launch form */
+.launch{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media (max-width:900px){.launch{grid-template-columns:1fr}}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow);display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font-size:14px;font-weight:500}
+.field .hint{font-size:13px;color:var(--dim)}
+.field input,.field textarea{width:100%;background:var(--bg);border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;min-height:46px;outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{min-height:110px;resize:vertical}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+@media (max-width:480px){.two{grid-template-columns:1fr}}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{min-height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);cursor:pointer;font-size:14px;color:var(--muted)}
+.chips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.err{font-size:13px;color:#ff7a88}
+.preview{display:grid;gap:14px}
+.preview .tile{border-style:dashed}
+.side-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.side-list li{display:flex;gap:10px;font-size:15px;color:var(--muted)}
+.side-list li b{color:var(--fg);font-weight:500}
+.side-list svg{width:20px;height:20px;flex:none;color:var(--accent);margin-top:2px}
+
+/* faq */
+.faq{max-width:760px}
+.faq details{border-bottom:1px solid var(--line);padding-block:16px}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;font-weight:500;font-size:17px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--dim);font-size:22px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{margin-top:8px;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);padding-block:26px 40px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,14,8,.45);z-index:40;opacity:0;transition:opacity .2s}
+.scrim.on{opacity:1}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--surface);z-index:41;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.drawer.on{transform:none}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.x{width:44px;height:44px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg);cursor:pointer;display:grid;place-items:center}
+.drawer-body{padding:18px;overflow:auto;display:grid;gap:16px;align-content:start}
+.steps-mini{display:grid;gap:8px}
+.steps-mini div{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted)}
+.steps-mini i{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line-2);display:grid;place-items:center;font-style:normal;font-size:12px;flex:none}
+.steps-mini .done i{background:var(--live);border-color:var(--live);color:#fff}
+.steps-mini .now i{border-color:var(--accent);color:var(--accent)}
+.steps-mini .done span,.steps-mini .now span{color:var(--fg)}
+.feed{display:grid;gap:8px}
+.feed div{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.feed code{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);font-size:12px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:14px;z-index:60;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="stud" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#c2581c"/><ellipse cx="16" cy="13" rx="8" ry="4" fill="#e9814a"/><path d="M8 13v5c0 2.2 3.6 4 8 4s8-1.8 8-4v-5c0 2.2-3.6 4-8 4s-8-1.8-8-4z" fill="#fffaf2"/></symbol>
+  <symbol id="chk" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top"><img src="pfp.jpg" alt="" width="34" height="34">Studs</a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#builds">Builds</a>
+      <a href="#stages">Stages</a>
+      <a href="#launch">Launch</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="grow"></div>
+    <div class="ca-chip">$STUDS CA <b>soon</b></div>
+    <a class="btn btn-accent" href="#launch">Launch a game</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="wrap hero">
+    <div>
+      <span class="eyebrow"><i></i>Roblox game launchpad</span>
+      <h1>Launch a Roblox game.<br><em>Fees build it.</em></h1>
+      <p class="lead">Every coin on Studs is a Roblox game. Its creator fees pay an AI to script it, build the map and publish it, one stage at a time.</p>
+      <div class="ctas">
+        <a class="btn btn-accent" href="#launch">Launch a game</a>
+        <a class="btn btn-line" href="#builds">See live builds</a>
+      </div>
+      <p class="note">More trading, more fees, faster build.</p>
+    </div>
+
+    <div class="plate-card" aria-label="Example build in progress">
+      <div class="plate-head">
+        <div class="t" id="pTitle">Lava Obby Tycoon<small id="pTick">$LAVA · building</small></div>
+        <span class="pill-live"><i></i>Building</span>
+      </div>
+      <div class="stage"><div class="plate" id="plate"><div class="base"></div></div></div>
+      <div class="meter">
+        <div class="meter-row"><span id="pStage">Stage 3 · Scripts</span><b id="pSol">0.00 SOL</b></div>
+        <div class="bar"><span id="pBar" style="width:0%"></span></div>
+      </div>
+      <div class="log" id="pLog">Waiting for the next fee…</div>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="builds">
+    <div class="sec-head">
+      <div>
+        <h2>Games being built</h2>
+        <p>Each card is a coin. Fees fill the bar, the AI ships the next stage.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filter builds" id="filters">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="building" aria-pressed="false">Building</button>
+        <button type="button" data-f="live" aria-pressed="false">Live on Roblox</button>
+        <button type="button" data-f="new" aria-pressed="false">New</button>
+      </div>
+    </div>
+
+    <div class="bento" id="bento">
+      <div class="tile stat"><small>Games launched</small><b id="sGames">0</b><span>+3 today</span></div>
+      <div class="tile stat"><small>Fees paid to builds</small><b id="sFees">0 SOL</b><span>all-time</span></div>
+      <div class="tile stat"><small>Stages shipped</small><b id="sStages">0</b><span>by the AI</span></div>
+      <div class="tile stat"><small>Live on Roblox</small><b id="sLive">0</b><span>playable now</span></div>
+    </div>
+    <p class="fine-ex">Example data until launch</p>
+  </section>
+
+  <section class="wrap sec" id="stages">
+    <div class="sec-head">
+      <div>
+        <h2>How a game gets built</h2>
+        <p>Fees stack up like bricks. Each stage unlocks when a coin's creator fees reach its total.</p>
+      </div>
+    </div>
+    <div class="ladder">
+      <div class="rung" style="--c:var(--b3)"><div class="lv"><i></i><b>Stage 1</b></div><div class="sol">1 SOL</div><p>Game plan. The AI writes the design doc: loop, rules, rewards and map layout.</p></div>
+      <div class="rung" style="--c:var(--b5)"><div class="lv"><i></i><b>Stage 2</b></div><div class="sol">3 SOL</div><p>Map. Terrain, parts and spawn areas built in Roblox Studio.</p></div>
+      <div class="rung" style="--c:var(--b2)"><div class="lv"><i></i><b>Stage 3</b></div><div class="sol">6 SOL</div><p>Scripts. Luau for the core game: checkpoints, currency, shops, leaderboards.</p></div>
+      <div class="rung" style="--c:var(--b5)"><div class="lv"><i></i><b>Stage 4</b></div><div class="sol">10 SOL</div><p>Playtest. Bots play it, the AI fixes what breaks and balances rewards.</p></div>
+      <div class="rung" style="--c:var(--b1)"><div class="lv"><i></i><b>Stage 5</b></div><div class="sol">15 SOL</div><p>Publish. The game goes live on Roblox, linked from its coin page. Fees after that fund updates.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="launch">
+    <div class="sec-head">
+      <div>
+        <h2>Launch your game</h2>
+        <p>Describe the game. Studs launches its coin on pump.fun and the AI starts building when fees come in.</p>
+      </div>
+    </div>
+    <div class="launch">
+      <form class="form" id="form" novalidate>
+        <div class="two">
+          <div class="field"><label for="gName">Game name</label><input id="gName" maxlength="32" placeholder="Lava Obby Tycoon" autocomplete="off"></div>
+          <div class="field"><label for="gTick">Ticker</label><input id="gTick" maxlength="10" placeholder="LAVA" autocomplete="off"></div>
+        </div>
+        <div class="field">
+          <label id="genreLbl">Genre</label>
+          <div class="chips" role="group" aria-labelledby="genreLbl" id="genres">
+            <button type="button" aria-pressed="true">Obby</button>
+            <button type="button" aria-pressed="false">Tycoon</button>
+            <button type="button" aria-pressed="false">Simulator</button>
+            <button type="button" aria-pressed="false">Horror</button>
+            <button type="button" aria-pressed="false">Tower defense</button>
+            <button type="button" aria-pressed="false">Racing</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="gIdea">What's the game?</label>
+          <textarea id="gIdea" maxlength="400" placeholder="An obby where the floor turns to lava every 30 seconds. Coins from each stage buy upgrades in your tycoon."></textarea>
+          <span class="hint"><span id="ideaCount">0</span>/400 · The AI builds from this, so be specific.</span>
+        </div>
+        <div class="err" id="formErr" hidden></div>
+        <button class="btn btn-accent" type="submit" style="min-height:52px;font-size:16px">Launch game</button>
+      </form>
+
+      <div class="preview">
+        <div class="tile game" id="previewCard" aria-live="polite"></div>
+        <ul class="side-list">
+          <li><svg><use href="#chk"/></svg><span><b>Launches on pump.fun.</b> Your game's coin trades like any other.</span></li>
+          <li><svg><use href="#chk"/></svg><span><b>Creator fees pay the AI.</b> No upfront cost to start a build.</span></li>
+          <li><svg><use href="#chk"/></svg><span><b>Watch it get built.</b> Every stage posts its changes on the game's page.</span></li>
+          <li><svg><use href="#chk"/></svg><span><b>Goes live on Roblox.</b> At 15 SOL in fees the game is published.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="faq">
+    <div class="sec-head"><div><h2>Questions</h2></div></div>
+    <div class="faq">
+      <details><summary>What is Studs?</summary><p>A launchpad where every coin is a Roblox game. The coin's creator fees pay an AI that builds the game in stages until it's live on Roblox.</p></details>
+      <details><summary>Where do the fees go?</summary><p>Creator fees from each coin go into that game's build fund. When the fund reaches the next stage's total, the AI builds that stage.</p></details>
+      <details><summary>What happens after a game is published?</summary><p>Fees keep coming in and pay for updates: new levels, items, events and fixes.</p></details>
+      <details><summary>Who owns the game?</summary><p>The game is published under the Studs Roblox group and linked to its coin. Its page shows every change the AI made.</p></details>
+      <details><summary>What is $STUDS?</summary><p>The token behind the launchpad. The contract address will be posted here at launch.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Studs · Not affiliated with Roblox Corporation · Not financial advice</span>
+    <span>Built on pump.fun</span>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="dTitle" role="dialog">
+  <div class="drawer-head">
+    <div class="game-top" id="dHead"></div>
+    <button class="x" id="dClose" type="button" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="drawer-body" id="dBody"></div>
+</aside>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var STAGES=[{n:"Game plan",sol:1},{n:"Map",sol:3},{n:"Scripts",sol:6},{n:"Playtest",sol:10},{n:"Publish",sol:15}];
+var COLORS=["#2f6bff","#1b3fa8","#5b8cff","#2a3f73","#4b5cff"];
+
+var GAMES=[
+  {name:"Lava Obby Tycoon",tick:"LAVA",genre:"Obby",fees:4.62,age:"2h",c:0,commit:"CheckpointService.lua: save stage on touch"},
+  {name:"Backrooms Hide & Seek",tick:"LVL0",genre:"Horror",fees:16.4,age:"3d",c:4,commit:"v1.3: added Level 2 hallway and flicker lights"},
+  {name:"Pet Sim Ranch",tick:"RANCH",genre:"Simulator",fees:8.1,age:"9h",c:3,commit:"EggHatch.lua: rarity table and hatch animation"},
+  {name:"Skibidi Tower Defense",tick:"TDS",genre:"Tower defense",fees:11.9,age:"1d",c:1,commit:"Playtest: wave 12 too hard, cut boss HP 18%"},
+  {name:"Drift City",tick:"DRIFT",genre:"Racing",fees:2.05,age:"40m",c:2,commit:"Map: highway loop and two ramps placed"},
+  {name:"Sushi Shop Tycoon",tick:"SUSHI",genre:"Tycoon",fees:0.48,age:"6m",c:0,commit:"Design doc: conveyor belt upgrade path drafted"},
+  {name:"Gravity Obby",tick:"GRAV",genre:"Obby",fees:19.7,age:"5d",c:2,commit:"v1.6: weekly event with flipped gravity rooms"},
+  {name:"Mine to Billionaire",tick:"MINE",genre:"Simulator",fees:6.6,age:"14h",c:1,commit:"PickaxeShop.lua: 8 tiers with prices"}
+];
+
+function stageOf(f){var i=0;while(i<STAGES.length&&f>=STAGES[i].sol)i++;return i;}
+function info(g){
+  var done=stageOf(g.fees),live=done>=STAGES.length;
+  if(live)return{live:true,label:"Live on Roblox",pct:100,next:null,done:done};
+  var prev=done?STAGES[done-1].sol:0,next=STAGES[done];
+  return{live:false,label:"Stage "+(done+1)+" · "+next.n,pct:Math.round((g.fees-prev)/(next.sol-prev)*100),next:next,done:done};
+}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function initials(n){return n.split(/\s+/).slice(0,2).map(function(w){return w[0]||"";}).join("").toUpperCase();}
+
+function cardHTML(g,i){
+  var s=info(g);
+  return '<div class="game-top"><div class="thumb" style="--c:'+COLORS[g.c%5]+'">'+esc(initials(g.name))+'</div><div class="meta"><div class="name">'+esc(g.name)+'</div><div class="sub">$'+esc(g.tick)+' · '+esc(g.genre)+' · '+esc(g.age)+'</div></div></div>'+
+    '<span class="stage-pill'+(s.live?' live':'')+'">'+s.label+'</span>'+
+    '<div class="row"><span>'+(s.live?"Update fund":"To next stage")+'</span><b>'+g.fees.toFixed(2)+(s.live?" SOL":" / "+s.next.sol+" SOL")+'</b></div>'+
+    '<div class="bar"><span style="width:'+s.pct+'%"></span></div>'+
+    '<div class="commit">Latest: <code>'+esc(g.commit)+'</code></div>';
+}
+
+var filter="all";
+function render(){
+  var b=$("bento");
+  b.querySelectorAll(".game").forEach(function(n){n.remove();});
+  GAMES.forEach(function(g,i){
+    var s=info(g);
+    if(filter==="building"&&s.live)return;
+    if(filter==="live"&&!s.live)return;
+    if(filter==="new"&&!/m$|^[0-9]h$/.test(g.age))return;
+    var el=document.createElement("div");el.className="tile game";el.tabIndex=0;el.setAttribute("role","button");
+    el.setAttribute("aria-label","Open "+g.name);el.innerHTML=cardHTML(g,i);
+    el.onclick=function(){openDrawer(i);};el.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openDrawer(i);}};
+    b.appendChild(el);
+  });
+  var fees=0,st=0,live=0;GAMES.forEach(function(g){fees+=g.fees;var d=stageOf(g.fees);st+=d;if(d>=5)live++;});
+  countTo($("sGames"),GAMES.length,"");countTo($("sFees"),fees,"SOL",1);countTo($("sStages"),st,"");countTo($("sLive"),live,"");
+}
+function countTo(el,v,unit,dec){
+  var t0=performance.now(),d=dec||0;
+  (function f(t){var p=Math.min(1,(t-t0)/700);el.textContent=(v*p).toFixed(d)+(unit?" "+unit:"");if(p<1)requestAnimationFrame(f);})(t0);
+}
+$("filters").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;filter=b.dataset.f;
+  Array.prototype.forEach.call(this.children,function(c){c.setAttribute("aria-pressed",c===b?"true":"false");});render();});
+
+/* drawer */
+var lastFocus=null;
+function openDrawer(i){
+  var g=GAMES[i],s=info(g);lastFocus=document.activeElement;
+  $("dHead").innerHTML='<div class="thumb" style="--c:'+COLORS[g.c%5]+'">'+esc(initials(g.name))+'</div><div class="meta"><div class="name" id="dTitle">'+esc(g.name)+'</div><div class="sub">$'+esc(g.tick)+' · '+esc(g.genre)+'</div></div>';
+  var steps=STAGES.map(function(st,k){var cls=k<s.done?"done":k===s.done?"now":"";return '<div class="'+cls+'"><i>'+(k<s.done?"✓":k+1)+'</i><span>'+st.n+' · '+st.sol+' SOL</span></div>';}).join("");
+  var feed=[g.commit,"Fee received: 0.08 SOL","Fee received: 0.21 SOL",s.done>1?"Map: spawn area and lobby built":"Design doc started"].map(function(t){return '<div><code>'+esc(t)+'</code></div>';}).join("");
+  $("dBody").innerHTML='<span class="stage-pill'+(s.live?' live':'')+'">'+s.label+'</span>'+
+    '<div><div class="meter-row"><span>Build fund</span><b>'+g.fees.toFixed(2)+' SOL</b></div><div class="bar"><span style="width:'+s.pct+'%"></span></div></div>'+
+    '<div class="steps-mini">'+steps+'</div>'+
+    '<div><h3 style="font-size:16px;margin-bottom:8px">Build log</h3><div class="feed">'+feed+'</div></div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-accent" type="button" id="dBuy">Buy $'+esc(g.tick)+'</button>'+(s.live?'<button class="btn btn-line" type="button" id="dPlay">Play on Roblox</button>':'')+'</div>'+
+    '<p style="font-size:13px;color:var(--dim)">Example data until launch.</p>';
+  $("dBuy").onclick=function(){toast("Trading opens at launch.");};
+  if($("dPlay"))$("dPlay").onclick=function(){toast("Game links go live at launch.");};
+  $("scrim").hidden=false;requestAnimationFrame(function(){$("scrim").classList.add("on");$("drawer").classList.add("on");});
+  $("drawer").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";$("dClose").focus();
+}
+function closeDrawer(){
+  $("scrim").classList.remove("on");$("drawer").classList.remove("on");$("drawer").setAttribute("aria-hidden","true");document.body.style.overflow="";
+  setTimeout(function(){$("scrim").hidden=true;},200);if(lastFocus)lastFocus.focus();
+}
+$("dClose").onclick=closeDrawer;$("scrim").onclick=closeDrawer;
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("drawer").classList.contains("on"))closeDrawer();});
+
+/* launch form */
+var genre="Obby";
+$("genres").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;genre=b.textContent;
+  Array.prototype.forEach.call(this.children,function(c){c.setAttribute("aria-pressed",c===b?"true":"false");});preview();});
+function preview(){
+  var n=$("gName").value.trim()||"Your game",t=($("gTick").value.trim()||"TICKER").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  $("previewCard").innerHTML=cardHTML({name:n,tick:t,genre:genre,fees:0,age:"now",c:n.length,commit:"Waiting for first fees"},0);
+  $("ideaCount").textContent=$("gIdea").value.length;
+}
+["gName","gTick","gIdea"].forEach(function(id){$(id).addEventListener("input",function(){if(id==="gTick")this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,"");$("formErr").hidden=true;preview();});});
+$("form").addEventListener("submit",function(e){
+  e.preventDefault();
+  var miss=[];if(!$("gName").value.trim())miss.push("a game name");if(!$("gTick").value.trim())miss.push("a ticker");if($("gIdea").value.trim().length<20)miss.push("a short description of the game (20+ characters)");
+  if(miss.length){$("formErr").textContent="Add "+miss.join(", ")+" to launch.";$("formErr").hidden=false;return;}
+  toast("Launches open soon. Your idea is ready to go.");
+});
+
+/* hero baseplate */
+var BR=[
+  {x:0,y:0,w:3,h:2,z:0,c:"var(--b1)"},{x:4,y:0,w:2,h:4,z:0,c:"var(--b2)"},{x:7,y:1,w:3,h:3,z:0,c:"var(--b3)"},
+  {x:0,y:3,w:3,h:3,z:0,c:"var(--b5)"},{x:4,y:5,w:4,h:2,z:0,c:"var(--b1)"},{x:9,y:5,w:3,h:3,z:0,c:"var(--b2)"},
+  {x:1,y:8,w:5,h:2,z:0,c:"var(--b3)"},{x:7,y:9,w:2,h:3,z:0,c:"var(--b5)"},
+  {x:0,y:0,w:3,h:2,z:1,c:"var(--b3)"},{x:4,y:1,w:2,h:2,z:1,c:"var(--b1)"},{x:7,y:1,w:3,h:2,z:1,c:"var(--b2)"},
+  {x:1,y:3,w:2,h:3,z:1,c:"var(--b1)"},{x:9,y:5,w:3,h:2,z:1,c:"var(--b5)"},{x:7,y:1,w:2,h:2,z:2,c:"var(--b1)"},
+  {x:4,y:5,w:3,h:2,z:1,c:"var(--b2)"},{x:9,y:6,w:2,h:2,z:2,c:"var(--b3)"}
+];
+var LOGS=["Placed spawn pad","Built lava floor tiles","Wrote <code>LavaTimer.lua</code>","Added 6 checkpoints","Built lobby walls","Wrote <code>Leaderstats.lua</code>","Placed stage 2 jumps","Added shop counter","Wrote <code>TycoonDropper.lua</code>","Raised tower block","Placed coin pickups","Built finish platform","Tuned jump gaps","Wrote <code>Rewards.lua</code>","Painted ramp blocks","Placed trophy room"];
+var plate=$("plate"),bricks=[];
+function size(){return plate.clientWidth/13;}
+BR.forEach(function(b){
+  var el=document.createElement("div");el.className="brick";el.style.setProperty("--c",b.c);
+  el.innerHTML='<div class="s1"></div><div class="s2"></div><div class="f"></div>';
+  plate.appendChild(el);bricks.push({el:el,b:b});
+});
+function layout(){var u=size();bricks.forEach(function(o){var b=o.b;o.el.style.left=(b.x*u)+"px";o.el.style.top=(b.y*u)+"px";o.el.style.width=(b.w*u)+"px";o.el.style.height=(b.h*u)+"px";o.el.style.setProperty("--z",(b.z*14+1)+"px");o.el.querySelector(".f").style.backgroundSize=u+"px "+u+"px";});}
+layout();addEventListener("resize",layout);
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var k=0,fee=0,START=3,END=6;
+function step(){
+  if(k>=bricks.length){setTimeout(function(){bricks.forEach(function(o){o.el.classList.remove("on");});k=0;fee=0;tickUI("Build stage done. Starting next…");setTimeout(step,900);},2600);return;}
+  bricks[k].el.classList.add("on");
+  fee+=(END-START)/bricks.length;
+  tickUI("AI: "+LOGS[k%LOGS.length]);
+  k++;setTimeout(step,reduce?60:700);
+}
+function tickUI(msg){
+  var sol=START+fee;$("pSol").textContent=sol.toFixed(2)+" / 6 SOL";
+  $("pBar").style.width=Math.min(100,Math.round(fee/(END-START)*100))+"%";$("pLog").innerHTML=msg;
+}
+if(reduce){bricks.forEach(function(o){o.el.classList.add("on");});tickUI("AI: Wrote <code>LavaTimer.lua</code>");$("pBar").style.width="64%";$("pSol").textContent="4.62 / 6 SOL";}
+else setTimeout(step,500);
+
+function toast(t){var el=document.createElement("div");el.className="toast";el.setAttribute("role","status");el.textContent=t;document.body.appendChild(el);setTimeout(function(){el.remove();},3000);}
+
+render();preview();
+})();
+</script>
+</body>
+</html>

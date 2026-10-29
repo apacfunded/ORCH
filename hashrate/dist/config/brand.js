@@ -5,7 +5,7 @@ export const BRAND = {
     ticker: 'HASH',
     tagline: 'Every coin runs its own mine.',
     pitch: 'Launch a coin on pump.fun and pick what its creator fees mine. Fees rent real hashpower, and the mined coins are paid out to holders.',
-    siteUrl: 'https://orch.lol/hashrate',
+    siteUrl: 'https://hashpad.online',
     x: null, // CONFIG: e.g. 'https://x.com/rig_pad'
     telegram: null, // CONFIG
     rigMint: null, // CONFIG: $HASH mint once live

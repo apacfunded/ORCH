@@ -10,7 +10,7 @@ const CONFIG={
   botWallet:"",       // claims fees + sends payouts
   top20Wallet:"5GDWSMHMPQASsbMUZRwjPy2qncV5F9jBnmeXMEC6awiH",     // Top 20 bonus wallet
   extraLaunchPrograms:[], // add a program id here only if pump.fun launches need it (e.g. custom pairs)
-  xpMint:"BuncinnNPkhSZwPs8XjFuhPnqUfbmpMzXRBj3m7Ypump",   // $CALLS contract address
+  xpMint:"",   // $CALLS contract address (blank = shows "new CA coming soon")
   reserveWallet:"4mxjihySJSjKD21xWpz6pCMYUQ6HZGyiFbJKbQC6JHGY",   // public $CALLS buyback reserve wallet
   top20Wallet:"5GDWSMHMPQASsbMUZRwjPy2qncV5F9jBnmeXMEC6awiH"      // Top 20 bonus wallet
 };
@@ -457,8 +457,8 @@ function renderXP(){
   const bought=burns.reduce((a,b)=>a+(+b.sol||0),0),burned=burns.reduce((a,b)=>a+(+b.xp||0),0);
   const big=n=>n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":Math.round(n).toLocaleString();
   $id("xpStatus").innerHTML=live?`<span class="xpPill isLive"><i></i>Live</span><a class="btn sig" href="https://pump.fun/coin/${encodeURIComponent(CONFIG.xpMint)}" target="_blank" rel="noopener">Buy $CALLS on pump.fun <span class="arr" aria-hidden="true">→</span></a>`
-    :`<span class="xpPill"><i></i>Not launched yet</span><span class="xpSoon">Launches after the launchpad. Follow <a href="https://x.com/exposurefun" target="_blank" rel="noopener">@exposurefun</a> for the date.</span>`;
-  $id("xpAddr").textContent=live?CONFIG.xpMint:"Posted here on launch day";
+    :`<span class="xpPill"><i></i>New CA coming soon</span><span class="xpSoon">The new $CALLS contract address will be posted here. Follow <a href="https://x.com/exposurefun" target="_blank" rel="noopener">@exposurefun</a> for the drop.</span>`;
+  $id("xpAddr").textContent=live?CONFIG.xpMint:"New address posted here soon";
   $id("xpCaBtns").innerHTML=live?`<button class="btn sm ghost" type="button" id="xpCopy">Copy address</button><a class="btn sm ghost" href="https://solscan.io/token/${encodeURIComponent(CONFIG.xpMint)}" target="_blank" rel="noopener">Solscan ↗</a>`:"";
   $id("xpRes").textContent=(+D.reserve.balance||0).toFixed(2)+" SOL";
   $id("xpBought").textContent=bought.toFixed(2)+" SOL";

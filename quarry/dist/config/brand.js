@@ -9,9 +9,9 @@ export const brand = {
     tagline: "Launch coins paired with the real world.",
     subline: "Launch on pump.fun, pick a commodity, and watch your coin priced in gold, silver, oil, uranium, coffee or cocoa here. Trading happens in SOL on pump.fun.",
     /** CONFIG: platform coin ticker. Shown as "Coming soon" while null. */
-    platformTicker: "QUARY",
+    platformTicker: "QUARRY",
     /** Main coin CA on pump.fun. */
-    mainCoinMint: "DfGGdMDW8kGvU3bzjdLC5QsES829G4jUWqn2u4Sqpump",
+    mainCoinMint: "BYVkngw2muudeMVepb5XsX6fjzxKtJGzRjaY8E6Mpump",
     /** CONFIG: X / Twitter handle without the @. null hides the link. */
     xHandle: null,
     /** CONFIG: Telegram invite URL. null hides the link. */

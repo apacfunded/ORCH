@@ -10,6 +10,7 @@ const CONFIG={
   botWallet:"",       // claims fees + sends payouts
   top20Wallet:"5GDWSMHMPQASsbMUZRwjPy2qncV5F9jBnmeXMEC6awiH",     // Top 20 bonus wallet
   extraLaunchPrograms:[], // add a program id here only if pump.fun launches need it (e.g. custom pairs)
+  hiddenMints:["BuncinnNPkhSZwPs8XjFuhPnqUfbmpMzXRBj3m7Ypump"], // coins hidden from this page (old $CALLS)
   xpMint:"",   // $CALLS contract address (blank = shows "new CA coming soon")
   reserveWallet:"4mxjihySJSjKD21xWpz6pCMYUQ6HZGyiFbJKbQC6JHGY",   // public $CALLS buyback reserve wallet
   top20Wallet:"5GDWSMHMPQASsbMUZRwjPy2qncV5F9jBnmeXMEC6awiH"      // Top 20 bonus wallet
@@ -823,7 +824,7 @@ async function loadState(){
   if(!CONFIG.api)return;
   try{const r=await fetch(CONFIG.api.replace(/\/$/,"")+"/state",{cache:"no-store"});if(!r.ok)throw 0;
     const txt=await r.text();if(txt===LAST_STATE_TXT)return;LAST_STATE_TXT=txt;
-    const j=clean(JSON.parse(txt));if(!j||typeof j!=="object")throw 0;const first=!D.live;D={...D,...j,live:true};
+    const j=clean(JSON.parse(txt));if(!j||typeof j!=="object")throw 0;if(Array.isArray(j.coins))j.coins=j.coins.filter(c=>!CONFIG.hiddenMints.includes(c.mint));const first=!D.live;D={...D,...j,live:true};
     // first load draws everything; later refreshes redraw only the page on screen and mark the rest to redraw when opened
     if(first||!window.CUR_VIEW){renderAll();STALE.clear()}else{VIEWS.forEach(v=>STALE.add(v));renderView(window.CUR_VIEW);if(ME)renderMe()}}catch(e){/* keep last good data; retry on the next tick */}
 }

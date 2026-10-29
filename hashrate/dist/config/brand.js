@@ -8,6 +8,6 @@ export const BRAND = {
     siteUrl: 'https://hashpad.online',
     x: null, // CONFIG: e.g. 'https://x.com/rig_pad'
     telegram: null, // CONFIG
-    rigMint: null, // CONFIG: $HASH mint once live
+    rigMint: 'AidGuStzEAzh9GxpSMvguz4egFhRNP67ZX3fy8vrpump', // $HASH mint
     riskLine: 'Memecoins are high risk and can go to zero. Rented hashpower usually mines a little less than it costs. Nothing here is financial advice.',
 };

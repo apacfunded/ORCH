@@ -7,6 +7,24 @@ import { icon, rigMark } from './Icons.js';
 import { openPalette } from './CommandPalette.js';
 import { connectWallet, disconnectWallet, onWallet, walletAddress } from './Wallet.js';
 import { toast } from './Toasts.js';
+/** $HASH contract address: tap to copy, plus a pump.fun buy link. */
+function caChip(full = false) {
+    const ca = BRAND.rigMint;
+    if (!ca)
+        return null;
+    const copy = h('button', { class: 'ca-chip', type: 'button', title: 'Copy contract address', 'aria-label': `Copy $${BRAND.ticker} contract address ${ca}` }, h('span', { class: 'ca-k' }, 'CA'), h('span', { class: 'ca-v mono' }, full ? ca : short(ca, 4)), icon('copy'));
+    copy.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(ca);
+            toast(`$${BRAND.ticker} CA copied`);
+        }
+        catch {
+            toast(ca);
+        }
+    });
+    const buy = h('a', { class: 'btn sm ca-buy', href: `https://pump.fun/coin/${ca}`, target: '_blank', rel: 'noopener' }, `Buy $${BRAND.ticker}`);
+    return h('span', { class: 'ca-wrap' }, copy, buy);
+}
 const NAV = [['Mines', '/mines'], ['Launch', '/launch'], ['Ledger', '/ledger'], ['Docs', '/docs']];
 function isDark() {
     const t = document.documentElement.dataset.theme;
@@ -14,7 +32,7 @@ function isDark() {
 }
 export function header() {
     const navLinks = NAV.map(([label, path]) => h('a', { href: href(path), 'data-path': path }, label));
-    const mobile = h('nav', { class: 'mobile-nav wrap', 'aria-label': 'Menu', 'data-open': 'false', id: 'mobile-nav' }, NAV.map(([label, path]) => h('a', { href: href(path), onclick: () => closeMenu() }, label)), h('a', { href: href('/link'), onclick: () => closeMenu() }, 'Link payout address'));
+    const mobile = h('nav', { class: 'mobile-nav wrap', 'aria-label': 'Menu', 'data-open': 'false', id: 'mobile-nav' }, NAV.map(([label, path]) => h('a', { href: href(path), onclick: () => closeMenu() }, label)), h('a', { href: href('/link'), onclick: () => closeMenu() }, 'Link payout address'), caChip(true));
     const menuBtn = h('button', { class: 'iconbtn menu-btn', 'aria-label': 'Open menu', 'aria-expanded': 'false', 'aria-controls': 'mobile-nav', type: 'button' }, icon('menu'));
     const closeMenu = () => { mobile.setAttribute('data-open', 'false'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.replaceChildren(icon('menu')); };
     menuBtn.addEventListener('click', () => {
@@ -51,7 +69,7 @@ export function header() {
         }
     });
     onWallet(paint);
-    const el = h('header', { class: 'hdr' }, h('div', { class: 'wrap hdr-row' }, h('a', { class: 'brand', href: href('/'), 'aria-label': `${BRAND.name} home` }, rigMark(), BRAND.name), h('nav', { class: 'nav', 'aria-label': 'Main' }, navLinks), h('span', { class: 'spacer' }), h('button', { class: 'search-btn', type: 'button', onclick: openPalette, 'aria-label': 'Search (Ctrl K)' }, icon('search'), h('span', { class: 'txt' }, 'Search coins'), h('kbd', null, '⌘K')), data().isDemo ? h('span', { class: 'pill warn demo-pill', title: 'All coins, prices and payouts on this site are simulated until launch.' }, 'DEMO DATA') : null, themeBtn, walletBtn, menuBtn), mobile);
+    const el = h('header', { class: 'hdr' }, h('div', { class: 'wrap hdr-row' }, h('a', { class: 'brand', href: href('/'), 'aria-label': `${BRAND.name} home` }, rigMark(), BRAND.name), h('nav', { class: 'nav', 'aria-label': 'Main' }, navLinks), h('span', { class: 'spacer' }), h('button', { class: 'search-btn', type: 'button', onclick: openPalette, 'aria-label': 'Search (Ctrl K)' }, icon('search'), h('span', { class: 'txt' }, 'Search coins'), h('kbd', null, '⌘K')), caChip(), data().isDemo ? h('span', { class: 'pill warn demo-pill', title: 'All coins, prices and payouts on this site are simulated until launch.' }, 'DEMO DATA') : null, themeBtn, walletBtn, menuBtn), mobile);
     const mark = () => {
         const path = '/' + (location.hash.replace(/^#\/?/, '').split('/')[0] || '');
         navLinks.forEach((a) => {
@@ -69,5 +87,5 @@ export function header() {
     return el;
 }
 export function footer() {
-    return h('footer', { class: 'ftr' }, h('div', { class: 'wrap' }, h('div', { class: 'ftr-row' }, h('div', { class: 'brand', style: 'font-size:18px' }, rigMark(), BRAND.name), h('nav', { 'aria-label': 'Footer' }, NAV.map(([l, p]) => h('a', { href: href(p) }, l)), h('a', { href: href('/link') }, 'Link payout'), BRAND.x ? h('a', { href: BRAND.x, target: '_blank', rel: 'noopener' }, 'X') : null, BRAND.telegram ? h('a', { href: BRAND.telegram, target: '_blank', rel: 'noopener' }, 'Telegram') : null)), h('p', { class: 'risk' }, BRAND.riskLine, data().isDemo ? ' This site is showing demo data: every coin, price and payout is simulated.' : '')));
+    return h('footer', { class: 'ftr' }, h('div', { class: 'wrap' }, h('div', { class: 'ftr-row' }, h('div', { class: 'brand', style: 'font-size:18px' }, rigMark(), BRAND.name), h('nav', { 'aria-label': 'Footer' }, NAV.map(([l, p]) => h('a', { href: href(p) }, l)), h('a', { href: href('/link') }, 'Link payout'), BRAND.x ? h('a', { href: BRAND.x, target: '_blank', rel: 'noopener' }, 'X') : null, BRAND.telegram ? h('a', { href: BRAND.telegram, target: '_blank', rel: 'noopener' }, 'Telegram') : null)), BRAND.rigMint ? h('div', { class: 'ftr-ca' }, caChip(true)) : null, h('p', { class: 'risk' }, BRAND.riskLine, data().isDemo ? ' This site is showing demo data: every coin, price and payout is simulated.' : '')));
 }

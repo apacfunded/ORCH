@@ -94,6 +94,20 @@ a.card:hover, .card.hoverable:hover { box-shadow: var(--inner-top), var(--glow);
 .nav a[aria-current="page"] { color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); }
 .hdr .spacer { flex: 1; }
 .search-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px 0 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); color: var(--muted); min-width: 220px; font-size: var(--fs-14); }
+.ca-wrap { display: inline-flex; align-items: center; gap: 6px; }
+.ca-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 13px; cursor: pointer; }
+.ca-chip:hover { border-color: var(--accent); }
+.ca-chip .ca-k { font-weight: 700; color: var(--accent); font-size: 12px; letter-spacing: .04em; }
+.ca-chip .ca-v { font: 500 13px/1 var(--mono); white-space: nowrap; }
+.ca-chip svg { width: 14px; height: 14px; color: var(--muted); flex: none; }
+.ca-buy { min-height: 40px; white-space: nowrap; }
+.ftr-ca { margin: 16px 0 4px; }
+.ftr-ca .ca-wrap { flex-wrap: wrap; max-width: 100%; }
+.ftr-ca .ca-chip { max-width: 100%; }
+.ftr-ca .ca-v, .mobile-nav .ca-v { white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+.mobile-nav .ca-wrap { flex-wrap: wrap; padding: 10px 0; }
+.mobile-nav .ca-chip { max-width: 100%; text-align: left; }
+.mobile-nav .ca-wrap { display: none; }
 .search-btn kbd { margin-left: auto; font: 500 11px/1 var(--mono); border: 1px solid var(--line-2); border-radius: 4px; padding: 3px 5px; color: var(--muted); font-size: 12px; }
 .menu-btn { display: none; }
 .mobile-nav { display: none; }
@@ -453,6 +467,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 32px
   .strip > div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
   .mines-grid, .row2, .deep-stats { grid-template-columns: minmax(0, 1fr); }
   .hdr .demo-pill { display: none; }
+  .hdr-row .ca-wrap { display: none; } .mobile-nav .ca-wrap { display: inline-flex; }
   .search-btn kbd { display: none; } .search-btn { padding: 0 10px; }
   .chart-box { height: 320px; }
   .hdr-row { gap: 8px; }

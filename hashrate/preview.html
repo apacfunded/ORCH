@@ -203,6 +203,20 @@ a.card:hover, .card.hoverable:hover { box-shadow: var(--inner-top), var(--glow);
 .nav a[aria-current="page"] { color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); }
 .hdr .spacer { flex: 1; }
 .search-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px 0 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); color: var(--muted); min-width: 220px; font-size: var(--fs-14); }
+.ca-wrap { display: inline-flex; align-items: center; gap: 6px; }
+.ca-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 13px; cursor: pointer; }
+.ca-chip:hover { border-color: var(--accent); }
+.ca-chip .ca-k { font-weight: 700; color: var(--accent); font-size: 12px; letter-spacing: .04em; }
+.ca-chip .ca-v { font: 500 13px/1 var(--mono); white-space: nowrap; }
+.ca-chip svg { width: 14px; height: 14px; color: var(--muted); flex: none; }
+.ca-buy { min-height: 40px; white-space: nowrap; }
+.ftr-ca { margin: 16px 0 4px; }
+.ftr-ca .ca-wrap { flex-wrap: wrap; max-width: 100%; }
+.ftr-ca .ca-chip { max-width: 100%; }
+.ftr-ca .ca-v, .mobile-nav .ca-v { white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+.mobile-nav .ca-wrap { flex-wrap: wrap; padding: 10px 0; }
+.mobile-nav .ca-chip { max-width: 100%; text-align: left; }
+.mobile-nav .ca-wrap { display: none; }
 .search-btn kbd { margin-left: auto; font: 500 11px/1 var(--mono); border: 1px solid var(--line-2); border-radius: 4px; padding: 3px 5px; color: var(--muted); font-size: 12px; }
 .menu-btn { display: none; }
 .mobile-nav { display: none; }
@@ -562,6 +576,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 32px
   .strip > div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
   .mines-grid, .row2, .deep-stats { grid-template-columns: minmax(0, 1fr); }
   .hdr .demo-pill { display: none; }
+  .hdr-row .ca-wrap { display: none; } .mobile-nav .ca-wrap { display: inline-flex; }
   .search-btn kbd { display: none; } .search-btn { padding: 0 10px; }
   .chart-box { height: 320px; }
   .hdr-row { gap: 8px; }
@@ -778,7 +793,7 @@ const BRAND = {
     siteUrl: 'https://hashpad.online',
     x: null, // CONFIG: e.g. 'https://x.com/rig_pad'
     telegram: null, // CONFIG
-    rigMint: null, // CONFIG: $HASH mint once live
+    rigMint: 'AidGuStzEAzh9GxpSMvguz4egFhRNP67ZX3fy8vrpump', // $HASH mint
     riskLine: 'Memecoins are high risk and can go to zero. Rented hashpower usually mines a little less than it costs. Nothing here is financial advice.',
 };
 
@@ -1653,6 +1668,24 @@ async function copyText(text, label = 'Copied') {
 
 
 
+/** $HASH contract address: tap to copy, plus a pump.fun buy link. */
+function caChip(full = false) {
+    const ca = BRAND.rigMint;
+    if (!ca)
+        return null;
+    const copy = h('button', { class: 'ca-chip', type: 'button', title: 'Copy contract address', 'aria-label': `Copy $${BRAND.ticker} contract address ${ca}` }, h('span', { class: 'ca-k' }, 'CA'), h('span', { class: 'ca-v mono' }, full ? ca : short(ca, 4)), icon('copy'));
+    copy.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(ca);
+            toast(`$${BRAND.ticker} CA copied`);
+        }
+        catch {
+            toast(ca);
+        }
+    });
+    const buy = h('a', { class: 'btn sm ca-buy', href: `https://pump.fun/coin/${ca}`, target: '_blank', rel: 'noopener' }, `Buy $${BRAND.ticker}`);
+    return h('span', { class: 'ca-wrap' }, copy, buy);
+}
 const NAV = [['Mines', '/mines'], ['Launch', '/launch'], ['Ledger', '/ledger'], ['Docs', '/docs']];
 function isDark() {
     const t = document.documentElement.dataset.theme;
@@ -1660,7 +1693,7 @@ function isDark() {
 }
 function header() {
     const navLinks = NAV.map(([label, path]) => h('a', { href: href(path), 'data-path': path }, label));
-    const mobile = h('nav', { class: 'mobile-nav wrap', 'aria-label': 'Menu', 'data-open': 'false', id: 'mobile-nav' }, NAV.map(([label, path]) => h('a', { href: href(path), onclick: () => closeMenu() }, label)), h('a', { href: href('/link'), onclick: () => closeMenu() }, 'Link payout address'));
+    const mobile = h('nav', { class: 'mobile-nav wrap', 'aria-label': 'Menu', 'data-open': 'false', id: 'mobile-nav' }, NAV.map(([label, path]) => h('a', { href: href(path), onclick: () => closeMenu() }, label)), h('a', { href: href('/link'), onclick: () => closeMenu() }, 'Link payout address'), caChip(true));
     const menuBtn = h('button', { class: 'iconbtn menu-btn', 'aria-label': 'Open menu', 'aria-expanded': 'false', 'aria-controls': 'mobile-nav', type: 'button' }, icon('menu'));
     const closeMenu = () => { mobile.setAttribute('data-open', 'false'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.replaceChildren(icon('menu')); };
     menuBtn.addEventListener('click', () => {
@@ -1697,7 +1730,7 @@ function header() {
         }
     });
     onWallet(paint);
-    const el = h('header', { class: 'hdr' }, h('div', { class: 'wrap hdr-row' }, h('a', { class: 'brand', href: href('/'), 'aria-label': `${BRAND.name} home` }, rigMark(), BRAND.name), h('nav', { class: 'nav', 'aria-label': 'Main' }, navLinks), h('span', { class: 'spacer' }), h('button', { class: 'search-btn', type: 'button', onclick: openPalette, 'aria-label': 'Search (Ctrl K)' }, icon('search'), h('span', { class: 'txt' }, 'Search coins'), h('kbd', null, '⌘K')), data().isDemo ? h('span', { class: 'pill warn demo-pill', title: 'All coins, prices and payouts on this site are simulated until launch.' }, 'DEMO DATA') : null, themeBtn, walletBtn, menuBtn), mobile);
+    const el = h('header', { class: 'hdr' }, h('div', { class: 'wrap hdr-row' }, h('a', { class: 'brand', href: href('/'), 'aria-label': `${BRAND.name} home` }, rigMark(), BRAND.name), h('nav', { class: 'nav', 'aria-label': 'Main' }, navLinks), h('span', { class: 'spacer' }), h('button', { class: 'search-btn', type: 'button', onclick: openPalette, 'aria-label': 'Search (Ctrl K)' }, icon('search'), h('span', { class: 'txt' }, 'Search coins'), h('kbd', null, '⌘K')), caChip(), data().isDemo ? h('span', { class: 'pill warn demo-pill', title: 'All coins, prices and payouts on this site are simulated until launch.' }, 'DEMO DATA') : null, themeBtn, walletBtn, menuBtn), mobile);
     const mark = () => {
         const path = '/' + (location.hash.replace(/^#\/?/, '').split('/')[0] || '');
         navLinks.forEach((a) => {
@@ -1715,7 +1748,7 @@ function header() {
     return el;
 }
 function footer() {
-    return h('footer', { class: 'ftr' }, h('div', { class: 'wrap' }, h('div', { class: 'ftr-row' }, h('div', { class: 'brand', style: 'font-size:18px' }, rigMark(), BRAND.name), h('nav', { 'aria-label': 'Footer' }, NAV.map(([l, p]) => h('a', { href: href(p) }, l)), h('a', { href: href('/link') }, 'Link payout'), BRAND.x ? h('a', { href: BRAND.x, target: '_blank', rel: 'noopener' }, 'X') : null, BRAND.telegram ? h('a', { href: BRAND.telegram, target: '_blank', rel: 'noopener' }, 'Telegram') : null)), h('p', { class: 'risk' }, BRAND.riskLine, data().isDemo ? ' This site is showing demo data: every coin, price and payout is simulated.' : '')));
+    return h('footer', { class: 'ftr' }, h('div', { class: 'wrap' }, h('div', { class: 'ftr-row' }, h('div', { class: 'brand', style: 'font-size:18px' }, rigMark(), BRAND.name), h('nav', { 'aria-label': 'Footer' }, NAV.map(([l, p]) => h('a', { href: href(p) }, l)), h('a', { href: href('/link') }, 'Link payout'), BRAND.x ? h('a', { href: BRAND.x, target: '_blank', rel: 'noopener' }, 'X') : null, BRAND.telegram ? h('a', { href: BRAND.telegram, target: '_blank', rel: 'noopener' }, 'Telegram') : null)), BRAND.rigMint ? h('div', { class: 'ftr-ca' }, caChip(true)) : null, h('p', { class: 'risk' }, BRAND.riskLine, data().isDemo ? ' This site is showing demo data: every coin, price and payout is simulated.' : '')));
 }
 
 // ---- dist/components/TickerTape.js

@@ -53,10 +53,13 @@ export class SolanaRpc {
     for (const program of [TOKEN_PROGRAM, TOKEN_2022_PROGRAM]) {
       const filters: unknown[] = [{ memcmp: { offset: 0, bytes: mint } }];
       if (program === TOKEN_PROGRAM) filters.push({ dataSize: 165 });
-      const accts = await this.call<{ account: { data: { parsed: { info: { owner: string; tokenAmount: { uiAmount: number } } } } } }[]>(
-        'getProgramAccounts',
-        [program, { encoding: 'jsonParsed', filters, commitment: 'confirmed' }],
-      );
+      let accts: { account: { data: { parsed: { info: { owner: string; tokenAmount: { uiAmount: number } } } } } }[] = [];
+      try {
+        accts = await this.call('getProgramAccounts', [program, { encoding: 'jsonParsed', filters, commitment: 'confirmed' }]);
+      } catch (e) {
+        // Some RPCs refuse wide queries on one program; pump.fun coins live on Token-2022, so only that one must succeed.
+        if (program === TOKEN_2022_PROGRAM) throw e;
+      }
       for (const a of accts) {
         const info = a.account.data.parsed?.info;
         const amt = info?.tokenAmount?.uiAmount ?? 0;

@@ -11,7 +11,7 @@ const CONFIG={
   top20Wallet:"5GDWSMHMPQASsbMUZRwjPy2qncV5F9jBnmeXMEC6awiH",     // Top 20 bonus wallet
   extraLaunchPrograms:[], // add a program id here only if pump.fun launches need it (e.g. custom pairs)
   hiddenMints:["BuncinnNPkhSZwPs8XjFuhPnqUfbmpMzXRBj3m7Ypump"], // coins hidden from this page (old $CALLS)
-  xpMint:"",   // $CALLS contract address (blank = shows "new CA coming soon")
+  xpMint:"67jccvJsgjG7iDXh9bDB74DauSAD8BHrXEyAat62pump",   // $CALLS contract address (blank = shows "new CA coming soon")
   reserveWallet:"4mxjihySJSjKD21xWpz6pCMYUQ6HZGyiFbJKbQC6JHGY",   // public $CALLS buyback reserve wallet
   top20Wallet:"5GDWSMHMPQASsbMUZRwjPy2qncV5F9jBnmeXMEC6awiH"      // Top 20 bonus wallet
 };

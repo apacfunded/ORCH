@@ -47,7 +47,8 @@ async function outcome(id: string): Promise<{ req?: LaunchReq; state: Outcome | 
   const req = await getJson<LaunchReq>(reqMeta.url);
   if (by('live.json')) return { req, state: await getJson<Outcome>(by('live.json')!.url) };
   if (by('failed.json')) return { req, state: await getJson<Outcome>(by('failed.json')!.url) };
-  if (by('launching.json')) return { req, state: await getJson<Outcome>(by('launching.json')!.url) };
+  const locks = files.filter((f) => /\/launching(-\d+)?\.json$/.test(f.pathname)).sort((a, b) => a.pathname.localeCompare(b.pathname));
+  if (locks.length) return { req, state: await getJson<Outcome>(locks[locks.length - 1].url) };
   return { req, state: null };
 }
 
@@ -59,7 +60,7 @@ export async function launchStatus(id: string) {
   if (state.status === 'live') return { ...base, status: 'live' as const, mint: state.mint, sig: state.sig };
   if (state.status === 'failed') return { ...base, status: 'failed' as const, error: state.error };
   // A launch stuck in "launching" for over 10 minutes is treated as failed so the launcher isn't left hanging.
-  if (Date.now() - state.ts > 10 * 60_000) return { ...base, status: 'failed' as const, error: 'The launch timed out. Contact support with your launch id.' };
+  if (Date.now() - state.ts > 15 * 60_000) return { ...base, status: 'failed' as const, error: 'The launch timed out. Contact support with your launch id.' };
   return { ...base, status: 'launching' as const };
 }
 
@@ -74,7 +75,7 @@ async function pinata(file: Blob, filename: string): Promise<string> {
   return `https://ipfs.io/ipfs/${j.data.cid}`;
 }
 
-async function execute(req: LaunchReq, rpc: SolanaRpc) {
+async function execute(req: LaunchReq, rpc: SolanaRpc): Promise<Coin | null> {
   const creator = creatorFor(req.id);
   const mintKp = mintFor(req.id);
   let imageUri = '';
@@ -92,12 +93,33 @@ async function execute(req: LaunchReq, rpc: SolanaRpc) {
   tx = signSerializedTx(tx, mintKp);
   tx = signSerializedTx(tx, creator);
   const sig = await rpc.sendRaw(tx);
-  await rpc.confirm(sig);
-  const coin: Coin = { mint: mintKp.publicKey, ticker: req.ticker, name: req.name, target: req.target, rent_share: req.rentShare, created_at: Date.now(), creator: creator.publicKey, launchId: req.id, socials: req.socials };
-  await putJson(`coins/${coin.mint}.json`, coin);
-  await putJson(`launches/${req.id}/live.json`, { status: 'live', mint: coin.mint, sig, ts: Date.now() });
+  // Record the sent tx before waiting, so a function timeout can't lose a coin that actually landed.
+  await putJson(`launches/${req.id}/sent.json`, { sig, mint: mintKp.publicKey, ts: Date.now() });
+  try { await rpc.confirm(sig, 25_000); }
+  catch (e) {
+    if (/not confirmed after/.test((e as Error).message)) return null; // still pending: the next tick finishes it
+    throw e;
+  }
+  return finalize(req, mintKp.publicKey, sig);
+}
+
+async function finalize(req: LaunchReq, mint: string, sig: string): Promise<Coin> {
+  const coin: Coin = { mint, ticker: req.ticker, name: req.name, target: req.target, rent_share: req.rentShare, created_at: Date.now(), creator: creatorFor(req.id).publicKey, launchId: req.id, socials: req.socials };
+  await putJson(`coins/${coin.mint}.json`, coin, true);
+  await putJson(`launches/${req.id}/live.json`, { status: 'live', mint: coin.mint, sig, ts: Date.now() }, true);
   await logLine({ mint: coin.mint, kind: 'claim', amount: 0, unit: 'SOL', ref: sig, status: 'done', note: `launched $${req.ticker} on pump.fun` });
   return coin;
+}
+
+/** A launch whose create tx was sent but not yet confirmed: check it and finish or fail it. */
+async function settleSent(id: string, req: LaunchReq, sentUrl: string, rpc: SolanaRpc): Promise<string> {
+  const sent = await getJson<{ sig: string; mint: string; ts: number }>(sentUrl);
+  const r = await rpc.call<{ value: ({ err: unknown; confirmationStatus?: string } | null)[] }>('getSignatureStatuses', [[sent.sig], { searchTransactionHistory: true }]);
+  const st = r.value[0];
+  if (st?.err) { await putJson(`launches/${id}/failed.json`, { status: 'failed', error: `create tx failed: ${JSON.stringify(st.err)}`, ts: Date.now() }); return 'failed on-chain'; }
+  if (st && (st.confirmationStatus === 'confirmed' || st.confirmationStatus === 'finalized')) { const c = await finalize(req, sent.mint, sent.sig); return `live ${c.mint}`; }
+  if (Date.now() - sent.ts > 3 * 60_000) { await putJson(`launches/${id}/failed.json`, { status: 'failed', error: 'create tx was dropped by the network; the SOL is still in the launch wallet', ts: Date.now() }); return 'dropped'; }
+  return 'pending confirmation';
 }
 
 /** Every tick: any launch whose wallet now holds enough SOL gets created. */
@@ -108,9 +130,22 @@ export async function processLaunches(rpc = new SolanaRpc(CFG.rpc)) {
   for (const id of ids) {
     const files = metas.filter((m) => m.pathname.startsWith(`launches/${id}/`));
     const has = (n: string) => files.some((f) => f.pathname.endsWith('/' + n));
-    if (has('live.json') || has('failed.json') || has('launching.json')) continue;
+    if (has('live.json') || has('failed.json')) continue;
     const reqMeta = files.find((f) => f.pathname.endsWith('/req.json'));
     if (!reqMeta) continue;
+    const sentMeta = files.find((f) => f.pathname.endsWith('/sent.json'));
+    const locks = files.filter((f) => /\/launching(-\d+)?\.json$/.test(f.pathname));
+    if (locks.length) {
+      if (sentMeta) {
+        try { out.push({ id, result: await settleSent(id, await getJson<LaunchReq>(reqMeta.url), sentMeta.url, rpc) }); }
+        catch (e) { out.push({ id, result: 'settle error: ' + (e as Error).message }); }
+        continue;
+      }
+      // Locked but never sent: the worker died mid-launch. Retry after 3 minutes, up to 3 attempts.
+      const newest = Math.max(...locks.map((l) => new Date(l.uploadedAt).getTime()));
+      if (Date.now() - newest < 3 * 60_000) continue;
+      if (locks.length >= 3) { await putJson(`launches/${id}/failed.json`, { status: 'failed', error: 'launch did not complete after 3 attempts; the SOL is still in the launch wallet', ts: Date.now() }); out.push({ id, result: 'gave up' }); continue; }
+    }
     const req = await getJson<LaunchReq>(reqMeta.url);
     if (Date.now() - req.ts > 7 * 86400_000) continue;
     try {
@@ -118,10 +153,10 @@ export async function processLaunches(rpc = new SolanaRpc(CFG.rpc)) {
       if (bal + 1e-9 < req.needSol) continue;
       if (!CFG.live) { out.push({ id, result: 'funded (LIVE=false, not launching)' }); continue; }
       // Lock first so a concurrent tick can't launch twice. The write fails if the lock already exists.
-      await putJson(`launches/${id}/launching.json`, { status: 'launching', ts: Date.now() });
+      await putJson(`launches/${id}/launching-${locks.length + 1}.json`, { status: 'launching', ts: Date.now() });
       try {
         const coin = await execute(req, rpc);
-        out.push({ id, result: `live ${coin.mint}` });
+        out.push({ id, result: coin ? `live ${coin.mint}` : 'sent, confirming' });
       } catch (e) {
         await putJson(`launches/${id}/failed.json`, { status: 'failed', error: (e as Error).message, ts: Date.now() });
         out.push({ id, result: 'failed: ' + (e as Error).message });

@@ -1,0 +1,13 @@
+name: hashrate-tick
+# Backstop worker for orch.lol/hashrate: creates funded launches and claims/forwards creator fees
+# even when nobody has the site open. The endpoint is public and rate-limited server-side.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: curl -fsS --max-time 90 https://hashrate-api.vercel.app/api/tick || true

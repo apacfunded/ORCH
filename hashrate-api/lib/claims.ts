@@ -45,11 +45,11 @@ export async function claimAll(rpc = new SolanaRpc(CFG.rpc)) {
   return out;
 }
 
-/** A 60s lock so public ticks can't stampede. Returns false when another tick ran recently. */
-export async function takeTickLock(): Promise<boolean> {
-  const locks = await list('locks/tick-');
+/** Rate-limit locks so public ticks can't stampede: `name` runs at most once per `windowMs`. */
+export async function takeLock(name: string, windowMs: number): Promise<boolean> {
+  const prefix = `locks/${name}-`;
+  const locks = await list(prefix);
   const now = Date.now();
-  const recent = locks.some((l) => now - Number(l.pathname.slice('locks/tick-'.length, -5)) < 60_000);
-  if (recent) return false;
-  try { await putJson(`locks/tick-${now}.json`, { ts: now }); return true; } catch { return false; }
+  if (locks.some((l) => now - Number(l.pathname.slice(prefix.length, -5)) < windowMs)) return false;
+  try { await putJson(`${prefix}${now}.json`, { ts: now }); return true; } catch { return false; }
 }

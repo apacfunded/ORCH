@@ -1313,7 +1313,11 @@ class RigApiData {
             throw new Error(j.error ?? `Launch request failed (${r.status}).`);
         return j;
     }
-    launchStatus(id) { return this.get(`/api/launch/${id}`); }
+    launchStatus(id) {
+        // While someone waits on a launch, push the worker so the coin is created as soon as the SOL lands.
+        fetch(this.base + '/api/tick?claims=0').catch(() => { });
+        return this.get(`/api/launch/${id}`);
+    }
 }
 function nextPayout() { const e = FEES.payoutEveryHours * 3600000; return Math.ceil(Date.now() / e) * e; }
 function hashHue(s) { let h = 0; for (const c of s)

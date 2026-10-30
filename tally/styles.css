@@ -307,12 +307,3 @@ footer{border-top:1px solid var(--line);background:var(--surface);margin-top:28p
   .flap{width:28px;height:44px;font-size:32px}
   .flap.thin{width:12px}
 }
-
-.ca-chip{display:inline-flex;align-items:center;gap:8px;flex:none;border:1px solid #2a3b57;background:#1b2840;color:#c9d4e4;border-radius:999px;padding:3px 6px 3px 12px;font:inherit;font-size:13px;cursor:pointer}
-.ca-chip b{color:#fff;font-weight:600;font-variant-numeric:tabular-nums}
-.ca-chip span{background:#f0bd4a;color:#06101f;border-radius:999px;padding:1px 9px;font-weight:600;font-size:12px}
-.ca-chip:hover{border-color:#f0bd4a}
-.foot .ca{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:6px 6px 6px 12px;min-width:0;max-width:100%;background:var(--bg)}
-.foot .ca code{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg);font-size:13px;min-width:0;flex:1}
-.foot .ca button{border:0;background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 14px;min-height:36px;font-weight:600;font-size:13px;cursor:pointer}
-@media (max-width:520px){.ca-chip b{display:none}}

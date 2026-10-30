@@ -1,0 +1,16 @@
+{
+  "name": "tally-markets",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tally: prediction markets on Pump.fun coins (play-money v1)",
+  "scripts": {
+    "dev": "node scripts/dev-server.js",
+    "dev:mock": "PRICE_SOURCE=mock node scripts/dev-server.js",
+    "test": "PRICE_SOURCE=mock node scripts/engine-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}

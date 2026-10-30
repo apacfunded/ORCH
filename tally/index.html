@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tally · Bet on Pump.fun coins</title>
+<meta name="description" content="Prediction markets on Pump.fun coins. Up/Down rounds from 5 minutes to a day, price ladders and head-to-heads.">
+<meta property="og:title" content="Tally">
+<meta property="og:description" content="Bet on Pump.fun coins. 5-minute rounds to daily closes.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://orch.lol/tally/banner.png">
+<meta property="og:image" content="https://orch.lol/tally/pfp.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script>window.TALLY_API = "https://tally-api.vercel.app";</script>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <button class="icon-btn" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a class="logo" href="#top" aria-label="Tally home">
+      <span class="mark"><svg viewBox="0 0 32 32" aria-hidden="true"><defs><mask id="lmb"><rect x="-10" y="-10" width="60" height="60" fill="#fff"/><circle cx="18.59" cy="18.59" r="2.45" fill="#000"/></mask><mask id="lmw"><rect x="-10" y="-10" width="60" height="60" fill="#fff"/><circle cx="6" cy="6" r="18.6" fill="#000"/><circle cx="18.59" cy="18.59" r="2.45" fill="#000"/></mask></defs><rect width="32" height="32" rx="8" fill="#0c1626"/><g transform="translate(16 16) scale(.86) translate(-17.1 -17.15)"><path d="M6 6H23A17 17 0 0 1 6 23Z" fill="#2563eb" mask="url(#lmb)"/><path d="M11.4 10.3H28.2V24.8A3.5 3.5 0 0 1 24.7 28.3H11.4Z" fill="#fff" mask="url(#lmw)"/><circle cx="18.59" cy="18.59" r="1.35" fill="#fbbf24"/></g></svg></span>
+      <span class="word"><span class="wm">Ta<span class="ll">ll</span>y</span><small>Every call, counted.</small></span>
+    </a>
+    <nav aria-label="Main" id="mainnav">
+      <a href="#top" data-sec="top" aria-current="true">Live</a>
+      <a href="#markets" data-sec="markets">Coins</a>
+      <a href="#mine" data-sec="mine">My bets</a>
+      <a href="#results" data-sec="results">Results</a>
+      <a href="#how" data-sec="how">How it works</a>
+    </nav>
+    <div class="grow"></div>
+    <label class="search" for="q"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search coin or CA" autocomplete="off" aria-label="Search coins"><kbd>/</kbd></label>
+    <div class="wallet-wrap" id="wallet-wrap">
+      <button class="btn btn-primary wallet" id="connect" type="button" aria-label="Connect wallet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h12v2"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 13.5h2" stroke-linecap="round"/></svg><span class="lbl">Connect</span></button>
+      <button class="wallet-pill" id="wallet-pill" type="button" aria-haspopup="menu" aria-expanded="false" hidden><span class="dot2" id="wp-ic"></span><span><span id="wp-addr"></span><small id="wp-bal"></small></span></button>
+      <div class="menu" id="wallet-menu" role="menu" hidden>
+        <a href="#mine" role="menuitem">My bets</a>
+        <button type="button" role="menuitem" id="copy-addr">Copy address</button>
+        <button type="button" role="menuitem" id="disconnect">Disconnect</button>
+      </div>
+    </div>
+  </div>
+  <div class="drawer" id="drawer" hidden>
+    <div class="wrap">
+      <label class="search" for="q2"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q2" type="search" placeholder="Search coin or CA" autocomplete="off" aria-label="Search coins"></label>
+      <a href="#top">Live</a><a href="#markets">Coins</a><a href="#mine">My bets</a><a href="#results">Results</a><a href="#how">How it works</a>
+    </div>
+  </div>
+  <div class="ribbon"><div class="wrap">
+    <span class="play" title="Bets use free play SOL until on-chain pools launch">Play mode</span>
+    <span class="next"><span class="live" aria-hidden="true"></span>Next 5m close <b id="h-next">--</b></span>
+    <span class="stat">In pools <b id="h-vol">--</b></span>
+    <span class="stat hide-sm">Open markets <b id="h-open">--</b></span>
+    <span class="sep hide-sm" aria-hidden="true"></span>
+    <div class="feed" id="feed"></div>
+  </div></div>
+  <div class="banner" id="banner" hidden><div class="wrap" id="banner-txt"></div></div>
+</header>
+
+<main id="top">
+  <section class="wrap hero" aria-label="Selected market">
+    <article class="card feature" id="feature">
+      <div class="empty-state" id="feature-empty"><b>Loading live markets…</b>Prices come from DexScreener and refresh every few seconds.</div>
+      <div id="feature-body" hidden>
+        <div class="feature-top">
+          <span class="tag"><span class="dot" aria-hidden="true"></span><span id="f-kind"></span></span>
+          <span class="closes"><span id="f-leftlbl">Betting closes in</span> <b class="num" id="f-left">--</b></span>
+        </div>
+        <h1 id="f-q" style="margin:18px 0"></h1>
+        <div class="who" id="f-who"></div>
+        <div class="tf" id="f-tf" role="group" aria-label="Round length" style="margin-top:18px"></div>
+        <div class="score" aria-live="polite" style="margin-top:18px">
+          <div><div class="k" id="f-nowlbl">Market cap</div><div class="flaps num" id="f-now"></div></div>
+          <div class="line"><div class="k" id="f-linelbl">Line</div><div class="flaps num" id="f-line"></div></div>
+          <div class="chartbox">
+            <div class="k" id="f-chartlbl">Recent</div>
+            <svg id="f-chart" viewBox="0 0 300 84" preserveAspectRatio="none" role="img" aria-label="Price chart with the line marked"></svg>
+            <div class="chart-txt num"><span id="f-chg"></span><span id="f-need"></span></div>
+          </div>
+        </div>
+        <div class="split" style="margin-top:18px">
+          <div class="split-bar"><div id="f-bar"></div></div>
+          <div class="split-lab num"><span class="y" id="f-y"></span><span id="f-pool"></span><span class="n" id="f-n"></span></div>
+        </div>
+        <div class="ladder" id="f-ladder" style="margin-top:18px"></div>
+        <details class="rules" style="margin-top:18px">
+          <summary>Rules, data source and refunds</summary>
+          <dl>
+            <dt>Closes</dt><dd id="r-close"></dd>
+            <dt>Resolves YES if</dt><dd id="r-rule"></dd>
+            <dt>How we measure</dt><dd>Market cap comes from the coin's most liquid pair on DexScreener, recorded every 20 seconds. Each market settles on the recorded value closest to its close time (within 90 seconds).</dd>
+            <dt>Locks</dt><dd>Betting stops 1 minute before close, or 5% of the round for longer rounds (72 minutes for daily markets).</dd>
+            <dt>Refunds</dt><dd>Stakes come back in full if nobody took the other side, or if price data is missing at close.</dd>
+          </dl>
+        </details>
+      </div>
+    </article>
+
+    <form class="card slip" id="slip" novalidate>
+      <div><span class="eyebrow">Bet slip · play SOL</span><h2>Pick your side</h2><div class="mkt" id="slip-mkt"></div></div>
+      <div class="sides" role="group" aria-label="Side">
+        <button type="button" class="side yes" id="pick-yes" aria-pressed="true"><b>Yes</b><span class="mult num" id="m-yes"></span><small id="s-yes"></small></button>
+        <button type="button" class="side no" id="pick-no" aria-pressed="false"><b>No</b><span class="mult num" id="m-no"></span><small id="s-no"></small></button>
+      </div>
+      <div class="field">
+        <label for="amount">Stake</label>
+        <div class="amt"><input id="amount" type="text" inputmode="decimal" value="0.5" autocomplete="off"><span>SOL</span></div>
+        <div class="quick"><button type="button" data-a="0.1">0.1</button><button type="button" data-a="0.5">0.5</button><button type="button" data-a="1">1</button><button type="button" data-a="5">5</button></div>
+      </div>
+      <div class="bal-line" id="bal-line" hidden><span>Balance <b class="num" id="bal"></b> play SOL</span><button type="button" class="link-btn" id="refill" hidden>Claim 10 play SOL</button></div>
+      <p class="err" id="err" role="alert"></p>
+      <div class="est num">
+        <div><span>Your share of the side</span><b id="e-share"></b></div>
+        <div><span>Fee on winnings</span><b>3%</b></div>
+        <div class="win"><span>You win</span><b id="e-pay"></b></div>
+      </div>
+      <button class="btn btn-primary" type="submit" id="place">Connect wallet to bet</button>
+      <p class="fine" id="slip-fine">Multipliers move as others bet. If nobody takes the other side, your stake comes back. No early cash-out.</p>
+    </form>
+  </section>
+
+  <section class="wrap block" id="markets">
+    <div class="head">
+      <div><span class="eyebrow" id="coins-eyebrow">Live from DexScreener</span><h2>Coins</h2></div>
+      <div class="tabs" role="group" aria-label="Filter markets">
+        <button class="tab" type="button" data-f="all" aria-pressed="true">All markets</button>
+        <button class="tab" type="button" data-f="updown" aria-pressed="false">Up / Down</button>
+        <button class="tab" type="button" data-f="ladder" aria-pressed="false">Price ladder</button>
+        <button class="tab" type="button" data-f="vs" aria-pressed="false">Head to head</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="wrap block" id="mine">
+    <div class="card">
+      <div class="card-head"><h3>My bets</h3><span class="eyebrow" id="mine-sum"></span></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Market</th><th>Side</th><th>Stake</th><th>Status</th><th style="text-align:right">Paid</th></tr></thead>
+        <tbody id="mine-rows"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="wrap block duo">
+    <div class="card" id="results">
+      <div class="card-head"><h3>Settled</h3><span class="eyebrow">Latest results</span></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Market</th><th>Result</th><th>Pool</th><th>Close</th></tr></thead>
+        <tbody id="settled"></tbody>
+      </table></div>
+    </div>
+    <div class="card" id="leaders">
+      <div class="card-head"><h3>Top players</h3><span class="eyebrow">Play SOL</span></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>#</th><th>Wallet</th><th>Hit rate</th><th style="text-align:right">P&amp;L</th></tr></thead>
+        <tbody id="board"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="wrap block" id="how">
+    <div class="head"><div><span class="eyebrow">Chart to payout</span><h2>How it works</h2></div></div>
+    <ol class="steps">
+      <li class="card"><h3>Connect a wallet</h3><p>Sign in with Phantom, Solflare or Backpack. Signing in is a free message, not a transaction. You start with 10 play SOL.</p></li>
+      <li class="card"><h3>Back a side</h3><p>Every coin runs Up/Down rounds from 5 minutes to a day, a daily price ladder and head-to-heads. Your multiplier moves as the pool fills.</p></li>
+      <li class="card"><h3>Get paid on the chart</h3><p>At close we read the coin's market cap and settle. Winners split the losing side, less 3% of winnings. One-sided rounds refund.</p></li>
+    </ol>
+    <div class="card faq">
+      <details><summary>Is this real money?</summary><p>Not yet. Tally runs on play SOL while the on-chain pools are built. Your wins, losses and leaderboard rank are real; the SOL isn't.</p></details>
+      <details><summary>Where do prices come from?</summary><p>DexScreener, using each coin's most liquid pair. We record market cap every 20 seconds and settle on the reading closest to close.</p></details>
+      <details><summary>Why can't I bet right before close?</summary><p>Betting locks 1 minute before a short round ends, and 5% of the round for longer ones, so nobody can bet once the answer is obvious.</p></details>
+      <details><summary>Which coins are listed?</summary><p>Only coins trading at least $1M a day. 5- and 15-minute rounds need $5M a day, so a single wallet can't push the price to win a bet.</p></details>
+      <details><summary>How is the payout worked out?</summary><p>Winners get their stake back plus a share of the losing pool equal to their share of the winning pool. The 3% fee comes out of winnings only, never the stake.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>Play-money beta. Not affiliated with Pump.fun or any listed coin. Not financial advice.</span>
+    <span>© 2026 Tally</span>
+  </div>
+</footer>
+
+<div class="modal-back" id="wallet-modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wm-title">
+    <h2 id="wm-title">Connect a wallet</h2>
+    <p>You'll sign a short message to prove it's yours. It's free and doesn't move any funds.</p>
+    <div id="wallet-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button type="button" class="btn" id="wm-close">Cancel</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="app.js" defer></script>
+</body>
+</html>

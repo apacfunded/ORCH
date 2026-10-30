@@ -250,7 +250,7 @@
           <span class="px num">${c.mc ? '$' + mcS(c.mc) : '—'}<small class="${ch >= 0 ? 'up' : 'down'}">${c.mc ? (ch >= 0 ? '+' : '') + ch.toFixed(1) + '%' : ''}</small></span></button>
         <div class="coin-meta num"><span>${all.length} markets · vol $${mcS(c.vol24)}</span><span>${f2(pool)} SOL in pools</span></div>
         ${list.length ? `<ul class="rows">${list.map(m => `<li class="row ${m.id === curId ? 'cur' : ''}"><span class="lbl num">${esc(rowLabel(m, c.sym))}<small>${locked(m) ? 'Locked · ' : ''}<span data-close="${esc(m.id)}">${left(m.close)}</span></small></span>${oddBtns(m)}</li>`).join('')}</ul>`
-          : `<p class="fine">${c.stale ? 'Waiting for price data.' : c.vol24 < 1e6 ? 'Not enough trading volume for markets right now.' : 'Next rounds open shortly.'}</p>`}
+          : `<p class="fine">${c.stale ? 'Waiting for price data.' : c.vol24 < 5e4 ? 'Not enough trading volume for markets right now.' : 'Next rounds open shortly.'}</p>`}
       </article>`;
     }).join('');
     if (cards.trim()) $('grid').innerHTML = cards;

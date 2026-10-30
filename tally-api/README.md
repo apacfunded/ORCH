@@ -68,8 +68,8 @@ Without Upstash settings it uses memory, so data resets when you restart.
   for 4h, 72 min for daily).
 - Payout: stake back + your share of the losing side, minus 3% of winnings.
   One-sided rounds and missing price data refund in full.
-- Risk gates: a coin needs $1M+ daily volume for any market and $5M+ for
-  5m/15m rounds. Edit in `lib/config.js`.
+- Risk gates (play mode): a coin needs $50K+ on-chain daily volume for any market and $250K+ for
+  5m/15m rounds. Raise MIN_VOL_24H / MIN_VOL_24H_FAST (env vars) before real money.
 - When the server first starts mid-round, it skips rounds that are more than
   25% done and opens the next ones on the clock, so the first 5-minute rounds
   can take a few minutes to appear.

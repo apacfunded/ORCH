@@ -7,8 +7,8 @@ export const MIN_BET = 0.01;
 export const MAX_BET = 25;
 
 // Risk gates: a coin only gets markets if it trades enough to be hard to push around.
-export const MIN_VOL_24H = 1_000_000;       // USD, any market
-export const MIN_VOL_24H_FAST = 5_000_000;  // USD, needed for 5m and 15m rounds
+export const MIN_VOL_24H = Number(process.env.MIN_VOL_24H || 50_000);        // USD on-chain, any market (raise before real money)
+export const MIN_VOL_24H_FAST = Number(process.env.MIN_VOL_24H_FAST || 250_000); // USD on-chain, needed for 5m and 15m rounds
 
 export const TF = { '5m': 300_000, '15m': 900_000, '1h': 3_600_000, '4h': 14_400_000, '1d': 86_400_000 };
 export const TF_ORDER = ['5m', '15m', '1h', '4h', '1d'];
@@ -21,9 +21,9 @@ export const COINS = [
   { sym: 'FARTCOIN', name: 'Fartcoin',            mint: '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump', color: '#c48a12', tfs: ['5m', '15m', '1h', '4h', '1d'] },
   { sym: 'MOODENG',  name: 'Moo Deng',            mint: 'ED5nyyWEzpPPiWimP8vYm7sD7TD3LAt3Q3gRTWHzPJBY', color: '#db2777', tfs: ['5m', '15m', '1h', '4h', '1d'] },
   { sym: 'PNUT',     name: 'Peanut the Squirrel', mint: '2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump', color: '#ea580c', tfs: ['15m', '1h', '4h', '1d'] },
-  { sym: 'ARC',      name: 'AI Rig Complex',      mint: '61V8vBaqAGMpgDQi4JcAwo1dmBGHsyhzodcPqnEVpump', color: '#2563eb', tfs: ['15m', '1h', '4h', '1d'] },
+  { sym: 'ARC',      name: 'AI Rig Complex',      mint: '61V8vBaqAGMpgDQi4JcAwo1dmBGHsyhzodcPqnEVpump', color: '#2563eb', tfs: ['5m', '15m', '1h', '4h', '1d'] },
   { sym: 'BAN',      name: 'Comedian',            mint: '9PR7nCP9DpcUotnDPVLUBUZKu5WAYkwrCUx9wDnSpump', color: '#ca8a04', tfs: ['1h', '4h', '1d'] },
-  { sym: 'ZEREBRO',  name: 'Zerebro',             mint: '8x5VqbHA8D7NkD52uNuS5nnt3PwA8pLD34ymskeSo2Wn', color: '#7c3aed', tfs: ['1h', '4h', '1d'] },
+  { sym: 'ZEREBRO',  name: 'Zerebro',             mint: '8x5VqbHA8D7NkD52uNuS5nnt3PwA8pLD34ymskeSo2Wn', color: '#7c3aed', tfs: ['15m', '1h', '4h', '1d'] },
   { sym: 'GOAT',     name: 'Goatseus Maximus',    mint: 'CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump', color: '#0f9d6b', tfs: ['1h', '4h', '1d'] }
 ];
 

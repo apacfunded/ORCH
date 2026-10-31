@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Afterlife is the Revive Burn launchpad on Solana. When a coin dumps past its trigger, its own creator fees buy it back and burn it.">
+<meta property="og:title" content="Afterlife — Coins that come back">
+<meta property="og:description" content="The Revive Burn launchpad on Solana. Dump past the trigger and the coin's own fees buy it back and burn it.">
+<meta property="og:image" content="https://orch.lol/afterlife/og.png">
+<meta property="og:url" content="https://orch.lol/afterlife/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@afterlife_pad">
+<meta name="twitter:title" content="Afterlife — Coins that come back">
+<meta name="twitter:description" content="The Revive Burn launchpad on Solana. Dump past the trigger and the coin's own fees buy it back and burn it.">
+<meta name="twitter:image" content="https://orch.lol/afterlife/og.png">
+<meta name="theme-color" content="#0a0d1c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 120 130%27%3E%3Cpath d=%27M60 8C33 8 14 29 14 58v58l11-9 12 9 11-9 12 9 12-9 11 9 12-9 11 9V58C106 29 87 8 60 8Z%27 fill=%27%233fe0c0%27 stroke=%27%2306081a%27 stroke-width=%276%27/%3E%3Cellipse cx=%2744%27 cy=%2758%27 rx=%279%27 ry=%2712%27 fill=%27%2306081a%27/%3E%3Cellipse cx=%2776%27 cy=%2758%27 rx=%279%27 ry=%2712%27 fill=%27%2306081a%27/%3E%3Cpath d=%27M46 82q14 14 28 0%27 fill=%27none%27 stroke=%27%2306081a%27 stroke-width=%276%27 stroke-linecap=%27round%27/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Afterlife Launchpad</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cartoon Halloween world. Fixed parallax night sky (canvas: stars, fog, bats, embers) + SVG graveyard horizon.
+   Sticker cards: thick ink outlines, hard offset shadows, squash/stretch hovers. One hero instrument: the Test Coin lab. Dark by design. */
+:root{
+  --night:#0a0d1c; --night2:#111630; --surface:#171d3a; --ink:#06081a; --line:#2a325c;
+  --teal:#3fe0c0; --teal-dk:#1aa98d; --pumpkin:#ff8a3d; --pumpkin-dk:#d9631c; --potion:#a66cff; --potion-dk:#6f3fd1;
+  --bone:#f4efe3; --bone-dim:#b8b3c9; --dim:#7d79a0; --red:#ff4d6d; --moon:#fff1c2;
+  --display:"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --pop:cubic-bezier(.34,1.56,.64,1); --ease:cubic-bezier(.22,.8,.2,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:var(--night);color:var(--bone);font-family:var(--body);font-size:17px;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:90;background:var(--night)}
+a{color:inherit}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pumpkin);outline-offset:3px;border-radius:8px}
+::selection{background:var(--pumpkin);color:var(--ink)}
+.wrap{position:relative;max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.display{font-family:var(--display);font-weight:400;letter-spacing:.01em;line-height:1}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+h1,h2,h3{margin:0}
+
+/* ===== sky & world ===== */
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.moon{position:fixed;top:calc(74px + 2vh);right:3vw;width:min(12vw,110px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 38% 36%,#fff8dc,var(--moon) 55%,#e9d38f);box-shadow:0 0 60px 20px rgba(255,241,194,.18),0 0 160px 60px rgba(255,241,194,.08);z-index:0;pointer-events:none}
+.moon::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 62% 58%,rgba(0,0,0,.08) 0 10%,transparent 11%),radial-gradient(circle at 30% 66%,rgba(0,0,0,.07) 0 6%,transparent 7%),radial-gradient(circle at 70% 28%,rgba(0,0,0,.06) 0 5%,transparent 6%)}
+.world{position:fixed;left:0;right:0;bottom:0;height:34vh;min-height:220px;z-index:0;pointer-events:none;opacity:.85}
+.world svg{position:absolute;bottom:0;left:0;width:100%;height:100%;display:block}
+.tree{transform-box:fill-box;transform-origin:50% 100%;animation:sway 7s ease-in-out infinite}
+.tree.t2{animation-duration:9s;animation-delay:-3s}
+@keyframes sway{50%{transform:rotate(1.6deg)}}
+.lantern{cursor:pointer;pointer-events:auto}
+.lantern .glow{animation:flicker 2.2s steps(1,end) infinite}
+.lantern.l2 .glow{animation-delay:-.7s;animation-duration:1.7s}
+@keyframes flicker{0%,100%{opacity:1}12%{opacity:.75}24%{opacity:.95}40%{opacity:.7}55%{opacity:1}70%{opacity:.85}}
+.lantern.smashed .glow{opacity:.15!important;animation:none}
+.lantern.laugh{animation:laugh .5s var(--pop)}
+@keyframes laugh{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0) rotate(5deg)}}
+main,header,footer{position:relative;z-index:1}
+
+/* ===== header ===== */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(10,13,28,.86);backdrop-filter:blur(10px);border-bottom:3px solid var(--ink)}
+.bar{display:flex;align-items:center;gap:28px;height:70px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-size:24px;letter-spacing:.02em;color:var(--bone)}
+.brand .gm{width:38px;height:38px;transition:transform .5s var(--pop)}
+.brand:hover .gm{transform:rotate(-12deg) scale(1.12)}
+nav{display:flex;gap:4px;margin-left:auto}
+nav a{text-decoration:none;color:var(--bone-dim);font-weight:700;font-size:15px;padding:8px 12px;border-radius:10px;transition:background .2s,color .2s,transform .2s var(--pop)}
+nav a:hover{color:var(--bone);background:var(--night2);transform:translateY(-2px) rotate(-1deg)}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 22px;border-radius:14px;border:3px solid var(--ink);font-family:var(--display);font-size:18px;letter-spacing:.02em;text-decoration:none;cursor:pointer;color:var(--ink);background:var(--bone);box-shadow:4px 4px 0 var(--ink);transition:transform .18s var(--pop),box-shadow .18s,background .2s;white-space:nowrap}
+.btn:hover{transform:translate(-2px,-3px) rotate(-1deg);box-shadow:7px 8px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn-teal{background:var(--teal)} .btn-teal:hover{background:#6cf0d6}
+.btn-pump{background:var(--pumpkin)} .btn-pump:hover{background:#ffa36a}
+.btn-ghost{background:var(--surface);color:var(--bone)} .btn-ghost:hover{background:#1f2750}
+.btn-red{background:var(--red);color:var(--ink)} .btn-red:hover{background:#ff7591}
+.btn-sm{min-height:40px;padding:0 14px;font-size:15px;border-width:2px;box-shadow:3px 3px 0 var(--ink)}
+.btn svg{flex:none}
+.hdr-actions{display:flex;gap:10px;align-items:center}
+.mute{width:44px;height:44px;border-radius:12px;border:3px solid var(--ink);background:var(--surface);color:var(--bone);display:grid;place-items:center;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .18s var(--pop)}
+.mute:hover{transform:translate(-1px,-2px)}
+.mute[aria-pressed="true"]{background:var(--teal);color:var(--ink)}
+@media (max-width:960px){nav{display:none}}
+@media (max-width:520px){.hdr-actions .btn{display:none}.bar{gap:12px}.hdr-actions{margin-left:auto}}
+
+/* ===== reveal ===== */
+.reveal{transform:translateY(22px) scale(.985);transition:transform .9s var(--pop)}
+.reveal.in{transform:none}
+
+/* ===== sticker cards ===== */
+.card{position:relative;background:var(--surface);border:3px solid var(--ink);border-radius:22px;box-shadow:6px 6px 0 var(--ink);transition:transform .25s var(--pop),box-shadow .25s}
+.card.hov:hover{transform:translate(-2px,-4px) rotate(-.6deg) scale(1.01);box-shadow:9px 11px 0 var(--ink)}
+.tilt{transition:transform .35s var(--pop)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:2px solid var(--ink);font-family:var(--display);font-size:13px;letter-spacing:.06em;text-transform:uppercase;box-shadow:3px 3px 0 var(--ink)}
+.badge i{width:8px;height:8px;border-radius:50%;background:currentColor;animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.25}}
+.b-pump{background:var(--pumpkin);color:var(--ink)} .b-teal{background:var(--teal);color:var(--ink)} .b-potion{background:var(--potion);color:var(--ink)} .b-bone{background:var(--bone);color:var(--ink)}
+
+/* ===== hero ===== */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:center;padding-block:64px 40px;min-height:0}
+.hero h1{font-size:clamp(54px,8vw,116px);line-height:.92;text-shadow:5px 6px 0 var(--ink);text-wrap:balance;margin:18px 0 20px}
+.hero h1 .l2{color:var(--teal)}
+.hero h1 .l2 span{display:inline-block;transition:transform .4s var(--pop)}
+.hero h1 .l2 span:hover{transform:translateY(-8px) rotate(-6deg);color:var(--pumpkin)}
+.lede{font-size:clamp(18px,1.6vw,21px);font-weight:700;color:var(--bone-dim);max-width:44ch;margin:0 0 28px}
+.ctas{display:flex;gap:14px;flex-wrap:wrap}
+.stage{position:relative;aspect-ratio:1;max-width:460px;margin-inline:auto;width:100%;display:grid;place-items:center}
+.stage .ring{position:absolute;inset:4%;border-radius:50%;border:3px dashed rgba(166,108,255,.45);animation:spin 40s linear infinite}
+.stage .ring.r2{inset:16%;border-color:rgba(63,224,192,.35);animation-direction:reverse;animation-duration:60s;border-style:dotted}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stage .aura{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle,rgba(63,224,192,.35),rgba(63,224,192,0) 70%);animation:breathe 4.5s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.12);opacity:.75}}
+.mascot{position:relative;width:62%;cursor:pointer;animation:float 5.5s ease-in-out infinite;filter:drop-shadow(0 22px 30px rgba(0,0,0,.6));transition:transform .4s var(--pop)}
+.mascot:hover{transform:scale(1.05) rotate(-3deg)}
+.mascot.boo{animation:boo .7s var(--pop)}
+@keyframes float{50%{transform:translateY(-16px)}}
+@keyframes boo{25%{transform:scale(1.25,.8)}55%{transform:scale(.9,1.2) rotate(8deg)}80%{transform:scale(1.05,.97) rotate(-4deg)}}
+.mascot img{width:100%;display:block;border-radius:28%;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.eye{transform-box:fill-box;transform-origin:center;animation:wink 5s infinite}
+@keyframes wink{0%,42%,46%,100%{transform:scaleY(1)}44%{transform:scaleY(.08)}}
+.speech{position:absolute;top:8%;right:4%;background:var(--bone);color:var(--ink);border:3px solid var(--ink);border-radius:16px;padding:8px 14px;font-family:var(--display);font-size:20px;box-shadow:4px 4px 0 var(--ink);opacity:0;transform:scale(.6) rotate(8deg);transition:opacity .25s,transform .35s var(--pop);pointer-events:none}
+.speech::after{content:"";position:absolute;left:18px;bottom:-14px;border:8px solid transparent;border-top:10px solid var(--ink)}
+.speech.on{opacity:1;transform:none}
+.orbit{position:absolute;width:52px;height:52px;animation:orbit 14s linear infinite;transform-origin:50% 50%}
+.orbit svg{width:100%;height:100%;filter:drop-shadow(0 4px 0 var(--ink))}
+@keyframes orbit{from{transform:rotate(0) translateX(190px) rotate(0)}to{transform:rotate(360deg) translateX(190px) rotate(-360deg)}}
+.orbit.o2{animation-duration:19s;animation-delay:-7s;width:40px;height:40px}
+@media (max-width:900px){.hero{grid-template-columns:1fr;padding-block:36px 24px;gap:28px}.stage{max-width:320px;order:-1}.orbit{animation-name:orbit-sm}@keyframes orbit-sm{from{transform:rotate(0) translateX(130px) rotate(0)}to{transform:rotate(360deg) translateX(130px) rotate(-360deg)}}}
+
+/* ===== ticker ===== */
+.ticker{border-block:3px solid var(--ink);background:var(--pumpkin);color:var(--ink);overflow:hidden;white-space:nowrap;transform:rotate(-1deg) scale(1.02);margin-block:28px 10px}
+.ticker .track{display:inline-flex;animation:scroll 40s linear infinite;padding-block:10px}
+.ticker span{font-family:var(--display);font-size:18px;letter-spacing:.04em;padding-inline:26px}
+.ticker span::after{content:"🎃";padding-left:26px}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* ===== sections ===== */
+.sec{padding-block:96px 24px}
+@media (max-width:760px){.sec{padding-block:72px 16px}}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:44px}
+.head h2{font-size:clamp(40px,5.6vw,76px);text-shadow:4px 4px 0 var(--ink);text-wrap:balance;margin-top:16px}
+.head p{margin:0;font-size:clamp(17px,1.4vw,19px);font-weight:700;color:var(--bone-dim);max-width:46ch}
+@media (max-width:860px){.head{grid-template-columns:1fr;gap:14px;margin-bottom:32px}.head p{margin-top:6px}}
+
+/* $AFTER band */
+.band{background:var(--potion);color:var(--ink);border-block:3px solid var(--ink);position:relative;overflow:hidden}
+.band::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 10% 20%,rgba(255,255,255,.18),transparent 30%),radial-gradient(circle at 90% 80%,rgba(0,0,0,.14),transparent 35%)}
+.band .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:64px}
+.band h2{font-size:clamp(80px,13vw,190px);line-height:.85;text-shadow:6px 7px 0 var(--bone);color:var(--ink)}
+.band p{font-size:clamp(17px,1.5vw,20px);font-weight:700;margin:0 0 20px;max-width:40ch}
+.ca{display:flex;border:3px solid var(--ink);border-radius:14px;background:var(--bone);overflow:hidden;box-shadow:5px 5px 0 var(--ink);max-width:520px}
+.ca code{flex:1;font-family:var(--mono);font-size:14px;padding:14px 16px;color:#4a4560;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ca button{border:0;border-left:3px solid var(--ink);background:var(--teal);font-family:var(--display);font-size:16px;padding:0 18px;cursor:pointer;color:var(--ink)}
+.ca button:hover{background:#6cf0d6}
+.socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.soc{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;border:3px solid var(--ink);background:var(--bone);color:var(--ink);font-family:var(--display);font-size:16px;text-decoration:none;box-shadow:4px 4px 0 var(--ink);transition:transform .18s var(--pop)}
+a.soc:hover{transform:translate(-1px,-3px) rotate(-1deg)}
+.soc.soon{background:transparent;border-style:dashed;box-shadow:none;color:rgba(6,8,26,.6);cursor:default}
+.soc small{font-family:var(--mono);font-size:10px;letter-spacing:.08em}
+@media (max-width:860px){.band .wrap{grid-template-columns:1fr;gap:24px;padding-block:48px}}
+
+/* how */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.step{padding:22px 22px 24px;display:flex;flex-direction:column;gap:14px}
+.step .num{position:absolute;top:-16px;left:-10px;width:44px;height:44px;border-radius:50%;background:var(--pumpkin);border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-size:20px;color:var(--ink);box-shadow:3px 3px 0 var(--ink);transform:rotate(-8deg)}
+.step .pic{height:120px;display:grid;place-items:center}
+.step .pic svg{height:110px;width:auto;filter:drop-shadow(4px 4px 0 var(--ink))}
+.step h3{font-family:var(--display);font-size:24px}
+.step p{margin:0;color:var(--bone-dim);font-weight:600;font-size:15px}
+.step:nth-child(3) h3{color:var(--red)} .step:nth-child(4) h3{color:var(--pumpkin)}
+.steps .card:nth-child(odd){transform:rotate(-.8deg)} .steps .card:nth-child(even){transform:rotate(.8deg)}
+.steps .card:hover{transform:translate(-2px,-5px) rotate(0) scale(1.02)}
+@media (max-width:960px){.steps{grid-template-columns:1fr 1fr}}
+@media (max-width:540px){.steps{grid-template-columns:1fr}}
+
+/* why */
+.cmp{overflow:hidden}
+.crow{display:grid;grid-template-columns:1.2fr 1fr 1fr;border-bottom:3px solid var(--ink)}
+.crow:last-child{border-bottom:0}
+.crow>div{padding:18px 20px;min-width:0}
+.crow>div+div{border-left:3px solid var(--ink)}
+.crow.h>div{font-family:var(--display);font-size:16px;letter-spacing:.04em;text-transform:uppercase;background:var(--night2)}
+.crow.h>div:nth-child(2){color:var(--bone-dim)} .crow.h>div:nth-child(3){background:var(--teal);color:var(--ink)}
+.crow b{font-family:var(--display);font-weight:400;font-size:18px}
+.crow .no{color:var(--dim);font-weight:700}
+.crow .yes{font-weight:800;color:var(--bone);display:flex;gap:10px;align-items:flex-start}
+.crow .yes::before{content:"✓";flex:none;width:24px;height:24px;border-radius:50%;background:var(--teal);color:var(--ink);display:grid;place-items:center;font-size:14px;border:2px solid var(--ink)}
+@media (max-width:680px){.crow{grid-template-columns:1fr 1fr}.crow>div:first-child{grid-column:1/-1;border-bottom:2px dashed var(--line);padding-bottom:10px}.crow>div:nth-child(2){border-left:0}.crow.h>div:first-child{display:none}.crow.h>div:nth-child(2){border-left:0}}
+
+/* ===== test coin lab ===== */
+.lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:stretch}
+@media (max-width:980px){.lab{grid-template-columns:1fr}}
+.monitor{overflow:hidden;display:flex;flex-direction:column}
+.mon-top{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:3px solid var(--ink);background:var(--night2);flex-wrap:wrap}
+.coinid{display:flex;align-items:center;gap:12px;min-width:0}
+.coinid .av{width:44px;height:44px;border-radius:12px;border:3px solid var(--ink);background:var(--teal);display:grid;place-items:center;overflow:hidden;flex:none}
+.coinid .av img{width:100%;height:100%;object-fit:cover}
+.coinid b{font-family:var(--display);font-weight:400;font-size:20px;display:block;line-height:1.1}
+.coinid span{font-family:var(--mono);font-size:12px;color:var(--bone-dim)}
+.mon-top .badge{margin-left:auto}
+.scene{position:relative;height:400px;background:linear-gradient(180deg,#0b1026 0%,#141a3a 70%,#1b1f3d 100%)}
+.scene canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.grave{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:150px;height:auto;pointer-events:none}
+.grave .stone{transform-box:fill-box;transform-origin:50% 100%}
+.grave .crack{opacity:0}
+.grave.cracking .stone{animation:shake .5s linear}
+.grave.cracking .crack{opacity:1;transition:opacity .2s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px) rotate(-2deg)}40%{transform:translateX(4px) rotate(2deg)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.riser{position:absolute;left:50%;bottom:10px;width:120px;transform:translate(-50%,40%) scale(.6);opacity:0;pointer-events:none;filter:drop-shadow(0 0 22px rgba(63,224,192,.8))}
+.riser.up{animation:rise 1.6s var(--pop) forwards}
+@keyframes rise{0%{opacity:0;transform:translate(-50%,40%) scale(.6)}20%{opacity:1}60%{transform:translate(-50%,-140%) scale(1.1) rotate(-6deg)}100%{opacity:0;transform:translate(-50%,-220%) scale(1) rotate(6deg)}}
+.stamp{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-8deg) scale(1.5);opacity:0;font-family:var(--display);font-size:clamp(40px,6vw,76px);color:var(--teal);text-shadow:5px 5px 0 var(--ink);-webkit-text-stroke:2px var(--ink);pointer-events:none;transition:opacity .15s,transform .35s cubic-bezier(.3,1.7,.5,1)}
+.stamp.on{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(1)}
+.readout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:3px solid var(--ink);background:var(--night2)}
+.readout div{padding:14px 18px;border-right:3px solid var(--ink);min-width:0}
+.readout div:last-child{border-right:0}
+.readout span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--bone-dim)}
+.readout b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(24px,2.6vw,34px);line-height:1;margin-top:6px;font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .3s}
+.meter{height:10px;border-radius:6px;border:2px solid var(--ink);background:var(--night);overflow:hidden;margin-top:8px}
+.meter div{height:100%;width:0;background:var(--teal);transition:width .3s var(--ease),background .3s}
+@media (max-width:640px){.readout{grid-template-columns:1fr 1fr}.readout div:nth-child(2){border-right:0}.readout div:nth-child(-n+2){border-bottom:3px solid var(--ink)}.scene{height:300px}.grave{width:110px}}
+.panel{display:flex;flex-direction:column;gap:22px}
+.blk{padding:22px}
+.blk h4{margin:0 0 4px;font-family:var(--display);font-weight:400;font-size:22px}
+.blk p{margin:0 0 16px;color:var(--bone-dim);font-weight:600;font-size:15px}
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ctl .btn{width:100%}
+.ctl .btn-reset{grid-column:1/-1;background:transparent;color:var(--bone-dim);box-shadow:none;border-style:dashed;min-height:42px;font-size:15px}
+.ctl .btn-reset:hover{color:var(--bone);transform:none;box-shadow:none}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-family:var(--mono);font-size:13px}
+.log li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--night);border:2px solid var(--ink);animation:logIn .5s var(--pop)}
+@keyframes logIn{from{transform:translateX(-10px) scale(.96);border-color:var(--teal)}}
+.log li.empty{display:block;font-family:var(--body);font-weight:700;color:var(--dim);border-style:dashed;animation:none}
+.log .d{color:var(--red)} .log .b{color:var(--pumpkin);text-align:right}
+.share{display:none;margin-top:14px;width:100%}
+.share.on{display:inline-flex}
+.labnote{margin-top:24px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+
+/* ===== launch ===== */
+.launch{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:28px;align-items:start}
+@media (max-width:960px){.launch{grid-template-columns:1fr}}
+.formcard{padding:28px}
+form{display:grid;gap:22px}
+.f{display:grid;gap:8px}
+.f label,.f .lbl{font-family:var(--display);font-size:16px;letter-spacing:.02em}
+.f .opt{font-family:var(--body);font-weight:600;color:var(--dim);font-size:14px}
+.inp{min-height:52px;border-radius:14px;border:3px solid var(--ink);background:var(--night);padding:0 16px;width:100%;font-weight:700;transition:box-shadow .2s,transform .2s var(--pop)}
+textarea.inp{padding:14px 16px;min-height:96px;resize:vertical}
+.inp::placeholder{color:var(--dim);font-weight:600}
+.inp:focus{outline:none;box-shadow:0 0 0 4px rgba(63,224,192,.35);transform:translateY(-1px)}
+.inp[aria-invalid="true"]{border-color:var(--red)}
+.err{font-size:14px;color:#ff8ea3;font-weight:700}
+.two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+@media (max-width:520px){.two{grid-template-columns:1fr}.formcard{padding:20px}}
+.pick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pick button{min-height:50px;border-radius:12px;border:3px solid var(--ink);background:var(--night);cursor:pointer;font-family:var(--display);font-size:17px;color:var(--bone);box-shadow:3px 3px 0 var(--ink);transition:transform .18s var(--pop),background .2s}
+.pick button:hover{transform:translate(-1px,-2px)}
+.pick button[aria-pressed="true"]{background:var(--teal);color:var(--ink)}
+.upload{display:flex;align-items:center;gap:16px;cursor:pointer;padding:12px;border:3px dashed var(--line);border-radius:16px;background:var(--night);transition:border-color .2s,transform .2s var(--pop)}
+.upload:hover{border-color:var(--teal);transform:translateY(-2px)}
+.upload .sq{width:60px;height:60px;border-radius:14px;border:3px solid var(--ink);background:var(--surface);display:grid;place-items:center;flex:none;overflow:hidden;font-family:var(--display);font-size:26px;color:var(--teal)}
+.upload .sq img{width:100%;height:100%;object-fit:cover}
+.upload b{font-family:var(--display);font-weight:400;display:block;font-size:17px}
+.upload span.h{font-size:14px;color:var(--dim);font-weight:600}
+.submit-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:6px}
+.submit-row small{color:var(--dim);font-weight:700;font-size:14px;max-width:28ch}
+.preview{position:sticky;top:100px;display:grid;justify-items:center;gap:12px}
+.tomb{width:min(100%,360px);aspect-ratio:4/5;background:var(--surface);border:4px solid var(--ink);border-radius:170px 170px 18px 18px;box-shadow:8px 8px 0 var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:52px 28px 32px;gap:12px;position:relative;transform:rotate(-1.5deg)}
+.tomb::before{content:"✝";position:absolute;top:18px;font-family:var(--display);font-size:28px;color:var(--bone-dim)}
+.tomb .rip{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--bone-dim)}
+.tomb .av{width:96px;height:96px;border-radius:50%;border:4px solid var(--ink);background:var(--teal);display:grid;place-items:center;overflow:hidden;box-shadow:4px 4px 0 var(--ink)}
+.tomb .av img{width:100%;height:100%;object-fit:cover}
+.tomb .nm{font-family:var(--display);font-size:clamp(26px,3vw,34px);line-height:1;word-break:break-word;max-width:100%}
+.tomb .tk{font-family:var(--mono);color:var(--teal);font-size:15px}
+.tomb .ep{font-weight:700;color:var(--bone-dim);font-size:15px;max-width:24ch}
+.tomb .ep b{color:var(--pumpkin)}
+.tomb .st{position:absolute;bottom:-16px;right:-14px;transform:rotate(6deg)}
+.dirt{width:min(100%,420px);height:14px;border-radius:50%;background:var(--ink);margin-top:-6px}
+
+/* graveyard board */
+.board{padding:0;overflow:hidden}
+.bhead{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px;padding:14px 22px;font-family:var(--display);font-size:14px;letter-spacing:.06em;text-transform:uppercase;background:var(--night2);border-bottom:3px solid var(--ink);color:var(--bone-dim)}
+.bhead span:not(:first-child){text-align:right}
+.plots{display:flex;gap:16px;align-items:flex-end;justify-content:center;padding:36px 22px 0;overflow:hidden}
+.plots svg{width:84px;height:auto;flex:none;opacity:.55;animation:bob 4s ease-in-out infinite}
+.plots svg:nth-child(2n){animation-delay:-1.3s} .plots svg:nth-child(3n){animation-delay:-2.6s}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.bempty{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding:24px 22px 26px;border-top:3px dashed var(--line)}
+.bempty p{margin:0;color:var(--bone-dim);font-weight:700;max-width:50ch}
+.bempty b{display:block;font-family:var(--display);font-weight:400;font-size:24px;color:var(--bone)}
+@media (max-width:700px){.bhead{grid-template-columns:2fr 1fr}.bhead span:nth-child(n+3){display:none}.plots svg:nth-child(n+5){display:none}}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.rule{padding:22px}
+.rule .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--bone-dim)}
+.rule .v{font-family:var(--display);font-size:clamp(40px,4.4vw,60px);line-height:1;margin:14px 0 8px;text-shadow:3px 3px 0 var(--ink)}
+.rule p{margin:0;color:var(--bone-dim);font-weight:600;font-size:15px}
+.rule.split{grid-column:1/-1}
+.splitbar{display:flex;height:58px;border:3px solid var(--ink);border-radius:14px;overflow:hidden;margin:16px 0 12px;box-shadow:4px 4px 0 var(--ink)}
+.splitbar div{display:flex;align-items:center;padding-left:18px;font-family:var(--display);font-size:24px;color:var(--ink)}
+.splitbar .a{width:70%;background:var(--teal);border-right:3px solid var(--ink)} .splitbar .b{width:30%;background:var(--pumpkin)}
+.legend{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-weight:700;color:var(--bone-dim);font-size:15px}
+.rules .card:nth-child(2){transform:rotate(-1deg)} .rules .card:nth-child(4){transform:rotate(1deg)}
+.planned{margin-top:22px;color:var(--dim);font-weight:700;font-size:14px}
+@media (max-width:900px){.rules{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.rules{grid-template-columns:1fr}}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;position:relative}
+.road::before{content:"";position:absolute;left:4%;right:4%;top:30px;border-top:4px dashed var(--line);z-index:0}
+.ms{padding:22px;position:relative;z-index:1}
+.ms .dot{width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);background:var(--night);display:grid;place-items:center;font-size:18px;box-shadow:3px 3px 0 var(--ink);margin-bottom:16px}
+.ms.done .dot{background:var(--teal)} .ms.next .dot{background:var(--pumpkin);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{transform:scale(1.1)}}
+.ms .lb{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ms.done .lb{color:var(--teal)} .ms.next .lb{color:var(--pumpkin)}
+.ms h3{font-family:var(--display);font-size:24px;margin:6px 0 8px}
+.ms p{margin:0;color:var(--bone-dim);font-weight:600;font-size:15px}
+@media (max-width:900px){.road{grid-template-columns:1fr 1fr}.road::before{display:none}}
+@media (max-width:520px){.road{grid-template-columns:1fr}}
+
+/* faq */
+.faq{display:grid;gap:12px;max-width:860px}
+details{border:3px solid var(--ink);border-radius:18px;background:var(--surface);box-shadow:5px 5px 0 var(--ink);transition:transform .2s var(--pop)}
+details[open]{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px;font-family:var(--display);font-size:clamp(18px,1.8vw,22px)}
+summary::-webkit-details-marker{display:none}
+summary .pl{width:34px;height:34px;border-radius:50%;background:var(--pumpkin);border:3px solid var(--ink);display:grid;place-items:center;color:var(--ink);flex:none;transition:transform .35s var(--pop)}
+details[open] summary .pl{transform:rotate(135deg)}
+details p{margin:0;padding:0 22px 22px;color:var(--bone-dim);font-weight:600;max-width:60ch}
+
+/* footer */
+footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);overflow:hidden}
+.foot{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:56px 36px}
+.foot h2{font-size:clamp(40px,5.4vw,72px);text-shadow:4px 4px 0 var(--ink)}
+.foot .r{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:760px){.foot{grid-template-columns:1fr}.foot .r{justify-content:flex-start}}
+.legal{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;border-top:2px dashed var(--line);color:var(--dim);font-weight:700;font-size:14px}
+.wordmark{font-family:var(--display);font-size:clamp(70px,20vw,310px);line-height:.78;margin:0;color:var(--ink);white-space:nowrap;transform:translateY(.12em);-webkit-text-stroke:2px var(--line);user-select:none}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px) rotate(-1deg);opacity:0;background:var(--bone);color:var(--ink);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:14px 20px;border-radius:14px;z-index:95;font-family:var(--display);font-size:17px;max-width:calc(100% - 40px);transition:opacity .25s,transform .4s var(--pop);pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0) rotate(-1deg)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.reveal{transform:none}.stamp.on{transform:translate(-50%,-50%) rotate(-8deg)}.riser.up{opacity:1;transform:translate(-50%,-180%)}}
+</style>
+</head><body>
+
+<!-- shared mascot symbol -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ghost" viewBox="0 0 120 130">
+      <path d="M60 8C33 8 14 29 14 58v58l11-9 12 9 11-9 12 9 12-9 11 9 12-9 11 9V58C106 29 87 8 60 8Z" fill="#3fe0c0" stroke="#06081a" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M26 60c0-20 14-36 34-38" fill="none" stroke="#9cf5e4" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+      <ellipse class="eye" cx="44" cy="58" rx="9" ry="12" fill="#06081a"/><ellipse class="eye" cx="76" cy="58" rx="9" ry="12" fill="#06081a"/>
+      <circle cx="47" cy="53" r="3.5" fill="#fff"/><circle cx="79" cy="53" r="3.5" fill="#fff"/>
+      <path d="M46 82q14 14 28 0" fill="none" stroke="#06081a" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="32" cy="74" r="5" fill="#ff8a3d" opacity=".7"/><circle cx="88" cy="74" r="5" fill="#ff8a3d" opacity=".7"/>
+    </symbol>
+    <symbol id="pumpkin" viewBox="0 0 100 100">
+      <path d="M50 22c-4-6-4-12 2-16" fill="none" stroke="#06081a" stroke-width="7" stroke-linecap="round"/>
+      <path d="M50 22c-4-6-4-12 2-16" fill="none" stroke="#5a9d3c" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="50" cy="60" rx="42" ry="34" fill="#ff8a3d" stroke="#06081a" stroke-width="6"/>
+      <path d="M34 28c-8 12-8 52 0 64M66 28c8 12 8 52 0 64" fill="none" stroke="#d9631c" stroke-width="5" stroke-linecap="round"/>
+      <g class="glow" fill="#fff1c2"><path d="M30 50l12 8-14 4z"/><path d="M70 50l-12 8 14 4z"/><path d="M28 70q22 16 44 0l-6 10q-16 8-32 0z"/><rect x="43" y="74" width="7" height="7"/></g>
+    </symbol>
+    <symbol id="bat" viewBox="0 0 120 60">
+      <path d="M60 30c-8-14-22-18-34-14 6 2 10 8 10 14-10-4-22 0-30 10 10-2 20 2 26 10 8-4 18-2 24 6 6-8 16-10 24-6 6-8 16-12 26-10-8-10-20-14-30-10 0-6 4-12 10-14-12-4-26 0-34 14Z" fill="#06081a" stroke="#2a325c" stroke-width="2"/>
+      <circle cx="54" cy="30" r="2" fill="#ff8a3d"/><circle cx="66" cy="30" r="2" fill="#ff8a3d"/>
+    </symbol>
+    <symbol id="tomb" viewBox="0 0 100 110">
+      <path d="M12 104V48a38 38 0 0 1 76 0v56z" fill="#171d3a" stroke="#06081a" stroke-width="5"/>
+      <path d="M38 50h24M50 38v30" stroke="#7d79a0" stroke-width="5" stroke-linecap="round"/>
+      <path d="M4 104h92" stroke="#06081a" stroke-width="6" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="moon" aria-hidden="true"></div>
+<div class="world" aria-hidden="true">
+  <svg viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice">
+    <path d="M0 250c120-20 200-60 340-50s220 40 360 30 240-60 380-40 240 50 360 40v90H0z" fill="#0d1230"/>
+    <g class="tree" transform="translate(150 60)"><path d="M40 190V80M40 110l-28-30M40 120l30-36M40 86l-14-30M40 96l20-40M12 80 0 60M70 84l12-24" fill="none" stroke="#06081a" stroke-width="12" stroke-linecap="round"/><path d="M40 190V80M40 110l-28-30M40 120l30-36M40 86l-14-30M40 96l20-40M12 80 0 60M70 84l12-24" fill="none" stroke="#141a3a" stroke-width="6" stroke-linecap="round"/></g>
+    <g class="tree t2" transform="translate(1180 30) scale(1.2)"><path d="M40 190V80M40 110l-28-30M40 120l30-36M40 86l-14-30M40 96l20-40M12 80 0 60M70 84l12-24" fill="none" stroke="#06081a" stroke-width="12" stroke-linecap="round"/><path d="M40 190V80M40 110l-28-30M40 120l30-36M40 86l-14-30M40 96l20-40M12 80 0 60M70 84l12-24" fill="none" stroke="#141a3a" stroke-width="6" stroke-linecap="round"/></g>
+    <use href="#tomb" x="420" y="150" width="70" height="77" opacity=".9"/>
+    <use href="#tomb" x="560" y="170" width="52" height="57" opacity=".7"/>
+    <use href="#tomb" x="900" y="160" width="62" height="68" opacity=".85"/>
+    <use href="#tomb" x="1020" y="176" width="46" height="50" opacity=".65"/>
+    <path d="M0 265c200 10 400 20 720 10s520-30 720-10v55H0z" fill="#0a0d1c"/>
+    <g class="lantern" tabindex="0" role="button" aria-label="A jack-o'-lantern" transform="translate(300 228)"><use href="#pumpkin" width="64" height="64"/></g>
+    <g class="lantern l2" tabindex="0" role="button" aria-label="A jack-o'-lantern" transform="translate(1090 236)"><use href="#pumpkin" width="52" height="52"/></g>
+  </svg>
+</div>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Afterlife home"><svg class="gm" viewBox="0 0 120 130"><use href="#ghost"/></svg>Afterlife</a>
+    <nav aria-label="Sections">
+      <a href="#how">How it works</a><a href="#why">Why</a><a href="#lab">Test coin</a><a href="#launch">Launch</a><a href="#board">Graveyard</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="hdr-actions">
+      <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Sound off. Turn sound on" title="Sound"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="sw" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" style="display:none"/><path class="sx" d="m22 9-6 6M16 9l6 6"/></svg></button>
+      <a class="btn btn-teal btn-sm" href="#launch">Launch a coin</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <div class="wrap hero">
+    <div>
+      <span class="badge b-pump"><i></i>Pre-launch · Solana</span>
+      <h1 class="display"><span>Coins that</span><br><span class="l2" id="l2">come back.</span></h1>
+      <p class="lede">Launch a coin on Afterlife and it refuses to stay dead. When the chart dumps past its trigger, its own creator fees buy it back and burn it.</p>
+      <div class="ctas">
+        <a class="btn btn-teal" href="#lab">Try the test coin <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        <a class="btn btn-pump" href="#launch">Launch a coin</a>
+      </div>
+    </div>
+    <div class="stage reveal" id="stage">
+      <div class="ring"></div><div class="ring r2"></div><div class="aura"></div>
+      <div class="orbit"><svg viewBox="0 0 100 100"><use href="#pumpkin"/></svg></div>
+      <div class="orbit o2"><svg viewBox="0 0 120 60"><use href="#bat"/></svg></div>
+      <div class="mascot" id="mascot" role="button" tabindex="0" aria-label="Boo!"><svg id="mascotSvg" viewBox="0 0 120 130" width="100%"><use href="#ghost"/></svg></div>
+      <div class="speech" id="speech">BOO!</div>
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true"><div class="track">
+    <span>Drops −20%? It revives</span><span>100% of buybacks burned</span><span>No dev button</span><span>Every launch burns $AFTER</span><span>Rest in pump</span><span>Coins that come back</span>
+    <span>Drops −20%? It revives</span><span>100% of buybacks burned</span><span>No dev button</span><span>Every launch burns $AFTER</span><span>Rest in pump</span><span>Coins that come back</span>
+  </div></div>
+
+  <!-- $AFTER -->
+  <section class="band" id="after">
+    <div class="wrap">
+      <h2 class="display reveal">$AFTER</h2>
+      <div class="reveal">
+        <span class="badge b-bone">The coin behind the pad</span>
+        <p style="margin-top:16px">$AFTER launches on pump.fun. Every coin launched on Afterlife sends a cut of its creator fees to buy $AFTER back and burn it.</p>
+        <div class="ca"><code id="caText">CA posted at launch</code><button type="button" id="caCopy">Copy</button></div>
+        <div class="socials" id="socials"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section class="sec" id="how">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-teal">How it works</span><h2 class="display reveal">Four stages<br>of afterlife.</h2></div><p>No buttons, no dev to trust. The same loop runs on every coin launched here.</p></div>
+      <div class="steps">
+        <div class="card hov step reveal"><span class="num">1</span><div class="pic"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="#a66cff" stroke="#06081a" stroke-width="6"/><path d="M60 30v40M44 54l16 16 16-16" fill="none" stroke="#06081a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 84h48" stroke="#06081a" stroke-width="8" stroke-linecap="round"/></svg></div><h3>Launch</h3><p>Name, ticker, image, and how far it can fall before it revives. Done in a minute.</p></div>
+        <div class="card hov step reveal"><span class="num">2</span><div class="pic"><svg viewBox="0 0 120 120"><path d="M28 56h64l-8 48H36z" fill="#3fe0c0" stroke="#06081a" stroke-width="6" stroke-linejoin="round"/><path d="M42 56V40a18 18 0 0 1 36 0v16" fill="none" stroke="#06081a" stroke-width="6"/><circle cx="60" cy="80" r="9" fill="#06081a"/><path d="M60 26l6-12M48 24l-4-12M72 24l4-12" stroke="#ff8a3d" stroke-width="5" stroke-linecap="round"/></svg></div><h3>Fees fill the pool</h3><p>Creator fees from every trade drop into that coin's own revive pool.</p></div>
+        <div class="card hov step reveal"><span class="num">3</span><div class="pic"><svg viewBox="0 0 120 120"><path d="M14 40l22 22 18-18 22 30 30-36" fill="none" stroke="#ff4d6d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 92h92" stroke="#ff4d6d" stroke-width="4" stroke-dasharray="8 8"/><circle cx="76" cy="74" r="9" fill="#ff4d6d" stroke="#06081a" stroke-width="5"/></svg></div><h3>Trigger hit</h3><p>Afterlife watches the last peak. Fall past the trigger and the revive fires.</p></div>
+        <div class="card hov step reveal"><span class="num">4</span><div class="pic"><svg viewBox="0 0 120 120"><path d="M60 14c6 20 32 28 32 56a32 32 0 0 1-64 0c0-14 8-20 12-30 6 6 10 12 10 20 6-10 10-28 10-46Z" fill="#ff8a3d" stroke="#06081a" stroke-width="6" stroke-linejoin="round"/><path d="M60 60c4 10 14 14 14 26a14 14 0 0 1-28 0c0-10 10-14 14-26Z" fill="#fff1c2"/></svg></div><h3>Buy back &amp; burn</h3><p>The pool buys the coin, burns every token it bought, and sets a new peak.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="sec" id="why">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-potion">Why Afterlife</span><h2 class="display reveal">What happens<br>when it dumps.</h2></div><p>On a typical launchpad, the dump is the end of the story. Here it's when the coin's defense kicks in.</p></div>
+      <div class="card cmp reveal">
+        <div class="crow h"><div></div><div>Typical launchpad</div><div>Afterlife</div></div>
+        <div class="crow"><div><b>Chart drops hard</b></div><div class="no">Nothing happens</div><div class="yes">Pool buys back automatically</div></div>
+        <div class="crow"><div><b>Creator fees</b></div><div class="no">Go to the creator</div><div class="yes">Fund the coin's own buybacks</div></div>
+        <div class="crow"><div><b>Tokens bought back</b></div><div class="no">No buybacks</div><div class="yes">100% burned</div></div>
+        <div class="crow"><div><b>Manual control</b></div><div class="no">Up to the dev</div><div class="yes">Rules only. No dev button</div></div>
+        <div class="crow"><div><b>Platform token</b></div><div class="no">Often none</div><div class="yes">Every launch burns $AFTER</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEST COIN LAB -->
+  <section class="sec" id="lab">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-pump"><i></i>Test coin · simulation</span><h2 class="display reveal">Try to<br>kill it.</h2></div><p>This is a simulated test coin so you can watch Revive Burn work. Not a real token, no real SOL, and none of its numbers are market data.</p></div>
+      <div class="lab">
+        <div class="card monitor reveal">
+          <div class="mon-top">
+            <div class="coinid"><span class="av" id="tcAv"><svg viewBox="0 0 120 130" width="30"><use href="#ghost"/></svg></span><div><b id="tcName">Test Coin</b><span id="tcTick">$TEST · revives at −20%</span></div></div>
+            <span class="badge b-pump">Test coin</span>
+          </div>
+          <div class="scene">
+            <canvas id="cv" aria-label="Test coin price chart"></canvas>
+            <svg class="grave" id="grave" viewBox="0 0 150 120" aria-hidden="true">
+              <ellipse cx="75" cy="112" rx="66" ry="8" fill="#06081a"/>
+              <g class="stone"><path d="M28 110V52a47 47 0 0 1 94 0v58z" fill="#2a325c" stroke="#06081a" stroke-width="6"/><text x="75" y="74" text-anchor="middle" font-family="Lilita One, Arial" font-size="22" fill="#b8b3c9">R.I.P.</text><path class="crack" d="M75 110 72 92l8-10-6-12 5-8" fill="none" stroke="#3fe0c0" stroke-width="4" stroke-linecap="round"/></g>
+            </svg>
+            <svg class="riser" id="riser" viewBox="0 0 120 130" aria-hidden="true"><use href="#ghost"/></svg>
+            <div class="stamp display" id="stamp">REVIVED!</div>
+          </div>
+          <div class="readout">
+            <div><span>Drop from peak</span><b id="rDD">0.0%</b><div class="meter"><div id="rBar"></div></div></div>
+            <div><span>Test pool</span><b id="rPool">0.00</b></div>
+            <div><span>Revives</span><b id="rRev">0</b></div>
+            <div><span>Test burned</span><b id="rBurn">0</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="card blk reveal">
+            <h4>Move the chart</h4>
+            <p>Sell until the line crosses red. Then watch the grave.</p>
+            <div class="ctl">
+              <button class="btn btn-red" type="button" id="sell">Sell</button>
+              <button class="btn btn-teal" type="button" id="buy">Buy</button>
+              <button class="btn btn-reset" type="button" id="reset">Reset test coin</button>
+            </div>
+          </div>
+          <div class="card blk reveal" style="flex:1">
+            <h4>Test revive log</h4>
+            <ul class="log" id="log"><li class="empty">Nothing yet. It's still breathing.</li></ul>
+            <a class="btn btn-ghost btn-sm share" id="share" href="#" target="_blank" rel="noopener">Share this revive on X →</a>
+          </div>
+        </div>
+      </div>
+      <p class="labnote">Simulation only · test units · not market data</p>
+    </div>
+  </section>
+
+  <!-- LAUNCH -->
+  <section class="sec" id="launch">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-teal">Launch</span><h2 class="display reveal">Dig a grave.<br>Plant a coin.</h2></div><p>Real launches open at go-live. Until then, set one up here and it loads into the test coin so you can see how it behaves.</p></div>
+      <div class="launch">
+        <form id="lf" novalidate class="card formcard reveal">
+          <div class="f">
+            <span class="lbl">Image</span>
+            <label class="upload" for="fImg"><span class="sq" id="sq">+</span><span><b>Upload an image</b><span class="h">PNG, JPG or GIF. Square works best.</span></span></label>
+            <input id="fImg" type="file" accept="image/*" hidden>
+          </div>
+          <div class="two">
+            <div class="f"><label for="fName">Coin name</label><input class="inp" id="fName" maxlength="28" placeholder="Ghost Dog" autocomplete="off"><span class="err" id="eName" hidden></span></div>
+            <div class="f"><label for="fTick">Ticker</label><input class="inp" id="fTick" maxlength="10" placeholder="GDOG" autocomplete="off" style="font-family:var(--mono);text-transform:uppercase"><span class="err" id="eTick" hidden></span></div>
+          </div>
+          <div class="f"><label for="fDesc">Epitaph <span class="opt">(optional)</span></label><textarea class="inp" id="fDesc" maxlength="120" placeholder="One line people read on the stone."></textarea></div>
+          <div class="f"><span class="lbl" id="lTrig">Revive trigger</span><div class="pick" role="group" aria-labelledby="lTrig" id="trig"><button type="button" data-v="15" aria-pressed="false">−15%</button><button type="button" data-v="20" aria-pressed="true">−20%</button><button type="button" data-v="30" aria-pressed="false">−30%</button></div></div>
+          <div class="f"><span class="lbl" id="lSize">Buyback size <span class="opt">(share of pool per revive)</span></span><div class="pick" role="group" aria-labelledby="lSize" id="size"><button type="button" data-v="15" aria-pressed="false">15%</button><button type="button" data-v="25" aria-pressed="true">25%</button><button type="button" data-v="50" aria-pressed="false">50%</button></div></div>
+          <div class="submit-row"><button class="btn btn-pump" type="submit">Load into test coin →</button><small>No wallet needed. Nothing goes on-chain from here.</small></div>
+        </form>
+        <div class="preview reveal" aria-live="polite">
+          <div class="tomb">
+            <span class="rip">HERE LIES</span>
+            <div class="av" id="sAv"><svg viewBox="0 0 120 130" width="70"><use href="#ghost"/></svg></div>
+            <div class="nm display" id="sNm">Your Coin</div>
+            <div class="tk" id="sTk">$TICKER</div>
+            <div class="ep" id="sEp">Rises again at <b>−20%</b>.<br>Buys back <b>25%</b> of its pool.</div>
+            <span class="badge b-pump st">Draft</span>
+          </div>
+          <div class="dirt"></div>
+          <span class="mono" style="color:var(--dim)">Live preview</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRAVEYARD -->
+  <section class="sec" id="board">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-potion">The graveyard</span><h2 class="display reveal">Plots open<br>at launch.</h2></div><p>Every coin launched on Afterlife gets a plot here with its revive meter, pool and burn record. None are taken yet.</p></div>
+      <div class="card board reveal">
+        <div class="bhead"><span>Coin</span><span>Distance to revive</span><span>Revives</span><span>Burned</span></div>
+        <div class="plots" aria-hidden="true"><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg></div>
+        <div class="bempty"><p><b>No coins buried yet.</b>The graveyard fills up with the first launch.</p><a class="btn btn-ghost" href="#launch">Reserve a name →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RULES -->
+  <section class="sec" id="rules">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-teal">The rules</span><h2 class="display reveal">Written<br>in stone.</h2></div><p>These are the planned launch settings. If anything changes before go-live, it changes here first.</p></div>
+      <div class="rules">
+        <div class="card rule split reveal"><span class="k">Creator fee split · per trade</span><div class="splitbar"><div class="a">70%</div><div class="b">30%</div></div><div class="legend"><span>To the coin's own revive pool</span><span>Buys back and burns $AFTER</span></div></div>
+        <div class="card hov rule reveal"><span class="k">Revive trigger</span><div class="v display">15–30%</div><p>Picked by the creator at launch.</p></div>
+        <div class="card hov rule reveal"><span class="k">Buyback size</span><div class="v display">15–50%</div><p>Share of the pool spent per revive.</p></div>
+        <div class="card hov rule reveal"><span class="k">Cooldown</span><div class="v display">10 min</div><p>So one dump can't drain the pool.</p></div>
+        <div class="card hov rule reveal"><span class="k">Burned</span><div class="v display">100%</div><p>Everything a revive buys is gone for good.</p></div>
+      </div>
+      <p class="planned">Planned settings. Nothing here is a guarantee.</p>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="sec" id="roadmap">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-pump">Roadmap</span><h2 class="display reveal">Where we are.</h2></div><p>Four milestones from test coin to the first real revive. The line moves as each one ships.</p></div>
+      <div class="road">
+        <div class="card ms done reveal"><div class="dot">✓</div><span class="lb">Done</span><h3>Test coin</h3><p>A working simulation of Revive Burn, open to anyone on this site.</p></div>
+        <div class="card ms next reveal"><div class="dot">🎃</div><span class="lb">Next</span><h3>$AFTER launch</h3><p>$AFTER goes live on pump.fun and the CA is posted here.</p></div>
+        <div class="card ms reveal"><div class="dot">⚰️</div><span class="lb">Planned</span><h3>Launchpad opens</h3><p>Anyone can launch a coin on Afterlife with Revive Burn built in.</p></div>
+        <div class="card ms reveal"><div class="dot">👻</div><span class="lb">Planned</span><h3>First revive</h3><p>The first real coin crosses its trigger and buys itself back.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="head"><div><span class="badge b-bone">FAQ</span><h2 class="display reveal">Last rites.</h2></div></div>
+      <div class="faq">
+        <details><summary>Is anything live yet?<span class="pl">+</span></summary><p>No. Afterlife is pre-launch. The test coin is the only thing you can touch, and it's a simulation. The $AFTER contract address goes up here the moment it launches on pump.fun.</p></details>
+        <details><summary>What's a revive?<span class="pl">+</span></summary><p>An automatic buyback. When a coin falls past its trigger from its last peak, its revive pool buys it on the open market and burns everything it bought.</p></details>
+        <details><summary>Who pays for it?<span class="pl">+</span></summary><p>The coin's own trading. Under the planned settings, 70% of creator fees fill its revive pool and 30% buy back and burn $AFTER.</p></details>
+        <details><summary>Can a dev press the button?<span class="pl">+</span></summary><p>There's no button. Revives only fire when the trigger is hit, with a cooldown between them.</p></details>
+        <details><summary>Does this mean coins can't go down?<span class="pl">+</span></summary><p>No. A buyback slows a fall, it doesn't stop one. Memecoins are risky and nothing here is audited, guaranteed, or financial advice. Only spend what you can afford to lose.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <h2 class="display">Give your coin<br>a second life.</h2>
+      <div class="r"><a class="btn btn-teal" href="#launch">Launch a coin</a><a class="btn btn-ghost" href="#after">$AFTER</a></div>
+    </div>
+    <div class="socials" id="socials2" style="margin:0 0 24px"></div>
+    <div class="legal"><span>© 2026 Afterlife · Revive Burn launchpad on Solana</span><span>Pre-launch · the test coin is a simulation</span></div>
+  </div>
+  <div class="wrap" aria-hidden="true"><p class="wordmark">Afterlife</p></div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+/* ===== EDIT THESE AT LAUNCH ===== */
+var CONFIG={
+  x:'https://x.com/afterlife_pad',
+  telegram:'',          // e.g. 'https://t.me/afterlife'
+  ca:'',                // $AFTER contract address
+  pumpfun:'',           // $AFTER pump.fun page URL
+  launch:'',            // e.g. '2026-11-07T18:00:00-07:00' (shows a countdown)
+  pfp:''                // URL of the chosen Higgsfield mascot (optional; falls back to the drawn ghost)
+};
+/* ================================ */
+var $=function(id){return document.getElementById(id)};
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var GHOST='<svg viewBox="0 0 120 130" width="70"><use href="#ghost"/></svg>';
+
+/* links + CA */
+function soc(name,url){return url?'<a class="soc" href="'+url+'" target="_blank" rel="noopener">'+name+' →</a>':'<span class="soc soon">'+name+' <small>Coming soon</small></span>'}
+['socials','socials2'].forEach(function(id){$(id).innerHTML=soc('X · @afterlife_pad',CONFIG.x)+soc('Telegram',CONFIG.telegram)+(CONFIG.pumpfun?soc('pump.fun',CONFIG.pumpfun):'')});
+if(CONFIG.ca){$('caText').textContent=CONFIG.ca;$('caText').style.color='#06081a'}
+$('caCopy').addEventListener('click',function(){
+  if(!CONFIG.ca){toast('No CA yet. It drops here at launch.');return}
+  var b=this;try{navigator.clipboard.writeText(CONFIG.ca).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1400)},sel)}catch(e){sel()}
+  function sel(){var r=document.createRange();r.selectNodeContents($('caText'));var s=getSelection();s.removeAllRanges();s.addRange(r)}
+});
+if(CONFIG.pfp){var im=new Image();im.onload=function(){$('mascot').innerHTML='<img src="'+CONFIG.pfp+'" alt="Afterlife mascot">';$('tcAv').innerHTML='<img src="'+CONFIG.pfp+'" alt="">';$('sAv').innerHTML='<img src="'+CONFIG.pfp+'" alt="">'};im.src=CONFIG.pfp}
+if(CONFIG.launch){
+  var target=new Date(CONFIG.launch).getTime(),bd=document.querySelector('.hero .badge');
+  var cd=function(){var d=Math.max(0,target-Date.now());if(!d){bd.innerHTML='<i></i>Live now';return}
+    var D=Math.floor(d/864e5),H=Math.floor(d/36e5)%24,M=Math.floor(d/6e4)%60,S2=Math.floor(d/1e3)%60;
+    bd.innerHTML='<i></i>Launch in '+D+'d '+H+'h '+M+'m '+S2+'s'};cd();setInterval(cd,1000);
+}
+
+/* ===== sound (synth, no files; off by default) ===== */
+var AC=null,soundOn=false;
+function ac(){if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,t,type,dur,vol,slide){var a=ac();if(!a||!soundOn)return;var o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,a.currentTime+t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,a.currentTime+t+dur);g.gain.setValueAtTime(0,a.currentTime+t);g.gain.linearRampToValueAtTime(vol||.15,a.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+t+dur);o.connect(g).connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+dur+.05)}
+var SFX={
+  click:function(){tone(520,0,'square',.06,.05)},
+  sell:function(){tone(300,0,'sawtooth',.18,.08,140)},
+  buy:function(){tone(420,0,'triangle',.12,.08,640)},
+  revive:function(){tone(220,0,'triangle',.4,.12,110);tone(330,.35,'sine',.3,.1);tone(440,.55,'sine',.3,.1);tone(660,.75,'sine',.5,.12);tone(880,.95,'triangle',.9,.1)},
+  boo:function(){tone(180,0,'sawtooth',.5,.1,90);tone(520,.1,'sine',.2,.06)},
+  pumpkin:function(){tone(200,0,'square',.08,.06);tone(260,.08,'square',.08,.06);tone(200,.16,'square',.12,.06)}
+};
+$('mute').addEventListener('click',function(){soundOn=!soundOn;ac();this.setAttribute('aria-pressed',soundOn);this.setAttribute('aria-label',soundOn?'Sound on. Turn sound off':'Sound off. Turn sound on');this.querySelector('.sw').style.display=soundOn?'':'none';this.querySelector('.sx').style.display=soundOn?'none':'';if(soundOn)SFX.buy();toast(soundOn?'Sound on 🔊':'Sound off')});
+document.addEventListener('click',function(e){if(e.target.closest('.btn,.pick button,summary,nav a'))SFX.click()});
+
+/* ===== scroll reveal ===== */
+if('IntersectionObserver' in window&&!reduce){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el,i){el.style.transitionDelay=(i%4)*60+'ms';io.observe(el)});
+}else document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});
+
+/* ===== card tilt ===== */
+document.addEventListener('pointermove',function(e){
+  var c=e.target.closest&&e.target.closest('.card.hov');if(!c||reduce)return;
+  var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  c.style.transform='translate(-2px,-4px) rotate('+(x*2)+'deg) scale(1.01) perspective(600px) rotateX('+(-y*4)+'deg) rotateY('+(x*4)+'deg)';
+},{passive:true});
+document.addEventListener('pointerout',function(e){var c=e.target.closest&&e.target.closest('.card.hov');if(c&&!c.contains(e.relatedTarget))c.style.transform=''});
+
+/* ===== mascot + easter eggs ===== */
+var boos=0;
+function boo(){var m=$('mascot');m.classList.remove('boo');void m.offsetWidth;m.classList.add('boo');var s=$('speech');boos++;s.textContent=['BOO!','Still here.','Can\'t kill me.','Rest in pump.','👻 again?'][Math.min(boos-1,4)];s.classList.add('on');clearTimeout(boo.t);boo.t=setTimeout(function(){s.classList.remove('on')},1200);SFX.boo();burstAt(m)}
+$('mascot').addEventListener('click',boo);$('mascot').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();boo()}});
+var smashed=0;
+document.querySelectorAll('.lantern').forEach(function(l){function hit(){l.classList.toggle('smashed');l.classList.remove('laugh');void l.getBoundingClientRect();l.classList.add('laugh');smashed+=l.classList.contains('smashed')?1:-1;SFX.pumpkin();toast(l.classList.contains('smashed')?'Pumpkin blown out. '+smashed+' of 2 🎃':'Relit 🔥')}l.addEventListener('click',hit);l.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();hit()}})});
+var l2=$('l2');l2.innerHTML=l2.textContent.split('').map(function(ch){return ch===' '?' ':'<span>'+ch+'</span>'}).join('');
+
+/* ===== sky: stars, fog, bats, embers, cursor sparkles, parallax ===== */
+var sky=$('sky'),sx=sky.getContext('2d'),W,H,dpr,stars=[],fog=[],bats=[],embers=[],sparks=[],scrollY=0;
+function sizeSky(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;sky.width=W*dpr;sky.height=H*dpr;sx.setTransform(dpr,0,0,dpr,0,0);
+  stars=[];for(var i=0;i<(W<600?70:140);i++)stars.push({x:Math.random()*W,y:Math.random()*H*.75,r:Math.random()*1.4+.3,p:Math.random()*6.28,s:.4+Math.random()*1.2});
+  fog=[];for(var j=0;j<6;j++)fog.push({x:Math.random()*W,y:H*.55+Math.random()*H*.35,w:W*(.4+Math.random()*.5),h:60+Math.random()*80,v:.12+Math.random()*.25,a:.05+Math.random()*.06});
+  bats=[];for(var k=0;k<(W<600?3:5);k++)bats.push(newBat(true));
+}
+function newBat(any){return{x:any?Math.random()*W:-60,y:H*.08+Math.random()*H*.4,v:.6+Math.random()*.9,f:Math.random()*6.28,s:.5+Math.random()*.6,w:Math.random()*2}}
+function burstAt(el){var r=el.getBoundingClientRect();for(var i=0;i<24;i++)sparks.push({x:r.left+r.width/2,y:r.top+r.height/2,vx:(Math.random()-.5)*6,vy:-2-Math.random()*5,life:1,c:Math.random()<.5?'#3fe0c0':'#ff8a3d',r:2+Math.random()*3})}
+var fine=matchMedia('(pointer:fine)').matches,lastSpark=0;
+document.addEventListener('pointermove',function(e){if(!fine||reduce)return;var now=performance.now();if(now-lastSpark<40)return;lastSpark=now;sparks.push({x:e.clientX,y:e.clientY,vx:(Math.random()-.5)*.8,vy:-.4-Math.random()*.6,life:1,c:'#3fe0c0',r:1.2+Math.random()*1.6})},{passive:true});
+addEventListener('scroll',function(){scrollY=window.scrollY},{passive:true});
+function drawBat(b){var x=b.x,y=b.y+Math.sin(b.f)*6,fl=Math.sin(b.f*2.4)*.6;sx.save();sx.translate(x,y);sx.scale(b.s,b.s);sx.fillStyle='#06081a';sx.strokeStyle='#2a325c';sx.lineWidth=1.5;
+  sx.beginPath();sx.moveTo(0,0);sx.quadraticCurveTo(-14,-10-fl*10,-30,-4+fl*8);sx.quadraticCurveTo(-18,2,-12,8);sx.quadraticCurveTo(-6,4,0,10);sx.quadraticCurveTo(6,4,12,8);sx.quadraticCurveTo(18,2,30,-4+fl*8);sx.quadraticCurveTo(14,-10-fl*10,0,0);sx.fill();sx.stroke();
+  sx.fillStyle='#ff8a3d';sx.fillRect(-4,1,2,2);sx.fillRect(2,1,2,2);sx.restore()}
+var t0=0;
+function skyFrame(ts){
+  var dt=Math.min(40,ts-t0)/16.7;t0=ts;sx.clearRect(0,0,W,H);
+  var py=scrollY*.08;
+  stars.forEach(function(s){s.p+=.02*s.s*dt;var a=.35+Math.sin(s.p)*.3;sx.globalAlpha=a;sx.fillStyle='#fff';sx.beginPath();sx.arc(s.x,(s.y-py*.5+H)%H,s.r,0,6.283);sx.fill()});
+  sx.globalAlpha=1;
+  bats.forEach(function(b,i){b.x+=b.v*dt;b.f+=.12*dt;if(b.x>W+60)bats[i]=newBat(false);drawBat({x:b.x,y:b.y-py*.3,f:b.f,s:b.s})});
+  fog.forEach(function(f){f.x+=f.v*dt;if(f.x-f.w>W)f.x=-f.w;var g=sx.createRadialGradient(f.x,f.y,0,f.x,f.y,f.w/2);g.addColorStop(0,'rgba(166,108,255,'+f.a+')');g.addColorStop(1,'rgba(166,108,255,0)');sx.fillStyle=g;sx.save();sx.scale(1,f.h/f.w*2);sx.beginPath();sx.arc(f.x,f.y/(f.h/f.w*2),f.w/2,0,6.283);sx.fill();sx.restore()});
+  if(Math.random()<.15*dt)embers.push({x:Math.random()*W,y:H+5,vx:(Math.random()-.5)*.4,vy:-.5-Math.random()*.8,life:1,c:Math.random()<.7?'#3fe0c0':'#ff8a3d',r:1+Math.random()*2});
+  embers=embers.filter(function(p){p.x+=p.vx*dt+Math.sin(p.y/30)*.3;p.y+=p.vy*dt;p.life-=.004*dt;if(p.life<=0)return false;sx.globalAlpha=p.life*.8;sx.fillStyle=p.c;sx.shadowBlur=10;sx.shadowColor=p.c;sx.beginPath();sx.arc(p.x,p.y,p.r,0,6.283);sx.fill();return true});
+  sparks=sparks.filter(function(p){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.08*dt;p.life-=.03*dt;if(p.life<=0)return false;sx.globalAlpha=p.life;sx.fillStyle=p.c;sx.shadowBlur=8;sx.shadowColor=p.c;sx.beginPath();sx.arc(p.x,p.y,p.r*p.life,0,6.283);sx.fill();return true});
+  sx.shadowBlur=0;sx.globalAlpha=1;
+  if(!reduce)requestAnimationFrame(skyFrame);
+}
+sizeSky();addEventListener('resize',sizeSky);requestAnimationFrame(skyFrame);
+
+/* ===== TEST COIN simulation (test units only) ===== */
+var T={tick:'TEST',trig:20,size:25},S;
+function resetSim(){S={p:1,peak:1,pool:4,rev:0,burned:0,cd:0,pts:[],marks:[],fire:[]};for(var i=0;i<130;i++){S.p*=1+(Math.random()-.47)*.011;if(S.p>S.peak)S.peak=S.p;S.pts.push(S.p)}
+  $('log').innerHTML='<li class="empty">Nothing yet. It\'s still breathing.</li>';$('share').classList.remove('on')}
+resetSim();
+var cv=$('cv'),cx=cv.getContext('2d'),R={width:0,height:0};
+function fit(){var r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0);R=r}
+function push(){S.pts.push(S.p);if(S.pts.length>130){S.pts.shift();S.marks=S.marks.map(function(m){return m-1}).filter(function(m){return m>=0})}}
+function check(){var dd=1-S.p/S.peak;if(dd*100>=T.trig&&S.cd===0){var spend=S.pool*T.size/100,tok=spend/S.p*1000;S.pool-=spend;S.burned+=tok;S.rev++;S.cd=10;
+  S.p*=1.12+Math.random()*.06;S.peak=S.p;S.pts[S.pts.length-1]=S.p;S.marks.push(S.pts.length-1);revive(dd*100,tok)}}
+function tick(){S.p*=1+(Math.random()-.47)*.009;S.pool+=.01+Math.random()*.02;if(S.p>S.peak)S.peak=S.p;if(S.cd>0)S.cd--;push();check()}
+$('sell').addEventListener('click',function(){S.p*=.93-Math.random()*.03;S.pool+=.12;push();SFX.sell();check();ui()});
+$('buy').addEventListener('click',function(){S.p*=1.04+Math.random()*.02;S.pool+=.12;if(S.p>S.peak)S.peak=S.p;push();SFX.buy();ui()});
+$('reset').addEventListener('click',function(){resetSim();ui();toast('Test coin reset.')});
+function fmt(n){return n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':n.toFixed(0)}
+function revive(dd,tok){
+  var l=$('log'),e=l.querySelector('.empty');if(e)e.remove();var li=document.createElement('li');li.innerHTML='<span>#'+S.rev+'</span><span class="d">−'+dd.toFixed(1)+'% → revived</span><span class="b">'+fmt(tok)+' burned</span>';l.insertBefore(li,l.firstChild);while(l.children.length>5)l.removeChild(l.lastChild);
+  var txt='Just watched $'+T.tick+' fall '+dd.toFixed(1)+'% and buy itself back on the @afterlife_pad test coin 👻 Coins that come back.';var a=$('share');a.href='https://x.com/intent/post?text='+encodeURIComponent(txt);a.classList.add('on');
+  var g=$('grave'),r=$('riser'),st=$('stamp');g.classList.remove('cracking');r.classList.remove('up');st.classList.remove('on');void g.offsetWidth;g.classList.add('cracking');r.classList.add('up');
+  setTimeout(function(){st.classList.add('on')},reduce?0:450);setTimeout(function(){st.classList.remove('on');g.classList.remove('cracking')},1700);
+  for(var i=0;i<40;i++)S.fire.push({dx:0,dy:0,vx:(Math.random()-.5)*4,vy:-1.5-Math.random()*4,life:1,c:Math.random()<.5?'#ff8a3d':'#3fe0c0'});
+  SFX.revive();
+}
+function draw(){
+  var w=R.width,h=R.height;if(!w)return;var pt=26,pb=34,pr=16,pts=S.pts;cx.clearRect(0,0,w,h);
+  var floor=S.peak*(1-T.trig/100),lo=Math.min(Math.min.apply(null,pts),floor)*.96,hi=Math.max(Math.max.apply(null,pts),S.peak)*1.03,sp=hi-lo;
+  function Y(v){return pt+(1-(v-lo)/sp)*(h-pt-pb)}function X(i){return i/(pts.length-1)*(w-pr)}
+  cx.strokeStyle='rgba(255,255,255,.05)';cx.lineWidth=1;for(var g=1;g<6;g++){var gy=pt+g*(h-pt-pb)/6;cx.beginPath();cx.moveTo(0,gy);cx.lineTo(w,gy);cx.stroke()}
+  var fy=Y(floor),py=Y(S.peak);
+  cx.fillStyle='rgba(255,77,109,.08)';cx.fillRect(0,fy,w,h-fy);
+  cx.setLineDash([3,6]);cx.strokeStyle='rgba(244,239,227,.35)';cx.lineWidth=2;cx.beginPath();cx.moveTo(0,py);cx.lineTo(w,py);cx.stroke();
+  cx.setLineDash([10,7]);cx.strokeStyle='#ff4d6d';cx.lineWidth=3;cx.beginPath();cx.moveTo(0,fy);cx.lineTo(w,fy);cx.stroke();cx.setLineDash([]);
+  cx.font='700 12px "Geist Mono",ui-monospace,monospace';cx.fillStyle='rgba(244,239,227,.6)';cx.fillText('PEAK',10,py-8);cx.fillStyle='#ff4d6d';cx.fillText('REVIVE LINE −'+T.trig+'%',10,fy+18);
+  var ag=cx.createLinearGradient(0,pt,0,h);ag.addColorStop(0,'rgba(63,224,192,.28)');ag.addColorStop(1,'rgba(63,224,192,0)');
+  cx.beginPath();pts.forEach(function(v,i){i?cx.lineTo(X(i),Y(v)):cx.moveTo(0,Y(v))});cx.lineTo(X(pts.length-1),h);cx.lineTo(0,h);cx.closePath();cx.fillStyle=ag;cx.fill();
+  cx.beginPath();pts.forEach(function(v,i){i?cx.lineTo(X(i),Y(v)):cx.moveTo(0,Y(v))});cx.strokeStyle='#06081a';cx.lineWidth=7;cx.lineJoin='round';cx.stroke();cx.strokeStyle='#3fe0c0';cx.lineWidth=3.5;cx.stroke();
+  S.marks.forEach(function(m){var mx=X(m),my=Y(pts[m]);cx.fillStyle='#ff8a3d';cx.strokeStyle='#06081a';cx.lineWidth=3;cx.beginPath();cx.arc(mx,my,7,0,7);cx.fill();cx.stroke()});
+  var lx=X(pts.length-1),ly=Y(pts[pts.length-1]);cx.fillStyle='#f4efe3';cx.strokeStyle='#06081a';cx.lineWidth=3;cx.beginPath();cx.arc(lx,ly,6,0,7);cx.fill();cx.stroke();
+  S.fire=S.fire.filter(function(b){b.dx+=b.vx;b.dy+=b.vy;b.vy+=.1;b.life-=.022;if(b.life<=0)return false;cx.globalAlpha=b.life;cx.fillStyle=b.c;cx.beginPath();cx.arc(w/2+b.dx,h-40+b.dy,3,0,7);cx.fill();cx.globalAlpha=1;return true});
+}
+function ui(){var dd=Math.max(0,(1-S.p/S.peak)*100),pct=Math.min(100,dd/T.trig*100),hot=pct>70;
+  $('rDD').textContent=dd.toFixed(1)+'%';$('rDD').style.color=hot?'var(--red)':'';$('rBar').style.width=pct+'%';$('rBar').style.background=hot?'var(--red)':'var(--teal)';
+  $('rPool').textContent=S.pool.toFixed(2);$('rRev').textContent=S.rev;$('rBurn').textContent=fmt(S.burned)}
+fit();ui();addEventListener('resize',fit);
+var n=0;(function loop(){n++;if(n%(reduce?60:16)===0){tick();ui()}draw();requestAnimationFrame(loop)})();
+
+/* ===== launch form + tombstone ===== */
+var form={img:null,trig:20,size:25};
+function pick(id,key){var g=$(id);g.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;form[key]=+b.dataset.v;g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});preview()})}
+pick('trig','trig');pick('size','size');
+$('fImg').addEventListener('change',function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){form.img=r.result;$('sq').innerHTML='<img src="'+r.result+'" alt="">';preview()};r.readAsDataURL(f)});
+$('fTick').addEventListener('input',function(){this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');clr('fTick');preview()});
+$('fName').addEventListener('input',function(){clr('fName');preview()});$('fDesc').addEventListener('input',preview);
+function setErr(id,m){$(id).setAttribute('aria-invalid','true');var e=$('e'+id.slice(1));e.textContent=m;e.hidden=false}
+function clr(id){$(id).removeAttribute('aria-invalid');$('e'+id.slice(1)).hidden=true}
+$('fName').addEventListener('blur',function(){if(!this.value.trim())setErr('fName','Give your coin a name.')});
+$('fTick').addEventListener('blur',function(){if(!this.value.trim())setErr('fTick','Add a ticker, like GDOG.')});
+function esc(s){return s.replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]})}
+function preview(){var nm=$('fName').value.trim(),t=$('fTick').value.trim(),d=$('fDesc').value.trim();
+  $('sNm').textContent=nm||'Your Coin';$('sTk').textContent='$'+(t||'TICKER');$('sAv').innerHTML=form.img?'<img src="'+form.img+'" alt="">':(CONFIG.pfp?'<img src="'+CONFIG.pfp+'" alt="">':GHOST);
+  $('sEp').innerHTML=(d?'“'+esc(d)+'”<br>':'')+'Rises again at <b>−'+form.trig+'%</b>.<br>Buys back <b>'+form.size+'%</b> of its pool.'}
+$('lf').addEventListener('submit',function(e){e.preventDefault();var nm=$('fName').value.trim(),t=$('fTick').value.trim(),ok=true;
+  if(!nm){setErr('fName','Give your coin a name.');ok=false}if(!t){setErr('fTick','Add a ticker, like GDOG.');ok=false}
+  if(!ok){(nm?$('fTick'):$('fName')).focus();return}
+  T={tick:t,trig:form.trig,size:form.size};$('tcName').textContent=nm+' (test)';$('tcTick').textContent='$'+t+' · revives at −'+form.trig+'%';
+  $('tcAv').innerHTML=form.img?'<img src="'+form.img+'" alt="">':$('tcAv').innerHTML;resetSim();ui();
+  $('lab').scrollIntoView({behavior:reduce?'auto':'smooth'});toast('$'+t+' is in the grave. Try to kill it.')});
+
+var tt;function toast(m){var el=$('toast');el.textContent=m;el.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('on')},2800)}
+})();
+</script>
+
+</body></html>

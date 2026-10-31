@@ -1,0 +1,792 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cauldron Launchpad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Brew a memecoin on pump.fun. Halloween launchpad with a brew ritual, costumes, the witching hour and a graveyard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Figtree:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: video forest behind a canvas sky, sticky tab header, cauldron hero, coin grid; one committed dark Halloween look */
+:root{
+  --bg:#0d0907;--surface:#17100c;--raised:#21170f;--line:#2e2117;--line-strong:#4a3424;
+  --text:#f6ebe3;--muted:#b8a596;--faint:#8a786a;
+  --pumpkin:#ff7a3d;--pumpkin-deep:#c4521f;--ghost:#9be58a;--blood:#e0344a;--candle:#f7c873;
+  --tint:rgba(255,122,61,.10);
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --r:14px;
+  color-scheme:dark;
+}
+:root[data-witch="1"]{--pumpkin:#ff4b5c;--pumpkin-deep:#b32433;--candle:#ffb0a0;--tint:rgba(224,52,74,.14);--ghost:#ffd1c8}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+body.shake{animation:shake .5s linear infinite}
+@keyframes shake{0%{transform:translate(0,0)}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,-3px)}80%{transform:translate(2px,3px)}100%{transform:translate(0,0)}}
+a{color:inherit}
+button,input,textarea{font:inherit;color:inherit}
+h1,h2,h3{text-wrap:balance;margin:0;font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--pumpkin);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Background layers */
+.bgvid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 1.2s;pointer-events:none;filter:saturate(.9)}
+.bgvid.on{opacity:.55}
+.shade{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(13,9,7,.55),rgba(13,9,7,.85) 70%,var(--bg))}
+.tint{position:fixed;inset:0;z-index:0;pointer-events:none;background:var(--tint);transition:background .8s}
+.sky{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.flash{position:fixed;inset:0;z-index:70;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash .5s ease-out}
+@keyframes flash{0%{opacity:0}10%{opacity:.9}30%{opacity:.1}45%{opacity:.7}100%{opacity:0}}
+main,header,footer,.tape{position:relative;z-index:1}
+
+/* Wand cursor */
+.wand{position:fixed;left:0;top:0;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle,var(--ghost),rgba(155,229,138,0) 70%);pointer-events:none;z-index:80;transform:translate(-50%,-50%);display:none;mix-blend-mode:screen}
+@media (hover:hover) and (pointer:fine){ .wand{display:block} }
+.spark{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--ghost);pointer-events:none;z-index:79;animation:spark .7s ease-out forwards}
+@keyframes spark{to{transform:translateY(14px) scale(0);opacity:0}}
+
+/* Ticker tape */
+.tape{background:#0a0605;border-bottom:1px solid var(--line);overflow:hidden;height:34px;display:flex;align-items:center}
+.tape-in{display:flex;gap:40px;white-space:nowrap;animation:tape 40s linear infinite;font:500 13px var(--mono);color:var(--muted);padding-left:100%}
+.tape-in span b{color:var(--ghost);font-weight:500}
+.tape-in span i{color:var(--pumpkin);font-style:normal}
+@keyframes tape{to{transform:translateX(-100%)}}
+.tape:hover .tape-in{animation-play-state:paused}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);background:rgba(13,9,7,.92);border-bottom:1px solid var(--line);z-index:20;backdrop-filter:blur(4px)}
+.bar{display:flex;align-items:center;gap:12px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 22px var(--display);letter-spacing:-.01em}
+.brand img{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover}
+.bar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line-strong);background:linear-gradient(180deg,#2a1d14,#17100c);text-decoration:none;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:box-shadow .2s,border-color .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.btn:hover{border-color:var(--pumpkin);box-shadow:0 0 18px rgba(255,122,61,.35),inset 0 1px 0 rgba(255,255,255,.05)}
+.btn.solid{background:linear-gradient(180deg,#ff9152,var(--pumpkin-deep));color:#1a0b03;border-color:var(--pumpkin-deep);text-shadow:0 1px 0 rgba(255,255,255,.25)}
+.btn.solid:hover{box-shadow:0 0 24px rgba(255,122,61,.55)}
+.btn.icon{width:44px;padding:0}
+.btn:disabled{opacity:.5;cursor:default;box-shadow:none}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{position:relative;flex:none;display:flex;align-items:center;min-height:46px;padding:0 14px;text-decoration:none;color:var(--muted);font-size:15px;font-weight:600}
+.tab:hover{color:var(--text)}
+.tab[aria-current="page"]{color:var(--text)}
+.tab[aria-current="page"]::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;border-radius:3px;background:var(--pumpkin);box-shadow:0 0 10px var(--pumpkin)}
+.count{margin-left:6px;font:500 12px var(--mono);color:var(--faint)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:28px;align-items:center;padding-block:36px 14px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:500 13px var(--mono);color:var(--candle);border:1px solid rgba(247,200,115,.35);border-radius:999px;padding:5px 12px;background:rgba(13,9,7,.6)}
+.hero h1{font-family:var(--display);font-size:clamp(40px,6.4vw,76px);line-height:.98;letter-spacing:-.03em;margin:16px 0 12px;font-weight:600;font-variation-settings:"opsz" 144;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--pumpkin)}
+.hero p{color:var(--muted);font-size:18px;max-width:32em;margin:0}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.clock{margin-top:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.clock .digits{font:500 28px var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.clock .what{font-size:14px;color:var(--muted);max-width:22em}
+.clock.live .digits{color:var(--blood);text-shadow:0 0 14px var(--blood)}
+
+.pot{position:relative;aspect-ratio:1/1;max-width:460px;width:100%;justify-self:center;cursor:pointer;border-radius:50%}
+.pot video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;-webkit-mask:radial-gradient(circle at 50% 55%,#000 55%,transparent 75%);mask:radial-gradient(circle at 50% 55%,#000 55%,transparent 75%);pointer-events:none}
+.pot canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.riser{position:absolute;left:50%;top:38%;width:26%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;border:3px solid var(--pumpkin);transform:translate(-50%,0) scale(.5);opacity:0;box-shadow:0 0 0 6px rgba(255,122,61,.15),0 0 30px var(--ghost)}
+.riser img{width:100%;height:100%;object-fit:cover;display:block}
+.riser.go{animation:rise 3s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{0%{transform:translate(-50%,10%) scale(.4) rotate(-8deg);opacity:0}25%{opacity:1}60%{transform:translate(-50%,-110%) scale(1) rotate(4deg);opacity:1}100%{transform:translate(-50%,-130%) scale(1) rotate(0);opacity:0}}
+.riser-tag{position:absolute;left:50%;top:0;transform:translateX(-50%);font:500 13px var(--mono);color:var(--text);background:var(--raised);border:1px solid var(--line-strong);border-radius:999px;padding:4px 12px;white-space:nowrap;opacity:0;transition:opacity .3s}
+.riser-tag.on{opacity:1}
+.pot-hint{position:absolute;bottom:4%;left:50%;transform:translateX(-50%);font:500 12px var(--mono);color:var(--faint);white-space:nowrap}
+
+/* Pumpkin leaderboard */
+.lanterns{display:flex;gap:10px;overflow-x:auto;padding:8px 0 14px;scrollbar-width:thin}
+.lantern{flex:none;width:96px;text-align:center;text-decoration:none;color:inherit}
+.lantern svg{width:84px;height:84px;display:block;margin:0 auto;filter:drop-shadow(0 0 calc(var(--glow)*18px) rgba(255,160,60,var(--glow)))}
+.lantern .face{fill:#ffb347;opacity:calc(.25 + var(--glow)*.75)}
+.lantern .t{font:500 12px var(--mono);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lantern .v{font:400 11px var(--mono);color:var(--faint)}
+.lantern .rank{position:absolute;font:600 11px var(--mono);color:var(--candle)}
+
+/* Coins */
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 18px}
+.stat{display:flex;align-items:baseline;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{font:600 18px var(--sans);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--faint)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.spell{flex:1 1 240px;min-width:0;position:relative}
+.search{width:100%;min-height:46px;background:linear-gradient(180deg,#1b130e,#120c09);border:1px solid var(--line-strong);border-radius:12px;padding:0 44px 0 16px;font:400 14px var(--mono);transition:box-shadow .2s,border-color .2s}
+.search::placeholder{color:var(--faint)}
+.search:focus{border-color:var(--ghost);box-shadow:0 0 18px rgba(155,229,138,.3);outline:none}
+.spell::after{content:"✦";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--faint);transition:color .2s,text-shadow .2s}
+.spell.glow::after{color:var(--ghost);text-shadow:0 0 10px var(--ghost)}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{min-height:38px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px}
+.card{display:block;text-decoration:none;background:linear-gradient(180deg,#1b130e,#130d0a);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .25s,box-shadow .25s;position:relative}
+.card:hover{border-color:var(--pumpkin-deep);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.card.lev{transform:translateY(-8px);border-color:var(--ghost);box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 22px rgba(155,229,138,.3)}
+.card .img{aspect-ratio:1/1;max-width:100%;width:100%;display:block;object-fit:cover;background:#111;image-rendering:pixelated}
+.card .meta{padding:12px 14px 14px}
+.card .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card .name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.card .tick{font:500 12px var(--mono);color:var(--muted);flex:none}
+.card .by{font-size:13px;color:var(--faint);margin-top:4px}
+.card .mc{display:flex;gap:6px;align-items:baseline;font:500 12px var(--mono);color:var(--muted);margin-top:4px}
+.card .mc b{color:var(--text);font-weight:500}
+.tag{position:absolute;top:10px;left:10px;font:500 12px var(--mono);background:rgba(13,9,7,.82);border:1px solid var(--line-strong);border-radius:999px;padding:3px 9px}
+.tag.live{color:var(--ghost);border-color:rgba(155,229,138,.5)}
+.tag.witch{left:auto;right:10px;color:var(--candle);border-color:rgba(247,200,115,.45);box-shadow:0 0 12px rgba(247,200,115,.35)}
+.empty{grid-column:1/-1;border:1px dashed var(--line-strong);border-radius:var(--r);padding:40px;text-align:center;color:var(--muted)}
+.note{font:400 12px var(--mono);color:var(--faint);margin-top:14px}
+.up{color:var(--ghost)!important}.down{color:var(--blood)!important}
+
+/* Pages */
+.page{padding-block:36px 64px}
+.page-head{margin-bottom:24px}
+.page-head h1{font-family:var(--display);font-size:clamp(34px,5vw,54px);letter-spacing:-.03em;line-height:1.02;font-variation-settings:"opsz" 144}
+.page-head p{color:var(--muted);margin:10px 0 0;max-width:36em;font-size:17px}
+.panel{background:linear-gradient(180deg,#1b130e,#130d0a);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.panel h3{font-size:17px;margin-bottom:6px}
+.panel p{margin:0;color:var(--muted);font-size:15px}
+.panel ul{margin:0;padding-left:18px;color:var(--muted);font-size:15px;display:grid;gap:6px}
+.label{display:block;font:500 12px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+
+/* Brew ritual */
+.brew{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.form{display:grid;gap:16px}
+.field{display:grid;gap:6px}
+.field label{font-size:14px;font-weight:600}
+.field input[type=text],.field textarea{width:100%;min-height:48px;background:#efe3cf;color:#2a1a0e;border:1px solid #c9b48f;border-radius:6px;padding:12px 14px;font-size:15px;box-shadow:inset 0 2px 6px rgba(0,0,0,.15)}
+.field input::placeholder,.field textarea::placeholder{color:#8f7a5d}
+.field textarea{min-height:80px;resize:vertical}
+.field .hint{font-size:13px;color:var(--faint)}
+.row2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px}
+.costumes{display:flex;flex-wrap:wrap;gap:8px}
+.costume{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer}
+.costume[aria-pressed="true"]{border-color:var(--pumpkin);color:var(--text);background:rgba(255,122,61,.12);box-shadow:0 0 12px rgba(255,122,61,.3)}
+.file-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px dashed var(--line-strong);border-radius:999px;cursor:pointer;color:var(--muted);position:relative}
+.file-btn:hover{color:var(--text)}
+.file-btn input{position:absolute;opacity:0;width:1px;height:1px}
+.ritual{display:grid;gap:14px;position:sticky;top:130px}
+.spin3d{perspective:800px;width:min(100%,260px);margin:0 auto;aspect-ratio:1/1}
+.spin3d img{width:100%;height:100%;border-radius:50%;border:4px solid var(--pumpkin);object-fit:cover;image-rendering:pixelated;background:#111;animation:coinspin 6s linear infinite;box-shadow:0 0 30px rgba(255,122,61,.3)}
+@keyframes coinspin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+.ritual .pname{font-family:var(--display);font-size:26px;line-height:1.1;text-align:center}
+.ritual .ptick{font:500 15px var(--mono);color:var(--muted);text-align:center}
+.ingredients{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ing{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line-strong);background:var(--raised);font-size:14px;font-weight:600;cursor:grab;display:inline-flex;align-items:center;gap:8px;touch-action:none;user-select:none}
+.ing.done{opacity:.4;cursor:default;border-style:dashed}
+.ing.ghosting{opacity:.3}
+.minipot{position:relative;height:150px;border-radius:50% 50% 40% 40%/30% 30% 60% 60%;border:2px dashed var(--line-strong);display:grid;place-items:center;color:var(--faint);font:500 13px var(--mono);transition:border-color .2s,background .4s;background:radial-gradient(ellipse at 50% 30%,var(--potion,rgba(155,229,138,.18)),transparent 70%)}
+.minipot.over{border-color:var(--ghost);box-shadow:0 0 24px rgba(155,229,138,.3)}
+.minipot.splash{animation:splash .5s ease-out}
+@keyframes splash{0%{transform:scale(1)}30%{transform:scale(1.06)}100%{transform:scale(1)}}
+.drag{position:fixed;z-index:90;pointer-events:none;transform:translate(-50%,-50%)}
+.cast{position:relative;overflow:hidden;width:100%;min-height:52px;font-size:16px}
+.cast .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(0,0,0,.25);transition:none}
+.cast span{position:relative}
+.log{display:grid;gap:8px;font:400 13px var(--mono);color:var(--muted)}
+.log div{display:flex;gap:10px;align-items:center;animation:in .3s ease both}
+.log .ok{color:var(--ghost)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ladle{width:16px;height:16px;flex:none;position:relative;animation:stir 1s linear infinite}
+.ladle::before{content:"";position:absolute;left:7px;top:0;width:2px;height:12px;background:var(--pumpkin)}
+.ladle::after{content:"";position:absolute;left:3px;bottom:0;width:10px;height:6px;border-radius:0 0 6px 6px;background:var(--pumpkin)}
+@keyframes stir{to{transform:rotate(360deg)}}
+
+/* Graveyard */
+.yard{perspective:1000px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;align-items:end;padding-top:40px}
+.stone{position:relative;background:linear-gradient(180deg,#2a2420,#1b1714);border:1px solid #3a322b;border-radius:110px 110px 10px 10px;padding:36px 18px 18px;text-align:center;min-width:0;transform:rotateX(6deg);transform-origin:50% 100%;transition:transform .4s;box-shadow:0 20px 30px rgba(0,0,0,.5)}
+.stone:hover{transform:rotateX(0) translateY(-4px)}
+.stone::after{content:"";position:absolute;left:-10px;right:-10px;bottom:-10px;height:12px;border-radius:50%;background:#1d2a16;border-top:1px solid #2c3d20}
+.stone .spook{position:absolute;left:50%;top:-10px;width:60px;transform:translate(-50%,20px);opacity:0;transition:transform .6s,opacity .6s;pointer-events:none}
+.stone:hover .spook{transform:translate(-50%,-70px);opacity:.9}
+.stone .rip{font-family:var(--display);font-size:30px;letter-spacing:.12em;color:#c9beb2}
+.stone .who{font:500 15px var(--mono);margin-top:4px}
+.stone .epi{font-family:var(--display);font-style:italic;color:var(--muted);font-size:15px;margin:10px 0 12px;min-height:44px}
+.stone .facts{display:grid;gap:2px;font:400 12px var(--mono);color:var(--faint)}
+.stone .facts b{color:var(--muted);font-weight:500}
+.stone .acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.candle{display:inline-flex;align-items:center;gap:6px}
+.candle .flame{width:8px;height:12px;border-radius:50% 50% 40% 40%;background:var(--candle);box-shadow:0 0 10px var(--candle);animation:flick .9s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scaleY(.85)}to{transform:scaleY(1.1)}}
+.stone.rising{animation:rising 1.6s ease-out forwards}
+@keyframes rising{0%{transform:rotateX(6deg)}30%{transform:rotateX(6deg) translateY(6px)}60%{transform:rotateX(-10deg) translateY(-40px)}100%{transform:rotateX(0) translateY(-400px);opacity:0}}
+.hand{position:absolute;left:50%;bottom:-6px;width:40px;transform:translate(-50%,100%);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.stone.rising .hand{transform:translate(-50%,-20%)}
+
+/* Coin page */
+.coin{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:40px;padding-block:20px 64px}
+.coin .art{width:100%;max-width:100%;aspect-ratio:1/1;border-radius:20px;border:1px solid var(--line);object-fit:cover;image-rendering:pixelated;background:#111}
+.coin h1{font-family:var(--display);font-size:clamp(34px,5vw,54px);letter-spacing:-.03em;margin:12px 0 4px;line-height:1.05}
+.coin .tk{font:500 20px var(--mono);color:var(--muted)}
+.coin .desc{color:var(--muted);margin:14px 0 0;max-width:34em}
+.ca-row{display:flex;gap:10px;align-items:center}
+.ca-row code{flex:1;min-width:0;font:400 15px var(--mono);overflow-wrap:anywhere}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.fact span{display:block;font:500 12px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.fact b{display:block;font-weight:600;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:14px;min-height:44px;margin-top:12px}
+.callout{margin-top:18px;border:1px solid var(--line);border-left:3px solid var(--candle);border-radius:12px;padding:12px 14px;color:var(--muted);font-size:14px}
+
+/* $BREW */
+.split{display:flex;height:16px;border-radius:999px;overflow:hidden;border:1px solid var(--line-strong);margin:14px 0 10px}
+.split .burn{width:31%;background:var(--pumpkin)}
+.split .fund{flex:1;background:repeating-linear-gradient(135deg,#2a1d14 0 6px,#1d140e 6px 12px)}
+.split-key{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.split-key b{color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 12px var(--mono);border-radius:999px;padding:4px 10px;border:1px solid rgba(247,200,115,.45);color:var(--candle);white-space:nowrap}
+.pfp{width:140px;height:140px;border-radius:50%;border:3px solid var(--pumpkin);object-fit:cover;box-shadow:0 0 40px rgba(255,122,61,.35)}
+
+/* FAQ */
+.faq{display:grid;gap:12px;max-width:820px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:0 18px}
+summary{cursor:pointer;list-style:none;padding:16px 0;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--faint);font-family:var(--mono);font-size:18px}
+details[open] summary::after{content:"–"}
+details p{margin:0 0 16px;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);padding-block:24px 36px;color:var(--faint);font-size:13px;background:var(--bg)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* Ghost speech toast */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#f3ece4;color:#1a0b03;font-weight:600;font-size:14px;padding:12px 20px;border-radius:22px 22px 22px 6px;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 0 20px rgba(243,236,228,.3)}
+.toast.on{opacity:1;transform:translateX(-50%);animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateX(-50%) translateY(-4px)}}
+
+/* Door + scare */
+.door-wrap{position:fixed;inset:0;z-index:65;display:grid;place-items:center;background:rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .3s}
+.door-wrap.on{opacity:1;pointer-events:auto}
+.door{width:160px;height:260px;background:linear-gradient(180deg,#5a3418,#3a2010);border:6px solid #2a160a;border-radius:80px 80px 6px 6px;position:relative;cursor:pointer;transform-origin:left;transition:transform .6s;box-shadow:0 0 40px rgba(0,0,0,.6)}
+.door::after{content:"";position:absolute;right:22px;top:50%;width:14px;height:14px;border-radius:50%;background:var(--candle)}
+.door.knock{animation:knock .3s ease 2}
+@keyframes knock{50%{transform:translateX(3px)}}
+.door.open{transform:perspective(600px) rotateY(-80deg)}
+.door-txt{position:absolute;top:calc(50% + 150px);color:var(--text);font:500 14px var(--mono);text-align:center}
+.scare{position:fixed;inset:0;z-index:75;background:#000;display:none;align-items:center;justify-content:center}
+.scare.on{display:flex;animation:scarein 1.2s ease forwards}
+.scare video,.scare svg{height:100%;max-width:100%;object-fit:contain}
+.scare svg{width:60vmin;height:70vmin;animation:lunge 1.2s ease forwards}
+@keyframes lunge{from{transform:scale(.2)}to{transform:scale(1.4)}}
+@keyframes scarein{0%{opacity:0}10%{opacity:1}85%{opacity:1}100%{opacity:0}}
+.candy{position:fixed;inset:0;z-index:66;display:none;place-items:center;background:rgba(0,0,0,.75)}
+.candy.on{display:grid}
+.bag{background:linear-gradient(180deg,#ff9152,#c4521f);color:#1a0b03;border-radius:24px;padding:26px 28px;text-align:center;max-width:320px;animation:in .4s ease;position:relative;box-shadow:0 0 50px rgba(255,122,61,.5)}
+.bag h3{font-family:var(--display);font-size:24px}
+.bag img{width:120px;height:120px;border-radius:16px;margin:12px auto;display:block;border:3px solid #1a0b03}
+.bag .btn{background:#1a0b03;color:var(--text);border-color:#1a0b03}
+
+@media (max-width:900px){
+  .hero,.brew,.two,.three{grid-template-columns:1fr}
+  .pot{max-width:320px}
+  .coin{grid-template-columns:1fr;gap:22px}
+  .ritual{position:static}
+}
+@media (max-width:560px){
+  .bar .hide-s{display:none}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card .meta{padding:10px 12px 12px}
+  .card .row{flex-direction:column;align-items:flex-start;gap:0}
+  .facts{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr}
+  .stat{flex:1 1 40%}
+  .ca-row{flex-direction:column;align-items:stretch}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .bgvid{display:none}
+  .riser{opacity:1;transform:translate(-50%,-80%) scale(1)}
+  .stone .spook{opacity:0}
+}
+</style>
+
+<video class="bgvid" id="bgForest" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184732_1a8ab404-0146-48b3-aff0-c85f40f4e2a1.mp4" muted loop playsinline autoplay preload="metadata"></video>
+<video class="bgvid" id="bgBlood" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184732_4ab8022c-4988-4ad2-ac89-6fbbfd6bbab6.mp4" muted loop playsinline preload="none"></video>
+<div class="shade"></div><div class="tint"></div>
+<canvas class="sky" id="sky" aria-hidden="true"></canvas>
+<div class="flash" id="flash"></div>
+<div class="wand" id="wand"></div>
+
+<div class="tape" aria-label="Live feed"><div class="tape-in" id="tape"></div></div>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#coins" aria-label="Cauldron home"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184742_9ce2bc62-eeb5-4428-82d0-189a01615ca0.png" alt="">Cauldron</a>
+    <div class="right">
+      <button class="btn icon" type="button" id="soundBtn" aria-pressed="false" aria-label="Turn sound on" title="Sound">🔇</button>
+      <button class="btn hide-s" type="button" id="trickBtn">Trick or treat</button>
+      <a class="btn solid" href="#brew">Brew a coin</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <nav class="tabs" aria-label="Sections">
+      <a class="tab" href="#coins" data-tab="coins">Coins<span class="count" id="tabCount"></span></a>
+      <a class="tab" href="#brew" data-tab="brew">Brew</a>
+      <a class="tab" href="#graveyard" data-tab="graveyard">Graveyard<span class="count" id="graveCount"></span></a>
+      <a class="tab" href="#token" data-tab="token">$BREW</a>
+      <a class="tab" href="#faq" data-tab="faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer>
+  <div class="wrap">
+    <span>Cauldron is an independent launchpad built on pump.fun.</span>
+    <span>Memecoins are risky. Only spend what you can lose.</span>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="door-wrap" id="doorWrap"><div class="door" id="door" role="button" tabindex="0" aria-label="Knock on the door"></div><div class="door-txt" id="doorTxt">Knock…</div></div>
+<div class="scare" id="scare" aria-hidden="true"><video id="scareVid" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184733_cd1fd4f4-5926-4cc2-8e81-2e4d2edc773b.mp4" muted playsinline preload="auto"></video></div>
+<div class="candy" id="candy"><div class="bag"><h3>Treat!</h3><img id="candyImg" alt=""><div id="candyName" style="font-weight:600"></div><div id="candyTick" style="font:500 13px var(--mono);margin-bottom:14px"></div><a class="btn" id="candyGo" href="#coins">Open the coin</a></div></div>
+
+<script>
+const PFP='https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184742_9ce2bc62-eeb5-4428-82d0-189a01615ca0.png';
+const MAIN={ name:'Cauldron', ticker:'BREW', mint:'' };
+const H=3600e3, D=24*H, now=Date.now();
+const LAUNCHES=[
+  { ticker:'PETE', name:'Pumpkin Pete', costume:'pumpkin', requester:'gourdgang', at:now-0.4*H, mc:184200, vol:91000, chg:42.1, desc:'A pumpkin who refuses to be carved. Holds the line every Halloween.', witch:false },
+  { ticker:'BOO', name:'Ghost Chain', costume:'ghost', requester:'spectral_sol', at:now-2*H, mc:96400, vol:44000, chg:12.8, desc:'Transactions you can see right through.', witch:true },
+  { ticker:'WITCH', name:'Witch Please', costume:'hat', requester:'covenmaxi', at:now-5*H, mc:412900, vol:238000, chg:-6.3, desc:'Brewed at midnight. Still bubbling.', witch:true },
+  { ticker:'CORN', name:'Candy Corn', costume:'bats', requester:'treatbag', at:now-9*H, mc:31800, vol:9000, chg:3.4, desc:'Nobody likes it. Everybody holds it.', witch:false },
+  { ticker:'DOGULA', name:'Count Dogula', costume:'cape', requester:'transylvania_inu', at:now-14*H, mc:268500, vol:150000, chg:21.7, desc:'A shiba who only buys after dark.', witch:false },
+  { ticker:'MUMMY', name:'Mummy Money', costume:'skull', requester:'wrapped_sol', at:now-1.2*D, mc:57300, vol:12000, chg:-14.9, desc:'Wrapped, buried, and still not selling.', witch:false },
+  { ticker:'SPOOK', name:'Spooky Frog', costume:'hat', requester:'pondghoul', at:now-1.6*D, mc:73100, vol:31000, chg:8.2, desc:'The frog put on a witch hat and never took it off.', witch:true },
+  { ticker:'FANG', name:'Fang Finance', costume:'cape', requester:'nightbanker', at:now-2.3*D, mc:22600, vol:4000, chg:-2.1, desc:'Bites the bears. Literally.', witch:false },
+].map(l=>({...l, mint:fakeMint(l.ticker), kind:'example'}));
+const GRAVES=[
+  { ticker:'RUGULA', name:'Rugula', peak:88400, born:'Oct 3', died:'Oct 5', epitaph:'Dev sold at the top. Nobody was surprised.', candles:41 },
+  { ticker:'ZCAT', name:'Zombie Cat', peak:152000, born:'Oct 11', died:'Oct 19', epitaph:'Came back twice. Third time it stayed down.', candles:77 },
+  { ticker:'HAM', name:'Haunted Hamster', peak:19300, born:'Oct 20', died:'Oct 21', epitaph:'Ran on the wheel. The wheel stopped.', candles:12 },
+  { ticker:'SCREAM', name:'Scream Token', peak:6100, born:'Oct 26', died:'Oct 26', epitaph:'Nobody heard it.', candles:5 },
+  { ticker:'CRYPT', name:'Crypt Keeper', peak:240700, born:'Sep 29', died:'Oct 24', epitaph:'Kept everything except the bid.', candles:133 },
+];
+const FEED=['<b>$WITCH</b> bought for <i>2.4 SOL</i>','<b>$PETE</b> brewed by @gourdgang','<b>$DOGULA</b> bought for <i>0.9 SOL</i>','<b>$BOO</b> hit $100K market cap','<b>$ZCAT</b> was buried in the graveyard','<b>$CORN</b> bought for <i>0.3 SOL</i>','<b>$SPOOK</b> got the Witching badge','<b>$FANG</b> bought for <i>1.1 SOL</i>'];
+
+function fakeMint(seed){ const a='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; let h=seed?hash(seed):Math.random()*1e9|0, s=''; for(let i=0;i<40;i++){ h=Math.imul(h^(h>>>13),1103515245)+12345>>>0; s+=a[h%a.length]; } return s+'pump'; }
+function hash(s){let h=2166136261;for(const c of String(s)){h=Math.imul(h^c.charCodeAt(0),16777619)}return h>>>0}
+const $=(s,el=document)=>el.querySelector(s);
+const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ago=(t)=>{const s=(Date.now()-t)/1000;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';};
+const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+const fmtUsd=(n)=>n==null||isNaN(n)?'–':n>=1e6?'$'+(n/1e6).toFixed(2)+'M':n>=1e3?'$'+(n/1e3).toFixed(1)+'K':'$'+Number(n).toFixed(0);
+const fmtPct=(n)=>n==null?'–':(n>0?'+':'')+n.toFixed(1)+'%';
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200);}
+async function copy(text,label,el){try{await navigator.clipboard.writeText(text);toast(label+' copied');}catch{if(el){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);}toast('Selected. Press Ctrl+C to copy');}}
+const store={get(k,d){try{const v=localStorage.getItem('cauldron:'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('cauldron:'+k,JSON.stringify(v));}catch{}}};
+
+/* ---------- Sound (synthesized, off by default) ---------- */
+const snd={ on:false, ctx:null, gain:null, timer:null,
+  start(){ if(!this.ctx){ this.ctx=new (window.AudioContext||window.webkitAudioContext)(); this.gain=this.ctx.createGain(); this.gain.gain.value=.25; this.gain.connect(this.ctx.destination); }
+    this.ctx.resume(); this.on=true; const bubble=()=>{ if(!this.on) return; const o=this.ctx.createOscillator(), g=this.ctx.createGain(); o.type='sine'; const f=120+Math.random()*220; o.frequency.setValueAtTime(f,this.ctx.currentTime); o.frequency.exponentialRampToValueAtTime(f*2.2,this.ctx.currentTime+.18); g.gain.setValueAtTime(.0001,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(.6,this.ctx.currentTime+.03); g.gain.exponentialRampToValueAtTime(.0001,this.ctx.currentTime+.22); o.connect(g).connect(this.gain); o.start(); o.stop(this.ctx.currentTime+.25); this.timer=setTimeout(bubble,150+Math.random()*500); }; bubble(); },
+  stop(){ this.on=false; clearTimeout(this.timer); },
+  creak(){ if(!this.on) return; const o=this.ctx.createOscillator(), g=this.ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(90,this.ctx.currentTime); o.frequency.linearRampToValueAtTime(140,this.ctx.currentTime+.6); g.gain.setValueAtTime(.08,this.ctx.currentTime); g.gain.linearRampToValueAtTime(.0001,this.ctx.currentTime+.7); o.connect(g).connect(this.gain); o.start(); o.stop(this.ctx.currentTime+.7); },
+  cackle(){ if(!this.on) return; for(let i=0;i<6;i++){ const o=this.ctx.createOscillator(), g=this.ctx.createGain(), t=this.ctx.currentTime+i*.12; o.type='square'; o.frequency.setValueAtTime(600-i*50,t); o.frequency.exponentialRampToValueAtTime(380-i*30,t+.1); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.15,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.11); o.connect(g).connect(this.gain); o.start(t); o.stop(t+.12); } },
+  thunder(){ if(!this.on) return; const n=this.ctx.createBuffer(1,this.ctx.sampleRate*1.5,this.ctx.sampleRate), d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5); const s=this.ctx.createBufferSource(); s.buffer=n; const f=this.ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=220; const g=this.ctx.createGain(); g.gain.value=.9; s.connect(f).connect(g).connect(this.gain); s.start(); } };
+$('#soundBtn').addEventListener('click',e=>{ const b=e.currentTarget; if(snd.on){ snd.stop(); b.textContent='🔇'; b.setAttribute('aria-pressed','false'); b.setAttribute('aria-label','Turn sound on'); } else { snd.start(); b.textContent='🔊'; b.setAttribute('aria-pressed','true'); b.setAttribute('aria-label','Turn sound off'); toast('The cauldron is bubbling'); } });
+
+/* ---------- Coin art: pixel ticker + costume ---------- */
+const FONT={A:'01110100011000111111100011000110001',B:'11110100011000111110100011000111110',C:'01111100001000010000100001000001111',D:'11110100011000110001100011000111110',E:'11111100001000011110100001000011111',F:'11111100001000011110100001000010000',G:'01111100001000010111100011000101111',H:'10001100011000111111100011000110001',I:'11111001000010000100001000010011111',J:'00111000100001000010000101001001100',K:'10001100101010011000101001001010001',L:'10000100001000010000100001000011111',M:'10001110111010110101100011000110001',N:'10001110011010110011100011000110001',O:'01110100011000110001100011000101110',P:'11110100011000111110100001000010000',Q:'01110100011000110001101011001001101',R:'11110100011000111110101001001010001',S:'01111100001000001110000010000111110',T:'11111001000010000100001000010000100',U:'10001100011000110001100011000101110',V:'10001100011000110001100010101000100',W:'10001100011000110101101011010101010',X:'10001100010101000100010101000110001',Y:'10001100010101000100001000010000100',Z:'11111000010001000100010001000011111',0:'01110100111010110101110011000101110',1:'00100011000010000100001000010001110',2:'01110100010000100010001000100011111',3:'11110000010000101110000010000111110',4:'00010001100101010010111110001000010',5:'11111100001111000001000011000101110',6:'00110010001000011110100011000101110',7:'11111000010001000100010000100001000',8:'01110100011000101110100011000101110',9:'01110100011000101111000010001001100',$:'00100011111010001110001011111000100'};
+const PAL=[[38,18,10],[48,14,40],[18,30,20],[52,20,14],[24,18,42],[40,28,12],[14,26,34],[44,12,20]];
+function drawCostume(x,kind,W){
+  x.save(); const k=W/256; x.scale(k,k);
+  if(kind==='hat'){
+    x.fillStyle='#120a14'; x.beginPath(); x.ellipse(128,78,92,16,0,0,6.283); x.fill();
+    x.beginPath(); x.moveTo(72,76); x.lineTo(154,4); x.lineTo(132,30); x.lineTo(184,76); x.closePath(); x.fill();
+    x.fillStyle='#7b3fb8'; x.fillRect(76,62,104,12); x.fillStyle='#f7c873'; x.fillRect(120,60,16,16); x.fillStyle='#120a14'; x.fillRect(124,64,8,8);
+  } else if(kind==='pumpkin'){
+    const cx=198,cy=200; x.fillStyle='#ff7a3d'; [-22,22,0].forEach(dx=>{x.beginPath();x.ellipse(cx+dx,cy,30,34,0,0,6.283);x.fill();});
+    x.strokeStyle='#c4521f'; x.lineWidth=3; [-12,12].forEach(dx=>{x.beginPath();x.ellipse(cx+dx,cy,12,33,0,0,6.283);x.stroke();});
+    x.fillStyle='#2f6b1f'; x.fillRect(cx-4,cy-46,8,16); x.fillStyle='#1a0b03';
+    x.beginPath(); x.moveTo(cx-22,cy-6); x.lineTo(cx-10,cy-6); x.lineTo(cx-16,cy-18); x.fill(); x.beginPath(); x.moveTo(cx+10,cy-6); x.lineTo(cx+22,cy-6); x.lineTo(cx+16,cy-18); x.fill();
+    x.beginPath(); x.moveTo(cx-24,cy+8); x.lineTo(cx+24,cy+8); x.lineTo(cx+14,cy+22); x.lineTo(cx-14,cy+22); x.fill();
+  } else if(kind==='ghost'){
+    const gx=160,gy=136; x.fillStyle='rgba(243,236,228,.95)'; x.beginPath(); x.moveTo(gx,gy+44); x.arc(gx+40,gy+40,40,Math.PI,0); x.lineTo(gx+80,gy+110);
+    for(let i=0;i<4;i++){x.lineTo(gx+80-i*20-10,gy+98);x.lineTo(gx+80-i*20-20,gy+110);} x.closePath(); x.fill();
+    x.fillStyle='#0d0907'; x.beginPath(); x.ellipse(gx+27,gy+40,6,9,0,0,6.283); x.ellipse(gx+53,gy+40,6,9,0,0,6.283); x.fill(); x.beginPath(); x.ellipse(gx+40,gy+64,7,9,0,0,6.283); x.fill();
+  } else if(kind==='bats'){
+    const bat=(cx,cy,s)=>{x.fillStyle='#0a0606';x.beginPath();x.moveTo(cx,cy);x.quadraticCurveTo(cx-14*s,cy-14*s,cx-30*s,cy-6*s);x.quadraticCurveTo(cx-22*s,cy+2*s,cx-20*s,cy+10*s);x.quadraticCurveTo(cx-10*s,cy+2*s,cx,cy+8*s);x.quadraticCurveTo(cx+10*s,cy+2*s,cx+20*s,cy+10*s);x.quadraticCurveTo(cx+22*s,cy+2*s,cx+30*s,cy-6*s);x.quadraticCurveTo(cx+14*s,cy-14*s,cx,cy);x.fill();};
+    x.fillStyle='rgba(247,200,115,.9)'; x.beginPath(); x.arc(200,52,30,0,6.283); x.fill(); bat(54,44,1.3); bat(186,60,.9); bat(104,26,.7);
+  } else if(kind==='cape'){
+    x.fillStyle='#5a0a14'; x.beginPath(); x.moveTo(0,256); x.lineTo(30,150); x.lineTo(128,190); x.lineTo(226,150); x.lineTo(256,256); x.closePath(); x.fill();
+    x.fillStyle='#120406'; x.beginPath(); x.moveTo(30,150); x.lineTo(128,200); x.lineTo(226,150); x.lineTo(226,166); x.lineTo(128,214); x.lineTo(30,166); x.closePath(); x.fill();
+    x.fillStyle='#f6ebe3'; x.beginPath(); x.moveTo(104,196); x.lineTo(112,196); x.lineTo(108,214); x.fill(); x.beginPath(); x.moveTo(144,196); x.lineTo(152,196); x.lineTo(148,214); x.fill();
+  } else if(kind==='skull'){
+    const sx=196,sy=56; x.fillStyle='#efe6d8'; x.beginPath(); x.arc(sx,sy,34,Math.PI,0); x.lineTo(sx+34,sy+18); x.quadraticCurveTo(sx+34,sy+40,sx+14,sy+42); x.lineTo(sx+14,sy+54); x.lineTo(sx-14,sy+54); x.lineTo(sx-14,sy+42); x.quadraticCurveTo(sx-34,sy+40,sx-34,sy+18); x.closePath(); x.fill();
+    x.fillStyle='#0d0907'; x.beginPath(); x.ellipse(sx-13,sy+4,9,11,0,0,6.283); x.ellipse(sx+13,sy+4,9,11,0,0,6.283); x.fill(); x.beginPath(); x.moveTo(sx,sy+18); x.lineTo(sx-5,sy+28); x.lineTo(sx+5,sy+28); x.fill();
+    for(let i=-9;i<=9;i+=6) x.fillRect(sx+i-1,sy+42,2,10);
+  }
+  x.restore();
+}
+const artCache={};
+function cardFor(ticker,name,costume='none'){
+  const key=ticker+'|'+name+'|'+costume; if(artCache[key]) return artCache[key];
+  const W=256,c=document.createElement('canvas'); c.width=c.height=W; const x=c.getContext('2d');
+  const h=hash((name||ticker).toUpperCase()),bg=PAL[h%PAL.length],sh=bg.map(v=>Math.max(0,v-10)),st=12+(h%4)*4;
+  const img=x.createImageData(W,W);
+  for(let y=0;y<W;y++)for(let i=0;i<W;i++){const col=Math.floor((i+y)/st)%2?bg:sh,p=(y*W+i)*4;img.data[p]=col[0];img.data[p+1]=col[1];img.data[p+2]=col[2];img.data[p+3]=255}
+  x.putImageData(img,0,0);
+  const label='$'+ticker.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
+  const s=Math.max(2,Math.min(9,Math.floor(210/(label.length*6))));
+  const draw=(cx,cy,color)=>{let px=Math.round(cx-(label.length*6*s-s)/2);const py=Math.round(cy-7*s/2);x.fillStyle=color;for(const ch of label){const g=FONT[ch];if(g)for(let r=0;r<7;r++)for(let k=0;k<5;k++)if(g[r*5+k]==='1')x.fillRect(px+k*s,py+r*s,s,s);px+=6*s}};
+  draw(W/2+2,W/2+12,'#000'); draw(W/2,W/2+10,'#f6ebe3');
+  x.fillStyle='#ff7a3d'; x.fillRect(28,Math.round(W/2+10+7*s/2+11),W-56,4);
+  drawCostume(x,costume,W);
+  return artCache[key]=c.toDataURL();
+}
+function costumeOnPhoto(src,costume){
+  return new Promise(res=>{const im=new Image();im.onload=()=>{const W=512,c=document.createElement('canvas');c.width=c.height=W;const x=c.getContext('2d');const sc=Math.max(W/im.width,W/im.height),w=im.width*sc,h=im.height*sc;x.drawImage(im,(W-w)/2,(W-h)/2,w,h);drawCostume(x,costume,W);res(c.toDataURL('image/jpeg',.9));};im.onerror=()=>res(src);im.src=src;});
+}
+const imgFor=(l)=>l.image||cardFor(l.ticker,l.name,l.costume);
+const COSTUMES=[['hat','Witch hat'],['pumpkin','Pumpkin head'],['ghost','Ghost sheet'],['cape','Vampire cape'],['skull','Skeleton'],['bats','Bats + moon'],['none','No costume']];
+
+/* ---------- Witching hour ---------- */
+function witching(){const d=new Date(),hr=d.getHours();if(hr<3){const end=new Date(d);end.setHours(3,0,0,0);return{live:true,ms:end-d};}const mid=new Date(d);mid.setHours(24,0,0,0);return{live:false,ms:mid-d};}
+const hms=(ms)=>{const t=Math.max(0,Math.floor(ms/1000));return[Math.floor(t/3600),Math.floor(t%3600/60),t%60].map(n=>String(n).padStart(2,'0')).join(':');};
+function clockHtml(){const w=witching();return`<div class="clock ${w.live?'live':''}" id="clock"><span class="digits" id="clockDigits">${hms(w.ms)}</span><span class="what" id="clockWhat">${w.live?'The witching hour is live. Blood moon is up. Coins brewed now get the Witching badge and the top spot.':'until the witching hour. Coins brewed from 12 to 3 AM get the Witching badge and the top spot.'}</span></div>`;}
+function applyWitch(){ const w=witching().live; document.documentElement.dataset.witch=w?'1':'0'; const f=$('#bgForest'),b=$('#bgBlood'); if(still) return; if(w){ b.preload='auto'; b.play().catch(()=>{}); b.classList.add('on'); f.classList.remove('on'); } else { f.classList.add('on'); b.classList.remove('on'); } }
+setInterval(()=>{const d=$('#clockDigits');const w=witching();if(d){d.textContent=hms(w.ms);$('#clock').classList.toggle('live',w.live);} if((document.documentElement.dataset.witch==='1')!==w.live) applyWitch();},1000);
+
+/* ---------- Views ---------- */
+const ui={q:'',sort:'new',filter:'all'};
+function heroHtml(){
+  return`<section class="wrap hero">
+    <div style="min-width:0">
+      <span class="eyebrow">Halloween on pump.fun</span>
+      <h1>Brew a coin <em>before midnight.</em></h1>
+      <p>Name it, dress it in a costume and drop it in the cauldron. It comes out live on pump.fun with a ghost-proof contract address.</p>
+      <div class="ctas"><a class="btn solid" href="#brew">Brew a coin</a><a class="btn" href="#graveyard">Visit the graveyard</a></div>
+      ${clockHtml()}
+    </div>
+    <div class="pot" id="pot" role="button" tabindex="0" aria-label="Stir the cauldron to see a random coin">
+      <video src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184732_33f42ee4-4ae4-4945-96a9-f5112d7cd6f9.mp4" muted loop playsinline autoplay preload="metadata" poster=""></video>
+      <canvas id="potfx"></canvas>
+      <span class="riser-tag" id="riserTag"></span>
+      <div class="riser" id="riser"><img id="riserImg" alt=""></div>
+      <span class="pot-hint">tap to stir</span>
+    </div>
+  </section>`;
+}
+function lanternsHtml(){
+  const top=LAUNCHES.filter(l=>l.vol).slice().sort((a,b)=>b.vol-a.vol).slice(0,10); const max=top[0]?.vol||1;
+  return`<span class="label" style="margin-top:8px">Pumpkin leaderboard · 24h volume</span><div class="lanterns">${top.map((l,i)=>`<a class="lantern" href="#coin-${esc(l.ticker.toLowerCase())}" style="--glow:${(l.vol/max).toFixed(2)}">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="46" y="8" width="8" height="16" rx="2" fill="#2f6b1f"/><ellipse cx="50" cy="58" rx="42" ry="36" fill="#d9602a"/><ellipse cx="32" cy="58" rx="16" ry="34" fill="none" stroke="#b7471b" stroke-width="2"/><ellipse cx="68" cy="58" rx="16" ry="34" fill="none" stroke="#b7471b" stroke-width="2"/><path class="face" d="M30 50l14 0-7-12zM56 50l14 0-7-12zM26 66h48l-8 12H34z"/></svg>
+    <div class="t">#${i+1} $${esc(l.ticker)}</div><div class="v">${fmtUsd(l.vol)}</div></a>`).join('')}</div>`;
+}
+function coinsView(){
+  const vol=LAUNCHES.reduce((a,l)=>a+(l.mc||0),0); const latest=LAUNCHES.slice().sort((a,b)=>b.at-a.at)[0];
+  return heroHtml()+`<div class="wrap">
+    ${lanternsHtml()}
+    <div class="stats">
+      <div class="stat"><b>${LAUNCHES.length}</b><span>coins brewed</span></div>
+      <div class="stat"><b>${fmtUsd(vol)}</b><span>total market cap</span></div>
+      <div class="stat"><b>${GRAVES.length}</b><span>in the graveyard</span></div>
+      <div class="stat"><b>${latest?ago(latest.at):'–'}</b><span>latest brew</span></div>
+    </div>
+    <div class="toolbar">
+      <div class="spell" id="spell"><label class="sr" for="q">Search coins</label><input id="q" class="search" placeholder="Cast a search: ticker, name or @handle" value="${esc(ui.q)}"></div>
+      <div class="seg" role="group" aria-label="Sort"><button type="button" data-sort="new" aria-pressed="${ui.sort==='new'}">Newest</button><button type="button" data-sort="mc" aria-pressed="${ui.sort==='mc'}">Market cap</button></div>
+      <div class="seg" role="group" aria-label="Show"><button type="button" data-filter="all" aria-pressed="${ui.filter==='all'}">All</button><button type="button" data-filter="witch" aria-pressed="${ui.filter==='witch'}">Witching hour</button></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="note">Example data until launch. Coins you brew here show as Demo and aren't on pump.fun yet.</p>
+  </div>`;
+}
+function cardHtml(l,lev){
+  const tag=l.kind==='real'?'<span class="tag live">Live</span>':l.kind==='demo'?'<span class="tag">Demo</span>':'<span class="tag">Example</span>';
+  return`<a class="card ${lev?'lev':''}" href="#coin-${esc(l.ticker.toLowerCase())}">${tag}${l.witch?'<span class="tag witch">Witching</span>':''}
+    <img class="img" src="${imgFor(l)}" alt="$${esc(l.ticker)} coin image" loading="lazy">
+    <div class="meta"><div class="row"><span class="name">${esc(l.name)}</span><span class="tick">$${esc(l.ticker)}</span></div>
+    <div class="by">by @${esc(l.requester)} · ${ago(l.at)}</div>
+    <div class="mc">${l.mc?`<span>MC</span><b>${fmtUsd(l.mc)}</b><span class="${l.chg>0?'up':l.chg<0?'down':''}">${fmtPct(l.chg)}</span>`:'<span>no trades yet</span>'}</div></div></a>`;
+}
+function renderGrid(){
+  const g=$('#grid'); if(!g) return; const q=ui.q.trim().toLowerCase().replace(/^[@$]/,'');
+  const match=(l)=>!q||[l.ticker,l.name,l.requester].some(v=>String(v).toLowerCase().includes(q));
+  let list=LAUNCHES.filter(l=>ui.filter==='all'||l.witch);
+  list=list.slice().sort(ui.sort==='mc'?(a,b)=>(b.mc||0)-(a.mc||0):(a,b)=>(b.witch-a.witch)||(b.at-a.at));
+  if(q) list=list.slice().sort((a,b)=>match(b)-match(a));
+  const any=list.some(match);
+  g.innerHTML=any?list.map(l=>cardHtml(l,q&&match(l))).join(''):`<div class="empty">${q?`No coins answer to "${esc(q)}". Try a ticker like BOO.`:'No witching-hour coins yet. Brew one between 12 and 3 AM.'}</div>`;
+  $('#spell')?.classList.toggle('glow',!!q);
+}
+
+/* ---------- Brew ritual ---------- */
+let draft={name:'',ticker:'',desc:'',costume:'hat',photo:null,art:null,dropped:{}};
+const ING=[['image','🖼 Image'],['name','✎ Name'],['ticker','$ Ticker']];
+const POTION={image:'rgba(123,63,184,.35)',name:'rgba(255,122,61,.35)',ticker:'rgba(224,52,74,.35)'};
+function brewView(){
+  return`<div class="wrap page">
+    <div class="page-head"><h1>Brew a coin</h1><p>Write the recipe, pick a costume, then drag each ingredient into the small cauldron and hold Cast. Real launches open soon; until then this brews a demo coin so you can see the whole ritual.</p></div>
+    <div class="brew">
+      <form class="panel form" id="brewForm" autocomplete="off" novalidate>
+        <div class="row2">
+          <div class="field"><label for="fName">Coin name</label><input type="text" id="fName" maxlength="32" placeholder="Pumpkin Pete" value="${esc(draft.name)}"></div>
+          <div class="field"><label for="fTicker">Ticker</label><input type="text" id="fTicker" maxlength="10" placeholder="PETE" value="${esc(draft.ticker)}"><span class="hint">2 to 10 letters or numbers</span></div>
+        </div>
+        <div class="field"><label for="fDesc">Description</label><textarea id="fDesc" maxlength="200" placeholder="What's the coin about?">${esc(draft.desc)}</textarea></div>
+        <div class="field"><span class="label" style="margin:0">Costume</span>
+          <div class="costumes" role="group" aria-label="Costume">${COSTUMES.map(([k,v])=>`<button class="costume" type="button" data-costume="${k}" aria-pressed="${draft.costume===k}">${v}</button>`).join('')}</div>
+        </div>
+        <div class="field"><span class="label" style="margin:0">Image</span>
+          <label class="file-btn" for="fPic"><input type="file" id="fPic" accept="image/*"><span id="picLabel">${draft.photo?'Picture added. Tap to change':'Add a picture (optional)'}</span></label>
+          <span class="hint">No picture? The cauldron paints a ticker card. The costume goes on either way.</span>
+        </div>
+        <p id="formErr" class="hint" style="color:var(--blood);margin:0" hidden></p>
+        <div class="log" id="brewLog" aria-live="polite"></div>
+      </form>
+      <aside class="ritual" aria-label="The ritual">
+        <div class="spin3d"><img id="pvImg" alt="Coin image preview"></div>
+        <div><div class="pname" id="pvName">Your coin</div><div class="ptick" id="pvTick">$TICKER</div></div>
+        <div class="ingredients" id="ings">${ING.map(([k,v])=>`<button class="ing ${draft.dropped[k]?'done':''}" type="button" data-ing="${k}" aria-label="Drop ${v} into the cauldron">${v}</button>`).join('')}</div>
+        <div class="minipot" id="minipot" style="--potion:${esc(potionColor())}">${Object.keys(draft.dropped).length?'':'drag or tap an ingredient to drop it in'}</div>
+        <button class="btn solid cast" type="button" id="castBtn" disabled><span class="fill"></span><span id="castTxt">Add all three ingredients</span></button>
+        <p class="hint" style="margin:0;text-align:center;font-size:13px;color:var(--faint)">Hold Cast for 2 seconds.</p>
+      </aside>
+    </div>
+  </div>`;
+}
+function potionColor(){ const ks=Object.keys(draft.dropped); return ks.length?POTION[ks[ks.length-1]]:'rgba(155,229,138,.18)'; }
+async function refreshPreview(){
+  const t=(draft.ticker||'TICKER').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)||'TICKER';
+  draft.art=draft.photo?await costumeOnPhoto(draft.photo,draft.costume):cardFor(t,draft.name||t,draft.costume);
+  const im=$('#pvImg'); if(!im) return; im.src=draft.art; $('#pvName').textContent=draft.name||'Your coin'; $('#pvTick').textContent='$'+t;
+}
+function readyCheck(){
+  const name=draft.name.trim(), ticker=draft.ticker.toUpperCase().replace(/[^A-Z0-9]/g,''), err=$('#formErr'), cast=$('#castBtn'), txt=$('#castTxt');
+  if(!cast) return false;
+  const all=ING.every(([k])=>draft.dropped[k]);
+  let msg=''; if(!name||ticker.length<2) msg='Add a name and a ticker of at least 2 letters.'; else if(LAUNCHES.some(l=>l.ticker===ticker&&l.kind!=='demo')) msg=`$${ticker} is already brewing here. Pick another ticker.`;
+  err.textContent=msg; err.hidden=!msg||!all;
+  const ok=all&&!msg; cast.disabled=!ok; txt.textContent=ok?'Hold to cast':all?'Fix the recipe above':`Add ${ING.filter(([k])=>!draft.dropped[k]).length} more ingredient${ING.filter(([k])=>!draft.dropped[k]).length>1?'s':''}`;
+  return ok;
+}
+function dropIng(k){
+  if(draft.dropped[k]) return; draft.dropped[k]=true;
+  const mp=$('#minipot'); mp.style.setProperty('--potion',potionColor()); mp.textContent=''; mp.classList.remove('splash'); void mp.offsetWidth; mp.classList.add('splash');
+  for(let i=0;i<10;i++){ const s=document.createElement('span'); s.className='spark'; const r=mp.getBoundingClientRect(); s.style.left=r.left+r.width/2+(Math.random()*60-30)+'px'; s.style.top=r.top+r.height/2+(Math.random()*30-15)+'px'; s.style.background=['#9be58a','#ff7a3d','#f7c873'][i%3]; document.body.appendChild(s); setTimeout(()=>s.remove(),700); }
+  document.querySelector(`[data-ing="${k}"]`)?.classList.add('done'); readyCheck();
+}
+function bindDrag(){
+  let drag=null, ghost=null;
+  document.querySelectorAll('[data-ing]').forEach(b=>{
+    b.addEventListener('pointerdown',e=>{ if(b.classList.contains('done')) return; drag=b.dataset.ing; b.classList.add('ghosting'); ghost=b.cloneNode(true); ghost.className='ing drag'; document.body.appendChild(ghost); move(e); b.setPointerCapture(e.pointerId); });
+    b.addEventListener('pointermove',move);
+    b.addEventListener('pointerup',e=>{ if(!drag) return; const mp=$('#minipot'), r=mp.getBoundingClientRect(); const inside=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom; const moved=ghost&&Math.hypot(e.clientX-start.x,e.clientY-start.y)>8; if(inside||!moved) dropIng(drag); end(); });
+    b.addEventListener('pointercancel',end);
+  });
+  const start={x:0,y:0};
+  function move(e){ if(!ghost) return; if(e.type==='pointerdown'){start.x=e.clientX;start.y=e.clientY;} ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px'; const mp=$('#minipot'), r=mp.getBoundingClientRect(); mp.classList.toggle('over',e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom); }
+  function end(){ ghost?.remove(); ghost=null; document.querySelectorAll('.ing.ghosting').forEach(x=>x.classList.remove('ghosting')); $('#minipot')?.classList.remove('over'); drag=null; }
+}
+function bindCast(){
+  const btn=$('#castBtn'), fill=btn.querySelector('.fill'); let t0=0, raf=0, holding=false;
+  const tick=()=>{ if(!holding) return; const p=Math.min(1,(performance.now()-t0)/2000); fill.style.width=p*100+'%'; if(p>=1){ holding=false; fill.style.width='0'; cast(); return; } raf=requestAnimationFrame(tick); };
+  const down=(e)=>{ if(btn.disabled) return; e.preventDefault(); holding=true; t0=performance.now(); document.body.classList.add('shake'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(!holding) return; holding=false; cancelAnimationFrame(raf); fill.style.width='0'; document.body.classList.remove('shake'); toast('Hold it a little longer'); };
+  btn.addEventListener('pointerdown',down); btn.addEventListener('pointerup',up); btn.addEventListener('pointerleave',up); btn.addEventListener('pointercancel',up);
+  btn.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ if(!holding) down(e); } }); btn.addEventListener('keyup',up);
+}
+let brewing=false;
+async function cast(){
+  if(brewing||!readyCheck()) return; brewing=true; $('#castBtn').disabled=true;
+  const name=draft.name.trim(), ticker=draft.ticker.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  $('#flash').classList.remove('go'); void $('#flash').offsetWidth; $('#flash').classList.add('go'); snd.thunder();
+  await sleep(600); document.body.classList.remove('shake');
+  const log=$('#brewLog'); log.innerHTML='';
+  for(const s of ['Adding eye of newt','Stirring three times counterclockwise','Minting the contract address','Pouring it onto pump.fun']){ log.insertAdjacentHTML('beforeend',`<div><span class="ladle"></span><span>${s}…</span></div>`); await sleep(700); log.lastElementChild.querySelector('.ladle').outerHTML='<span class="ok">✓</span>'; }
+  await refreshPreview();
+  const coin={ticker,name,desc:draft.desc.trim()||'Freshly brewed.',costume:draft.costume,image:draft.art,requester:'you',at:Date.now(),mc:0,vol:0,chg:null,mint:fakeMint(),kind:'demo',witch:witching().live};
+  const i=LAUNCHES.findIndex(l=>l.ticker===ticker); if(i>=0) LAUNCHES.splice(i,1); LAUNCHES.unshift(coin); queue.unshift(coin);
+  FEED.unshift(`<b>$${esc(ticker)}</b> brewed by @you`); snd.cackle();
+  log.insertAdjacentHTML('beforeend',`<div class="ok">$${esc(ticker)} is out of the cauldron. <a href="#coin-${esc(ticker.toLowerCase())}">Open its page</a></div>`);
+  draft={name:'',ticker:'',desc:'',costume:draft.costume,photo:null,art:null,dropped:{}}; brewing=false; updateCounts(); renderTape();
+  setTimeout(()=>{ if(location.hash==='#brew') location.hash='coin-'+ticker.toLowerCase(); },1400);
+}
+
+/* ---------- Graveyard ---------- */
+const GHOST_SVG='<svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 4C24 4 10 24 10 50v52l13-10 13 10 14-10 14 10 13-10 13 10V50C90 24 76 4 50 4z" fill="#f3ece4"/><ellipse cx="36" cy="46" rx="7" ry="10" fill="#0d0907"/><ellipse cx="64" cy="46" rx="7" ry="10" fill="#0d0907"/><ellipse cx="50" cy="70" rx="9" ry="11" fill="#0d0907"/></svg>';
+const HAND_SVG='<svg viewBox="0 0 40 60" aria-hidden="true"><path d="M12 60V26a4 4 0 018 0v14M20 40V18a4 4 0 018 0v22M28 40V22a4 4 0 018 0v38M12 60V34a4 4 0 00-8 0v26" fill="#7d8f6a" stroke="#4d5a40" stroke-width="2"/></svg>';
+function graveyardView(){
+  const lit=store.get('candles',{});
+  return`<div class="wrap page">
+    <div class="page-head"><h1>The graveyard</h1><p>Coins with no trades for 72 hours get buried here. Hover a stone to see its ghost. Light a candle, or bring one back: $5K volume within an hour and it climbs out.</p></div>
+    <div class="yard">${GRAVES.map(g=>`<div class="stone" data-stone="${esc(g.ticker)}"><span class="spook">${GHOST_SVG}</span><span class="hand">${HAND_SVG}</span>
+      <div class="rip">RIP</div><div class="who">$${esc(g.ticker)}</div>
+      <p class="epi">${esc(g.epitaph)}</p>
+      <div class="facts"><span>${esc(g.name)}</span><span>${esc(g.born)} – ${esc(g.died)}</span><span>Peaked at <b>${fmtUsd(g.peak)}</b></span></div>
+      <div class="acts">
+        <button class="btn" type="button" data-candle="${esc(g.ticker)}" aria-pressed="${!!lit[g.ticker]}"><span class="candle">${lit[g.ticker]?'<span class="flame"></span>':''}<span>${g.candles+(lit[g.ticker]?1:0)} candles</span></span></button>
+        <button class="btn" type="button" data-raise="${esc(g.ticker)}" title="Demo of the resurrection animation">Resurrect</button>
+      </div></div>`).join('')}</div>
+    <p class="note">Example data until launch. The Resurrect button previews what happens when a buried coin hits $5K volume.</p>
+  </div>`;
+}
+function resurrect(t){
+  const st=document.querySelector(`[data-stone="${t}"]`); if(!st||st.classList.contains('rising')) return; st.classList.add('rising'); snd.thunder();
+  const g=GRAVES.find(x=>x.ticker===t); const gi=GRAVES.indexOf(g);
+  setTimeout(()=>{ GRAVES.splice(gi,1); LAUNCHES.unshift({ticker:g.ticker,name:g.name,costume:'skull',requester:'the_dead',at:Date.now(),mc:5200,vol:5000,chg:88,desc:g.epitaph+' Back from the grave.',mint:fakeMint(g.ticker),kind:'example',witch:false}); FEED.unshift(`<b>$${esc(g.ticker)}</b> rose from the graveyard`); renderTape(); updateCounts(); toast(`$${g.ticker} climbed out of the grave`); st.remove(); },1600);
+}
+
+/* ---------- Token, FAQ, coin ---------- */
+function tokenView(){
+  return`<div class="wrap page">
+    <div class="page-head" style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><img class="pfp" src="${PFP}" alt="$BREW logo"><div><h1>$BREW</h1><p>The coin behind Cauldron. Its creator fees burn $BREW and pay for every free brew.</p></div></div>
+    <div class="panel"><span class="label">Contract address</span><div class="ca-row"><code>Brewing soon. The contract address appears here at launch.</code><span class="pill">Soon</span></div></div>
+    <div class="panel" style="margin-top:16px"><h3>Where the fees go</h3>
+      <div class="split" role="img" aria-label="31% buyback and burn, 69% brew wallet"><span class="burn"></span><span class="fund"></span></div>
+      <div class="split-key"><span><b>31%</b> buys back $BREW and burns it, one for every day of October</span><span><b>69%</b> fills the brew wallet so launches stay free</span></div>
+    </div>
+    <div class="three" style="margin-top:16px">
+      <div class="panel"><h3>Witching hour</h3><p>From 12 to 3 AM the whole site turns blood-moon red, and every coin brewed then gets the Witching badge and the top spot.</p></div>
+      <div class="panel"><h3>Costumes</h3><p>Witch hat, pumpkin head, ghost sheet, vampire cape, skeleton or bats. Baked into the coin image.</p></div>
+      <div class="panel"><h3>Resurrections</h3><p>Buried coins that hit $5K volume in an hour climb out of the graveyard and back onto the board.</p></div>
+    </div>
+  </div>`;
+}
+function faqView(){
+  return`<div class="wrap page"><div class="page-head"><h1>FAQ</h1></div><div class="faq">
+    <details open><summary>Does brewing cost anything?</summary><p>No. The brew wallet pays the pump.fun launch cost, and 69% of $BREW's fees keep it topped up.</p></details>
+    <details><summary>Who gets the creator fees?</summary><p>The wallet that brewed the coin.</p></details>
+    <details><summary>What is the witching hour?</summary><p>12 to 3 AM in your time zone. The site switches to a blood moon, and coins brewed then get the Witching badge and sit at the top of the board.</p></details>
+    <details><summary>How does a coin end up in the graveyard?</summary><p>No trades for 72 hours. It keeps its page and contract address, it just moves off the main board.</p></details>
+    <details><summary>Can a buried coin come back?</summary><p>Yes. $5K in volume within an hour and it climbs out and returns to the Coins board.</p></details>
+    <details><summary>What does Trick or treat do?</summary><p>Knock on the door. 60% of the time a candy bag opens with a random live coin. 40% of the time something jumps out.</p></details>
+    <details><summary>Why is the sound off?</summary><p>Nothing plays until you tap the speaker. Then the cauldron bubbles, doors creak between tabs and the witch cackles when a coin launches.</p></details>
+  </div></div>`;
+}
+function coinView(l){
+  if(!l) return`<div class="wrap page"><a class="back" href="#coins">← All coins</a><h1 style="font-family:var(--display);font-size:32px;margin-top:8px">Coin not found</h1><p style="color:var(--muted)">It may still be in the cauldron. Search the Coins tab.</p></div>`;
+  const real=l.kind==='real';
+  return`<div class="wrap"><a class="back" href="#coins">← All coins</a>
+    <div class="coin"><img class="art" src="${imgFor(l)}" alt="$${esc(l.ticker)} coin image">
+      <div style="min-width:0">
+        <span class="eyebrow">${real?'Live on pump.fun':l.kind==='demo'?'Demo brew, not launched':'Example coin'}</span>
+        <h1>${esc(l.name)}</h1><div class="tk">$${esc(l.ticker)}</div><p class="desc">${esc(l.desc)}</p>
+        <div class="panel" style="margin:20px 0 14px"><span class="label">Contract address</span><div class="ca-row"><code id="ca">${esc(l.mint)}</code><button class="btn solid" type="button" data-copy="ca" ${real?'':'disabled'}>Copy CA</button></div></div>
+        ${real?`<a class="btn solid" href="https://pump.fun/coin/${encodeURIComponent(l.mint)}" target="_blank" rel="noopener">Buy on pump.fun</a>`:''}
+        <div class="facts">
+          <div class="fact"><span>Brewed by</span><b>@${esc(l.requester)}</b></div><div class="fact"><span>Brewed</span><b>${ago(l.at)}</b></div>
+          <div class="fact"><span>Market cap</span><b>${l.mc?fmtUsd(l.mc):'–'}</b></div><div class="fact"><span>Costume</span><b>${esc((COSTUMES.find(c=>c[0]===l.costume)||['','None'])[1])}</b></div>
+        </div>
+        ${real?'':`<p class="callout">${l.kind==='demo'?'This coin came from the Brew tab. When launches open, the same recipe goes live on pump.fun.':'Example coin to show the layout. It is not on pump.fun.'}</p>`}
+      </div></div></div>`;
+}
+
+/* ---------- Hero cauldron ---------- */
+let queue=LAUNCHES.slice(), qi=0, potTimer, potRaf, ripples=[];
+function popCoin(c){ const r=$('#riser'); if(!r) return; $('#riserImg').src=imgFor(c); $('#riserImg').alt='$'+c.ticker; r.classList.remove('go'); void r.offsetWidth; r.classList.add('go'); const t=$('#riserTag'); t.textContent='$'+c.ticker+(c.kind==='demo'?' · your brew':' · '+ago(c.at)); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2600); }
+function startPot(){
+  clearInterval(potTimer); cancelAnimationFrame(potRaf);
+  const pot=$('#pot'); if(!pot) return;
+  const step=()=>{ if(!$('#riser')) return clearInterval(potTimer); popCoin(queue[qi++%queue.length]); };
+  step(); potTimer=setInterval(step,3400);
+  const c=$('#potfx'), x=c.getContext('2d'); let bubs=[];
+  const size=()=>{ const r=pot.getBoundingClientRect(), d=devicePixelRatio||1; c.width=r.width*d; c.height=r.height*d; x.setTransform(d,0,0,d,0,0); }; size();
+  const frame=(t)=>{ if(!document.body.contains(c)) return; const w=c.clientWidth,h=c.clientHeight; x.clearRect(0,0,w,h);
+    if(Math.random()<.15) bubs.push({x:w*.3+Math.random()*w*.4,y:h*.5,r:3+Math.random()*7,v:.6+Math.random(),a:1});
+    for(const b of bubs){ b.y-=b.v; b.a-=.012; x.globalAlpha=Math.max(0,b.a); x.fillStyle='#9be58a'; x.beginPath(); x.arc(b.x,b.y,b.r,0,6.283); x.fill(); } bubs=bubs.filter(b=>b.a>0);
+    for(const rp of ripples){ rp.r+=2.4; rp.a-=.02; x.globalAlpha=Math.max(0,rp.a); x.strokeStyle='#9be58a'; x.lineWidth=2; x.beginPath(); x.ellipse(rp.x,rp.y,rp.r,rp.r*.4,0,0,6.283); x.stroke(); } ripples=ripples.filter(r=>r.a>0);
+    x.globalAlpha=1; if(!still) potRaf=requestAnimationFrame(frame); };
+  potRaf=requestAnimationFrame(frame);
+  const stir=(e)=>{ const r=pot.getBoundingClientRect(); const px=e.clientX?e.clientX-r.left:r.width/2, py=e.clientY?e.clientY-r.top:r.height/2; for(let i=0;i<3;i++) ripples.push({x:px,y:py,r:4+i*10,a:.9}); for(let i=0;i<14;i++) bubs.push({x:px+(Math.random()*60-30),y:py,r:2+Math.random()*8,v:1.5+Math.random()*2,a:1}); popCoin(LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]); snd.cackle(); };
+  pot.addEventListener('click',stir); pot.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); stir({}); } });
+  addEventListener('resize',size,{once:true});
+}
+
+/* ---------- Ticker tape ---------- */
+function renderTape(){ const t=$('#tape'); const items=FEED.slice(0,12).map(s=>`<span>${s}</span>`).join(''); t.innerHTML=items+items; }
+
+/* ---------- Trick or treat ---------- */
+function trickOrTreat(){
+  const w=$('#doorWrap'), d=$('#door'); w.classList.add('on'); d.classList.remove('open','knock'); $('#doorTxt').textContent='Knock…';
+  const knock=()=>{ d.classList.add('knock'); snd.creak(); $('#doorTxt').textContent='…'; setTimeout(()=>{ d.classList.add('open'); setTimeout(()=>{ w.classList.remove('on'); if(Math.random()<.4) scare(); else treat(); },500); },700); d.removeEventListener('click',knock); };
+  d.addEventListener('click',knock); d.onkeydown=(e)=>{ if(e.key==='Enter'||e.key===' ') knock(); };
+}
+function scare(){ const s=$('#scare'), v=$('#scareVid'); s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); snd.thunder(); v.currentTime=0; v.play().catch(()=>{ s.innerHTML=GHOST_SVG+`<video id="scareVid" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_184733_cd1fd4f4-5926-4cc2-8e81-2e4d2edc773b.mp4" muted playsinline preload="auto" hidden></video>`; }); setTimeout(()=>{ s.classList.remove('on'); toast('Trick! Knock again for a treat.'); },1200); }
+function treat(){ const c=LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]; $('#candyImg').src=imgFor(c); $('#candyName').textContent=c.name; $('#candyTick').textContent='$'+c.ticker; $('#candyGo').href='#coin-'+c.ticker.toLowerCase(); $('#candy').classList.add('on'); }
+$('#candy').addEventListener('click',e=>{ if(e.target.id==='candy'||e.target.id==='candyGo') $('#candy').classList.remove('on'); });
+$('#doorWrap').addEventListener('click',e=>{ if(e.target.id==='doorWrap') e.currentTarget.classList.remove('on'); });
+
+/* ---------- Router ---------- */
+const TABS={coins:coinsView,brew:brewView,graveyard:graveyardView,token:tokenView,faq:faqView};
+const TINT={coins:'rgba(255,122,61,.10)',brew:'rgba(155,229,138,.08)',graveyard:'rgba(60,110,160,.14)',token:'rgba(155,229,138,.12)',faq:'rgba(255,122,61,.06)'};
+function updateCounts(){$('#tabCount').textContent=LAUNCHES.length;$('#graveCount').textContent=GRAVES.length;}
+let lastTab=null;
+function route(){
+  const token=decodeURIComponent(location.hash.slice(1)).toLowerCase()||'coins'; const isTab=token in TABS;
+  const coin=token.startsWith('coin-')?LAUNCHES.find(x=>'coin-'+x.ticker.toLowerCase()===token):null;
+  document.querySelectorAll('.tab').forEach(t=>t.removeAttribute('aria-current'));
+  const active=isTab?token:'coins'; document.querySelector(`.tab[data-tab="${active}"]`)?.setAttribute('aria-current','page');
+  if(document.documentElement.dataset.witch!=='1') document.documentElement.style.setProperty('--tint',TINT[active]);
+  if(lastTab&&lastTab!==token) snd.creak(); lastTab=token;
+  $('#app').innerHTML=isTab?TABS[token]():coinView(coin);
+  if(token==='coins'){ renderGrid(); $('#q').addEventListener('input',e=>{ui.q=e.target.value;renderGrid();}); startPot(); }
+  if(token==='brew') bindBrew();
+  updateCounts(); scrollTo({top:0});
+}
+function bindBrew(){
+  const sync=()=>{draft.name=$('#fName').value;draft.ticker=$('#fTicker').value;draft.desc=$('#fDesc').value;refreshPreview();readyCheck();};
+  ['fName','fTicker','fDesc'].forEach(id=>$('#'+id).addEventListener('input',sync));
+  $('#fTicker').addEventListener('blur',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');sync();});
+  $('#fPic').addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;const r=new FileReader();r.onload=()=>{draft.photo=r.result;$('#picLabel').textContent='Picture added. Tap to change';refreshPreview();};r.readAsDataURL(file);});
+  $('#brewForm').addEventListener('submit',e=>e.preventDefault());
+  bindDrag(); bindCast(); refreshPreview(); readyCheck();
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-copy]'); if(c){copy($('#ca').textContent,'CA',$('#ca'));return;}
+  const s=e.target.closest('[data-sort]'); if(s){ui.sort=s.dataset.sort;document.querySelectorAll('[data-sort]').forEach(b=>b.setAttribute('aria-pressed',b===s));renderGrid();return;}
+  const fl=e.target.closest('[data-filter]'); if(fl){ui.filter=fl.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',b===fl));renderGrid();return;}
+  const co=e.target.closest('[data-costume]'); if(co){draft.costume=co.dataset.costume;document.querySelectorAll('[data-costume]').forEach(b=>b.setAttribute('aria-pressed',b===co));refreshPreview();return;}
+  const rz=e.target.closest('[data-raise]'); if(rz){resurrect(rz.dataset.raise);return;}
+  const cd=e.target.closest('[data-candle]'); if(cd){const lit=store.get('candles',{});const t=cd.dataset.candle;lit[t]=!lit[t];store.set('candles',lit);const g=GRAVES.find(x=>x.ticker===t);cd.setAttribute('aria-pressed',!!lit[t]);cd.innerHTML=`<span class="candle">${lit[t]?'<span class="flame"></span>':''}<span>${g.candles+(lit[t]?1:0)} candles</span></span>`;if(lit[t])toast(`Candle lit for $${t}`);return;}
+});
+$('#trickBtn').addEventListener('click',trickOrTreat);
+addEventListener('hashchange',route);
+
+/* ---------- Sky canvas: stars, fireflies, bats, fog, parallax ---------- */
+(function(){
+  const c=$('#sky'),x=c.getContext('2d'); let w,h,stars=[],flies=[],bats=[],mx=.5,my=.5,sy=0,hidden=false;
+  function size(){const d=devicePixelRatio||1;w=innerWidth;h=innerHeight;c.width=w*d;c.height=h*d;x.setTransform(d,0,0,d,0,0);
+    stars=Array.from({length:Math.round(w*h/9000)},()=>({x:Math.random()*w,y:Math.random()*h*.7,r:Math.random()*1.1+.3,a:Math.random()*.5+.2,t:Math.random()*6,z:Math.random()}));
+    flies=Array.from({length:w<600?8:16},()=>({x:Math.random()*w,y:h*.4+Math.random()*h*.6,p:Math.random()*6,v:.2+Math.random()*.3}));
+    bats=Array.from({length:w<600?3:6},()=>({x:Math.random()*w,y:60+Math.random()*h*.4,vx:.4+Math.random()*.6,vy:0,s:.6+Math.random()*.6,p:Math.random()*6}));}
+  addEventListener('pointermove',e=>{mx=e.clientX/w;my=e.clientY/h;},{passive:true}); addEventListener('scroll',()=>{sy=scrollY;},{passive:true});
+  document.addEventListener('visibilitychange',()=>{hidden=document.hidden; document.querySelectorAll('video').forEach(v=>hidden?v.pause():v.play().catch(()=>{}));});
+  function bat(b,t){const f=Math.sin(t*.012+b.p)*.9,s=b.s*10;x.fillStyle='rgba(10,6,6,.92)';x.beginPath();x.moveTo(b.x,b.y);x.quadraticCurveTo(b.x-s,b.y-s*f,b.x-2.4*s,b.y-s*.3*f);x.quadraticCurveTo(b.x-1.4*s,b.y+.3*s,b.x,b.y+.5*s);x.quadraticCurveTo(b.x+1.4*s,b.y+.3*s,b.x+2.4*s,b.y-s*.3*f);x.quadraticCurveTo(b.x+s,b.y-s*f,b.x,b.y);x.fill();}
+  function frame(t){
+    if(hidden){requestAnimationFrame(frame);return;} x.clearRect(0,0,w,h);
+    const px=(mx-.5)*20, py=(my-.5)*12;
+    for(const s of stars){s.t+=.02;x.globalAlpha=s.a*(.7+.3*Math.sin(s.t));x.fillStyle='#f6ebe3';x.beginPath();x.arc(s.x+px*s.z,s.y+py*s.z-sy*.05*s.z,s.r,0,6.283);x.fill();}
+    x.globalAlpha=1;
+    const witch=document.documentElement.dataset.witch==='1';
+    const mxx=w-Math.min(140,w*.18)+px*.3, myy=120+py*.3-sy*.08, mr=Math.min(60,w*.085);
+    const g=x.createRadialGradient(mxx,myy,mr*.6,mxx,myy,mr*3.2); g.addColorStop(0,witch?'rgba(224,52,74,.28)':'rgba(247,200,115,.2)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.beginPath(); x.arc(mxx,myy,mr*3.2,0,6.283); x.fill();
+    x.fillStyle=witch?'#c8323f':'#f3dfb0'; x.beginPath(); x.arc(mxx,myy,mr,0,6.283); x.fill();
+    x.fillStyle=witch?'rgba(120,20,30,.5)':'rgba(200,170,120,.35)'; [[-.3,-.2,.18],[.25,.15,.13],[-.05,.35,.1]].forEach(([a,b,r])=>{x.beginPath();x.arc(mxx+a*mr,myy+b*mr,r*mr,0,6.283);x.fill();});
+    for(const f of flies){ if(!still){f.p+=.02;f.x+=Math.sin(f.p)*f.v;f.y+=Math.cos(f.p*.7)*f.v;} const a=.4+.6*Math.abs(Math.sin(f.p*2)); x.globalAlpha=a; x.fillStyle=witch?'#ffb0a0':'#9be58a'; x.shadowColor=x.fillStyle; x.shadowBlur=10; x.beginPath(); x.arc(f.x+px*.6,f.y+py*.6-sy*.15,1.6,0,6.283); x.fill(); x.shadowBlur=0; }
+    x.globalAlpha=1;
+    for(const b of bats){ if(!still){ const dx=b.x-mx*w, dy=b.y-my*h, d=Math.hypot(dx,dy); if(d<140){ b.vx+=dx/d*.4; b.vy+=dy/d*.4; } b.vx+=(0.6-b.vx)*.02; b.vy*=.95; b.x+=b.vx; b.y+=b.vy+Math.sin(t*.002+b.p)*.4; if(b.x>w+40){b.x=-40;b.y=60+Math.random()*h*.4;} if(b.y<20)b.y=20; if(b.y>h*.7)b.y=h*.7; } bat({...b,x:b.x+px*.8,y:b.y+py*.8},still?0:t); }
+    const fog=x.createLinearGradient(0,h*.7,0,h); fog.addColorStop(0,'rgba(60,46,36,0)'); fog.addColorStop(1,witch?'rgba(90,20,30,.4)':'rgba(60,46,36,.4)'); x.fillStyle=fog; x.fillRect(0,h*.7,w,h*.3);
+    if(!still) requestAnimationFrame(frame);
+  }
+  addEventListener('resize',()=>{size();if(still)frame(0);}); size(); requestAnimationFrame(frame);
+})();
+
+/* ---------- Wand cursor ---------- */
+(function(){ const wand=$('#wand'); if(!matchMedia('(hover:hover) and (pointer:fine)').matches||still) return; let n=0;
+  addEventListener('pointermove',e=>{ wand.style.left=e.clientX+'px'; wand.style.top=e.clientY+'px'; if(++n%3===0){ const s=document.createElement('span'); s.className='spark'; s.style.left=e.clientX+(Math.random()*10-5)+'px'; s.style.top=e.clientY+(Math.random()*10-5)+'px'; document.body.appendChild(s); setTimeout(()=>s.remove(),700); } },{passive:true}); })();
+
+applyWitch(); renderTape(); route();
+</script>
+</html>

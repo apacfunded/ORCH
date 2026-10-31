@@ -296,6 +296,14 @@ textarea.inp{padding:14px 16px;min-height:96px;resize:vertical}
 .bempty b{display:block;font-family:var(--display);font-weight:400;font-size:24px;color:var(--bone)}
 @media (max-width:700px){.bhead{grid-template-columns:2fr 1fr}.bhead span:nth-child(n+3){display:none}.plots svg:nth-child(n+5){display:none}}
 
+/* x links */
+.xbtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:12px;border:3px solid var(--ink);background:var(--bone);color:var(--ink);font-family:var(--display);font-size:15px;text-decoration:none;box-shadow:3px 3px 0 var(--ink);transition:transform .18s var(--pop)}
+.xbtn:hover{transform:translate(-1px,-2px) rotate(-1deg)}
+@media (max-width:1100px){.xbtn span{display:none}.xbtn{width:44px;padding:0;justify-content:center}}
+.xline{display:inline-flex;align-items:center;gap:10px;margin-top:22px;color:var(--bone-dim);font-weight:700;text-decoration:none;font-size:16px;transition:color .2s}
+.xline b{color:var(--bone)}
+.xline:hover{color:var(--teal)}
+.xline svg{flex:none}
 /* coins */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .cbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
@@ -444,6 +452,7 @@ footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);
     </nav>
     <div class="hdr-actions">
       <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Sound off. Turn sound on" title="Sound"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="sw" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" style="display:none"/><path class="sx" d="m22 9-6 6M16 9l6 6"/></svg></button>
+      <a class="xbtn" href="https://x.com/afterlife_pad" target="_blank" rel="noopener" aria-label="Afterlife on X (@afterlife_pad)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.3-8.3L1 2h6.2l4.4 5.8zm-1.1 18.2h1.7L6.3 3.7H4.5z"/></svg><span>@afterlife_pad</span></a>
       <a class="btn btn-teal btn-sm" href="#launch">Launch a coin</a>
     </div>
   </div>
@@ -460,6 +469,7 @@ footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);
         <a class="btn btn-teal" href="#lab">Try the test coin <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
         <a class="btn btn-pump" href="#launch">Launch a coin</a>
       </div>
+      <a class="xline" href="https://x.com/afterlife_pad" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.3-8.3L1 2h6.2l4.4 5.8zm-1.1 18.2h1.7L6.3 3.7H4.5z"/></svg>Follow <b>@afterlife_pad</b> for the launch →</a>
     </div>
     <div class="stage reveal" id="stage">
       <div class="ring"></div><div class="ring r2"></div><div class="aura"></div>
@@ -665,7 +675,7 @@ footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);
   <div class="wrap">
     <div class="foot">
       <h2 class="display">Give your coin<br>a second life.</h2>
-      <div class="r"><a class="btn btn-teal" href="#launch">Launch a coin</a><a class="btn btn-ghost" href="#after">$AFTER</a></div>
+      <div class="r"><a class="btn btn-teal" href="#launch">Launch a coin</a><a class="btn btn-ghost" href="https://x.com/afterlife_pad" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.3-8.3L1 2h6.2l4.4 5.8zm-1.1 18.2h1.7L6.3 3.7H4.5z"/></svg>@afterlife_pad</a></div>
     </div>
     <div class="socials" id="socials2" style="margin:0 0 24px"></div>
     <div class="legal"><span>© 2026 Afterlife · Revive Burn launchpad on Solana</span><span>Pre-launch · the test coin is a simulation</span></div>
@@ -679,7 +689,6 @@ footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);
 /* ===== EDIT THESE AT LAUNCH ===== */
 var CONFIG={
   x:'https://x.com/afterlife_pad',
-  telegram:'',          // e.g. 'https://t.me/afterlife'
   ca:'',                // $AFTER contract address
   pumpfun:'',           // $AFTER pump.fun page URL
   launch:'',            // e.g. '2026-11-07T18:00:00-07:00' (shows a countdown)
@@ -693,7 +702,7 @@ var GHOST='<svg viewBox="0 0 120 130" width="70"><use href="#ghost"/></svg>';
 
 /* links + CA */
 function soc(name,url){return url?'<a class="soc" href="'+url+'" target="_blank" rel="noopener">'+name+' →</a>':'<span class="soc soon">'+name+' <small>Coming soon</small></span>'}
-['socials','socials2'].forEach(function(id){$(id).innerHTML=soc('X · @afterlife_pad',CONFIG.x)+soc('Telegram',CONFIG.telegram)+(CONFIG.pumpfun?soc('pump.fun',CONFIG.pumpfun):'')});
+['socials','socials2'].forEach(function(id){$(id).innerHTML=soc('<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.1l-4.8-6.3L6.6 22H3.5l7.3-8.3L1 2h6.2l4.4 5.8zm-1.1 18.2h1.7L6.3 3.7H4.5z"/></svg> Follow @afterlife_pad',CONFIG.x)+(CONFIG.pumpfun?soc('pump.fun',CONFIG.pumpfun):'')});
 if(CONFIG.ca){$('caText').textContent=CONFIG.ca;$('caText').style.color='#06081a'}
 $('caCopy').addEventListener('click',function(){
   if(!CONFIG.ca){toast('No CA yet. It drops here at launch.');return}

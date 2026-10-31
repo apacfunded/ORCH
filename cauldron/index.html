@@ -267,6 +267,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .riser{opacity:1;transform:translate(-50%,-80%) scale(1)}
   .stone .spook{opacity:0}
 }
+.chart{border:3px solid var(--ink);border-radius:var(--r);overflow:hidden;background:var(--paper);height:min(80vh,620px);min-height:420px;position:relative;box-shadow:var(--sh);margin-bottom:56px}
+.chart iframe{width:100%;height:100%;border:0;display:block}
+.chart .empty{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:12px;border:0;box-shadow:none}
+.live{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.extra{border:3px dashed var(--ink);border-radius:14px;padding:0 14px;background:#fff;box-shadow:none}
+.extra summary{font:600 16px var(--display);padding:12px 0}
+.extra .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-bottom:14px}
+.walletline{font:700 13px var(--mono);text-align:center;color:var(--ink)}
+.log .err{color:var(--blood)}
+@media (max-width:560px){.live{grid-template-columns:repeat(2,minmax(0,1fr))}.extra .grid2{grid-template-columns:1fr}}
 </style>
 
 <div class="shade"></div><div class="tint"></div>
@@ -282,7 +292,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <div class="right">
       <button class="btn icon" type="button" id="soundBtn" aria-pressed="false" aria-label="Turn sound on" title="Sound">🔇</button>
       <button class="btn hide-s" type="button" id="trickBtn">Trick or treat</button>
-      <a class="btn solid" href="#brew">Brew a coin</a>
+      <button class="btn" type="button" id="walletBtn">Connect wallet</button>
+      <a class="btn solid hide-s" href="#brew">Brew a coin</a>
     </div>
   </div>
   <div class="wrap">
@@ -310,7 +321,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <div class="scare" id="scare" aria-hidden="true"></div>
 <div class="candy" id="candy"><div class="bag"><h3>Treat!</h3><img id="candyImg" alt=""><div id="candyName" style="font-weight:600"></div><div id="candyTick" style="font:500 13px var(--mono);margin-bottom:14px"></div><a class="btn" id="candyGo" href="#coins">Open the coin</a></div></div>
 
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
 <script>
+const API='https://cauldron-api-aislopv1-8230.vercel.app/api';
 const PFP='https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_194139_6a02730c-b169-4063-8e5d-c4004c61d12a.png';
 const MAIN={ name:'Cauldron', ticker:'BREW', mint:'' };
 const H=3600e3, D=24*H, now=Date.now();
@@ -345,6 +358,29 @@ const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200);}
 async function copy(text,label,el){try{await navigator.clipboard.writeText(text);toast(label+' copied');}catch{if(el){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);}toast('Selected. Press Ctrl+C to copy');}}
 const store={get(k,d){try{const v=localStorage.getItem('cauldron:'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('cauldron:'+k,JSON.stringify(v));}catch{}}};
+
+/* ---------- Wallet + API ---------- */
+const shortAddr=(a)=>a?a.slice(0,4)+'…'+a.slice(-4):'';
+const wallet={pk:null,provider:null};
+const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function getProvider(){ return window.phantom?.solana || window.solflare || window.backpack?.solana || window.solana || null; }
+function renderWallet(){ const b=$('#walletBtn'); if(b) b.textContent=wallet.pk?shortAddr(wallet.pk):'Connect wallet'; const w=$('#walletLine'); if(w) w.textContent=wallet.pk?`Brewing from ${shortAddr(wallet.pk)}`:'You sign the launch from your own wallet.'; }
+async function connectWallet(){
+  const p=getProvider();
+  if(!p){
+    if(isMobile){ location.href='https://phantom.app/ul/browse/'+encodeURIComponent(location.href)+'?ref='+encodeURIComponent(location.origin); return null; }
+    toast('No Solana wallet found. Install Phantom, then reload.'); return null;
+  }
+  const r=await p.connect(); wallet.provider=p; wallet.pk=(r?.publicKey||p.publicKey).toString(); renderWallet(); return wallet.pk;
+}
+async function api(path,body){
+  const r=await fetch(API+path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error||`Request failed (${r.status}). Try again in a minute.`);
+  return j;
+}
+const bytesToB64=(b)=>{ let s=''; for(let i=0;i<b.length;i+=0x8000) s+=String.fromCharCode(...b.subarray(i,i+0x8000)); return btoa(s); };
+const b64ToBytes=(b)=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
 
 /* ---------- Sound (synthesized, off by default) ---------- */
 const snd={ on:false, ctx:null, gain:null, timer:null,
@@ -460,7 +496,7 @@ function coinsView(){
       <div class="seg" role="group" aria-label="Show"><button type="button" data-filter="all" aria-pressed="${ui.filter==='all'}">All</button><button type="button" data-filter="witch" aria-pressed="${ui.filter==='witch'}">Witching hour</button></div>
     </div>
     <div class="grid" id="grid"></div>
-    <p class="note">Example data until launch. Coins you brew here show as Demo and aren't on pump.fun yet.</p>
+    ${LAUNCHES.some(l=>l.kind==='real')?'<p class="note">Live from pump.fun. Prices refresh every 20 seconds.</p>':'<p class="note">Example coins until the first real brew. Brew one and it shows up here live.</p>'}
   </div>`;
 }
 function cardHtml(l,lev){
@@ -468,7 +504,7 @@ function cardHtml(l,lev){
   return`<a class="card ${lev?'lev':''}" href="#coin-${esc(l.ticker.toLowerCase())}">${tag}${l.witch?'<span class="tag witch">Witching</span>':''}
     <img class="img" src="${imgFor(l)}" alt="$${esc(l.ticker)} coin image" loading="lazy">
     <div class="meta"><div class="row"><span class="name">${esc(l.name)}</span><span class="tick">$${esc(l.ticker)}</span></div>
-    <div class="by">by @${esc(l.requester)} · ${ago(l.at)}</div>
+    <div class="by">by ${l.creator?esc(shortAddr(l.creator)):"@"+esc(l.requester)} · ${ago(l.at)}</div>
     <div class="mc">${l.mc?`<span>MC</span><b>${fmtUsd(l.mc)}</b><span class="${l.chg>0?'up':l.chg<0?'down':''}">${fmtPct(l.chg)}</span>`:'<span>no trades yet</span>'}</div></div></a>`;
 }
 function renderGrid(){
@@ -488,7 +524,7 @@ const ING=[['image','🖼 Image'],['name','✎ Name'],['ticker','$ Ticker']];
 const POTION={image:'rgba(123,63,184,.35)',name:'rgba(255,122,61,.35)',ticker:'rgba(224,52,74,.35)'};
 function brewView(){
   return`<div class="wrap page">
-    <div class="page-head"><h1>Brew a coin</h1><p>Write the recipe, pick a costume, then drag each ingredient into the small cauldron and hold Cast. Real launches open soon; until then this brews a demo coin so you can see the whole ritual.</p></div>
+    <div class="page-head"><h1>Brew a coin</h1><p>Write the recipe, pick a costume, drag each ingredient into the small cauldron and hold Cast. Your coin goes live on pump.fun, launched from your own wallet, so the creator fees are yours.</p></div>
     <div class="brew">
       <form class="panel form" id="brewForm" autocomplete="off" novalidate>
         <div class="row2">
@@ -503,6 +539,15 @@ function brewView(){
           <label class="file-btn" for="fPic"><input type="file" id="fPic" accept="image/*"><span id="picLabel">${draft.photo?'Picture added. Tap to change':'Add a picture (optional)'}</span></label>
           <span class="hint">No picture? The cauldron paints a ticker card. The costume goes on either way.</span>
         </div>
+        <details class="extra"><summary>Socials and dev buy (optional)</summary>
+          <div class="grid2">
+            <div class="field"><label for="fX">X link</label><input type="text" id="fX" maxlength="200" placeholder="https://x.com/..." value="${esc(draft.x||'')}"></div>
+            <div class="field"><label for="fTg">Telegram link</label><input type="text" id="fTg" maxlength="200" placeholder="https://t.me/..." value="${esc(draft.tg||'')}"></div>
+            <div class="field"><label for="fWeb">Website</label><input type="text" id="fWeb" maxlength="200" placeholder="https://..." value="${esc(draft.web||'')}"></div>
+            <div class="field"><label for="fDev">Dev buy (SOL)</label><input type="text" id="fDev" inputmode="decimal" maxlength="6" placeholder="0" value="${esc(draft.dev||'')}"><span class="hint">Bought for you in the same transaction.</span></div>
+          </div>
+        </details>
+        <p class="hint" style="margin:0">Launching costs pump.fun's create fee (about 0.02 SOL) plus any dev buy, paid from your wallet. Cauldron adds no fee.</p>
         <p id="formErr" class="hint" style="color:var(--blood);margin:0" hidden></p>
         <div class="log" id="brewLog" aria-live="polite"></div>
       </form>
@@ -513,6 +558,7 @@ function brewView(){
         <div class="minipot" id="minipot" style="--potion:${esc(potionColor())}">${Object.keys(draft.dropped).length?'':'drag or tap an ingredient to drop it in'}</div>
         <button class="btn solid cast" type="button" id="castBtn" disabled><span class="fill"></span><span id="castTxt">Add all three ingredients</span></button>
         <p class="hint" style="margin:0;text-align:center;font-size:13px;color:var(--faint)">Hold Cast for 2 seconds.</p>
+        <p class="walletline" id="walletLine"></p>
       </aside>
     </div>
   </div>`;
@@ -527,7 +573,7 @@ function readyCheck(){
   const name=draft.name.trim(), ticker=draft.ticker.toUpperCase().replace(/[^A-Z0-9]/g,''), err=$('#formErr'), cast=$('#castBtn'), txt=$('#castTxt');
   if(!cast) return false;
   const all=ING.every(([k])=>draft.dropped[k]);
-  let msg=''; if(!name||ticker.length<2) msg='Add a name and a ticker of at least 2 letters.'; else if(LAUNCHES.some(l=>l.ticker===ticker&&l.kind!=='demo')) msg=`$${ticker} is already brewing here. Pick another ticker.`;
+  let msg=''; if(!name||ticker.length<2) msg='Add a name and a ticker of at least 2 letters.'; else if(draft.dev&&!(Number(draft.dev)>=0&&Number(draft.dev)<=85)) msg='Dev buy must be a number of SOL, like 0.5.'; else if(LAUNCHES.some(l=>l.ticker===ticker&&l.kind==='real')) msg=`$${ticker} is already brewing here. Pick another ticker.`;
   err.textContent=msg; err.hidden=!msg||!all;
   const ok=all&&!msg; cast.disabled=!ok; txt.textContent=ok?'Hold to cast':all?'Fix the recipe above':`Add ${ING.filter(([k])=>!draft.dropped[k]).length} more ingredient${ING.filter(([k])=>!draft.dropped[k]).length>1?'s':''}`;
   return ok;
@@ -559,20 +605,46 @@ function bindCast(){
   btn.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ if(!holding) down(e); } }); btn.addEventListener('keyup',up);
 }
 let brewing=false;
+function logStep(text){
+  const log=$('#brewLog'); log.insertAdjacentHTML('beforeend',`<div><span class="ladle"></span><span>${esc(text)}…</span></div>`); const el=log.lastElementChild;
+  return { ok(){ el.querySelector('.ladle').outerHTML='<span class="ok">✓</span>'; }, fail(){ el.querySelector('.ladle')?.replaceWith(Object.assign(document.createElement('span'),{className:'err',textContent:'✗'})); } };
+}
 async function cast(){
   if(brewing||!readyCheck()) return; brewing=true; $('#castBtn').disabled=true;
-  const name=draft.name.trim(), ticker=draft.ticker.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const name=draft.name.trim(), ticker=draft.ticker.toUpperCase().replace(/[^A-Z0-9]/g,''), desc=draft.desc.trim();
   $('#flash').classList.remove('go'); void $('#flash').offsetWidth; $('#flash').classList.add('go'); snd.thunder();
-  await sleep(600); document.body.classList.remove('shake');
-  const log=$('#brewLog'); log.innerHTML='';
-  for(const s of ['Adding eye of newt','Stirring three times counterclockwise','Minting the contract address','Pouring it onto pump.fun']){ log.insertAdjacentHTML('beforeend',`<div><span class="ladle"></span><span>${s}…</span></div>`); await sleep(700); log.lastElementChild.querySelector('.ladle').outerHTML='<span class="ok">✓</span>'; }
-  await refreshPreview();
-  const coin={ticker,name,desc:draft.desc.trim()||'Freshly brewed.',costume:draft.costume,image:draft.art,requester:'you',at:Date.now(),mc:0,vol:0,chg:null,mint:fakeMint(),kind:'demo',witch:witching().live};
-  const i=LAUNCHES.findIndex(l=>l.ticker===ticker); if(i>=0) LAUNCHES.splice(i,1); LAUNCHES.unshift(coin); queue.unshift(coin);
-  FEED.unshift(`<b>$${esc(ticker)}</b> brewed by @you`); snd.cackle();
-  log.insertAdjacentHTML('beforeend',`<div class="ok">$${esc(ticker)} is out of the cauldron. <a href="#coin-${esc(ticker.toLowerCase())}">Open its page</a></div>`);
-  draft={name:'',ticker:'',desc:'',costume:draft.costume,photo:null,art:null,dropped:{}}; brewing=false; updateCounts(); renderTape();
-  setTimeout(()=>{ if(location.hash==='#brew') location.hash='coin-'+ticker.toLowerCase(); },1400);
+  await sleep(500); document.body.classList.remove('shake');
+  $('#brewLog').innerHTML=''; let st=null;
+  try{
+    if(!wallet.pk){ st=logStep('Connecting your wallet'); await connectWallet(); if(!wallet.pk) throw new Error('Connect a Solana wallet to brew.'); st.ok(); }
+    await refreshPreview();
+    st=logStep('Uploading your coin image');
+    const meta=await api('/metadata',{name,ticker,description:desc,image:draft.art,twitter:draft.x||'',telegram:draft.tg||'',website:draft.web||''}); st.ok();
+    const mintKp=solanaWeb3.Keypair.generate(); const mint=mintKp.publicKey.toBase58();
+    st=logStep('Brewing the launch transaction');
+    const {tx}=await api('/create-tx',{creator:wallet.pk,mint,name,ticker,uri:meta.uri,devBuySol:Number(draft.dev)||0}); st.ok();
+    if(!wallet.provider?.signTransaction) throw new Error('Your wallet cannot sign this launch. Use Phantom, Solflare or Backpack.');
+    st=logStep('Approve the launch in your wallet');
+    const signed=await wallet.provider.signTransaction(solanaWeb3.VersionedTransaction.deserialize(b64ToBytes(tx)));
+    const final=solanaWeb3.VersionedTransaction.deserialize(signed.serialize()); final.sign([mintKp]); st.ok();
+    st=logStep('Sending it to Solana');
+    const {signature:sig}=await api('/send',{tx:bytesToB64(final.serialize())}); st.ok();
+    st=logStep('Waiting for Solana to confirm');
+    let reg=null;
+    for(let i=0;i<4&&!reg;i++){ try{ reg=await api('/register',{signature:sig,mint,creator:wallet.pk,name,ticker,description:desc,costume:draft.costume,image:meta.image,uri:meta.uri,witch:witching().live}); }catch(e){ if(i===3||!/not found yet/.test(e.message)) throw e; await sleep(4000); } }
+    st.ok();
+    const coin={ticker,name,costume:draft.costume,requester:shortAddr(wallet.pk),creator:wallet.pk,at:Date.now(),mc:0,vol:0,chg:null,desc:desc||'Freshly brewed.',mint,kind:'real',witch:witching().live,image:meta.image?gw(meta.image):draft.art};
+    if(!LAUNCHES.some(l=>l.kind==='real')){ LAUNCHES.length=0; }
+    LAUNCHES.unshift(coin); queue.unshift(coin); REAL.unshift(coin);
+    FEED.unshift(`<b>$${esc(ticker)}</b> brewed by ${esc(shortAddr(wallet.pk))}`); snd.cackle(); renderTape();
+    $('#brewLog').insertAdjacentHTML('beforeend',`<div class="ok">$${esc(ticker)} is live on pump.fun. <a href="#coin-${esc(ticker.toLowerCase())}">Open its page</a></div>`);
+    draft={name:'',ticker:'',desc:'',costume:draft.costume,photo:null,art:null,dropped:{}}; updateCounts();
+    setTimeout(()=>{ if(location.hash==='#brew') location.hash='coin-'+ticker.toLowerCase(); },1600);
+  }catch(e){
+    st?.fail();
+    const m=/reject|cancel|denied|4001/i.test(e?.message||'')||e?.code===4001?'You cancelled in your wallet. Nothing was launched.':(e?.message||'The launch failed. Nothing was charged; try again.');
+    $('#brewLog').insertAdjacentHTML('beforeend',`<div class="err">${esc(m)}</div>`); toast(m);
+  }finally{ brewing=false; readyCheck(); }
 }
 
 /* ---------- Graveyard ---------- */
@@ -582,31 +654,31 @@ function graveyardView(){
   const lit=store.get('candles',{});
   return`<div class="wrap page">
     <div class="page-head"><h1>The graveyard</h1><p>Coins with no trades for 72 hours get buried here. Hover a stone to see its ghost. Light a candle, or bring one back: $5K volume within an hour and it climbs out.</p></div>
-    <div class="yard">${GRAVES.map(g=>`<div class="stone" data-stone="${esc(g.ticker)}"><span class="spook">${GHOST_SVG}</span><span class="hand">${HAND_SVG}</span>
+    ${GRAVES.length?'':`<div class="empty">The graveyard is empty. Every coin is still trading.</div>`}<div class="yard">${GRAVES.map(g=>`<div class="stone" data-stone="${esc(g.ticker)}"><span class="spook">${GHOST_SVG}</span><span class="hand">${HAND_SVG}</span>
       <div class="rip">RIP</div><div class="who">$${esc(g.ticker)}</div>
       <p class="epi">${esc(g.epitaph)}</p>
       <div class="facts"><span>${esc(g.name)}</span><span>${esc(g.born)} – ${esc(g.died)}</span><span>Peaked at <b>${fmtUsd(g.peak)}</b></span></div>
       <div class="acts">
         <button class="btn" type="button" data-candle="${esc(g.ticker)}" aria-pressed="${!!lit[g.ticker]}"><span class="candle">${lit[g.ticker]?'<span class="flame"></span>':''}<span>${g.candles+(lit[g.ticker]?1:0)} candles</span></span></button>
-        <button class="btn" type="button" data-raise="${esc(g.ticker)}" title="Demo of the resurrection animation">Resurrect</button>
+        ${g.real?`<a class="btn" href="https://pump.fun/coin/${esc(g.mint)}" target="_blank" rel="noopener">Revive it</a>`:`<button class="btn" type="button" data-raise="${esc(g.ticker)}" title="Demo of the resurrection animation">Resurrect</button>`}
       </div></div>`).join('')}</div>
-    <p class="note">Example data until launch. The Resurrect button previews what happens when a buried coin hits $5K volume.</p>
+    ${GRAVES.some(g=>g.real)?'':'<p class="note">Example graves until real coins go quiet. The Resurrect button previews what happens when a buried coin hits $5K volume.</p>'}
   </div>`;
 }
 function resurrect(t){
   const st=document.querySelector(`[data-stone="${t}"]`); if(!st||st.classList.contains('rising')) return; st.classList.add('rising'); snd.thunder();
-  const g=GRAVES.find(x=>x.ticker===t); const gi=GRAVES.indexOf(g);
+  const g=GRAVES.find(x=>x.ticker===t); if(!g) return; const gi=GRAVES.indexOf(g);
   setTimeout(()=>{ GRAVES.splice(gi,1); LAUNCHES.unshift({ticker:g.ticker,name:g.name,costume:'skull',requester:'the_dead',at:Date.now(),mc:5200,vol:5000,chg:88,desc:g.epitaph+' Back from the grave.',mint:fakeMint(g.ticker),kind:'example',witch:false}); FEED.unshift(`<b>$${esc(g.ticker)}</b> rose from the graveyard`); renderTape(); updateCounts(); toast(`$${g.ticker} climbed out of the grave`); st.remove(); },1600);
 }
 
 /* ---------- Token, FAQ, coin ---------- */
 function tokenView(){
   return`<div class="wrap page">
-    <div class="page-head" style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><img class="pfp" src="${PFP}" alt="$BREW logo"><div><h1>$BREW</h1><p>The coin behind Cauldron. Its creator fees burn $BREW and pay for every free brew.</p></div></div>
+    <div class="page-head" style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><img class="pfp" src="${PFP}" alt="$BREW logo"><div><h1>$BREW</h1><p>The coin behind Cauldron. Its creator fees burn $BREW and fund Cauldron.</p></div></div>
     <div class="panel"><span class="label">Contract address</span><div class="ca-row"><code>Brewing soon. The contract address appears here at launch.</code><span class="pill">Soon</span></div></div>
     <div class="panel" style="margin-top:16px"><h3>Where the fees go</h3>
       <div class="split" role="img" aria-label="31% buyback and burn, 69% brew wallet"><span class="burn"></span><span class="fund"></span></div>
-      <div class="split-key"><span><b>31%</b> buys back $BREW and burns it, one for every day of October</span><span><b>69%</b> fills the brew wallet so launches stay free</span></div>
+      <div class="split-key"><span><b>31%</b> buys back $BREW and burns it, one for every day of October</span><span><b>69%</b> funds Cauldron</span></div>
     </div>
     <div class="three" style="margin-top:16px">
       <div class="panel"><h3>Witching hour</h3><p>From 12 to 3 AM the whole site turns blood-moon red, and every coin brewed then gets the Witching badge and the top spot.</p></div>
@@ -617,8 +689,9 @@ function tokenView(){
 }
 function faqView(){
   return`<div class="wrap page"><div class="page-head"><h1>FAQ</h1></div><div class="faq">
-    <details open><summary>Does brewing cost anything?</summary><p>No. The brew wallet pays the pump.fun launch cost, and 69% of $BREW's fees keep it topped up.</p></details>
-    <details><summary>Who gets the creator fees?</summary><p>The wallet that brewed the coin.</p></details>
+    <details open><summary>Does brewing cost anything?</summary><p>Only pump.fun's create fee (about 0.02 SOL) plus any dev buy you choose, paid from your own wallet. Cauldron adds no fee.</p></details>
+    <details><summary>Who gets the creator fees?</summary><p>You do. The coin launches from your wallet, so pump.fun records you as the creator and pays creator fees to you directly.</p></details>
+    <details><summary>Which wallets work?</summary><p>Phantom, Solflare and Backpack. On a phone, Connect wallet opens this page inside the Phantom app.</p></details>
     <details><summary>What is the witching hour?</summary><p>12 to 3 AM in your time zone. The site switches to a blood moon, and coins brewed then get the Witching badge and sit at the top of the board.</p></details>
     <details><summary>How does a coin end up in the graveyard?</summary><p>No trades for 72 hours. It keeps its page and contract address, it just moves off the main board.</p></details>
     <details><summary>Can a buried coin come back?</summary><p>Yes. $5K in volume within an hour and it climbs out and returns to the Coins board.</p></details>
@@ -637,11 +710,12 @@ function coinView(l){
         <div class="panel" style="margin:20px 0 14px"><span class="label">Contract address</span><div class="ca-row"><code id="ca">${esc(l.mint)}</code><button class="btn solid" type="button" data-copy="ca" ${real?'':'disabled'}>Copy CA</button></div></div>
         ${real?`<a class="btn solid" href="https://pump.fun/coin/${encodeURIComponent(l.mint)}" target="_blank" rel="noopener">Buy on pump.fun</a>`:''}
         <div class="facts">
-          <div class="fact"><span>Brewed by</span><b>@${esc(l.requester)}</b></div><div class="fact"><span>Brewed</span><b>${ago(l.at)}</b></div>
+          <div class="fact"><span>Brewed by</span><b>${l.creator?`<a href="https://solscan.io/account/${esc(l.creator)}" target="_blank" rel="noopener">${esc(shortAddr(l.creator))}</a>`:"@"+esc(l.requester)}</b></div><div class="fact"><span>Brewed</span><b>${ago(l.at)}</b></div>
           <div class="fact"><span>Market cap</span><b>${l.mc?fmtUsd(l.mc):'–'}</b></div><div class="fact"><span>Costume</span><b>${esc((COSTUMES.find(c=>c[0]===l.costume)||['','None'])[1])}</b></div>
         </div>
-        ${real?'':`<p class="callout">${l.kind==='demo'?'This coin came from the Brew tab. When launches open, the same recipe goes live on pump.fun.':'Example coin to show the layout. It is not on pump.fun.'}</p>`}
-      </div></div></div>`;
+        ${real?'':`<p class="callout">Example coin to show the layout. It is not on pump.fun.</p>`}
+      </div></div>
+    ${real?`<span class="label">Live chart</span><div class="chart" id="chart"><div class="empty"><span class="ladle"></span><span>Loading chart…</span></div></div>`:''}</div>`;
 }
 
 /* ---------- Hero cauldron ---------- */
@@ -679,6 +753,49 @@ function treat(){ const c=LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]; $
 $('#candy').addEventListener('click',e=>{ if(e.target.id==='candy'||e.target.id==='candyGo') $('#candy').classList.remove('on'); });
 $('#doorWrap').addEventListener('click',e=>{ if(e.target.id==='doorWrap') e.currentTarget.classList.remove('on'); });
 
+/* ---------- Live coins ---------- */
+let REAL=[]; const MARKET={};
+const gw=(u)=>String(u||'').replace(/^https:\/\/(cf-ipfs\.com|gateway\.pinata\.cloud|ipfs\.io)\/ipfs\//,'https://ipfs.io/ipfs/');
+async function loadCoins(){
+  try{
+    const j=await api('/coins');
+    REAL=(j.coins||[]).map(c=>({ticker:c.ticker,name:c.name,costume:c.costume,requester:shortAddr(c.creator),creator:c.creator,at:c.at,mc:0,vol:0,chg:null,desc:c.description||'Freshly brewed.',mint:c.mint,kind:'real',witch:!!c.witch,image:c.image?gw(c.image):null}));
+  }catch(e){ console.warn('coins',e); }
+  if(!REAL.length) return false;
+  await refreshMarket(); return true;
+}
+async function fetchMarket(mints){
+  for(let i=0;i<mints.length;i+=30){
+    const chunk=mints.slice(i,i+30);
+    try{
+      const d=await (await fetch('https://api.geckoterminal.com/api/v2/networks/solana/tokens/multi/'+chunk.join(',')+'?include=top_pools')).json();
+      const pools=Object.fromEntries((d.included||[]).filter(x=>x.type==='pool').map(x=>[x.id,x.attributes]));
+      for(const t of d.data||[]){ const a=t.attributes, pid=t.relationships?.top_pools?.data?.[0]?.id, pool=pools[pid];
+        MARKET[a.address]={price:Number(a.price_usd),mc:Number(a.market_cap_usd||a.fdv_usd)||0,vol:Number(a.volume_usd?.h24||0),chg:pool?Number(pool.price_change_percentage?.h24):null,pool:pool?.address}; }
+      for(const m of chunk) if(!MARKET[m]) MARKET[m]={none:true,mc:0,vol:0,chg:null};
+    }catch(e){}
+  }
+}
+async function refreshMarket(){
+  if(!REAL.length) return;
+  await fetchMarket(REAL.map(c=>c.mint));
+  for(const c of REAL){ const m=MARKET[c.mint]; if(m){ c.mc=m.mc; c.vol=m.vol; c.chg=m.chg; } }
+  const dead=REAL.filter(c=>Date.now()-c.at>72*3600e3 && !(c.vol>0));
+  const alive=REAL.filter(c=>!dead.includes(c));
+  LAUNCHES.splice(0,LAUNCHES.length,...alive); queue=alive.slice();
+  GRAVES.splice(0,GRAVES.length,...dead.map(c=>({ticker:c.ticker,name:c.name,peak:c.mc,born:new Date(c.at).toLocaleDateString(undefined,{month:'short',day:'numeric'}),died:'quiet 72h',epitaph:c.desc,candles:0,real:true,mint:c.mint})));
+  FEED.splice(0,FEED.length,...REAL.slice(0,12).map(c=>`<b>$${esc(c.ticker)}</b> brewed by ${esc(c.requester)}${c.mc?` · <i>${fmtUsd(c.mc)} MC</i>`:''}`));
+  renderTape(); updateCounts(); if($('#grid')) renderGrid();
+}
+async function mountChart(l){
+  const box=$('#chart'); if(!box) return;
+  if(!MARKET[l.mint]) await fetchMarket([l.mint]);
+  if($('#chart')!==box) return;
+  const m=MARKET[l.mint];
+  if(!m||m.none||!m.pool){ box.innerHTML=`<div class="empty"><span>The chart shows up a minute or two after launch.</span><a class="btn" href="https://pump.fun/coin/${encodeURIComponent(l.mint)}" target="_blank" rel="noopener">Open on pump.fun</a></div>`; return; }
+  box.innerHTML=`<iframe title="$${esc(l.ticker)} live chart" src="https://www.geckoterminal.com/solana/pools/${encodeURIComponent(m.pool)}?embed=1&info=0&swaps=1&grayscale=0&light_chart=1&chart_type=market_cap&resolution=1m"></iframe>`;
+}
+
 /* ---------- Router ---------- */
 const TABS={coins:coinsView,brew:brewView,graveyard:graveyardView,token:tokenView,faq:faqView};
 const TINT={coins:'rgba(255,122,61,.10)',brew:'rgba(155,229,138,.08)',graveyard:'rgba(60,110,160,.14)',token:'rgba(155,229,138,.12)',faq:'rgba(255,122,61,.06)'};
@@ -694,15 +811,16 @@ function route(){
   $('#app').innerHTML=isTab?TABS[token]():coinView(coin);
   if(token==='coins'){ renderGrid(); $('#q').addEventListener('input',e=>{ui.q=e.target.value;renderGrid();}); startPot(); }
   if(token==='brew') bindBrew();
+  if(coin&&coin.kind==='real') mountChart(coin);
   updateCounts(); scrollTo({top:0});
 }
 function bindBrew(){
-  const sync=()=>{draft.name=$('#fName').value;draft.ticker=$('#fTicker').value;draft.desc=$('#fDesc').value;refreshPreview();readyCheck();};
-  ['fName','fTicker','fDesc'].forEach(id=>$('#'+id).addEventListener('input',sync));
+  const sync=()=>{draft.name=$('#fName').value;draft.ticker=$('#fTicker').value;draft.desc=$('#fDesc').value;draft.x=$('#fX').value;draft.tg=$('#fTg').value;draft.web=$('#fWeb').value;draft.dev=$('#fDev').value;refreshPreview();readyCheck();};
+  ['fName','fTicker','fDesc','fX','fTg','fWeb','fDev'].forEach(id=>$('#'+id).addEventListener('input',sync));
   $('#fTicker').addEventListener('blur',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');sync();});
   $('#fPic').addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;const r=new FileReader();r.onload=()=>{draft.photo=r.result;$('#picLabel').textContent='Picture added. Tap to change';refreshPreview();};r.readAsDataURL(file);});
   $('#brewForm').addEventListener('submit',e=>e.preventDefault());
-  bindDrag(); bindCast(); refreshPreview(); readyCheck();
+  bindDrag(); bindCast(); refreshPreview(); readyCheck(); renderWallet();
 }
 document.addEventListener('click',e=>{
   const c=e.target.closest('[data-copy]'); if(c){copy($('#ca').textContent,'CA',$('#ca'));return;}
@@ -713,6 +831,8 @@ document.addEventListener('click',e=>{
   const cd=e.target.closest('[data-candle]'); if(cd){const lit=store.get('candles',{});const t=cd.dataset.candle;lit[t]=!lit[t];store.set('candles',lit);const g=GRAVES.find(x=>x.ticker===t);cd.setAttribute('aria-pressed',!!lit[t]);cd.innerHTML=`<span class="candle">${lit[t]?'<span class="flame"></span>':''}<span>${g.candles+(lit[t]?1:0)} candles</span></span>`;if(lit[t])toast(`Candle lit for $${t}`);return;}
 });
 $('#trickBtn').addEventListener('click',trickOrTreat);
+$('#walletBtn').addEventListener('click',async()=>{ if(wallet.pk){ try{ await wallet.provider.disconnect?.(); }catch{} wallet.pk=null; wallet.provider=null; renderWallet(); toast('Wallet disconnected'); return; } try{ await connectWallet(); if(wallet.pk) toast('Wallet connected'); }catch{ toast('Connection cancelled'); } });
+const _p=getProvider(); if(_p?.isConnected&&_p.publicKey){ wallet.provider=_p; wallet.pk=_p.publicKey.toString(); } else { _p?.connect?.({onlyIfTrusted:true}).then(r=>{ wallet.provider=_p; wallet.pk=(r?.publicKey||_p.publicKey).toString(); renderWallet(); }).catch(()=>{}); }
 addEventListener('hashchange',route);
 
 /* ---------- Sky canvas: stars, fireflies, bats, fog, parallax ---------- */
@@ -756,6 +876,8 @@ addEventListener('hashchange',route);
 (function(){ const wand=$('#wand'); if(!matchMedia('(hover:hover) and (pointer:fine)').matches||still) return; let n=0;
   addEventListener('pointermove',e=>{ wand.style.left=e.clientX+'px'; wand.style.top=e.clientY+'px'; if(++n%3===0){ const s=document.createElement('span'); s.className='spark'; s.style.left=e.clientX+(Math.random()*10-5)+'px'; s.style.top=e.clientY+(Math.random()*10-5)+'px'; document.body.appendChild(s); setTimeout(()=>s.remove(),700); } },{passive:true}); })();
 
-applyWitch(); renderTape(); route();
+applyWitch(); renderTape(); route(); renderWallet();
+loadCoins().then(has=>{ if(has){ const t=decodeURIComponent(location.hash.slice(1)).toLowerCase()||'coins'; if(t==='coins'||t.startsWith('coin-')||t==='graveyard') route(); } });
+setInterval(refreshMarket,20000);
 </script>
 </html>

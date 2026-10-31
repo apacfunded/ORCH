@@ -296,6 +296,43 @@ textarea.inp{padding:14px 16px;min-height:96px;resize:vertical}
 .bempty b{display:block;font-family:var(--display);font-weight:400;font-size:24px;color:var(--bone)}
 @media (max-width:700px){.bhead{grid-template-columns:2fr 1fr}.bhead span:nth-child(n+3){display:none}.plots svg:nth-child(n+5){display:none}}
 
+/* coins */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{min-height:44px;padding:0 16px;border-radius:12px;border:3px solid var(--ink);background:var(--surface);color:var(--bone-dim);font-family:var(--display);font-size:16px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .18s var(--pop),background .2s,color .2s}
+.tab:hover{transform:translate(-1px,-2px);color:var(--bone)}
+.tab[aria-pressed="true"]{background:var(--potion);color:var(--ink)}
+.csearch{flex:1 1 220px;max-width:320px}
+.csearch .inp{min-height:46px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px}
+.coin{padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;min-width:0}
+.coin.revived{animation:jolt .6s var(--pop)}
+@keyframes jolt{30%{transform:translateY(-8px) scale(1.03) rotate(-1deg)}}
+.coin .top{display:flex;align-items:center;gap:12px;min-width:0}
+.coin .av{width:52px;height:52px;border-radius:14px;border:3px solid var(--ink);background:var(--teal);display:grid;place-items:center;overflow:hidden;flex:none}
+.coin .av img{width:100%;height:100%;object-fit:cover}
+.coin .nm{min-width:0;flex:1}
+.coin .nm b{display:block;font-family:var(--display);font-weight:400;font-size:20px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coin .nm span{font-family:var(--mono);font-size:12px;color:var(--teal)}
+.coin .tag{flex:none;font-family:var(--display);font-size:12px;letter-spacing:.06em;padding:3px 8px;border-radius:8px;border:2px solid var(--ink);background:var(--pumpkin);color:var(--ink)}
+.coin canvas{width:100%;height:64px;display:block;border-radius:10px;background:var(--night)}
+.coin .row{display:flex;justify-content:space-between;gap:8px;white-space:nowrap;font-family:var(--mono);font-size:12px;color:var(--bone-dim)}
+.coin .mt{height:12px;border-radius:7px;border:2px solid var(--ink);background:var(--night);overflow:hidden}
+.coin .mt div{height:100%;background:var(--teal);transition:width .3s var(--ease),background .3s}
+.coin .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.coin .stats div{background:var(--night);border:2px solid var(--ink);border-radius:10px;padding:8px 10px}
+.coin .stats span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.coin .stats b{font-family:var(--display);font-weight:400;font-size:20px;font-variant-numeric:tabular-nums}
+.coin .ft{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.coin .ft small{color:var(--dim);font-weight:700;font-size:13px}
+.coin .open{border:0;background:transparent;padding:6px 0;cursor:pointer;font-family:var(--display);font-size:15px;color:var(--teal)}.coin .open:hover{color:#8af5e0}
+.coin .x{border:0;background:transparent;color:var(--dim);font-family:var(--display);font-size:14px;cursor:pointer;padding:6px;border-radius:8px}
+.coin .x:hover{color:var(--red)}
+.cempty{margin-top:4px}
+.cgrid:not(:empty)+.cempty{display:none}
+.nores{grid-column:1/-1;text-align:center;color:var(--dim);font-weight:700;padding:28px 0}
+
 /* rules */
 .rules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
 .rule{padding:22px}
@@ -403,7 +440,7 @@ footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);
   <div class="wrap bar">
     <a class="brand" href="#top" aria-label="Afterlife home"><svg class="gm" viewBox="0 0 120 130"><use href="#ghost"/></svg>Afterlife</a>
     <nav aria-label="Sections">
-      <a href="#how">How it works</a><a href="#why">Why</a><a href="#lab">Test coin</a><a href="#launch">Launch</a><a href="#board">Graveyard</a><a href="#faq">FAQ</a>
+      <a href="#how">How it works</a><a href="#why">Why</a><a href="#lab">Test coin</a><a href="#launch">Launch</a><a href="#board">Coins</a><a href="#faq">FAQ</a>
     </nav>
     <div class="hdr-actions">
       <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Sound off. Turn sound on" title="Sound"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="sw" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" style="display:none"/><path class="sx" d="m22 9-6 6M16 9l6 6"/></svg></button>
@@ -561,14 +598,22 @@ footer{margin-top:80px;border-top:3px solid var(--ink);background:var(--night2);
     </div>
   </section>
 
-  <!-- GRAVEYARD -->
+  <!-- COINS -->
   <section class="sec" id="board">
     <div class="wrap">
-      <div class="head"><div><span class="badge b-potion">The graveyard</span><h2 class="display reveal">Plots open<br>at launch.</h2></div><p>Every coin launched on Afterlife gets a plot here with its revive meter, pool and burn record. None are taken yet.</p></div>
-      <div class="card board reveal">
-        <div class="bhead"><span>Coin</span><span>Distance to revive</span><span>Revives</span><span>Burned</span></div>
+      <div class="head"><div><span class="badge b-potion">The graveyard</span><h2 class="display reveal">Coins.</h2></div><p>Every coin on Afterlife lives here with its revive meter, revive count and burn record. Real coins appear at launch. Test coins you make are marked TEST and only you can see them.</p></div>
+      <div class="cbar reveal">
+        <div class="tabs" role="group" aria-label="Sort coins">
+          <button type="button" class="tab" data-sort="near" aria-pressed="true">💀 Near revive</button>
+          <button type="button" class="tab" data-sort="rev" aria-pressed="false">👻 Most revived</button>
+          <button type="button" class="tab" data-sort="new" aria-pressed="false">🪦 Newest</button>
+        </div>
+        <label class="csearch"><span class="sr">Search coins</span><input class="inp" id="cq" type="search" placeholder="Search name or ticker" autocomplete="off"></label>
+      </div>
+      <div class="cgrid" id="cgrid"></div>
+      <div class="card board cempty reveal" id="cempty">
         <div class="plots" aria-hidden="true"><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg><svg viewBox="0 0 100 110"><use href="#tomb"/></svg></div>
-        <div class="bempty"><p><b>No coins buried yet.</b>The graveyard fills up with the first launch.</p><a class="btn btn-ghost" href="#launch">Reserve a name →</a></div>
+        <div class="bempty"><p><b id="cemptyT">No coins buried yet.</b><span id="cemptyP">Real coins show up here at launch. Make a test coin to see how a card works.</span></p><a class="btn btn-pump" href="#launch">Make a test coin →</a></div>
       </div>
     </div>
   </section>
@@ -638,7 +683,8 @@ var CONFIG={
   ca:'',                // $AFTER contract address
   pumpfun:'',           // $AFTER pump.fun page URL
   launch:'',            // e.g. '2026-11-07T18:00:00-07:00' (shows a countdown)
-  pfp:''                // URL of the chosen Higgsfield mascot (optional; falls back to the drawn ghost)
+  pfp:'',               // URL of the chosen Higgsfield mascot (optional; falls back to the drawn ghost)
+  coins:[]              // real launched coins, e.g. {name:'Ghost Dog',tick:'GDOG',img:'https://...',trig:20,url:'https://...'}
 };
 /* ================================ */
 var $=function(id){return document.getElementById(id)};
@@ -796,7 +842,55 @@ $('lf').addEventListener('submit',function(e){e.preventDefault();var nm=$('fName
   if(!ok){(nm?$('fTick'):$('fName')).focus();return}
   T={tick:t,trig:form.trig,size:form.size};$('tcName').textContent=nm+' (test)';$('tcTick').textContent='$'+t+' · revives at −'+form.trig+'%';
   $('tcAv').innerHTML=form.img?'<img src="'+form.img+'" alt="">':$('tcAv').innerHTML;resetSim();ui();
-  $('lab').scrollIntoView({behavior:reduce?'auto':'smooth'});toast('$'+t+' is in the grave. Try to kill it.')});
+  addTestCoin({name:nm,tick:t,img:form.img,trig:form.trig,size:form.size});
+  $('lab').scrollIntoView({behavior:reduce?'auto':'smooth'});toast('$'+t+' is in the grave and on the coin board. Try to kill it.')});
+
+/* ===== coin board ===== */
+var COINS=[],csort='near',cq='',KEY='afterlife-test-coins';
+function mkSim(){var s={p:1,peak:1,pool:2+Math.random()*2,rev:0,burned:0,cd:0,pts:[]};for(var i=0;i<48;i++){s.p*=1+(Math.random()-.47)*.012;if(s.p>s.peak)s.peak=s.p;s.pts.push(s.p)}return s}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(COINS.filter(function(c){return c.test}).map(function(c){return{id:c.id,name:c.name,tick:c.tick,img:c.img&&c.img.length<200000?c.img:null,trig:c.trig,size:c.size,born:c.born}})))}catch(e){}}
+function addTestCoin(o,quiet){var c={id:o.id||Math.random().toString(36).slice(2,9),name:o.name,tick:o.tick,img:o.img||null,trig:o.trig||20,size:o.size||25,born:o.born||Date.now(),test:true,s:mkSim()};
+  COINS=COINS.filter(function(x){return !(x.test&&x.tick===c.tick)});COINS.unshift(c);if(COINS.filter(function(x){return x.test}).length>12)COINS.splice(COINS.lastIndexOf(COINS.filter(function(x){return x.test}).pop()),1);if(!quiet)save();renderCoins(true)}
+(CONFIG.coins||[]).forEach(function(o,i){COINS.push({id:'real'+i,name:o.name,tick:o.tick,img:o.img||null,trig:o.trig||20,url:o.url||'',born:0,test:false})});
+try{(JSON.parse(localStorage.getItem(KEY)||'[]')||[]).forEach(function(o){addTestCoin(o,true)})}catch(e){}
+function dd(c){return c.s?Math.max(0,(1-c.s.p/c.s.peak)*100):0}
+function avHTML(c){return c.img?'<img src="'+c.img+'" alt="">':'<svg viewBox="0 0 120 130" width="36"><use href="#ghost"/></svg>'}
+function cardHTML(c){var d=dd(c),pct=c.s?Math.min(100,d/c.trig*100):0,hot=pct>70;
+  return '<div class="top"><span class="av">'+avHTML(c)+'</span><div class="nm"><b>'+esc(c.name)+'</b><span>$'+esc(c.tick)+'</span></div>'+(c.test?'<span class="tag">TEST</span>':'')+'</div>'+
+  (c.s?'<canvas data-id="'+c.id+'" aria-hidden="true"></canvas>':'')+
+  '<div><div class="row"><span class="rl">'+(c.s?'Down '+d.toFixed(1)+'%':'Live at launch')+'</span><span>Revive at −'+c.trig+'%</span></div>'+
+  '<div class="mt" style="margin-top:6px"><div class="mf" style="width:'+pct+'%;background:'+(hot?'var(--red)':'var(--teal)')+'"></div></div></div>'+
+  '<div class="stats"><div><span>Revives</span><b class="sr1">'+(c.s?c.s.rev:'—')+'</b></div><div><span>'+(c.test?'Test burned':'Burned')+'</span><b class="sb1">'+(c.s?fmt(c.s.burned):'—')+'</b></div></div>'+
+  '<div class="ft">'+(c.test?'<button type="button" class="open">Open in lab →</button><button type="button" class="x" data-del="'+c.id+'" aria-label="Remove test coin '+esc(c.tick)+'">Remove</button>':(c.url?'<button type="button" class="open">View coin →</button>':'<small>Launching soon</small>'))+'</div>'}
+var order='';
+function sorted(){var l=COINS.filter(function(c){return !cq||(c.name+' '+c.tick).toLowerCase().indexOf(cq)>-1});
+  var f={near:function(a,b){return dd(b)/b.trig-dd(a)/a.trig},rev:function(a,b){return (b.s?b.s.rev:0)-(a.s?a.s.rev:0)},new:function(a,b){return b.born-a.born}}[csort];return l.sort(f)}
+function renderCoins(force){var g=$('cgrid'),l=sorted(),ids=l.map(function(c){return c.id}).join();
+  if(!COINS.length){g.innerHTML='';return}
+  if(force||ids!==order){order=ids;g.innerHTML=l.length?l.map(function(c){return '<div class="card hov coin" data-id="'+c.id+'">'+cardHTML(c)+'</div>'}).join(''):'<p class="nores">No coins match that search. Try another name or ticker.</p>'}
+  else l.forEach(function(c){var el=g.querySelector('.coin[data-id="'+c.id+'"]');if(!el||!c.s)return;var d=dd(c),pct=Math.min(100,d/c.trig*100),hot=pct>70;el.querySelector('.rl').textContent='Down '+d.toFixed(1)+'%';var mf=el.querySelector('.mf');mf.style.width=pct+'%';mf.style.background=hot?'var(--red)':'var(--teal)';el.querySelector('.sr1').textContent=c.s.rev;el.querySelector('.sb1').textContent=fmt(c.s.burned)});
+  g.querySelectorAll('canvas[data-id]').forEach(function(k){var c=byId(k.dataset.id);if(c)spark(k,c)})}
+function byId(id){for(var i=0;i<COINS.length;i++)if(COINS[i].id===id)return COINS[i]}
+function spark(k,c){var r=k.getBoundingClientRect();if(!r.width)return;var d=devicePixelRatio||1;k.width=r.width*d;k.height=r.height*d;var x=k.getContext('2d');x.setTransform(d,0,0,d,0,0);
+  var w=r.width,h=r.height,p=c.s.pts,fl=c.s.peak*(1-c.trig/100),lo=Math.min(Math.min.apply(null,p),fl)*.97,hi=Math.max(Math.max.apply(null,p),c.s.peak)*1.02,sp=hi-lo;
+  function Y(v){return 6+(1-(v-lo)/sp)*(h-12)}function X(i){return i/(p.length-1)*w}
+  x.setLineDash([5,4]);x.strokeStyle='rgba(255,77,109,.8)';x.lineWidth=1.5;x.beginPath();x.moveTo(0,Y(fl));x.lineTo(w,Y(fl));x.stroke();x.setLineDash([]);
+  x.beginPath();p.forEach(function(v,i){i?x.lineTo(X(i),Y(v)):x.moveTo(0,Y(v))});x.strokeStyle='#3fe0c0';x.lineWidth=2.5;x.lineJoin='round';x.stroke()}
+function stepCoin(c){var s=c.s,d=(Math.random()-.47)*.02;if(Math.random()<.05)d-=.06+Math.random()*.08;s.p*=1+d;s.pool+=.01+Math.random()*.02;if(s.p>s.peak)s.peak=s.p;if(s.cd>0)s.cd--;
+  s.pts.push(s.p);if(s.pts.length>48)s.pts.shift();
+  if((1-s.p/s.peak)*100>=c.trig&&s.cd===0){var sp2=s.pool*c.size/100;s.pool-=sp2;s.burned+=sp2/s.p*1000;s.rev++;s.cd=8;s.p*=1.12+Math.random()*.06;s.peak=s.p;s.pts[s.pts.length-1]=s.p;
+    var el=$('cgrid').querySelector('.coin[data-id="'+c.id+'"]');if(el&&!reduce){el.classList.remove('revived');void el.offsetWidth;el.classList.add('revived')}}}
+document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){csort=b.dataset.sort;document.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-pressed',x===b)});renderCoins(true)})});
+$('cq').addEventListener('input',function(){cq=this.value.trim().toLowerCase();renderCoins(true)});
+$('cgrid').addEventListener('click',function(e){var del=e.target.closest('[data-del]');
+  if(del){e.stopPropagation();COINS=COINS.filter(function(c){return c.id!==del.dataset.del});save();renderCoins(true);toast('Test coin removed.');return}
+  var b=e.target.closest('.coin');if(!b)return;var c=byId(b.dataset.id);if(!c)return;
+  if(!c.test){if(c.url)window.location.href=c.url;return}
+  T={tick:c.tick,trig:c.trig,size:c.size};$('tcName').textContent=c.name+' (test)';$('tcTick').textContent='$'+c.tick+' · revives at −'+c.trig+'%';$('tcAv').innerHTML=c.img?'<img src="'+c.img+'" alt="">':'<svg viewBox="0 0 120 130" width="30"><use href="#ghost"/></svg>';
+  resetSim();ui();$('lab').scrollIntoView({behavior:reduce?'auto':'smooth'});toast('$'+c.tick+' loaded into the lab.')});
+$('cgrid').addEventListener('keydown',function(e){var del=e.target.closest('[data-del]');if(del&&(e.key==='Enter'||e.key===' ')){e.preventDefault();del.click()}});
+renderCoins(true);addEventListener('resize',function(){renderCoins(true)});
+setInterval(function(){COINS.forEach(function(c){if(c.s)stepCoin(c)});renderCoins(csort!=='new'&&Math.random()<.15)},reduce?2500:900);
 
 var tt;function toast(m){var el=$('toast');el.textContent=m;el.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('on')},2800)}
 })();

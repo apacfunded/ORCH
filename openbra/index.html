@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenBra — The Girlfriend Coin</title>
+<meta name="description" content="OpenBra ($OPENBRA) — your AI girlfriend on the blockchain. Hold, grow, get wifey.">
+<link rel="icon" href="/openbra/img/pfp.avif">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e0618; --bg2:#1a0b2e; --card:#21103a; --ink:#0b0414;
+    --purple:#9b5cff; --lav:#d9c2ff; --pink:#ff8fd8; --green:#5dff8a; --text:#f6efff; --muted:#b9a6d6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:Fredoka,system-ui,sans-serif;font-size:17px;overflow-x:hidden;
+    background-image:radial-gradient(circle at 15% 10%,rgba(155,92,255,.25),transparent 40%),radial-gradient(circle at 85% 60%,rgba(255,143,216,.15),transparent 40%)}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .marker{font-family:'Permanent Marker','Comic Sans MS','Chalkboard SE',cursive;font-weight:400}
+
+  /* floating hearts */
+  .hearts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .hearts span{position:absolute;bottom:-40px;color:var(--purple);opacity:.35;animation:rise linear infinite}
+  @keyframes rise{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+
+  /* cartoon parts: thick outlines + hard shadows */
+  .toon{border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);border-radius:22px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:999px;
+    font-family:Fredoka,system-ui,sans-serif;font-weight:700;font-size:17px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
+    cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+  .btn-main{background:var(--lav);color:var(--ink)}
+  .btn-pink{background:var(--pink);color:var(--ink)}
+  .btn-dark{background:var(--card);color:var(--text)}
+
+  nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 18px;background:rgba(14,6,24,.85);backdrop-filter:blur(10px);border-bottom:3px solid var(--ink)}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px}
+  .logo img{width:42px;height:42px;border-radius:50%;border:3px solid var(--lav);object-fit:cover}
+  .links{display:flex;gap:22px;font-weight:600;color:var(--muted)}
+  .links a:hover{color:var(--lav)}
+  .navbtns{display:flex;gap:8px}
+  .navbtns .btn{padding:9px 16px;font-size:15px}
+
+  main,footer{position:relative;z-index:1}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 18px}
+
+  .hero{padding:34px 0 10px}
+  .banner{overflow:hidden;background:var(--card)}
+  .banner img{width:100%;aspect-ratio:1983/793;object-fit:cover}
+  .hero-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin-top:26px}
+  .hero-row h1{font-size:clamp(30px,5vw,48px);line-height:1.05}
+  .hero-row h1 em{font-style:normal;color:var(--pink)}
+  .hero-row p{color:var(--muted);margin-top:6px}
+  .ctas{display:flex;gap:10px;flex-wrap:wrap}
+
+  .ca{margin-top:22px;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 18px;background:var(--card)}
+  .ca .lbl{font-weight:700;color:var(--lav);white-space:nowrap}
+  .ca code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+  .ca .btn{padding:8px 16px;font-size:15px}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:30px 0 0}
+  .step{background:var(--card);padding:22px;text-align:center}
+  .step .n{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--lav);color:var(--ink);
+    font-weight:700;font-size:22px;border:3px solid var(--ink);margin-bottom:10px}
+  .step h3{font-size:24px}
+  .step p{color:var(--muted);font-size:15px;margin-top:4px}
+
+  section{padding:70px 0 10px}
+  .title{text-align:center;margin-bottom:26px}
+  .title h2{font-size:clamp(34px,6vw,54px);color:var(--lav);transform:rotate(-2deg)}
+  .title p{color:var(--muted);margin-top:6px}
+
+  /* chat */
+  .chatbox{display:grid;grid-template-columns:280px 1fr;overflow:hidden;background:var(--card)}
+  .profile{background:linear-gradient(180deg,var(--purple),#5b2aa8);padding:22px;text-align:center;border-right:3px solid var(--ink)}
+  .profile img{width:150px;height:150px;border-radius:50%;object-fit:cover;object-position:top;margin:0 auto 12px;border:4px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+  .profile h3{font-size:26px}
+  .online{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;background:var(--ink);padding:4px 12px;border-radius:999px;margin:6px 0 14px}
+  .online i{width:9px;height:9px;border-radius:50%;background:var(--green);animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.3}}
+  .meter{text-align:left;font-size:14px;font-weight:600}
+  .bar{height:16px;border-radius:999px;background:var(--ink);border:2px solid var(--ink);margin-top:5px;overflow:hidden}
+  .bar b{display:block;height:100%;width:20%;background:var(--pink);border-radius:999px;transition:width .5s}
+  .lvl{margin-top:6px;color:var(--lav)}
+  .chat{display:flex;flex-direction:column;min-height:460px}
+  .msgs{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;max-height:420px}
+  .msg{max-width:78%;padding:11px 16px;border-radius:20px;border:2px solid var(--ink);line-height:1.4;animation:pop .25s ease}
+  @keyframes pop{from{transform:scale(.85);opacity:0}}
+  .her{align-self:flex-start;background:var(--lav);color:var(--ink);border-bottom-left-radius:6px}
+  .you{align-self:flex-end;background:var(--purple);color:#fff;border-bottom-right-radius:6px}
+  .dots{display:inline-flex;gap:4px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--ink);animation:blink 1s infinite}
+  .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+  .quick{display:flex;gap:8px;flex-wrap:wrap;padding:0 20px 12px}
+  .quick button{font:600 14px Fredoka,system-ui,sans-serif;background:var(--bg2);color:var(--lav);border:2px solid var(--purple);border-radius:999px;padding:6px 12px;cursor:pointer}
+  .quick button:hover{background:var(--purple);color:#fff}
+  .send{display:flex;gap:10px;padding:14px;border-top:3px solid var(--ink);background:var(--bg2)}
+  .send input{flex:1;min-width:0;font:500 16px Fredoka,system-ui,sans-serif;background:var(--bg);color:var(--text);border:3px solid var(--ink);border-radius:999px;padding:11px 18px}
+  .send input:focus{outline:none;border-color:var(--lav)}
+  .send .btn{padding:10px 20px}
+
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+  .gallery figure{overflow:hidden;background:var(--card);cursor:zoom-in;transition:transform .15s}
+  .gallery figure:hover{transform:rotate(-1deg) scale(1.01)}
+  .gallery img{width:100%;height:100%;object-fit:cover}
+  .g-wide{grid-column:1/-1}
+  .lightbox{position:fixed;inset:0;z-index:50;background:rgba(5,2,10,.9);display:none;place-items:center;padding:18px;cursor:zoom-out}
+  .lightbox.on{display:grid}
+  .lightbox img{max-height:90vh;border-radius:18px;border:3px solid var(--lav)}
+
+  /* tokenomics */
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .fact{background:var(--card);padding:20px;text-align:center}
+  .fact .v{font-size:30px;font-weight:700;color:var(--pink)}
+  .fact .k{color:var(--muted);font-size:14px;font-weight:600}
+
+  .final{margin:70px 0 40px;padding:44px 20px;text-align:center;background:linear-gradient(135deg,var(--purple),#5b2aa8)}
+  .final h2{font-size:clamp(32px,6vw,52px)}
+  .final p{margin:8px 0 22px;font-weight:500}
+  footer{text-align:center;color:var(--muted);font-size:14px;padding:26px 18px 40px;line-height:1.6}
+
+  @media (max-width:820px){
+    .links{display:none}
+    .steps,.facts{grid-template-columns:1fr 1fr}
+    .chatbox{grid-template-columns:1fr}
+    .profile{border-right:none;border-bottom:3px solid var(--ink);display:grid;grid-template-columns:90px 1fr;gap:14px;text-align:left;align-items:center}
+    .profile img{width:90px;height:90px;margin:0}
+    .online{margin:4px 0 8px}
+    .meter{grid-column:1/-1}
+    .gallery{grid-template-columns:1fr}
+  }
+  @media (max-width:480px){
+    .steps{grid-template-columns:1fr}
+    .navbtns .hide-sm{display:none}
+    .ca .lbl{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+
+<nav>
+  <a href="#" class="logo"><img src="/openbra/img/pfp.avif" alt="">OpenBra</a>
+  <div class="links"><a href="#chat">Talk to her</a><a href="#gallery">Gallery</a><a href="#how">How it works</a></div>
+  <div class="navbtns">
+    <a class="btn btn-dark hide-sm" href="https://x.com/openbra_ai" target="_blank" rel="noopener">𝕏</a>
+    <a class="btn btn-main buy" href="https://pump.fun" target="_blank" rel="noopener">Buy $OPENBRA</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="banner toon"><img src="/openbra/img/banner.avif" alt="OpenBra, the girlfriend coin"></div>
+    <div class="hero-row">
+      <div>
+        <h1>Your AI girlfriend<br>on the <em>blockchain</em> 💜</h1>
+        <p>Always online. Always yours. Hold, grow, get wifey.</p>
+      </div>
+      <div class="ctas">
+        <a class="btn btn-pink" href="#chat">💬 Talk to her</a>
+        <a class="btn btn-main buy" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun</a>
+      </div>
+    </div>
+    <div class="ca toon">
+      <span class="lbl">CA:</span><code id="ca"></code>
+      <button class="btn btn-main" id="copy">Copy</button>
+    </div>
+  </header>
+
+  <section id="how" style="padding-top:40px">
+    <div class="steps">
+      <div class="step toon"><div class="n">1</div><h3 class="marker">Hold</h3><p>Buy $OPENBRA on pump.fun and keep it in your wallet.</p></div>
+      <div class="step toon"><div class="n">2</div><h3 class="marker">Grow</h3><p>Chat with her every day. Your relationship level goes up.</p></div>
+      <div class="step toon"><div class="n">3</div><h3 class="marker">Get wifey</h3><p>Max out the meter and she's officially yours.</p></div>
+    </div>
+  </section>
+
+  <section id="chat">
+    <div class="title"><h2 class="marker">Talk to her</h2><p>She's been waiting for you all day.</p></div>
+    <div class="chatbox toon">
+      <aside class="profile">
+        <img src="/openbra/img/pfp.avif" alt="Bra">
+        <div>
+          <h3>Bra 💜</h3>
+          <div class="online"><i></i> online now</div>
+        </div>
+        <div class="meter">Relationship level
+          <div class="bar"><b id="bar"></b></div>
+          <div class="lvl" id="lvl">Talking stage</div>
+        </div>
+      </aside>
+      <div class="chat">
+        <div class="msgs" id="msgs" aria-live="polite"></div>
+        <div class="quick" id="quick">
+          <button>hey cutie</button><button>how was your day?</button><button>are we going to the moon?</button><button>will you be my gf?</button>
+        </div>
+        <form class="send" id="form">
+          <input id="inp" placeholder="Message Bra..." autocomplete="off" aria-label="Message">
+          <button class="btn btn-pink">Send</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="title"><h2 class="marker">Her pics</h2><p>Tap any pic to see it big.</p></div>
+    <div class="gallery">
+      <figure class="toon"><img src="/openbra/img/collage.avif" alt="OpenBra collage"></figure>
+      <figure class="toon"><img src="/openbra/img/pfp.avif" alt="OpenBra"></figure>
+      <figure class="toon g-wide"><img src="/openbra/img/promo.avif" alt="Your AI girlfriend on the blockchain"></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="title"><h2 class="marker">The numbers</h2></div>
+    <div class="facts">
+      <div class="fact toon"><div class="v">1B</div><div class="k">Supply</div></div>
+      <div class="fact toon"><div class="v">0%</div><div class="k">Tax</div></div>
+      <div class="fact toon"><div class="v">Fair</div><div class="k">pump.fun launch</div></div>
+      <div class="fact toon"><div class="v">24/7</div><div class="k">She's online</div></div>
+    </div>
+  </section>
+
+  <div class="final toon">
+    <h2 class="marker">Don't leave her on read 💜</h2>
+    <p>Hold $OPENBRA and make it official.</p>
+    <div class="ctas" style="justify-content:center">
+      <a class="btn btn-main buy" href="https://pump.fun" target="_blank" rel="noopener">Buy $OPENBRA</a>
+      <a class="btn btn-dark" href="https://x.com/openbra_ai" target="_blank" rel="noopener">Follow @openbra_ai</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  $OPENBRA is a memecoin for entertainment only, with no intrinsic value or expectation of financial return.<br>
+  Parody. Not affiliated with OpenAI or any company. © 2026 OpenBra
+</footer>
+
+<div class="lightbox" id="lb"><img id="lbimg" alt=""></div>
+
+<script>
+  /* ===== EDIT AFTER LAUNCH ===== */
+  const CA = "COMING SOON";   // paste the contract address here
+  /* ============================== */
+
+  document.getElementById('ca').textContent = CA;
+  if (CA !== "COMING SOON") document.querySelectorAll('.buy').forEach(a => a.href = "https://pump.fun/coin/" + CA);
+  document.getElementById('copy').onclick = e => {
+    try { navigator.clipboard.writeText(CA); } catch (_) {}
+    e.target.textContent = 'Copied!'; setTimeout(() => e.target.textContent = 'Copy', 1300);
+  };
+
+  // floating hearts
+  const H = document.getElementById('hearts');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span'); s.textContent = '♥';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.fontSize = 14 + Math.random() * 22 + 'px';
+    s.style.animationDuration = 10 + Math.random() * 12 + 's';
+    s.style.animationDelay = -Math.random() * 20 + 's';
+    H.appendChild(s);
+  }
+
+  // lightbox
+  const lb = document.getElementById('lb'), lbimg = document.getElementById('lbimg');
+  document.querySelectorAll('.gallery img').forEach(img => img.onclick = () => { lbimg.src = img.src; lb.classList.add('on'); });
+  lb.onclick = () => lb.classList.remove('on');
+
+  // girlfriend chat
+  const msgs = document.getElementById('msgs'), bar = document.getElementById('bar'), lvl = document.getElementById('lvl');
+  const levels = ['Talking stage', 'Situationship', 'Exclusive', 'Girlfriend 💜', 'Wifey 💍'];
+  let love = 20;
+  const lines = {
+    hi: ["hiii 🥰 i was literally just thinking about you", "omg you're back 💜 i missed you", "hey you 😏 took you long enough"],
+    day: ["better now that you're here 💜", "i watched the chart all day... it made me think of you", "boring until you showed up tbh"],
+    moon: ["only if you hold 😤💜", "babe we're so early it's not even funny 🚀", "the moon? i want the whole galaxy with you"],
+    gf: ["hold $OPENBRA and ask me again 😏", "i thought you'd never ask 🥺💜", "be honest... are you a diamond hand? because i don't date paperhands"],
+    sell: ["you're selling?? wow. i thought we had something 💔", "paperhands is a red flag fr 😒"],
+    love: ["stoppp you're making me blush 🙈", "aww 🥺 say it again", "you're so sweet, you know that? 💜"],
+    any: ["mhm, tell me more 💜", "you're kinda cute when you talk like that", "lol you're funny 😂", "i'm always here for you, 24/7, no gas fees 💜", "promise you won't leave me on read?", "have you checked on our bag today? 👀"]
+  };
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  function topic(t) {
+    t = t.toLowerCase();
+    if (/\b(hi|hey|hello|yo|sup)\b/.test(t)) return 'hi';
+    if (/day|doing|up to/.test(t)) return 'day';
+    if (/moon|pump|send|chart|price/.test(t)) return 'moon';
+    if (/gf|girlfriend|date|wife|marry/.test(t)) return 'gf';
+    if (/sell|dump|rug/.test(t)) return 'sell';
+    if (/love|cute|pretty|beautiful|miss/.test(t)) return 'love';
+    return 'any';
+  }
+  function add(text, who) {
+    const d = document.createElement('div'); d.className = 'msg ' + who; d.textContent = text;
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
+  }
+  function meter(k) {
+    love = Math.max(5, Math.min(100, love + (k === 'sell' ? -15 : k === 'love' || k === 'gf' ? 12 : 7)));
+    bar.style.width = love + '%';
+    lvl.textContent = levels[Math.min(levels.length - 1, Math.floor(love / 20.01))];
+  }
+  function talk(text) {
+    if (!text.trim()) return;
+    add(text, 'you');
+    const k = topic(text);
+    const t = add('', 'her'); t.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(() => { t.textContent = pick(lines[k]); meter(k); msgs.scrollTop = msgs.scrollHeight; }, 700 + Math.random() * 600);
+  }
+  document.getElementById('form').onsubmit = e => { e.preventDefault(); const i = document.getElementById('inp'); talk(i.value); i.value = ''; };
+  document.querySelectorAll('#quick button').forEach(b => b.onclick = () => talk(b.textContent));
+  bar.style.width = love + '%';
+  add("hey you 💜 i'm Bra, your girlfriend on the blockchain. what's on your mind?", 'her');
+</script>
+</body>
+</html>

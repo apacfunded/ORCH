@@ -325,7 +325,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <script>
 const API='https://cauldron-api-aislopv1-8230.vercel.app/api';
 const PFP='https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_194139_6a02730c-b169-4063-8e5d-c4004c61d12a.png';
-const MAIN={ name:'Cauldron', ticker:'BREW', mint:'' };
+const MAIN={ name:'Cauldron', ticker:'BREW', mint:'GJvYBPFb2kZJatQ8YMptnzjcKNDn3X26Vs83gCYDpump' };
 const H=3600e3, D=24*H, now=Date.now();
 const LAUNCHES=[
   { ticker:'PETE', name:'Pumpkin Pete', costume:'pumpkin', requester:'gourdgang', at:now-0.4*H, mc:184200, vol:91000, chg:42.1, desc:'A pumpkin who refuses to be carved. Holds the line every Halloween.', witch:false },
@@ -459,7 +459,7 @@ const ui={q:'',sort:'new',filter:'all'};
 function heroHtml(){
   return`<section class="wrap hero">
     <div style="min-width:0">
-      <span class="eyebrow">Halloween on pump.fun</span>
+      <a class="eyebrow" href="#token" style="text-decoration:none">$BREW is live · view the coin</a>
       <h1>Brew a coin <em>before midnight.</em></h1>
       <p>Name it, dress it in a costume and drop it in the cauldron. It comes out live on pump.fun with a ghost-proof contract address.</p>
       <div class="ctas"><a class="btn solid" href="#brew">Brew a coin</a><a class="btn" href="#graveyard">Visit the graveyard</a></div>
@@ -672,10 +672,16 @@ function resurrect(t){
 }
 
 /* ---------- Token, FAQ, coin ---------- */
+function brewStatsHtml(){
+  const m=MARKET[MAIN.mint]||{}; const cell=(k,v,c='')=>`<div class="fact"><span>${k}</span><b class="${c}">${v}</b></div>`;
+  return cell('Price',m.price?(m.price<1?'$'+Number(m.price).toPrecision(3):fmtUsd(m.price)):'–')+cell('Market cap',m.mc?fmtUsd(m.mc):'–')+cell('24h volume',m.vol?fmtUsd(m.vol):'–')+cell('24h change',m.chg==null||isNaN(m.chg)?'–':fmtPct(m.chg),m.chg>0?'up':m.chg<0?'down':'');
+}
 function tokenView(){
   return`<div class="wrap page">
     <div class="page-head" style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><img class="pfp" src="${PFP}" alt="$BREW logo"><div><h1>$BREW</h1><p>The coin behind Cauldron. Its creator fees burn $BREW and fund Cauldron.</p></div></div>
-    <div class="panel"><span class="label">Contract address</span><div class="ca-row"><code>Brewing soon. The contract address appears here at launch.</code><span class="pill">Soon</span></div></div>
+    <div class="panel"><span class="label">Contract address</span><div class="ca-row"><code id="ca">${MAIN.mint}</code><button class="btn solid" type="button" data-copy="ca">Copy CA</button></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><a class="btn solid" href="https://pump.fun/coin/${MAIN.mint}" target="_blank" rel="noopener">Buy on pump.fun</a><a class="btn" href="https://dexscreener.com/solana/${MAIN.mint}" target="_blank" rel="noopener">DexScreener</a></div></div>
+    <div class="live" id="brewStats">${brewStatsHtml()}</div>
     <div class="panel" style="margin-top:16px"><h3>Where the fees go</h3>
       <div class="split" role="img" aria-label="31% buyback and burn, 69% brew wallet"><span class="burn"></span><span class="fund"></span></div>
       <div class="split-key"><span><b>31%</b> buys back $BREW and burns it, one for every day of October</span><span><b>69%</b> funds Cauldron</span></div>
@@ -685,6 +691,7 @@ function tokenView(){
       <div class="panel"><h3>Costumes</h3><p>Witch hat, pumpkin head, ghost sheet, vampire cape, skeleton or bats. Baked into the coin image.</p></div>
       <div class="panel"><h3>Resurrections</h3><p>Buried coins that hit $5K volume in an hour climb out of the graveyard and back onto the board.</p></div>
     </div>
+    <span class="label" style="margin-top:22px">Live chart</span><div class="chart" id="chart"><div class="empty"><span class="ladle"></span><span>Loading chart…</span></div></div>
   </div>`;
 }
 function faqView(){
@@ -787,6 +794,7 @@ async function refreshMarket(){
   FEED.splice(0,FEED.length,...REAL.slice(0,12).map(c=>`<b>$${esc(c.ticker)}</b> brewed by ${esc(c.requester)}${c.mc?` · <i>${fmtUsd(c.mc)} MC</i>`:''}`));
   renderTape(); updateCounts(); if($('#grid')) renderGrid();
 }
+setInterval(async()=>{ if(!$('#brewStats')) return; await fetchMarket([MAIN.mint]); const b=$('#brewStats'); if(b) b.innerHTML=brewStatsHtml(); },20000);
 async function mountChart(l){
   const box=$('#chart'); if(!box) return;
   if(!MARKET[l.mint]) await fetchMarket([l.mint]);
@@ -811,6 +819,7 @@ function route(){
   $('#app').innerHTML=isTab?TABS[token]():coinView(coin);
   if(token==='coins'){ renderGrid(); $('#q').addEventListener('input',e=>{ui.q=e.target.value;renderGrid();}); startPot(); }
   if(token==='brew') bindBrew();
+  if(token==='token'){ fetchMarket([MAIN.mint]).then(()=>{ const b=$('#brewStats'); if(b) b.innerHTML=brewStatsHtml(); }); mountChart({mint:MAIN.mint,ticker:MAIN.ticker}); }
   if(coin&&coin.kind==='real') mountChart(coin);
   updateCounts(); scrollTo({top:0});
 }

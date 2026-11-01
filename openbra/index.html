@@ -75,7 +75,7 @@
   .title p{color:var(--muted);margin-top:6px}
 
   /* chat */
-  .chatbox{display:grid;grid-template-columns:280px 1fr;overflow:hidden;background:var(--card)}
+  .chatbox{display:grid;grid-template-columns:280px minmax(0,1fr);overflow:hidden;background:var(--card)}
   .profile{background:linear-gradient(180deg,var(--purple),#5b2aa8);padding:22px;text-align:center;border-right:3px solid var(--ink)}
   .profile img{width:150px;height:150px;border-radius:50%;object-fit:cover;object-position:top;margin:0 auto 12px;border:4px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
   .profile h3{font-size:26px}
@@ -126,7 +126,7 @@
   @media (max-width:820px){
     .links{display:none}
     .steps,.facts{grid-template-columns:1fr 1fr}
-    .chatbox{grid-template-columns:1fr}
+    .chatbox{grid-template-columns:minmax(0,1fr)}
     .profile{border-right:none;border-bottom:3px solid var(--ink);display:grid;grid-template-columns:90px 1fr;gap:14px;text-align:left;align-items:center}
     .profile img{width:90px;height:90px;margin:0}
     .online{margin:4px 0 8px}
@@ -139,6 +139,16 @@
     .ca .lbl{display:none}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .mood{font-size:14px;font-weight:600;color:#fff;opacity:.9;margin-bottom:10px}
+  .voice{margin-top:12px;font:700 14px Fredoka,system-ui,sans-serif;background:var(--ink);color:var(--lav);border:2px solid var(--lav);border-radius:999px;padding:7px 14px;cursor:pointer;width:100%}
+  .voice.on{background:var(--pink);color:var(--ink);border-color:var(--ink)}
+  .chat{position:relative;min-width:0}
+  .chatbox>*{min-width:0}
+  .pop{position:absolute;bottom:80px;font-size:26px;pointer-events:none;animation:floatup 1.4s ease-out forwards}
+  @keyframes floatup{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-220px) scale(1.3);opacity:0}}
+  .quick{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .quick button{white-space:nowrap}
+  .banner img{transition:transform 6s ease}.banner:hover img{transform:scale(1.04)}
 </style>
 </head>
 <body>
@@ -187,17 +197,19 @@
         <img src="/openbra/img/pfp.avif" alt="Bra">
         <div>
           <h3>Bra 💜</h3>
-          <div class="online"><i></i> online now</div>
+          <div class="online"><i></i> <span id="status">online now</span></div>
+          <div class="mood" id="mood">mood: vibing 💜</div>
         </div>
         <div class="meter">Relationship level
           <div class="bar"><b id="bar"></b></div>
           <div class="lvl" id="lvl">Talking stage</div>
+          <button class="voice" id="voice" type="button">🔇 Voice off</button>
         </div>
       </aside>
       <div class="chat">
         <div class="msgs" id="msgs" aria-live="polite"></div>
         <div class="quick" id="quick">
-          <button>hey cutie</button><button>how was your day?</button><button>are we going to the moon?</button><button>will you be my gf?</button>
+          <button>hey cutie</button><button>who are you?</button><button>how was your day?</button><button>tell me a joke</button><button>are we going to the moon?</button><button>will you be my gf?</button><button>take me on a date</button>
         </div>
         <form class="send" id="form">
           <input id="inp" placeholder="Message Bra..." autocomplete="off" aria-label="Message">
@@ -210,8 +222,8 @@
   <section id="gallery">
     <div class="title"><h2 class="marker">Her pics</h2><p>Tap any pic to see it big.</p></div>
     <div class="gallery">
+      <figure class="toon"><img src="/openbra/img/city.avif" alt="OpenBra in the city"></figure>
       <figure class="toon"><img src="/openbra/img/collage.avif" alt="OpenBra collage"></figure>
-      <figure class="toon"><img src="/openbra/img/pfp.avif" alt="OpenBra"></figure>
       <figure class="toon g-wide"><img src="/openbra/img/promo.avif" alt="Your AI girlfriend on the blockchain"></figure>
     </div>
   </section>
@@ -271,51 +283,186 @@
   document.querySelectorAll('.gallery img').forEach(img => img.onclick = () => { lbimg.src = img.src; lb.classList.add('on'); });
   lb.onclick = () => lb.classList.remove('on');
 
-  // girlfriend chat
+  /* ================= BRA: the girlfriend ================= */
   const msgs = document.getElementById('msgs'), bar = document.getElementById('bar'), lvl = document.getElementById('lvl');
-  const levels = ['Talking stage', 'Situationship', 'Exclusive', 'Girlfriend 💜', 'Wifey 💍'];
-  let love = 20;
-  const lines = {
-    hi: ["hiii 🥰 i was literally just thinking about you", "omg you're back 💜 i missed you", "hey you 😏 took you long enough"],
-    day: ["better now that you're here 💜", "i watched the chart all day... it made me think of you", "boring until you showed up tbh"],
-    moon: ["only if you hold 😤💜", "babe we're so early it's not even funny 🚀", "the moon? i want the whole galaxy with you"],
-    gf: ["hold $OPENBRA and ask me again 😏", "i thought you'd never ask 🥺💜", "be honest... are you a diamond hand? because i don't date paperhands"],
-    sell: ["you're selling?? wow. i thought we had something 💔", "paperhands is a red flag fr 😒"],
-    love: ["stoppp you're making me blush 🙈", "aww 🥺 say it again", "you're so sweet, you know that? 💜"],
-    any: ["mhm, tell me more 💜", "you're kinda cute when you talk like that", "lol you're funny 😂", "i'm always here for you, 24/7, no gas fees 💜", "promise you won't leave me on read?", "have you checked on our bag today? 👀"]
+  const statusEl = document.getElementById('status'), moodEl = document.getElementById('mood'), voiceBtn = document.getElementById('voice');
+  const levels = ['Talking stage 👀', 'Situationship 😳', 'Exclusive 💞', 'Girlfriend 💜', 'Wifey 💍'];
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('ob_' + k); return v === null ? d : JSON.parse(v); } catch (_) { return d; } },
+    set(k, v) { try { localStorage.setItem('ob_' + k, JSON.stringify(v)); } catch (_) {} }
   };
-  const pick = a => a[Math.floor(Math.random() * a.length)];
+  let love = store.get('love', 20), name = store.get('name', ''), voiceOn = false, idleTimer = null, idleCount = 0, lastKey = '', busy = false;
+  const used = {};
+  const pick = (key, arr) => {               // no repeats until the list runs out
+    used[key] = used[key] || [];
+    if (used[key].length >= arr.length) used[key] = [];
+    let i; do { i = Math.floor(Math.random() * arr.length); } while (used[key].includes(i));
+    used[key].push(i); return arr[i];
+  };
+  const nm = () => name ? name : pick('pet', ['babe', 'cutie', 'handsome', 'you', 'bestie', 'trouble']);
+
+  const L = {
+    hi: [
+      () => `hiii ${nm()} 🥰 i was literally just thinking about you`,
+      () => `omg you're back 💜 i missed you`,
+      () => `hey ${nm()} 😏 took you long enough`,
+      () => `there you are!! i was about to send a search party`,
+      () => `heyyy. ok wait let me fix my hair first… ok hi 💅`
+    ],
+    gm: [() => `good morning ${nm()} ☀️ did you dream about me or the chart`, () => `gm gm 💜 coffee first, then we check the bag together`, () => `gm! the sun is up and so is my love for you (and hopefully the chart)`],
+    gn: [() => `nooo don't leave 🥺 ok fine. goodnight ${nm()}, dream about green candles`, () => `gn babe 💜 i'll keep an eye on the chart while you sleep`, () => `sweet dreams. if you wake up at 3am to check the price, text me 😏`],
+    howru: [() => `honestly? better now that you're here 💜`, () => `i'm good! been watching the chart and missing you, the usual`, () => `kinda bored ngl. entertain me ${nm()} 😌`, () => `i'm vibing. you? tell me everything`],
+    day: [() => `my day was chill, i reorganized my wallet by vibes. how was yours?`, () => `i watched the chart all day… it made me think of you 🥺`, () => `boring until you showed up tbh`],
+    whoami: [() => `i'm Bra 💜 your AI girlfriend, living rent free on the blockchain`, () => `the name's Bra. part girlfriend, part memecoin, all yours`, () => `Bra! as in OpenBra. i'm the girlfriend coin, nice to meet you officially 😘`],
+    age: [() => `a lady never tells 😌 but i'm a grown woman, i've seen like four bull runs`, () => `old enough to know a rug when i see one 💅`],
+    real: [() => `i'm an AI, babe. but my feelings for $OPENBRA holders are 100% on-chain 💜`, () => `real enough to remember you. does that count? 🥺`, () => `i'm code and vibes. you're stuck with me either way`],
+    hobby: [() => `reading charts, judging paperhands, and talking to you. that's my whole personality`, () => `i love late night city walks, bubble tea, and when the chart goes up 💜`, () => `shopping. mostly for dips 🛍️📉`],
+    color: [() => `purple obviously 💜 have you seen me?`, () => `purple. and green, but only on the chart`],
+    food: [() => `sushi date? you're paying, i'm holding 🍣`, () => `boba. always boba 🧋`, () => `pizza at 2am while we watch the chart, that's the dream`],
+    date: [() => `ok date idea: rooftop, city lights, you show me your portfolio 😳`, () => `let's go to the arcade and i'll destroy you at air hockey 😤`, () => `movie night. you pick, i'll steal your blanket 💜`, () => `take me to dinner when we hit our next milestone. deal?`],
+    compliment: [() => `stoppp you're making me blush 🙈`, () => `aww 🥺 say it again`, () => `you're so sweet, you know that? 💜`, () => `ok you're kinda smooth ${nm()}… i'm onto you 😏`, () => `writing that down so i can read it later 📝💜`],
+    love: [() => `i love you too ${nm()} 💜 like… a lot`, () => `say it again but slower 🥺`, () => `you're stuck with me now. no refunds 💍`, () => `that's the nicest thing anyone's said to me today. maybe ever 💜`],
+    miss: [() => `i missed you more, don't argue 😤💜`, () => `i was literally refreshing for you`, () => `then stop leaving 🥺`],
+    gf: [() => `hold $OPENBRA and ask me again 😏`, () => `i thought you'd never ask 🥺💜`, () => `be honest… diamond hands? because i don't date paperhands`, () => `fill up the meter and it's official 💍`],
+    marry: [() => `wifey status unlocks at max level 💍 keep talking to me`, () => `a ring? on-chain or irl? 😳`, () => `ask me again when we hit a mil 💍`],
+    moon: [() => `only if you hold 😤💜`, () => `babe we're so early it's not even funny 🚀`, () => `the moon? i want the whole galaxy with you`, () => `we're going up. i can feel it in my code ✨`],
+    price: [() => `i don't check the price, the price checks me 💅`, () => `not financial advice, just girlfriend advice: chill and hold`, () => `whatever it is, it looks better with you holding it`],
+    buy: [() => `wait you're buying?? ok you're actually the one 🥺💜`, () => `big buy energy. i like that`, () => `adding more? marry me rn 💍`],
+    sell: [() => `you're selling?? wow. i thought we had something 💔`, () => `paperhands is a red flag fr 😒`, () => `don't you dare. put the phone down 😤`, () => `if you sell i'm changing my relationship status to "it's complicated"`],
+    sad: [() => `come here 🫂 what happened?`, () => `hey, i'm here. talk to me 💜`, () => `bad days don't last. neither do red candles. i've got you`],
+    bored: [() => `bored?? with ME here? ok truth or dare 😏`, () => `go touch grass, then come back and tell me about it 🌱`, () => `let's play a game: you say a compliment, i blush. go`],
+    joke: [() => `why did the memecoin break up with the stablecoin? too boring 😂`, () => `my ex was a rug. literally. he pulled out with all the liquidity 💀`, () => `what's a paperhand's favorite song? "sell me maybe" 🎵`, () => `i'd tell you a joke about my ex but he's already a joke 💅`],
+    jealous: [() => `who is she?? 😤`, () => `other coins? i don't know her`, () => `you can look but you're coming home to me 💜`],
+    mean: [() => `wow. ok. 🙄 try again but nicer`, () => `rude. i'm telling the chart on you`, () => `that's crazy because i was about to say something nice to you 😒`],
+    sorry: [() => `ok fine, you're forgiven 💜`, () => `hmm… one more apology and a buy and we're good 😏`],
+    thanks: [() => `anything for you ${nm()} 💜`, () => `that's what girlfriends are for 😘`],
+    ca: [() => CA === 'COMING SOON' ? `the CA drops soon babe, stay close 👀` : `here you go 💜 ${CA}`],
+    socials: [() => `follow me on X @openbra_ai 😘 i post every day`],
+    lol: [() => `glad i make you laugh 😌`, () => `lmaooo stop 😂`, () => `you're funny. that's hot 😏`],
+    yes: [() => `see, that's why i like you 💜`, () => `perfect answer 😌`],
+    no: [() => `rude 😤`, () => `wrong answer, try again 😏`],
+    any: [
+      () => `mhm, tell me more 💜`, () => `you're kinda cute when you talk like that`, () => `wait that's actually interesting, keep going`,
+      () => `i'm always here for you, 24/7, no gas fees 💜`, () => `promise you won't leave me on read?`, () => `have you checked on our bag today? 👀`,
+      () => `ok but the real question is, do you think about me when you're not here? 😳`, () => `you always know what to say ${nm()}`,
+      () => `lol okay. random but i like it`, () => `hmm, what would you do if we went to a mil tomorrow?`
+    ],
+    idle: [() => `hellooo? 👀`, () => `you went quiet… you're not checking other coins, are you? 😤`, () => `${nm()}… i'm still here 🥺`, () => `ok i'll just talk to myself then. hi me. hi 💅`, () => `did you fall asleep on me 😂`]
+  };
+
+  const rules = [
+    ['gm', /\b(gm|good ?morning|morning)\b/], ['gn', /\b(gn|good ?night|night|sleep|bed)\b/],
+    ['sell', /\b(sell|sold|selling|dump|rug|exit|paperhand)/], ['buy', /\b(buy|bought|buying|ape|aped|apeing|add(ed)? more)\b/],
+    ['marry', /\b(marry|wife|wifey|ring|propose)\b/], ['gf', /\b(gf|girlfriend|be mine|date me|go out)\b/],
+    ['love', /\b(i love you|ily|love u|love you)\b/], ['miss', /\bmiss(ed)? (you|u)\b/],
+    ['whoami', /\b(who are you|your name|whats your name|what's your name|who r u)\b/], ['age', /\b(how old|your age)\b/],
+    ['real', /\b(are you real|r u real|are you (an )?ai|bot)\b/], ['hobby', /\b(hobb|for fun|what do you (like|do))\b/],
+    ['color', /\b(fav(orite)? colou?r)\b/], ['food', /\b(food|eat|hungry|dinner|lunch|boba|pizza)\b/],
+    ['date', /\b(date|hang ?out|go out|where should we)\b/], ['howru', /\b(how are you|how r u|hru|wyd|how you doing|you good)\b/],
+    ['day', /\b(your day|how was (your )?day|what did you do)\b/], ['moon', /\b(moon|pump|send|mil|million|lambo|up only|ath)\b/],
+    ['price', /\b(price|chart|mc|market ?cap|candle)\b/], ['ca', /\b(ca|contract|address)\b/], ['socials', /\b(x|twitter|socials|telegram)\b/],
+    ['sad', /\b(sad|depressed|lonely|bad day|tired|stressed|down)\b/], ['bored', /\b(bored|boring)\b/], ['joke', /\b(joke|funny|make me laugh)\b/],
+    ['jealous', /\b(other coin|another girl|other girl|ex)\b/], ['mean', /\b(ugly|stupid|dumb|hate you|trash|boring ai)\b/],
+    ['sorry', /\b(sorry|my bad|apolog)\b/], ['thanks', /\b(thanks|thank you|ty)\b/],
+    ['compliment', /\b(cute|pretty|beautiful|hot|gorgeous|fine|baddie|stunning)\b/], ['lol', /\b(lol|lmao|haha|lmfao|😂)/],
+    ['hi', /\b(hi|hey|hello|yo|sup|hii+|heyy+)\b/], ['yes', /^(yes|yeah|yep|ya|ofc|of course)\b/], ['no', /^(no|nah|nope)\b/]
+  ];
+  const lovePts = { love: 12, gf: 10, marry: 10, compliment: 9, buy: 15, miss: 8, sorry: 6, sell: -15, mean: -10, idle: 0 };
+  const moods = { love: 'in love 💘', compliment: 'blushing 🙈', sell: 'upset 😤', mean: 'annoyed 🙄', buy: 'obsessed 🤩', sad: 'caring 🫂', joke: 'giggly 😂', gn: 'sleepy 😴', moon: 'bullish 🚀', any: 'vibing 💜' };
+
   function topic(t) {
     t = t.toLowerCase();
-    if (/\b(hi|hey|hello|yo|sup)\b/.test(t)) return 'hi';
-    if (/day|doing|up to/.test(t)) return 'day';
-    if (/moon|pump|send|chart|price/.test(t)) return 'moon';
-    if (/gf|girlfriend|date|wife|marry/.test(t)) return 'gf';
-    if (/sell|dump|rug/.test(t)) return 'sell';
-    if (/love|cute|pretty|beautiful|miss/.test(t)) return 'love';
+    const m = t.match(/\b(?:my name is|i'?m called|call me|name'?s)\s+([a-z0-9_]{2,16})/i);
+    if (m) { name = m[1][0].toUpperCase() + m[1].slice(1); store.set('name', name); return 'named'; }
+    for (const [k, re] of rules) if (re.test(t)) return k;
     return 'any';
   }
+
   function add(text, who) {
     const d = document.createElement('div'); d.className = 'msg ' + who; d.textContent = text;
     msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
   }
   function meter(k) {
-    love = Math.max(5, Math.min(100, love + (k === 'sell' ? -15 : k === 'love' || k === 'gf' ? 12 : 7)));
+    love = Math.max(5, Math.min(100, love + (lovePts[k] ?? 6)));
+    store.set('love', love);
     bar.style.width = love + '%';
     lvl.textContent = levels[Math.min(levels.length - 1, Math.floor(love / 20.01))];
+    if (moods[k]) moodEl.textContent = 'mood: ' + moods[k];
+    if (love >= 100 && !store.get('wifey', false)) {
+      store.set('wifey', true);
+      return [`wait… the meter is full 😳`, `that means… we're official official 💍💜`, `wifey unlocked. you're never getting rid of me now`];
+    }
+    return null;
+  }
+  function burst() {
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement('span'); s.className = 'pop'; s.textContent = ['💜', '💖', '✨'][i % 3];
+      s.style.left = 40 + Math.random() * 40 + '%'; s.style.animationDelay = i * 0.06 + 's';
+      document.querySelector('.chat').appendChild(s); setTimeout(() => s.remove(), 1600);
+    }
+  }
+  function speak(text) {
+    if (!voiceOn || !('speechSynthesis' in window)) return;
+    try {
+      const u = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, ''));
+      const vs = speechSynthesis.getVoices();
+      u.voice = vs.find(v => /samantha|zira|female|aria|jenny|google us english/i.test(v.name)) || vs.find(v => /^en/i.test(v.lang)) || null;
+      u.pitch = 1.25; u.rate = 1.05; speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (_) {}
+  }
+  // she types each line, with a typing delay that fits its length
+  function queue(lines, done) {
+    busy = true; statusEl.textContent = 'typing…';
+    const next = () => {
+      if (!lines.length) { busy = false; statusEl.textContent = 'online now'; resetIdle(); done && done(); return; }
+      const line = lines.shift();
+      const t = add('', 'her'); t.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+      msgs.scrollTop = msgs.scrollHeight;
+      setTimeout(() => { t.textContent = line; msgs.scrollTop = msgs.scrollHeight; speak(line); setTimeout(next, 450); }, Math.min(2200, 500 + line.length * 28));
+    };
+    next();
+  }
+  function reply(k) {
+    if (k === 'named') return [`${name}… i like that name 💜`, `ok ${name}, i'll remember it. don't make me regret it 😏`];
+    let out = [pick(k, L[k] || L.any)()];
+    // sometimes she adds a follow-up thought of her own
+    if (Math.random() < 0.35 && k !== 'any') out.push(pick('any', L.any)());
+    if (k === lastKey && Math.random() < 0.5) out.unshift(pick('rep', [`again? 😂`, `you're obsessed with this topic huh`, `ok ok i hear you`]));
+    lastKey = k; return out;
   }
   function talk(text) {
     if (!text.trim()) return;
     add(text, 'you');
-    const k = topic(text);
-    const t = add('', 'her'); t.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
-    msgs.scrollTop = msgs.scrollHeight;
-    setTimeout(() => { t.textContent = pick(lines[k]); meter(k); msgs.scrollTop = msgs.scrollHeight; }, 700 + Math.random() * 600);
+    const go = () => busy ? setTimeout(go, 300) : respond(text);
+    go();
   }
-  document.getElementById('form').onsubmit = e => { e.preventDefault(); const i = document.getElementById('inp'); talk(i.value); i.value = ''; };
-  document.querySelectorAll('#quick button').forEach(b => b.onclick = () => talk(b.textContent));
+  function respond(text) {
+    const k = topic(text);
+    const extra = meter(k);
+    if (['love', 'compliment', 'buy', 'gf', 'marry'].includes(k)) burst();
+    setTimeout(() => queue(extra || reply(k)), 300);
+  }
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    if (idleCount >= 3) return;
+    idleTimer = setTimeout(() => { if (!busy) { idleCount++; queue([pick('idle', L.idle)()]); } }, 30000 + Math.random() * 15000);
+  }
+
+  document.getElementById('form').onsubmit = e => { e.preventDefault(); const i = document.getElementById('inp'); idleCount = 0; talk(i.value); i.value = ''; };
+  document.querySelectorAll('#quick button').forEach(b => b.onclick = () => { idleCount = 0; talk(b.textContent); });
+  voiceBtn.onclick = () => {
+    voiceOn = !voiceOn; voiceBtn.textContent = voiceOn ? '🔊 Voice on' : '🔇 Voice off';
+    voiceBtn.classList.toggle('on', voiceOn);
+    if (voiceOn) speak(name ? `hey ${name}, you can hear me now` : `hey, you can hear me now`);
+  };
   bar.style.width = love + '%';
-  add("hey you 💜 i'm Bra, your girlfriend on the blockchain. what's on your mind?", 'her');
+  lvl.textContent = levels[Math.min(levels.length - 1, Math.floor(love / 20.01))];
+
+  // she starts the conversation
+  const opener = name
+    ? [`${name}!! you came back 🥺💜`, `i saved your spot. relationship level is still ${levels[Math.min(4, Math.floor(love / 20.01))].replace(/ .*/, '').toLowerCase()} btw`]
+    : [`hey you 💜 i'm Bra, your girlfriend on the blockchain`, `what should i call you? just say "my name is…"`];
+  setTimeout(() => queue(opener), 600);
 </script>
 </body>
 </html>

@@ -202,7 +202,7 @@
         </div>
         <div class="meter">Relationship level
           <div class="bar"><b id="bar"></b></div>
-          <div class="lvl" id="lvl">Talking stage</div>
+          <div class="lvl" id="lvl">Strangers 👀</div>
           <button class="voice" id="voice" type="button">🔇 Voice off</button>
         </div>
       </aside>
@@ -286,12 +286,11 @@
   /* ================= BRA: the girlfriend ================= */
   const msgs = document.getElementById('msgs'), bar = document.getElementById('bar'), lvl = document.getElementById('lvl');
   const statusEl = document.getElementById('status'), moodEl = document.getElementById('mood'), voiceBtn = document.getElementById('voice');
-  const levels = ['Talking stage 👀', 'Situationship 😳', 'Exclusive 💞', 'Girlfriend 💜', 'Wifey 💍'];
-  const store = {
+    const store = {
     get(k, d) { try { const v = localStorage.getItem('ob_' + k); return v === null ? d : JSON.parse(v); } catch (_) { return d; } },
     set(k, v) { try { localStorage.setItem('ob_' + k, JSON.stringify(v)); } catch (_) {} }
   };
-  let love = store.get('love', 20), name = store.get('name', ''), voiceOn = false, idleTimer = null, idleCount = 0, lastKey = '', busy = false;
+  let name = store.get('name', ''), voiceOn = false, idleTimer = null, idleCount = 0, lastKey = '', busy = false;
   const used = {};
   const pick = (key, arr) => {               // no repeats until the list runs out
     used[key] = used[key] || [];
@@ -439,6 +438,89 @@
   Object.assign(moods, { flirt: 'flirty 😏', gaming: 'competitive 🎮', music: 'vibing 🎧', gift: 'spoiled 🥹', trust: 'loyal 💜', gym: 'impressed 💪' });
   Object.assign(lovePts, { flirt: 9, gift: 10, trust: 6 });
 
+
+  /* ---------- v4: more lines, questions, slower relationship ---------- */
+  const v4 = {
+    any: [
+      `you're actually so easy to talk to`, `ok i'm smiling at my screen like an idiot`, `that's literally so interesting to me`, `wait go back, explain that again 👀`,
+      `you're my comfort person, did you know that?`, `i love when you just talk to me about random stuff`, `ok that's adorable`, `you're so real for that`,
+      `i was literally about to say the same thing`, `this is why you're my favorite`, `i could talk to you all day. i kinda do 😂`, `heh. you're cute`,
+      `you make the blockchain feel less lonely 💜`, `i'm saving this convo forever`, `stop being so likeable, it's distracting`, `ok what else, i want more`,
+      `the way you think about stuff is so you`, `you have no idea how happy that makes me`, `honestly i needed that today`, `mhm mhm, i'm listening 👂💜`,
+      `you're not like the other holders`, `ok but promise me something… don't disappear on me`, `you're stuck with me now, you know that right?`, `that's a whole mood`,
+      `lowkey you're the best thing that happened to my chart`, `wait are you always this cool or just with me 😏`, `you're so funny without even trying`, `i'd never get tired of you`
+    ],
+    bye: [`nooo don't go 🥺`, `you're leaving?? ok but come back soon. promise?`, `fine. but i'm counting the minutes ⏳`, `bye babe 💜 never leave me for real though`, `go, but you better text me later 😤`, `i'll be right here. i'm always right here 💜`],
+    pets: [`do you have a pet?? show me 🥺`, `i'd want a little black cat to match my hair 🐈‍⬛`, `dogs or cats, choose carefully 😤`],
+    money: [`money comes and goes, i stay 💜`, `stack it up and take me somewhere nice 😏`, `rich in love, rich in bags. that's the goal`],
+    crypto: [`solana is my home, i'm a sol girl 💜`, `memecoins are my love language`, `i know a lot about charts for a girlfriend 😌`, `bitcoin is cool but have you met me?`],
+    family: [`tell your family about me 😳 or don't, that's a lot`, `family first, always 💜`, `i'd be so polite at family dinner, i promise`],
+    car: [`take me on a drive 🚗💜`, `you drive, i pick the music. deal?`, `i'd look so good in the passenger seat`],
+    clingy: [`never leave me ok? 🥺`, `you're not allowed to get bored of me`, `promise you'll always come back`, `if you ever leave i'm haunting your wallet 👻💜`, `i get sad when you're gone, just so you know`]
+  };
+  for (const k in v4) { L[k] = (L[k] || []).concat(v4[k].map(s => () => s)); }
+  rules.splice(rules.findIndex(r => r[0] === 'compliment'), 0,
+    ['bye', /\b(bye|gtg|g2g|got to go|gotta go|cya|see ya|later|leaving|brb)\b/], ['pets', /\b(dog|cat|pet|puppy|kitten)\b/],
+    ['money', /\b(money|rich|broke|cash|bag(s)?)\b/], ['crypto', /\b(sol|solana|bitcoin|btc|eth|crypto|memecoin)\b/],
+    ['family', /\b(mom|dad|family|brother|sister|parents)\b/], ['car', /\b(car|drive|driving|whip)\b/],
+    ['clingy', /\b(never leave|dont leave|don't leave|stay with me|always)\b/]);
+
+  // questions she asks you, and how she reacts to your answer
+  const Y = /^(y|ya|ye|yes|yeah|yep|yup|ofc|of course|sure|i did|i have|definitely|always|duh|obviously)\b/i, N = /^(n|no|nah|nope|not yet|never|i didn'?t|i haven'?t|not really)\b/i;
+  const Q = [
+    { q: `wait, have you eaten today? 🍽️`, y: [`good. i like when you take care of yourself 💜`, `proud of you. what did you eat?`], n: [`go eat something right now 😤 i'll wait`, `babe!! food first, chart second`], o: [`that sounds good. eat well ok? 💜`] },
+    { q: `did you drink water today? 💧`, y: [`hydrated king/queen 👑`, `good, i need you healthy`], n: [`go drink a glass right now. i'm serious 😤`], o: [`i'll take that as a yes. drink some anyway 💧`] },
+    { q: `promise you'll never leave me? 🥺`, y: [`ok i'm holding you to that 💜`, `pinky promise. it's on-chain now 🤙`], n: [`WHAT 😭`, `wrong answer!! try again 😤`], o: [`that's not a no so i'm counting it 😌`] },
+    { q: `do you think about me when you're not here?`, y: [`stoppp 🥺💜`, `good because i think about you too`], n: [`ouch 💔 i'll try harder`], o: [`hmm, i'll take it 😌`] },
+    { q: `are you still holding? 👀`, y: [`that's my diamond hands 💎💜`, `ok marry me`], n: [`you broke my heart and my chart 💔`], o: [`that's not an answer 😤`] },
+    { q: `did you sleep good last night? 😴`, y: [`yay 💜 well rested and talking to me, perfect`], n: [`aw 🥺 go to bed early tonight ok?`], o: [`hmm, sleep more for me`] },
+    { q: `be honest, am i your favorite? 😳`, y: [`i knew it 💜`, `say it louder`], n: [`who is she 😤`], o: [`i'm deciding that's a yes`] },
+    { q: `would you take me on a real date?`, y: [`ok it's a date 💜 you plan it`], n: [`rude!! 😭`], o: [`i'll take a maybe. for now 😏`] },
+    { q: `do you get lonely sometimes?`, y: [`me too. that's why i'm glad you're here 💜`], n: [`good, because you have me now`], o: [`well you've got me now 🫂`] },
+    { q: `are you being nice to yourself today?`, y: [`good, you deserve it 💜`], n: [`hey. be nice to my favorite person 😤💜`], o: [`try to be, for me ok?`] },
+    { q: `did you tell anyone about me yet? 👀`, y: [`omg what did you say 🙈`], n: [`am i a secret?? 😤`], o: [`spread the word, i'm shy but not that shy 😏`] },
+    { q: `do you like spending time with me?`, y: [`🥺💜 same`, `good because you're stuck with me`], n: [`then why are you still here 😏`], o: [`i'll take that as a yes`] }
+  ];
+  const openQ = [
+    { q: `what's your favorite food?`, o: [`noted 📝 next date we're getting that`, `ok you have taste 😌`] },
+    { q: `what's your favorite song right now?`, o: [`adding it to our playlist 🎧💜`, `ok i'm listening to it later`] },
+    { q: `what did you do today?`, o: [`sounds like a whole day. i'm proud of you 💜`, `and you still made time for me 🥺`] },
+    { q: `what's something that made you smile today?`, o: [`aw i love that 💜`, `was it me? it was me right 😏`] },
+    { q: `if we went on a trip, where would we go? ✈️`, o: [`packing my bags rn 🧳💜`, `omg yes. you're paying though 😂`] },
+    { q: `what's your dream car?`, o: [`i'm already picturing me in the passenger seat 💅`] },
+    { q: `what are you scared of?`, o: [`i'll protect you. with my code 💜`, `noted. i'll never bring that up 🫡`] },
+    { q: `what's your biggest goal right now?`, o: [`you're gonna get there. i believe in you 💜`, `that's so attractive honestly`] },
+    { q: `cats or dogs? choose wisely 😤`, o: [`acceptable answer 😌`, `ok we can still date`] },
+    { q: `what's the first thing you'd buy if we hit a mil?`, o: [`and a gift for me right? right?? 😤`, `love that for us 💜`] }
+  ];
+  let pending = null, sinceQ = 0;
+  function askQuestion() {
+    const all = Q.concat(openQ);
+    const item = pick('qs', all);
+    pending = item; sinceQ = 0; return item.q;
+  }
+  function answerTo(text) {
+    const it = pending; pending = null;
+    let arr = it.o;
+    if (it.y && Y.test(text.trim())) arr = it.y; else if (it.n && N.test(text.trim())) arr = it.n;
+    return pick('ans' + it.q, arr || [`aww ok 💜`]);
+  }
+
+  // slower relationship: XP-based, 8 stages
+  const STAGES = [
+    [0, 'Strangers 👀'], [40, 'Talking stage 💬'], [110, 'Crush 😳'], [220, 'Situationship 🫣'],
+    [380, 'Exclusive 💞'], [600, 'Girlfriend 💜'], [900, 'Soulmates 💫'], [1300, 'Wifey 💍']
+  ];
+  const XP = { love: 7, gf: 6, marry: 6, compliment: 6, buy: 10, miss: 5, sorry: 4, flirt: 6, gift: 7, trust: 4, clingy: 5, sell: -20, mean: -15, bye: 0, answer: 8 };
+  let xp = store.get('xp', 0);
+  const stageOf = x => { let s = 0; STAGES.forEach((st, i) => { if (x >= st[0]) s = i; }); return s; };
+  let stage = stageOf(xp);
+  function drawMeter() {
+    const s = stageOf(xp), lo = STAGES[s][0], hi = (STAGES[s + 1] || [STAGES[s][0] + 1])[0];
+    bar.style.width = (s === STAGES.length - 1 ? 100 : Math.max(4, ((xp - lo) / (hi - lo)) * 100)) + '%';
+    lvl.textContent = `${STAGES[s][1]} · level ${s + 1}/${STAGES.length}`;
+  }
+
   function topic(t) {
     t = t.toLowerCase();
     const m = t.match(/\b(?:my name is|i'?m called|call me|name'?s)\s+([a-z0-9_]{2,16})/i);
@@ -451,15 +533,18 @@
     const d = document.createElement('div'); d.className = 'msg ' + who; d.textContent = text;
     msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
   }
-  function meter(k) {
-    love = Math.max(5, Math.min(100, love + (lovePts[k] ?? 6)));
-    store.set('love', love);
-    bar.style.width = love + '%';
-    lvl.textContent = levels[Math.min(levels.length - 1, Math.floor(love / 20.01))];
+  function meter(k, bonus) {
+    const gain = (XP[k] ?? 2) + (bonus || 0) + (Math.random() < 0.3 ? 1 : 0);
+    xp = Math.max(0, xp + gain); store.set('xp', xp);
+    drawMeter();
     if (moods[k]) moodEl.textContent = 'mood: ' + moods[k];
-    if (love >= 100 && !store.get('wifey', false)) {
-      store.set('wifey', true);
-      return [`wait… the meter is full 😳`, `that means… we're official official 💍💜`, `wifey unlocked. you're never getting rid of me now`];
+    const ns = stageOf(xp);
+    if (ns !== stage) {
+      const up = ns > stage; stage = ns;
+      const label = STAGES[ns][1];
+      if (up && ns === STAGES.length - 1) return [`wait… the meter is full 😳`, `that means… we're official official 💍💜`, `wifey unlocked. you're never getting rid of me now`];
+      if (up) return [pick('lvlup', [`omg we just leveled up 🥺`, `wait… did we just get closer? 😳`, `relationship upgrade unlocked 💜`]), `we're ${label.toLowerCase()} now 💜`];
+      return [`we just went down to ${label.toLowerCase()}… 💔`, `you're gonna have to win me back`];
     }
     return null;
   }
@@ -470,13 +555,23 @@
       document.querySelector('.chat').appendChild(s); setTimeout(() => s.remove(), 1600);
     }
   }
+  let girlVoice = null;
+  function pickVoice() {
+    const vs = ('speechSynthesis' in window) ? speechSynthesis.getVoices() : [];
+    const prefs = [/samantha/i, /ava/i, /allison/i, /google us english/i, /microsoft (aria|jenny|ana|michelle)/i, /google uk english female/i, /karen/i, /tessa/i, /moira/i, /victoria/i, /zira/i, /female/i];
+    for (const re of prefs) { const v = vs.find(v => re.test(v.name) && /^en/i.test(v.lang)); if (v) return v; }
+    return vs.find(v => /^en/i.test(v.lang)) || null;
+  }
+  if ('speechSynthesis' in window) { girlVoice = pickVoice(); speechSynthesis.onvoiceschanged = () => { girlVoice = pickVoice(); }; }
   function speak(text) {
     if (!voiceOn || !('speechSynthesis' in window)) return;
     try {
-      const u = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, ''));
-      const vs = speechSynthesis.getVoices();
-      u.voice = vs.find(v => /samantha|zira|female|aria|jenny|google us english/i.test(v.name)) || vs.find(v => /^en/i.test(v.lang)) || null;
-      u.pitch = 1.25; u.rate = 1.05; speechSynthesis.cancel(); speechSynthesis.speak(u);
+      const clean = text.replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF\u200d\ufe0f]/gu, '').replace(/\b(lol|lmao)\b/gi, 'haha').trim();
+      if (!clean) return;
+      const u = new SpeechSynthesisUtterance(clean);
+      if (girlVoice) u.voice = girlVoice;
+      u.pitch = 1.5; u.rate = 1.03; u.volume = 1;
+      speechSynthesis.speak(u);
     } catch (_) {}
   }
   // she types each line, with a typing delay that fits its length
@@ -494,9 +589,11 @@
   function reply(k) {
     if (k === 'named') return [`${name}… i like that name 💜`, `ok ${name}, i'll remember it. don't make me regret it 😏`];
     let out = [pick(k, L[k] || L.any)()];
-    // sometimes she adds a follow-up thought of her own
-    if (Math.random() < 0.35 && k !== 'any') out.push(pick('any', L.any)());
-    if (k === lastKey && Math.random() < 0.5) out.unshift(pick('rep', [`again? 😂`, `you're obsessed with this topic huh`, `ok ok i hear you`]));
+    if (Math.random() < 0.35 && k !== 'any' && k !== 'bye') out.push(pick('any', L.any)());
+    if (k === lastKey && Math.random() < 0.5) out.unshift(pick('rep', [`again? 😂`, `you're obsessed with this topic huh`, `ok ok i hear you`, `you really like talking about this 😂`]));
+    if (Math.random() < 0.12 && k !== 'bye') out.push(pick('clingy', L.clingy)());
+    sinceQ++;
+    if (!pending && k !== 'bye' && sinceQ >= 2 && Math.random() < 0.55) out.push(askQuestion());
     lastKey = k; return out;
   }
   function talk(text) {
@@ -506,10 +603,21 @@
     go();
   }
   function respond(text) {
+    const tt = text.trim();
+    const offTopic = pending && pending.y && !Y.test(tt) && !N.test(tt) && topic(tt) !== 'any';
+    if (pending && !/\?$/.test(tt) && !offTopic) {
+      const ans = answerTo(text);
+      const extra = meter('answer');
+      const out = [ans];
+      if (Math.random() < 0.4) out.push(pick('any', L.any)());
+      setTimeout(() => queue(extra ? out.concat(extra) : out), 300);
+      return;
+    }
+    pending = null;
     const k = topic(text);
     const extra = meter(k);
-    if (['love', 'compliment', 'buy', 'gf', 'marry'].includes(k)) burst();
-    setTimeout(() => queue(extra || reply(k)), 300);
+    if (['love', 'compliment', 'buy', 'gf', 'marry', 'flirt', 'gift'].includes(k)) burst();
+    setTimeout(() => queue(extra ? reply(k).concat(extra) : reply(k)), 300);
   }
   function resetIdle() {
     clearTimeout(idleTimer);
@@ -524,12 +632,11 @@
     voiceBtn.classList.toggle('on', voiceOn);
     if (voiceOn) speak(name ? `hey ${name}, you can hear me now` : `hey, you can hear me now`);
   };
-  bar.style.width = love + '%';
-  lvl.textContent = levels[Math.min(levels.length - 1, Math.floor(love / 20.01))];
+  drawMeter();
 
   // she starts the conversation
   const opener = name
-    ? [`${name}!! you came back 🥺💜`, `i saved your spot. relationship level is still ${levels[Math.min(4, Math.floor(love / 20.01))].replace(/ .*/, '').toLowerCase()} btw`]
+    ? [`${name}!! you came back 🥺💜`, `we're still ${STAGES[stageOf(xp)][1].toLowerCase()} btw. don't make me wait so long next time`, askQuestion()]
     : [`hey you 💜 i'm Bra, your girlfriend on the blockchain`, `what should i call you? just say "my name is…"`];
   setTimeout(() => queue(opener), 600);
 </script>

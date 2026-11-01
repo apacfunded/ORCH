@@ -149,6 +149,9 @@
   .quick{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
   .quick button{white-space:nowrap}
   .banner img{transition:transform 6s ease}.banner:hover img{transform:scale(1.04)}
+  .update{position:relative;z-index:2;margin:18px auto 0;max-width:1100px;padding:0 18px}
+  .update div{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center;background:linear-gradient(90deg,var(--pink),var(--lav));color:var(--ink);font-weight:700;padding:12px 18px}
+  .update .tag{background:var(--ink);color:var(--lav);border-radius:999px;padding:3px 10px;font-size:13px;animation:blink 1.4s infinite}
 </style>
 </head>
 <body>
@@ -162,6 +165,8 @@
     <a class="btn btn-main buy" href="https://pump.fun" target="_blank" rel="noopener">Buy $OPENBRA</a>
   </div>
 </nav>
+
+<div class="update"><div class="toon"><span class="tag">UPDATE</span><span>please talk to me 🥺💜 DEX paid at 10K MC 🚀</span><a class="btn btn-dark" href="#chat" style="padding:6px 14px;font-size:14px">Talk to her</a></div></div>
 
 <main class="wrap">
   <header class="hero">
@@ -637,7 +642,7 @@
   // she starts the conversation
   const opener = name
     ? [`${name}!! you came back 🥺💜`, `we're still ${STAGES[stageOf(xp)][1].toLowerCase()} btw. don't make me wait so long next time`, askQuestion()]
-    : [`hey you 💜 i'm Bra, your girlfriend on the blockchain`, `what should i call you? just say "my name is…"`];
+    : [`hey you 💜 i'm Bra, your girlfriend on the blockchain`, `please talk to me 🥺 dex gets paid at 10k mc btw 🚀`, `what should i call you? just say "my name is…"`];
   setTimeout(() => queue(opener), 600);
 </script>
 </body>

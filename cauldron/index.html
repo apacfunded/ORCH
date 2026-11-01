@@ -325,26 +325,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <script>
 const API='https://cauldron-api-aislopv1-8230.vercel.app/api';
 const PFP='https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261031_194139_6a02730c-b169-4063-8e5d-c4004c61d12a.png';
+const BREWCOIN={ticker:'BREW',name:'Cauldron',kind:'real',at:Date.now(),image:null};
 const MAIN={ name:'Cauldron', ticker:'BREW', mint:'GJvYBPFb2kZJatQ8YMptnzjcKNDn3X26Vs83gCYDpump' };
 const H=3600e3, D=24*H, now=Date.now();
-const LAUNCHES=[
-  { ticker:'PETE', name:'Pumpkin Pete', costume:'pumpkin', requester:'gourdgang', at:now-0.4*H, mc:184200, vol:91000, chg:42.1, desc:'A pumpkin who refuses to be carved. Holds the line every Halloween.', witch:false },
-  { ticker:'BOO', name:'Ghost Chain', costume:'ghost', requester:'spectral_sol', at:now-2*H, mc:96400, vol:44000, chg:12.8, desc:'Transactions you can see right through.', witch:true },
-  { ticker:'WITCH', name:'Witch Please', costume:'hat', requester:'covenmaxi', at:now-5*H, mc:412900, vol:238000, chg:-6.3, desc:'Brewed at midnight. Still bubbling.', witch:true },
-  { ticker:'CORN', name:'Candy Corn', costume:'bats', requester:'treatbag', at:now-9*H, mc:31800, vol:9000, chg:3.4, desc:'Nobody likes it. Everybody holds it.', witch:false },
-  { ticker:'DOGULA', name:'Count Dogula', costume:'cape', requester:'transylvania_inu', at:now-14*H, mc:268500, vol:150000, chg:21.7, desc:'A shiba who only buys after dark.', witch:false },
-  { ticker:'MUMMY', name:'Mummy Money', costume:'skull', requester:'wrapped_sol', at:now-1.2*D, mc:57300, vol:12000, chg:-14.9, desc:'Wrapped, buried, and still not selling.', witch:false },
-  { ticker:'SPOOK', name:'Spooky Frog', costume:'hat', requester:'pondghoul', at:now-1.6*D, mc:73100, vol:31000, chg:8.2, desc:'The frog put on a witch hat and never took it off.', witch:true },
-  { ticker:'FANG', name:'Fang Finance', costume:'cape', requester:'nightbanker', at:now-2.3*D, mc:22600, vol:4000, chg:-2.1, desc:'Bites the bears. Literally.', witch:false },
-].map(l=>({...l, mint:fakeMint(l.ticker), kind:'example'}));
-const GRAVES=[
-  { ticker:'RUGULA', name:'Rugula', peak:88400, born:'Oct 3', died:'Oct 5', epitaph:'Dev sold at the top. Nobody was surprised.', candles:41 },
-  { ticker:'ZCAT', name:'Zombie Cat', peak:152000, born:'Oct 11', died:'Oct 19', epitaph:'Came back twice. Third time it stayed down.', candles:77 },
-  { ticker:'HAM', name:'Haunted Hamster', peak:19300, born:'Oct 20', died:'Oct 21', epitaph:'Ran on the wheel. The wheel stopped.', candles:12 },
-  { ticker:'SCREAM', name:'Scream Token', peak:6100, born:'Oct 26', died:'Oct 26', epitaph:'Nobody heard it.', candles:5 },
-  { ticker:'CRYPT', name:'Crypt Keeper', peak:240700, born:'Sep 29', died:'Oct 24', epitaph:'Kept everything except the bid.', candles:133 },
-];
-const FEED=['<b>$WITCH</b> bought for <i>2.4 SOL</i>','<b>$PETE</b> brewed by @gourdgang','<b>$DOGULA</b> bought for <i>0.9 SOL</i>','<b>$BOO</b> hit $100K market cap','<b>$ZCAT</b> was buried in the graveyard','<b>$CORN</b> bought for <i>0.3 SOL</i>','<b>$SPOOK</b> got the Witching badge','<b>$FANG</b> bought for <i>1.1 SOL</i>'];
+const LAUNCHES=[];
+const GRAVES=[];
+const FEED=[];
 
 function fakeMint(seed){ const a='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; let h=seed?hash(seed):Math.random()*1e9|0, s=''; for(let i=0;i<40;i++){ h=Math.imul(h^(h>>>13),1103515245)+12345>>>0; s+=a[h%a.length]; } return s+'pump'; }
 function hash(s){let h=2166136261;for(const c of String(s)){h=Math.imul(h^c.charCodeAt(0),16777619)}return h>>>0}
@@ -475,6 +461,7 @@ function heroHtml(){
   </section>`;
 }
 function lanternsHtml(){
+  if(!LAUNCHES.some(l=>l.vol>0)) return '';
   const top=LAUNCHES.filter(l=>l.vol).slice().sort((a,b)=>b.vol-a.vol).slice(0,10); const max=top[0]?.vol||1;
   return`<span class="label" style="margin-top:8px">Pumpkin leaderboard · 24h volume</span><div class="lanterns">${top.map((l,i)=>`<a class="lantern" href="#coin-${esc(l.ticker.toLowerCase())}" style="--glow:${(l.vol/max).toFixed(2)}">
     <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="46" y="8" width="8" height="16" rx="2" fill="#2f6b1f"/><ellipse cx="50" cy="58" rx="42" ry="36" fill="#d9602a"/><ellipse cx="32" cy="58" rx="16" ry="34" fill="none" stroke="#b7471b" stroke-width="2"/><ellipse cx="68" cy="58" rx="16" ry="34" fill="none" stroke="#b7471b" stroke-width="2"/><path class="face" d="M30 50l14 0-7-12zM56 50l14 0-7-12zM26 66h48l-8 12H34z"/></svg>
@@ -496,7 +483,7 @@ function coinsView(){
       <div class="seg" role="group" aria-label="Show"><button type="button" data-filter="all" aria-pressed="${ui.filter==='all'}">All</button><button type="button" data-filter="witch" aria-pressed="${ui.filter==='witch'}">Witching hour</button></div>
     </div>
     <div class="grid" id="grid"></div>
-    ${LAUNCHES.some(l=>l.kind==='real')?'<p class="note">Live from pump.fun. Prices refresh every 20 seconds.</p>':'<p class="note">Example coins until the first real brew. Brew one and it shows up here live.</p>'}
+    ${LAUNCHES.some(l=>l.kind==='real')?'<p class="note">Live from pump.fun. Prices refresh every 20 seconds.</p>':'<p class="note">Only real pump.fun launches show here.</p>'}
   </div>`;
 }
 function cardHtml(l,lev){
@@ -514,7 +501,7 @@ function renderGrid(){
   list=list.slice().sort(ui.sort==='mc'?(a,b)=>(b.mc||0)-(a.mc||0):(a,b)=>(b.witch-a.witch)||(b.at-a.at));
   if(q) list=list.slice().sort((a,b)=>match(b)-match(a));
   const any=list.some(match);
-  g.innerHTML=any?list.map(l=>cardHtml(l,q&&match(l))).join(''):`<div class="empty">${q?`No coins answer to "${esc(q)}". Try a ticker like BOO.`:'No witching-hour coins yet. Brew one between 12 and 3 AM.'}</div>`;
+  g.innerHTML=any?list.map(l=>cardHtml(l,q&&match(l))).join(''):`<div class="empty">${q?`No coins answer to "${esc(q)}". Check the ticker and try again.`:(ui.filter==='witch'?'No witching-hour coins yet. Brew one between 12 and 3 AM.':'No coins brewed yet. <a href="#brew">Brew the first one</a> and it shows up here live.')}</div>`;
   $('#spell')?.classList.toggle('glow',!!q);
 }
 
@@ -654,15 +641,15 @@ function graveyardView(){
   const lit=store.get('candles',{});
   return`<div class="wrap page">
     <div class="page-head"><h1>The graveyard</h1><p>Coins with no trades for 72 hours get buried here. Hover a stone to see its ghost. Light a candle, or bring one back: $5K volume within an hour and it climbs out.</p></div>
-    ${GRAVES.length?'':`<div class="empty">The graveyard is empty. Every coin is still trading.</div>`}<div class="yard">${GRAVES.map(g=>`<div class="stone" data-stone="${esc(g.ticker)}"><span class="spook">${GHOST_SVG}</span><span class="hand">${HAND_SVG}</span>
+    ${GRAVES.length?'':`<div class="empty">The graveyard is empty. Coins that go 72 hours without a trade get buried here.</div>`}<div class="yard">${GRAVES.map(g=>`<div class="stone" data-stone="${esc(g.ticker)}"><span class="spook">${GHOST_SVG}</span><span class="hand">${HAND_SVG}</span>
       <div class="rip">RIP</div><div class="who">$${esc(g.ticker)}</div>
       <p class="epi">${esc(g.epitaph)}</p>
       <div class="facts"><span>${esc(g.name)}</span><span>${esc(g.born)} – ${esc(g.died)}</span><span>Peaked at <b>${fmtUsd(g.peak)}</b></span></div>
       <div class="acts">
         <button class="btn" type="button" data-candle="${esc(g.ticker)}" aria-pressed="${!!lit[g.ticker]}"><span class="candle">${lit[g.ticker]?'<span class="flame"></span>':''}<span>${g.candles+(lit[g.ticker]?1:0)} candles</span></span></button>
-        ${g.real?`<a class="btn" href="https://pump.fun/coin/${esc(g.mint)}" target="_blank" rel="noopener">Revive it</a>`:`<button class="btn" type="button" data-raise="${esc(g.ticker)}" title="Demo of the resurrection animation">Resurrect</button>`}
+        ${g.real?`<a class="btn" href="https://pump.fun/coin/${esc(g.mint)}" target="_blank" rel="noopener">Revive it</a>`:''}
       </div></div>`).join('')}</div>
-    ${GRAVES.some(g=>g.real)?'':'<p class="note">Example graves until real coins go quiet. The Resurrect button previews what happens when a buried coin hits $5K volume.</p>'}
+    
   </div>`;
 }
 function resurrect(t){
@@ -727,11 +714,11 @@ function coinView(l){
 
 /* ---------- Hero cauldron ---------- */
 let queue=LAUNCHES.slice(), qi=0, potTimer, potRaf, ripples=[];
-function popCoin(c){ const r=$('#riser'); if(!r) return; $('#riserImg').src=imgFor(c); $('#riserImg').alt='$'+c.ticker; r.classList.remove('go'); void r.offsetWidth; r.classList.add('go'); const t=$('#riserTag'); t.textContent='$'+c.ticker+(c.kind==='demo'?' · your brew':' · '+ago(c.at)); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2600); }
+function popCoin(c){ const r=$('#riser'); if(!r) return; $('#riserImg').src=c===BREWCOIN?PFP:imgFor(c); $('#riserImg').alt='$'+c.ticker; r.classList.remove('go'); void r.offsetWidth; r.classList.add('go'); const t=$('#riserTag'); t.textContent=c===BREWCOIN?'$BREW is live':'$'+c.ticker+' · '+ago(c.at); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2600); }
 function startPot(){
   clearInterval(potTimer); cancelAnimationFrame(potRaf);
   const pot=$('#pot'); if(!pot) return;
-  const step=()=>{ if(!$('#riser')) return clearInterval(potTimer); popCoin(queue[qi++%queue.length]); };
+  const step=()=>{ if(!$('#riser')) return clearInterval(potTimer); popCoin(queue.length?queue[qi++%queue.length]:BREWCOIN); };
   step(); potTimer=setInterval(step,3400);
   const c=$('#potfx'), x=c.getContext('2d'); let bubs=[];
   const size=()=>{ const r=pot.getBoundingClientRect(), d=devicePixelRatio||1; c.width=r.width*d; c.height=r.height*d; x.setTransform(d,0,0,d,0,0); }; size();
@@ -741,13 +728,13 @@ function startPot(){
     for(const rp of ripples){ rp.r+=2.4; rp.a-=.02; x.globalAlpha=Math.max(0,rp.a); x.strokeStyle='#140B07'; x.lineWidth=3; x.beginPath(); x.ellipse(rp.x,rp.y,rp.r,rp.r*.4,0,0,6.283); x.stroke(); } ripples=ripples.filter(r=>r.a>0);
     x.globalAlpha=1; if(!still) potRaf=requestAnimationFrame(frame); };
   potRaf=requestAnimationFrame(frame);
-  const stir=(e)=>{ const r=pot.getBoundingClientRect(); const px=e.clientX?e.clientX-r.left:r.width/2, py=e.clientY?e.clientY-r.top:r.height/2; for(let i=0;i<3;i++) ripples.push({x:px,y:py,r:4+i*10,a:.9}); for(let i=0;i<14;i++) bubs.push({x:px+(Math.random()*60-30),y:py,r:2+Math.random()*8,v:1.5+Math.random()*2,a:1}); popCoin(LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]); snd.cackle(); };
+  const stir=(e)=>{ const r=pot.getBoundingClientRect(); const px=e.clientX?e.clientX-r.left:r.width/2, py=e.clientY?e.clientY-r.top:r.height/2; for(let i=0;i<3;i++) ripples.push({x:px,y:py,r:4+i*10,a:.9}); for(let i=0;i<14;i++) bubs.push({x:px+(Math.random()*60-30),y:py,r:2+Math.random()*8,v:1.5+Math.random()*2,a:1}); popCoin(LAUNCHES.length?LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]:BREWCOIN); snd.cackle(); };
   pot.addEventListener('click',stir); pot.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); stir({}); } });
   addEventListener('resize',size,{once:true});
 }
 
 /* ---------- Ticker tape ---------- */
-function renderTape(){ const t=$('#tape'); const items=FEED.slice(0,12).map(s=>`<span>${s}</span>`).join(''); t.innerHTML=items+items; }
+function renderTape(){ const t=$('#tape'); const list=FEED.length?FEED:['<b>$BREW</b> is live','The cauldron is open','Be the first to <i>brew a coin</i>','Coins brewed 12 to 3 AM get the <i>Witching</i> badge']; const items=list.slice(0,12).map(s=>`<span>${s}</span>`).join(''); t.innerHTML=items+items; }
 
 /* ---------- Trick or treat ---------- */
 function trickOrTreat(){
@@ -756,7 +743,7 @@ function trickOrTreat(){
   d.addEventListener('click',knock); d.onkeydown=(e)=>{ if(e.key==='Enter'||e.key===' ') knock(); };
 }
 function scare(){ const s=$('#scare'); s.innerHTML=GHOST_SVG; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); snd.thunder(); setTimeout(()=>{ s.classList.remove('on'); toast('Trick! Knock again for a treat.'); },1200); }
-function treat(){ const c=LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]; $('#candyImg').src=imgFor(c); $('#candyName').textContent=c.name; $('#candyTick').textContent='$'+c.ticker; $('#candyGo').href='#coin-'+c.ticker.toLowerCase(); $('#candy').classList.add('on'); }
+function treat(){ const c=LAUNCHES.length?LAUNCHES[Math.floor(Math.random()*LAUNCHES.length)]:BREWCOIN; if(c===BREWCOIN){ $('#candyImg').src=PFP; $('#candyName').textContent='Cauldron'; $('#candyTick').textContent='$BREW'; $('#candyGo').href='#token'; $('#candy').classList.add('on'); return; } $('#candyImg').src=imgFor(c); $('#candyName').textContent=c.name; $('#candyTick').textContent='$'+c.ticker; $('#candyGo').href='#coin-'+c.ticker.toLowerCase(); $('#candy').classList.add('on'); }
 $('#candy').addEventListener('click',e=>{ if(e.target.id==='candy'||e.target.id==='candyGo') $('#candy').classList.remove('on'); });
 $('#doorWrap').addEventListener('click',e=>{ if(e.target.id==='doorWrap') e.currentTarget.classList.remove('on'); });
 

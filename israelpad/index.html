@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IsraelPad</title>
+<meta name="description" content="IsraelPad: launch pump.fun coins from the Holy Land.">
+<meta name="theme-color" content="#0038b8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20220%20160%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20width%3D%22220%22%20height%3D%22160%22%20fill%3D%22%23fff%22/%3E%3Crect%20y%3D%2215%22%20width%3D%22220%22%20height%3D%2225%22%20fill%3D%22%230038b8%22/%3E%3Crect%20y%3D%22120%22%20width%3D%22220%22%20height%3D%2225%22%20fill%3D%22%230038b8%22/%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%230038b8%22%20stroke-width%3D%225.5%22%3E%3Cpath%20d%3D%22M110%2047L138.6%2096.5H81.4Z%22/%3E%3Cpath%20d%3D%22M110%20113L81.4%2063.5H138.6Z%22/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;600;700&family=Heebo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* IsraelPad theme: flag blue + white, Jerusalem stone surfaces, gold for wins */
+:root{
+  --page:#f5efe3; --bg:#fffdf9; --surface:#ffffff; --raised:#ffffff; --sunk:#faf6ee;
+  --line:#e4d9c4; --line-strong:#d3c4a6; --fg:#0c1c3f; --dim:#5d6680;
+  --accent:#0038b8; --accent-deep:#002a8c; --accent-soft:#e8eefb; --on-accent:#ffffff;
+  --gold:#c9a227; --gold-deep:#8a6d12; --gold-soft:#fbf4dc;
+  --ok:#137a48; --warn:#a86a00; --bad:#c02f2f;
+  --display:"Frank Ruhl Libre",Georgia,serif;
+  --body:"Heebo",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(12,28,63,.05),0 6px 20px rgba(12,28,63,.06);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:140px}
+body{margin:0;color:var(--fg);font:15px/1.55 var(--body);
+  background-color:var(--page);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%230038b8' stroke-opacity='.06' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpath d='M36 24l10.4 18H25.6z'/%3E%3Cpath d='M36 48L25.6 30h20.8z'/%3E%3C/g%3E%3C/svg%3E");
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+@media (max-width:720px){body{padding-bottom:72px}}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--page)}
+a{color:var(--accent)}
+.wrap{max-width:1100px;margin:0 auto}
+.mono,input[type=number],input[type=password],table,.wbal,.summary strong,.stat b,#mint,#createSig,#tpMint,#hMint,#rpc,#dev,#sweepTo,#importArea{font-family:var(--mono)}
+
+/* Flag bands (top and bottom of the page) */
+.flagband{height:28px;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+  background:linear-gradient(to bottom,#fff 0 8px,var(--accent) 8px 20px,#fff 20px)}
+.flagband.bottom{margin-top:40px;transform:scaleY(-1)}
+
+/* Header */
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-block:22px 18px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.logo{width:64px;height:auto;flex:none;border-radius:6px;box-shadow:var(--shadow);display:block}
+.brand .names{display:flex;flex-direction:column;gap:2px;min-width:0}
+.brand h1{margin:0;font:700 32px/1 var(--display);letter-spacing:-.01em;color:var(--accent-deep)}
+.brand .he{font:500 15px/1 var(--display);color:var(--accent);direction:rtl;unicode-bidi:isolate;align-self:flex-start}
+.brand .tag{color:var(--dim);font-size:13px}
+.hright{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.shalom{font:600 15px var(--display);color:var(--accent-deep);padding:6px 12px;border-radius:999px;background:var(--accent-soft)}
+.shalom span{font-family:var(--display);margin-inline-start:6px;color:var(--accent)}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a,.pf{font-size:13px;text-decoration:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);padding:6px 12px;border-radius:999px;min-height:36px;display:inline-flex;align-items:center}
+.pf{color:var(--dim)} .pf b{color:var(--accent);font-weight:600;margin-inline:4px}
+.links a:hover,.pf:hover{border-color:var(--accent)}
+
+/* Sticky top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--page);
+  border-block:1px solid var(--line);padding-block:10px;display:flex;flex-direction:column;gap:10px}
+.tbrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between}
+.wsel{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 260px}
+.wsel select{flex:1 1 auto;min-width:0}
+.wbal{font-variant-numeric:tabular-nums;color:var(--dim);font-size:12px;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--dim);white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.chip.ok{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,transparent);background:var(--accent-soft)}
+.chip.gold{color:var(--gold-deep);border-color:var(--gold);background:var(--gold-soft)}
+.chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.chip.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+nav.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px}
+nav.tabs a{flex:1 1 0;text-align:center;text-decoration:none;color:var(--dim);font:600 15px var(--display);padding:8px;border-radius:7px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:8px}
+nav.tabs a small{font:500 12px var(--display);opacity:.75}
+nav.tabs a[aria-current="page"]{color:var(--on-accent);background:var(--accent)}
+nav.tabs a:not([aria-current="page"]):hover{color:var(--fg);background:var(--accent-soft)}
+@media (max-width:720px){
+  .topbar nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;border-radius:0;border-width:1px 0 0;box-shadow:0 -4px 16px rgba(12,28,63,.06);
+    padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+  nav.tabs a{font-size:13px;flex-direction:column;gap:0;padding:4px}
+  nav.tabs a small{font-size:11px}
+  .brand h1{font-size:28px}
+  .logo{width:54px}
+  .shalom{display:none}
+}
+
+/* Panels + sections */
+.panel{display:grid;gap:16px;margin-top:18px}
+.panel.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:860px){.panel.two{grid-template-columns:minmax(0,1fr)}}
+section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0;box-shadow:var(--shadow)}
+h2{margin:0;font:700 20px/1.2 var(--display);color:var(--fg);display:flex;align-items:baseline;gap:10px}
+h2 .he{font:500 14px var(--display);color:var(--dim)}
+h3{margin:0;font:600 18px/1.2 var(--display);text-wrap:balance}
+
+/* Hero */
+section.hero{position:relative;overflow:hidden;color:var(--on-accent);border:0;padding:24px 24px 72px;
+  background:linear-gradient(135deg,var(--accent-deep),var(--accent) 60%,#1f56d6)}
+section.hero>*{position:relative;z-index:1}
+section.hero .skyline{position:absolute;z-index:0;left:0;right:0;bottom:0;width:100%;height:80px;color:#fff;opacity:.16;pointer-events:none}
+section.hero .herostar{position:absolute;z-index:0;right:-30px;top:-30px;width:220px;height:220px;color:#fff;opacity:.08;pointer-events:none}
+section.hero h2{color:#fff;font-size:30px}
+section.hero h2 .he{color:rgba(255,255,255,.75);font-size:18px}
+section.hero .note{color:rgba(255,255,255,.82)}
+section.hero .status{font-size:15px}
+section.hero .dot{background:rgba(255,255,255,.5)}
+section.hero .dot.live{background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.3)}
+section.hero button.primary{background:#fff;color:var(--accent-deep);border-color:#fff;font-weight:700}
+section.hero button.primary:hover{background:var(--gold-soft);border-color:var(--gold)}
+section.hero .btn,section.hero button:not(.primary){color:#fff;border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.06)}
+section.hero .btn:hover,section.hero button:not(.primary):hover{border-color:#fff;background:rgba(255,255,255,.14)}
+section.hero details{border-color:rgba(255,255,255,.25)}
+section.hero details>summary{color:rgba(255,255,255,.85)}
+section.hero details>summary::before{color:#fff}
+section.hero label{color:rgba(255,255,255,.85)}
+section.hero input{background:rgba(255,255,255,.95);border-color:transparent}
+section.hero :focus-visible{outline-color:#fff}
+
+/* Forms */
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:500;color:var(--dim)}
+input,select,textarea{font:14px var(--body);color:var(--fg);background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:44px;width:100%}
+select{font:500 14px var(--body)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#fff}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>label{flex:1 1 120px}
+.row>.grow{flex:3 1 220px}
+button,.btn{font:600 14px var(--body);min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;transition:background-color .15s,border-color .15s}
+button:hover,.btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+button.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+button.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+button.big{min-height:54px;font-size:16px;flex:1 1 220px}
+button.danger{border-color:color-mix(in srgb,var(--bad) 50%,transparent);color:var(--bad)}
+button.danger:hover{background:#fdeeee;border-color:var(--bad)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:13px;color:var(--dim);margin:0;max-width:70ch}
+details{border-top:1px solid var(--line);padding-top:10px}
+details>summary{cursor:pointer;color:var(--dim);font-size:13px;font-weight:500;min-height:32px;display:flex;align-items:center;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"+";width:18px;color:var(--accent);font-weight:700}
+details[open]>summary::before{content:"–"}
+details>.inner{display:flex;flex-direction:column;gap:12px;padding-top:10px}
+
+/* Checklist */
+.checklist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.checklist{grid-template-columns:minmax(0,1fr)}}
+.checklist li{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:10px 12px;min-width:0}
+.checklist li .txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.checklist li .txt b{font:600 16px var(--display)}
+.checklist li .txt span{font-size:12px;color:var(--dim)}
+.checklist li button{min-height:36px;padding:0 12px;font-size:13px}
+.mark{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;color:#fff;background:var(--line-strong)}
+.mark.ok{background:var(--accent)} .mark.warn{background:var(--warn)} .mark.bad{background:var(--bad)}
+.mark.ok,.mark.warn,.mark.bad{color:#fff;font-weight:700}
+
+/* Status + stats */
+.status{display:flex;align-items:flex-start;gap:10px;flex-wrap:nowrap}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line-strong);flex:none;margin-top:7px}
+.dot.live{background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.stat{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-variant-numeric:tabular-nums;padding-block:2px;border-bottom:1px dashed var(--line)}
+.stat b{font-weight:500}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.summary div{border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:10px 12px}
+.summary small{display:block;color:var(--dim);font-size:12px;font-weight:500}
+.summary strong{font-size:20px;font-weight:500;line-height:1.3;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)} .dim{color:var(--dim)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;border:1px solid currentColor}
+.pill.ok{color:var(--accent);background:var(--accent-soft)}
+
+/* Tables */
+.rack{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+th{color:var(--dim);font:600 12px var(--body);position:sticky;top:0;background:var(--sunk)}
+
+/* Wallet tabs */
+.wtabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;min-width:0}
+.wtab{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:6px 14px;white-space:nowrap;text-align:left}
+.wtab b{font:600 15px var(--display)}
+.wtab small{color:var(--dim);font:12px var(--mono);font-variant-numeric:tabular-nums}
+.wtab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+
+/* History */
+.hlist{display:flex;flex-direction:column;gap:10px}
+.launch{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:12px}
+.launch img,.launch .ph{width:52px;height:52px;border-radius:8px;object-fit:cover;flex:none}
+.launch .ph{display:grid;place-items:center;background:#fff;border:1px solid var(--line);overflow:hidden}
+.launch .ph svg{width:46px;height:auto}
+.lmeta{display:flex;flex-direction:column;gap:2px;flex:1 1 200px;min-width:0;font-size:13px}
+.lmeta b{font:600 17px var(--display)}
+.lact{display:flex;gap:8px}
+
+/* Confirm sheet */
+.sheet-bg{position:fixed;inset:0;z-index:40;background:rgba(12,28,63,.35)}
+.confirm{position:fixed;z-index:41;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(520px,calc(100% - 32px));
+  background:var(--raised);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 40px rgba(12,28,63,.22)}
+.confirm .row button{flex:1}
+
+/* Activity drawer */
+.logbtn{position:fixed;z-index:22;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--surface);border-color:var(--line);gap:8px;box-shadow:var(--shadow);border-radius:999px}
+@media (max-width:720px){.logbtn{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+.badge{min-width:20px;height:20px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px;display:inline-grid;place-items:center;padding:0 6px}
+.drawer{position:fixed;z-index:35;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(12,28,63,.1);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px}
+.drawer .tbrow h2{flex:1}
+pre#log{margin:0;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px;height:min(40vh,320px);overflow:auto;font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all}
+
+/* One-click launch form (in hero) */
+.newcoin{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
+.imgpick{position:relative;width:132px;height:132px;border-radius:12px;border:2px dashed rgba(255,255,255,.55);background:rgba(255,255,255,.08);
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;color:#fff;text-align:center;font-weight:600}
+.imgpick:hover{border-color:#fff;background:rgba(255,255,255,.14)}
+.imgpick:focus-within{outline:2px solid #fff;outline-offset:2px}
+.imgpick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.imgpick img{width:100%;height:100%;object-fit:cover}
+.imgpick span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;pointer-events:none}
+.imgpick b{font:400 34px/1 var(--display)}
+.ncfields{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ncgo{grid-column:1/-1;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.ncgo label{flex:0 1 160px}
+.ncgo button.big{flex:1 1 240px;font-size:17px}
+.newcoin .note{grid-column:1/-1}
+section.hero textarea{background:rgba(255,255,255,.95);border-color:transparent;resize:vertical;font-family:var(--body)}
+@media (max-width:560px){.newcoin{grid-template-columns:96px minmax(0,1fr)}.imgpick{width:96px;height:96px}.ncfields .row>label{flex-basis:100%}}
+footer.site{margin-top:28px;text-align:center;color:var(--dim);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
+footer.site .he{font:500 16px var(--display);color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="flagband" aria-hidden="true"></div>
+<div class="wrap">
+<header>
+  <div class="brand"><svg class="logo" role="img" aria-label="Flag of Israel" viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="160" fill="#fff"/><rect y="15" width="220" height="25" fill="#0038b8"/><rect y="120" width="220" height="25" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width="5.5"><path d="M110 47L138.6 96.5H81.4Z"/><path d="M110 113L81.4 63.5H138.6Z"/></g></svg><div class="names"><h1>IsraelPad</h1><span class="he" lang="he">ישראל פד</span><span class="tag">Launch from the Holy Land</span></div></div>
+  <div class="hright">
+    <span class="shalom">Shalom<span lang="he">שלום</span></span>
+    <nav id="links" class="links" aria-label="Project links"></nav>
+    <a class="pf" href="https://pump.fun/create" target="_blank" rel="noopener">Powered by<b>pump.fun</b>↗</a>
+  </div>
+</header>
+
+<div class="topbar">
+  <div class="tbrow">
+    <div class="wsel">
+      <label for="wQuick" class="dim" style="flex-direction:row;align-items:center;gap:8px;flex:1 1 auto;min-width:0">Dev wallet
+        <select id="wQuick"></select></label>
+      <span id="wQuickBal" class="wbal"></span>
+    </div>
+    <div class="chips"><span id="chipArm" class="chip">Idle</span><span id="chipTp" class="chip">Take profit off</span></div>
+  </div>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#launch" data-tab="launch">Launch <small lang="he">שיגור</small></a>
+    <a href="#history" data-tab="history">History <small lang="he">היסטוריה</small></a>
+    <a href="#wallets" data-tab="wallets">Wallets <small lang="he">ארנקים</small></a>
+    <a href="#setup" data-tab="setup">Setup <small lang="he">הגדרות</small></a>
+  </nav>
+</div>
+
+<!-- LAUNCH -->
+<div id="p-launch" class="panel" data-panel="launch">
+  <section>
+    <h2>Before you launch</h2>
+    <ul class="checklist">
+      <li id="ck-rpc"><span class="mark">·</span><div class="txt"><b>RPC</b><span></span></div><button data-fix="rpc">Set</button></li>
+      <li id="ck-vault"><span class="mark">·</span><div class="txt"><b>Dev wallet</b><span></span></div><button data-fix="vault">Open</button></li>
+      <li id="ck-fund"><span class="mark">·</span><div class="txt"><b>Dev wallet SOL</b><span></span></div><button data-fix="fund">Copy address</button></li>
+      <li id="ck-burn"><span class="mark">·</span><div class="txt"><b>Burners</b><span></span></div><button data-fix="burn">Open</button></li>
+    </ul>
+  </section>
+
+  <section class="hero">
+    <svg class="herostar" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="5"><path d="M50 10l34.6 60H15.4z"/><path d="M50 90L15.4 30h69.2z"/></g></svg><svg class="skyline" viewBox="0 0 1000 80" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><path fill="currentColor" d="M0 80 V62 H10 V56 H16 V62 H26 V56 H32 V62 H42 V56 H48 V62 H58 V56 H64 V62 H74 V56 H80 V62 H90 V40 H93 V34 H98 V40 H126 V34 H131 V40 H134 V62 H144 V56 H150 V62 H160 V56 H166 V62 H176 V56 H182 V62 H192 V56 H198 V62 H210 V50 H220.0 V14 H217.0 V8 L225.0 -2 L233.0 8 H230.0 V50 H240 V62 H250 V56 H256 V62 H260 V32 H263 V26 H268 V32 H308 V26 H313 V32 H316 V62 V40 H337.6 A38.4 30 0 0 1 414.4 40 H436 V62 H446 V56 H452 V62 H462 V56 H468 V62 H470 V44 H473 V38 H478 V44 H502 V38 H507 V44 H510 V62 H520 V56 H526 V62 H536 V56 H542 V62 H552 V56 H558 V62 H560 V46 H576.2 A28.8 20 0 0 1 633.8 46 H650 V62 H640 V50 H648.0 V22 H645.0 V16 L653.0 6 L661.0 16 H658.0 V50 H666 V62 H676 V56 H682 V62 H692 V56 H698 V62 H708 V56 H714 V62 H724 V56 H730 V62 H740 V56 H746 V62 H760 V36 H763 V30 H768 V36 H812 V30 H817 V36 H820 V62 H830 V56 H836 V62 H846 V56 H852 V62 H862 V56 H868 V62 H880 V46 H883 V40 H888 V46 H908 V40 H913 V46 H916 V62 H926 V56 H932 V62 H942 V56 H948 V62 H958 V56 H964 V62 H974 V56 H980 V62 H990 V56 H996 V62 H1000 V80 Z"/></svg>
+    <h2>Launch <span class="he" lang="he">שיגור</span></h2>
+    <div class="status"><span id="dot" class="dot"></span><span id="statusText">Idle. Fill in your coin and press Launch coin. Your dev wallet signs it for you.</span></div>
+    <form id="newCoin" class="newcoin" autocomplete="off" novalidate>
+      <label class="imgpick" for="ncImg"><input id="ncImg" type="file" accept="image/png,image/jpeg,image/gif,image/webp"><img id="ncPrev" alt="Coin image preview" hidden><span id="ncImgTxt"><b>+</b>Add image</span></label>
+      <div class="ncfields">
+        <div class="row">
+          <label for="ncName" class="grow">Name<input id="ncName" maxlength="32" placeholder="Shabbat Shalom"></label>
+          <label for="ncSym">Ticker<input id="ncSym" maxlength="10" placeholder="SHABBAT" autocapitalize="characters"></label>
+        </div>
+        <label for="ncDesc">Description<textarea id="ncDesc" rows="2" maxlength="500" placeholder="What's the coin about?"></textarea></label>
+      </div>
+      <div class="ncgo">
+        <label for="ncBuy">Dev buy (SOL)<input id="ncBuy" type="number" min="0" step="0.01" value="0.1"></label>
+        <button id="ncLaunch" type="submit" class="primary big">Launch coin</button>
+      </div>
+      <p class="note" id="ncLinks"></p>
+    </form>
+    <details>
+      <summary>Launching on pump.fun yourself instead?</summary>
+      <div class="inner">
+        <div class="row">
+          <button id="arm">Arm only</button>
+          <a class="btn" href="https://pump.fun/create" target="_blank" rel="noopener" style="flex:1 1 160px">Open pump.fun ↗</a>
+          <button id="disarm" disabled>Disarm</button>
+        </div>
+        <p class="note">While armed, the selected dev wallet's next coin triggers the failed txs and take profit automatically.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Fire at a coin that's already live</summary>
+      <div class="inner">
+        <div class="row">
+          <label for="mint" class="grow">Coin mint
+            <input id="mint" placeholder="Coin mint / CA" autocomplete="off"></label>
+          <label for="createSig">Create tx (optional)
+            <input id="createSig" placeholder="For slot delta" autocomplete="off"></label>
+        </div>
+        <div class="row"><button id="fireNow">Fire now</button></div>
+      </div>
+    </details>
+  </section>
+
+  <div class="panel two" style="margin-top:0">
+    <section>
+      <h2>Take profit</h2>
+      <div class="status"><span id="tpDot" class="dot"></span><span id="tpStatus">Off. Starts on its own when an armed launch fires.</span></div>
+      <div class="row">
+        <label for="tpMult">Sell at (× launch mcap)
+          <input id="tpMult" type="number" min="1.05" step="0.05" value="2"></label>
+        <label for="tpPct">Sell %
+          <input id="tpPct" type="number" min="1" max="100" value="100"></label>
+      </div>
+      <div class="summary">
+        <div><small>Launch mcap</small><strong id="tpBase">–</strong></div>
+        <div><small>Live mcap</small><strong id="tpLive">–</strong></div>
+        <div><small>Target</small><strong id="tpTarget">–</strong></div>
+        <div><small>Sell</small><strong id="tpResult">–</strong></div>
+      </div>
+      <p class="note">Market caps in SOL. Sells once through PumpPortal, then stops. Keep this tab open.</p>
+      <details>
+        <summary>Advanced</summary>
+        <div class="inner">
+          <div class="row">
+            <label for="tpSlip">Slippage %
+              <input id="tpSlip" type="number" min="1" max="99" value="15"></label>
+            <label for="tpPrio">Priority (SOL)
+              <input id="tpPrio" type="number" min="0" step="0.0001" value="0.0005"></label>
+          </div>
+          <label for="tpMint">Watch a live coin instead (mint)
+            <input id="tpMint" placeholder="Coin mint / CA" autocomplete="off"></label>
+          <div class="row"><button id="tpStart">Start take profit</button><button id="tpStop" disabled>Stop</button></div>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <h2>Slot report</h2>
+      <div class="summary">
+        <div><small>Landed</small><strong id="sLanded">–</strong></div>
+        <div><small>Same slot</small><strong id="sSame">–</strong></div>
+        <div><small>Spread</small><strong id="sSpread">–</strong></div>
+        <div><small>Fees (SOL)</small><strong id="sFees">–</strong></div>
+      </div>
+      <div class="scroll"><table><thead><tr><th>Burner</th><th>Slot</th><th>Δ vs create</th><th>Result</th><th>Tx</th></tr></thead><tbody id="resBody">
+        <tr class="dim"><td>Example</td><td>418204551</td><td>+0</td><td><span class="pill ok">failed ✓</span></td><td>solscan</td></tr>
+        <tr class="dim"><td>Example</td><td>418204552</td><td>+1</td><td><span class="pill ok">failed ✓</span></td><td>solscan</td></tr>
+      </tbody></table></div>
+    </section>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="p-history" class="panel" data-panel="history" hidden>
+  <section>
+    <h2>Launch history</h2>
+    <div class="row">
+      <label for="hBuy">Dev buy on revamp (SOL)
+        <input id="hBuy" type="number" min="0" step="0.01" value="0.1"></label>
+      <label for="hMint" class="grow">Add a past coin
+        <input id="hMint" placeholder="Coin mint / CA" autocomplete="off"></label>
+      <button id="hAdd" style="align-self:flex-end">Add coin</button>
+    </div>
+    <div id="hList" class="hlist"></div>
+    <p class="note">Revamp relaunches a coin with the same name, ticker, image, description and links from the selected dev wallet.</p>
+  </section>
+</div>
+
+<!-- WALLETS -->
+<div id="p-wallets" class="panel two" data-panel="wallets" hidden>
+  <section id="walletBar" aria-label="Dev wallets">
+    <h2>Dev wallets</h2>
+    <div id="wLocked" class="row">
+      <label for="wPass" class="grow"><span id="wPassLabel">Set a password (8+ characters) to store your wallets</span>
+        <input id="wPass" type="password" autocomplete="current-password"></label>
+      <button id="wUnlock" class="primary" style="align-self:flex-end">Create vault</button>
+    </div>
+    <div id="wTabs" class="wtabs" role="tablist"></div>
+    <div id="wActions" class="row" hidden>
+      <button id="wNew" class="primary">New wallet</button>
+      <button id="wImportBtn">Import</button>
+      <button id="wCopy">Copy address</button>
+      <button id="wExport">Copy key</button>
+      <button id="wRemove" class="danger">Remove</button>
+      <button id="wLock">Lock</button>
+    </div>
+    <div id="wImportBox" class="row" hidden>
+      <label for="wImportKey" class="grow">Private key
+        <input id="wImportKey" type="password" placeholder="Base58 key or [64 numbers]" autocomplete="off"></label>
+      <label for="wImportName">Name
+        <input id="wImportName" placeholder="Dev 2" autocomplete="off"></label>
+      <button id="wImportSave" style="align-self:flex-end">Add wallet</button>
+    </div>
+    <p class="note">Encrypted with your password, stored in this browser only. Back up keys for wallets that hold SOL.</p>
+  </section>
+
+  <section id="burnerSec">
+    <h2>Burners</h2>
+    <div class="stat"><span>Burners</span><b id="nBurners">0</b></div>
+    <div class="stat"><span>Ready (≥ <span id="minSol"></span> SOL)</span><b id="nReady">0</b></div>
+    <div class="stat"><span>Runs left on the weakest one</span><b id="runsLeft">–</b></div>
+    <div class="row">
+      <button id="gen" class="primary">Generate burners</button>
+      <button id="bal">Refresh</button>
+      <button id="copyAddr">Copy addresses</button>
+    </div>
+    <div class="rack"><table><thead><tr><th>#</th><th>Address</th><th>SOL</th></tr></thead><tbody id="rackBody"></tbody></table></div>
+    <p class="note">Fund each with 0.002 SOL (~200 runs). 0.00089 SOL per wallet stays locked as Solana's rent minimum.</p>
+    <details>
+      <summary>Sweep, back up or delete burners</summary>
+      <div class="inner">
+        <label for="sweepTo">Send leftover SOL to
+          <input id="sweepTo" placeholder="Your main wallet address" autocomplete="off"></label>
+        <div class="row">
+          <button id="sweep">Sweep burners</button>
+          <button id="exportKeys">Copy burner keys</button>
+          <button id="importKeys">Import keys</button>
+          <button id="wipe" class="danger">Delete burners</button>
+        </div>
+        <textarea id="importArea" hidden placeholder="Paste a JSON array of keypairs ([[64 numbers], …]) then press Import keys again"></textarea>
+      </div>
+    </details>
+  </section>
+</div>
+
+<!-- SETUP -->
+<div id="p-setup" class="panel two" data-panel="setup" hidden>
+  <section>
+    <h2>Connection</h2>
+    <label for="rpc">RPC URL
+      <input id="rpc" placeholder="https://mainnet.helius-rpc.com/?api-key=…" autocomplete="off"></label>
+    <p class="note">A paid RPC (Helius, QuickNode) lands txs tighter. The public one often blocks browsers.</p>
+    <details>
+      <summary>Advanced</summary>
+      <div class="inner">
+        <div class="row">
+          <label for="count">Failed txs per launch
+            <input id="count" type="number" min="1" max="100" value="20"></label>
+          <label for="prio">Priority (µlamports/CU)
+            <input id="prio" type="number" min="0" value="200000"></label>
+        </div>
+        <p class="note">Priority adds <span id="prioLamports">200</span> lamports per failed tx on top of the 5,000 base fee.</p>
+        <label for="dev">Dev wallet address (set by the wallet bar)
+          <input id="dev" placeholder="Creator wallet address" autocomplete="off"></label>
+        <label for="tpKey">Dev wallet key (set by the wallet bar; memory only)
+          <input id="tpKey" type="password" placeholder="Base58 key or [64 numbers]" autocomplete="off"></label>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Links</h2>
+    <label for="site">Website
+      <input id="site" placeholder="yoursite.com" autocomplete="off"></label>
+    <label for="tg">Telegram
+      <input id="tg" placeholder="@yourgroup or t.me/yourgroup" autocomplete="off"></label>
+    <label for="x">X / Twitter
+      <input id="x" placeholder="@yourhandle or x.com/yourhandle" autocomplete="off"></label>
+    <div class="row"><button id="shareLink">Copy share link</button></div>
+    <p class="note">Links show in the header. Send the share link so visitors see them too.</p>
+  </section>
+</div>
+
+<footer class="site"><span class="he" lang="he">עם ישראל חי</span><span>Am Yisrael Chai · IsraelPad · Powered by pump.fun</span></footer>
+</div>
+<div class="flagband bottom" aria-hidden="true"></div>
+
+<!-- Confirm sheet -->
+<div id="sheetBg" class="sheet-bg" hidden></div>
+<div id="confirmBox" class="confirm" role="dialog" aria-modal="true" aria-labelledby="confirmText" hidden>
+  <span id="confirmText"></span>
+  <div class="row"><button id="confirmNo">Cancel</button><button id="confirmYes" class="danger">Confirm</button></div>
+</div>
+
+<!-- Activity drawer -->
+<button id="logBtn" class="logbtn" aria-controls="logDrawer" aria-expanded="false">Activity <span id="logBadge" class="badge" hidden>0</span></button>
+<div id="logDrawer" class="drawer" hidden>
+  <div class="tbrow"><h2>Activity</h2><button id="logClose">Close</button></div>
+  <pre id="log">Ready.</pre>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
+<script>
+const FLAG_SVG = '<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="160" fill="#fff"/><rect y="15" width="220" height="25" fill="#0038b8"/><rect y="120" width="220" height="25" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width="5.5"><path d="M110 47L138.6 96.5H81.4Z"/><path d="M110 113L81.4 63.5H138.6Z"/></g></svg>';
+</script>
+<script>
+const W = solanaWeb3;
+const RENT = 890880, BASE_FEE = 5000, CU_LIMIT = 1000;
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem("misfire:"+k); return v===null?d:JSON.parse(v); }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem("misfire:"+k, JSON.stringify(v)); }catch{} }
+};
+let burners = store.get("burners", []).map(a => W.Keypair.fromSecretKey(Uint8Array.from(a)));
+let balances = {};
+let conn = null, ws = null, armed = false, cachedHash = null, hashTimer = null;
+
+["rpc","dev","count","prio","sweepTo"].forEach(id => {
+  $(id).value = store.get(id, $(id).value);
+  $(id).addEventListener("change", () => { store.set(id, $(id).value); conn = null; render(); });
+});
+
+const LINKS = {
+  site: { label: "Website", url: v => /^https?:\/\//i.test(v) ? v : "https://" + v },
+  tg:   { label: "Telegram", url: v => /t\.me\//i.test(v) ? (/^https?:/i.test(v) ? v : "https://" + v) : "https://t.me/" + v.replace(/^@/, "") },
+  x:    { label: "X", url: v => /(x|twitter)\.com\//i.test(v) ? (/^https?:/i.test(v) ? v : "https://" + v) : "https://x.com/" + v.replace(/^@/, "") }
+};
+const qs = new URLSearchParams(location.search);
+Object.keys(LINKS).forEach(id => {
+  $(id).value = qs.get(id) ?? store.get(id, "");
+  $(id).addEventListener("input", () => { store.set(id, $(id).value); renderLinks(); });
+});
+function renderLinks(){
+  $("links").innerHTML = "";
+  Object.entries(LINKS).forEach(([id, l]) => {
+    const v = $(id).value.trim(); if (!v) return;
+    const a = document.createElement("a");
+    a.href = l.url(v); a.target = "_blank"; a.rel = "noopener"; a.textContent = l.label + " ↗";
+    $("links").appendChild(a);
+  });
+}
+$("shareLink").onclick = async () => {
+  const p = new URLSearchParams();
+  Object.keys(LINKS).forEach(id => { const v = $(id).value.trim(); if (v) p.set(id, v); });
+  const url = location.origin + location.pathname + (p.toString() ? "?" + p : "");
+  const ok = await copy(url);
+  log(ok ? "Share link copied: " + url : "Copy was blocked. Share link: " + url);
+};
+renderLinks();
+
+let unread = 0;
+function log(msg, cls){
+  const t = new Date().toLocaleTimeString(); $("log").textContent += `\n[${t}] ${msg}`; $("log").scrollTop = 1e9;
+  if ($("logDrawer").hidden){ unread++; $("logBadge").textContent = unread; $("logBadge").hidden = false; }
+}
+function getConn(){
+  const url = $("rpc").value.trim() || W.clusterApiUrl("mainnet-beta");
+  if (!conn) conn = new W.Connection(url, "confirmed");
+  return conn;
+}
+const prioLamports = () => Math.ceil((Number($("prio").value)||0) * CU_LIMIT / 1e6);
+const feePerTx = () => BASE_FEE + prioLamports();
+const minBal = () => RENT + feePerTx();
+const short = (s) => s.slice(0,4)+"…"+s.slice(-4);
+const sol = (l) => (l/1e9).toFixed(6);
+function saveBurners(){ store.set("burners", burners.map(k => Array.from(k.secretKey))); }
+function copy(text){ return navigator.clipboard.writeText(text).then(() => true, () => false); }
+
+function render(){
+  $("prioLamports").textContent = prioLamports();
+  $("minSol").textContent = sol(minBal());
+  $("nBurners").textContent = burners.length;
+  const ready = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal());
+  $("nReady").textContent = Object.keys(balances).length ? ready.length : "–";
+  const vals = burners.map(k => balances[k.publicKey.toBase58()]).filter(v => v !== undefined);
+  $("runsLeft").textContent = vals.length ? Math.max(0, Math.floor((Math.min(...vals) - RENT) / feePerTx())) : "–";
+  updateChecklist();
+  $("rackBody").innerHTML = burners.map((k,i) => {
+    const a = k.publicKey.toBase58(), b = balances[a];
+    const cls = b === undefined ? "dim" : b >= minBal() ? "ok" : "bad";
+    return `<tr><td>${i+1}</td><td title="${a}">${short(a)}</td><td class="${cls}">${b===undefined?"–":sol(b)}</td></tr>`;
+  }).join("") || `<tr><td colspan="3" class="dim">No burners yet. Generate ${$("count").value} to start.</td></tr>`;
+}
+
+async function refreshBalances(){
+  if (!burners.length) return;
+  try{
+    const keys = burners.map(k => k.publicKey);
+    for (let i = 0; i < keys.length; i += 100){
+      const infos = await getConn().getMultipleAccountsInfo(keys.slice(i,i+100));
+      infos.forEach((info,j) => balances[keys[i+j].toBase58()] = info ? info.lamports : 0);
+    }
+    render(); log(`Balances refreshed for ${keys.length} burners.`);
+  }catch(e){ log("Balance check failed: " + e.message + ". Check the RPC URL."); }
+}
+
+$("gen").onclick = () => {
+  const n = Math.max(1, Math.min(100, Number($("count").value)||20));
+  const add = n - burners.length;
+  if (add <= 0){ log(`You already have ${burners.length} burners.`); return; }
+  for (let i = 0; i < add; i++) burners.push(W.Keypair.generate());
+  saveBurners(); render(); log(`Generated ${add} burners. Copy the addresses and fund each with 0.002 SOL.`);
+};
+$("bal").onclick = refreshBalances;
+$("copyAddr").onclick = async () => {
+  const ok = await copy(burners.map(k => k.publicKey.toBase58()).join("\n"));
+  log(ok ? "Addresses copied." : "Copy was blocked. Select the addresses from the table instead.");
+};
+$("exportKeys").onclick = async () => {
+  const ok = await copy(JSON.stringify(burners.map(k => Array.from(k.secretKey))));
+  log(ok ? "Burner keys copied. Store them somewhere safe." : "Copy was blocked by the browser.");
+};
+$("importKeys").onclick = () => {
+  const area = $("importArea");
+  if (area.hidden){ area.hidden = false; area.focus(); return; }
+  try{
+    const arr = JSON.parse(area.value);
+    const kps = arr.map(a => W.Keypair.fromSecretKey(Uint8Array.from(a)));
+    const have = new Set(burners.map(k => k.publicKey.toBase58()));
+    kps.forEach(k => { if (!have.has(k.publicKey.toBase58())) burners.push(k); });
+    saveBurners(); area.value = ""; area.hidden = true; render(); refreshBalances();
+    log(`Imported ${kps.length} keys.`);
+  }catch{ log("Couldn't read those keys. Paste a JSON array of 64-number arrays."); }
+};
+
+let pending = null;
+function ask(text, fn){ $("confirmText").textContent = text; $("confirmBox").hidden = false; $("sheetBg").hidden = false; pending = fn; $("confirmNo").focus(); }
+function closeAsk(){ $("confirmBox").hidden = true; $("sheetBg").hidden = true; }
+$("confirmNo").onclick = () => { closeAsk(); pending = null; };
+$("sheetBg").onclick = () => { closeAsk(); pending = null; };
+$("confirmYes").onclick = () => { closeAsk(); const f = pending; pending = null; f && f(); };
+$("wipe").onclick = () => ask(`Delete all ${burners.length} burner keys from this browser? Sweep or copy them first, or their SOL is lost.`, () => {
+  burners = []; balances = {}; saveBurners(); render(); log("Burners deleted.");
+});
+
+$("sweep").onclick = () => {
+  let dest;
+  try{ dest = new W.PublicKey($("sweepTo").value.trim()); }catch{ log("Enter a valid wallet address to sweep to."); return; }
+  ask(`Send all SOL from ${burners.length} burners to ${short(dest.toBase58())}?`, async () => {
+    await refreshBalances();
+    const { blockhash, lastValidBlockHeight } = await getConn().getLatestBlockhash("confirmed");
+    let sent = 0;
+    for (const k of burners){
+      const b = balances[k.publicKey.toBase58()] || 0;
+      if (b <= BASE_FEE) continue;
+      const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight })
+        .add(W.SystemProgram.transfer({ fromPubkey: k.publicKey, toPubkey: dest, lamports: b - BASE_FEE }));
+      tx.sign(k);
+      try{ await getConn().sendRawTransaction(tx.serialize()); sent++; }catch(e){ log(`Sweep ${short(k.publicKey.toBase58())} failed: ${e.message}`); }
+    }
+    log(`Sweep sent from ${sent} burners. Refresh balances in a few seconds.`);
+  });
+};
+
+async function refreshHash(){
+  try{ cachedHash = await getConn().getLatestBlockhash("confirmed"); }catch(e){ log("Blockhash fetch failed: " + e.message); }
+}
+
+function setStatus(text, live){ $("statusText").textContent = text; $("dot").classList.toggle("live", !!live); $("chipArm").textContent = live ? "Armed" : "Idle"; $("chipArm").className = "chip" + (live ? " ok" : ""); }
+
+async function fire(mintStr, createSig){
+  let mint;
+  try{ mint = new W.PublicKey(mintStr); }catch{ log("That mint address isn't valid."); return; }
+  const n = Math.max(1, Number($("count").value)||20);
+  const ready = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal()).slice(0, n);
+  if (!ready.length){ log("No burner can cover rent + fee. Fund them and refresh balances."); return; }
+  if (!cachedHash) await refreshHash();
+  const { blockhash, lastValidBlockHeight } = cachedHash;
+  const cuPrice = Number($("prio").value)||0;
+
+  const signed = ready.map(k => {
+    const bal = balances[k.publicKey.toBase58()];
+    const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight });
+    if (cuPrice > 0){
+      tx.add(W.ComputeBudgetProgram.setComputeUnitLimit({ units: CU_LIMIT }));
+      tx.add(W.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: cuPrice }));
+    }
+    const ix = W.SystemProgram.transfer({ fromPubkey: k.publicKey, toPubkey: W.Keypair.generate().publicKey, lamports: bal + 1e9 });
+    ix.keys.push({ pubkey: mint, isSigner: false, isWritable: false });
+    tx.add(ix); tx.sign(k);
+    return { k, raw: tx.serialize() };
+  });
+
+  const t0 = performance.now();
+  const sends = await Promise.allSettled(signed.map(s => getConn().sendRawTransaction(s.raw, { skipPreflight: true, maxRetries: 2 })));
+  const sent = [];
+  sends.forEach((r,i) => r.status === "fulfilled" ? sent.push({ ...signed[i], sig: r.value }) : log(`Send failed ${short(signed[i].k.publicKey.toBase58())}: ${r.reason?.message||r.reason}`));
+  log(`Sent ${sent.length}/${signed.length} failed txs at ${short(mint.toBase58())} in ${Math.round(performance.now()-t0)} ms.`);
+  setStatus(`Fired ${sent.length} txs. Waiting for slots…`, false);
+  await report(sent, createSig);
+}
+
+async function report(sent, createSig){
+  const sigs = sent.map(s => s.sig);
+  let statuses = [], createSlot = null;
+  for (let tries = 0; tries < 30; tries++){
+    await new Promise(r => setTimeout(r, 1000));
+    try{
+      statuses = (await getConn().getSignatureStatuses(sigs, { searchTransactionHistory: true })).value;
+      if (createSig && createSlot === null){
+        const c = (await getConn().getSignatureStatuses([createSig], { searchTransactionHistory: true })).value[0];
+        if (c) createSlot = c.slot;
+      }
+    }catch(e){ log("Status check failed: " + e.message); }
+    if (statuses.every(s => s) && (!createSig || createSlot !== null)) break;
+  }
+  const landed = statuses.map((s,i) => ({ s, w: sent[i] })).filter(x => x.s);
+  const slots = landed.map(x => x.s.slot);
+  $("resBody").innerHTML = sent.map((w,i) => {
+    const s = statuses[i];
+    if (!s) return `<tr><td>${short(w.k.publicKey.toBase58())}</td><td colspan="2" class="dim">not found</td><td><span class="pill warn">dropped</span></td><td><a href="https://solscan.io/tx/${w.sig}" target="_blank" rel="noopener">solscan</a></td></tr>`;
+    const delta = createSlot !== null ? (s.slot - createSlot >= 0 ? "+" : "") + (s.slot - createSlot) : "–";
+    const res = s.err ? `<span class="pill ok">failed ✓</span>` : `<span class="pill bad">succeeded</span>`;
+    return `<tr><td>${short(w.k.publicKey.toBase58())}</td><td>${s.slot}</td><td>${delta}</td><td>${res}</td><td><a href="https://solscan.io/tx/${w.sig}" target="_blank" rel="noopener">solscan</a></td></tr>`;
+  }).join("");
+  $("sLanded").textContent = `${landed.length}/${sent.length}`;
+  $("sSame").textContent = createSlot !== null ? slots.filter(s => s === createSlot).length : "–";
+  $("sSpread").textContent = slots.length ? Math.max(...slots) - Math.min(...slots) : "–";
+  $("sFees").textContent = sol(landed.length * feePerTx());
+  setStatus(`${landed.length ? "Mazel tov! " : ""}Done. ${landed.length}/${sent.length} landed${createSlot!==null?`, create in slot ${createSlot}`:""}.`, false);
+  log(`Report: ${landed.length} landed across ${new Set(slots).size} slot(s).`);
+  updateLaunch($("mint").value.trim(), { failed: `${landed.length}/${sent.length} landed, spread ${slots.length ? Math.max(...slots) - Math.min(...slots) : "–"}` });
+  refreshBalances();
+}
+
+$("fireNow").onclick = () => fire($("mint").value.trim(), $("createSig").value.trim() || null);
+
+function armLaunch(){
+  let dev;
+  try{ dev = new W.PublicKey($("dev").value.trim()).toBase58(); }catch{ log("Enter the dev wallet that will create the coin."); return Promise.resolve(false); }
+  if (armed) return Promise.resolve(true);
+  return (async () => {
+    await refreshBalances(); await refreshHash();
+    clearInterval(hashTimer); hashTimer = setInterval(refreshHash, 5000);
+    return new Promise(resolve => {
+      ws = new WebSocket("wss://pumpportal.fun/api/data");
+      ws.onopen = () => { ws.send(JSON.stringify({ method: "subscribeNewToken" })); armed = true;
+        $("arm").disabled = true; $("disarm").disabled = false;
+        setStatus(`Armed. Watching pump.fun for a new coin from ${short(dev)}.`, true); log("Armed on pump.fun new-token feed."); resolve(true); };
+      ws.onmessage = (ev) => {
+        let d; try{ d = JSON.parse(ev.data); }catch{ return; }
+        if (!armed || !d.mint || d.traderPublicKey !== dev) return;
+        armed = false; log(`New coin ${d.symbol||""} ${short(d.mint)} from dev. Firing.`);
+        $("mint").value = d.mint; $("createSig").value = d.signature || "";
+        disarm(true); recordLaunch(d); fire(d.mint, d.signature || null);
+        if ($("tpKey").value.trim()){ $("tpMint").value = d.mint; startTP(d.mint, d.marketCapSol || null); }
+      };
+      ws.onerror = () => { log("Couldn't reach the pump.fun feed. Use Fire now with the mint instead."); resolve(false); };
+      ws.onclose = () => { if (armed){ setStatus("Feed closed. Arm again.", false); armed = false; $("arm").disabled = false; $("disarm").disabled = true; } };
+    });
+  })();
+}
+$("arm").onclick = () => armLaunch();
+function disarm(keepStatus){
+  armed = false; clearInterval(hashTimer);
+  try{ ws && ws.close(); }catch{}
+  $("arm").disabled = false; $("disarm").disabled = true;
+  if (!keepStatus) setStatus("Idle. Fill in your coin and press Launch coin. Your dev wallet signs it for you.", false);
+}
+$("disarm").onclick = () => disarm(false);
+
+// ---- Take profit (one sell of the dev buy) ----
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function b58decode(s){
+  const bytes = [];
+  for (const c of s){
+    const v = B58.indexOf(c); if (v < 0) throw new Error("bad base58");
+    let carry = v;
+    for (let j = 0; j < bytes.length; j++){ carry += bytes[j] * 58; bytes[j] = carry & 255; carry >>= 8; }
+    while (carry){ bytes.push(carry & 255); carry >>= 8; }
+  }
+  for (const c of s){ if (c === "1") bytes.push(0); else break; }
+  return Uint8Array.from(bytes.reverse());
+}
+function parseKey(s){
+  s = s.trim();
+  const raw = s.startsWith("[") ? Uint8Array.from(JSON.parse(s)) : b58decode(s);
+  return W.Keypair.fromSecretKey(raw);
+}
+const tp = { ws: null, base: null, done: false, mint: null };
+const fmt = (n) => n == null ? "–" : Number(n).toFixed(2);
+function tpSet(text, live){
+  $("tpStatus").textContent = text; $("tpDot").classList.toggle("live", !!live);
+  const sold = /^Sold/.test(text), failed = /failed/i.test(text);
+  $("chipTp").textContent = sold ? "Mazel tov · sold" : live ? "Take profit on" : failed ? "Take profit failed" : "Take profit off";
+  $("chipTp").className = "chip" + (sold ? " gold" : live ? " ok" : failed ? " bad" : "");
+}
+
+function startTP(mint, baseMcap){
+  let kp;
+  try{ kp = parseKey($("tpKey").value); }catch{ tpSet("That private key couldn't be read. Paste the base58 key or the 64-number array."); return; }
+  try{ new W.PublicKey(mint); }catch{ tpSet("Enter a valid coin mint to watch."); return; }
+  const dev = $("dev").value.trim();
+  if (dev && dev !== kp.publicKey.toBase58()) log(`Heads up: the take-profit key is ${short(kp.publicKey.toBase58())}, not the watched dev wallet.`);
+  stopTP(true);
+  Object.assign(tp, { base: baseMcap, done: false, mint, kp });
+  const mult = Number($("tpMult").value) || 2;
+  $("tpBase").textContent = fmt(tp.base); $("tpTarget").textContent = tp.base ? fmt(tp.base * mult) : "–";
+  $("tpLive").textContent = "–"; $("tpResult").textContent = "–";
+  tp.ws = new WebSocket("wss://pumpportal.fun/api/data");
+  tp.ws.onopen = () => {
+    tp.ws.send(JSON.stringify({ method: "subscribeTokenTrade", keys: [mint] }));
+    $("tpStart").disabled = true; $("tpStop").disabled = false;
+    tpSet(`Watching ${short(mint)}. Sells ${$("tpPct").value}% at ${mult}× launch mcap.`, true);
+    log(`Take profit armed on ${short(mint)} at ${mult}×.`);
+  };
+  tp.ws.onmessage = (ev) => {
+    let d; try{ d = JSON.parse(ev.data); }catch{ return; }
+    if (d.mint !== mint || typeof d.marketCapSol !== "number") return;
+    if (!tp.base){ tp.base = d.marketCapSol; $("tpBase").textContent = fmt(tp.base); $("tpTarget").textContent = fmt(tp.base * mult); }
+    $("tpLive").textContent = fmt(d.marketCapSol);
+    if (!tp.done && d.marketCapSol >= tp.base * mult){ tp.done = true; sellTP(); }
+  };
+  tp.ws.onerror = () => tpSet("Couldn't reach the pump.fun price feed. Press Start again.", false);
+}
+
+async function sellTP(){
+  tpSet("Target hit. Selling…", true); $("tpResult").textContent = "selling";
+  const body = {
+    publicKey: tp.kp.publicKey.toBase58(), action: "sell", mint: tp.mint,
+    amount: `${Math.min(100, Math.max(1, Number($("tpPct").value) || 100))}%`, denominatedInSol: "false",
+    slippage: Number($("tpSlip").value) || 15, priorityFee: Number($("tpPrio").value) || 0.0005, pool: "auto"
+  };
+  for (let attempt = 1; attempt <= 3; attempt++){
+    try{
+      const res = await fetch("https://pumpportal.fun/api/trade-local", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (res.status !== 200) throw new Error(`PumpPortal returned ${res.status}: ${(await res.text()).slice(0,120)}`);
+      const tx = W.VersionedTransaction.deserialize(new Uint8Array(await res.arrayBuffer()));
+      tx.sign([tp.kp]);
+      const sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 });
+      log(`Sell sent (try ${attempt}): https://solscan.io/tx/${sig}`);
+      let st = null;
+      for (let i = 0; i < 30 && !st; i++){ await new Promise(r => setTimeout(r, 1000)); st = (await getConn().getSignatureStatuses([sig])).value[0]; }
+      if (st && !st.err){
+        $("tpResult").textContent = "sold ✓"; tpSet(`Sold ${body.amount} at ${$("tpLive").textContent} SOL mcap.`, false);
+        log("Mazel tov! Take profit filled."); updateLaunch(tp.mint, { tp: `sold ${body.amount} at ${$("tpLive").textContent} SOL mcap` }); stopTP(true); return;
+      }
+      throw new Error(st ? "sell failed on-chain (slippage?)" : "sell not confirmed");
+    }catch(e){ log(`Sell try ${attempt} failed: ${e.message}`); }
+  }
+  $("tpResult").textContent = "failed"; tpSet("Sell failed 3 times. Sell manually on pump.fun.", false); stopTP(true);
+}
+
+function stopTP(keepStatus){
+  try{ tp.ws && tp.ws.close(); }catch{}
+  tp.ws = null; $("tpStart").disabled = false; $("tpStop").disabled = true;
+  if (!keepStatus) tpSet("Stopped.", false);
+}
+$("tpStart").onclick = () => startTP($("tpMint").value.trim() || $("mint").value.trim(), null);
+$("tpStop").onclick = () => stopTP(false);
+
+// ---- Launch history + one-click revamp ----
+let launches = store.get("launches", []);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+function saveLaunches(){ store.set("launches", launches); renderLaunches(); }
+function updateLaunch(mint, patch){
+  const e = launches.find(l => l.mint === mint); if (!e) return;
+  Object.assign(e, patch); saveLaunches();
+}
+async function fillMeta(entry){
+  if (!entry.uri) return;
+  try{
+    const m = await (await fetch(entry.uri)).json();
+    updateLaunch(entry.mint, { image: m.image || entry.image, description: m.description || "", twitter: m.twitter || "", telegram: m.telegram || "", website: m.website || "" });
+  }catch{ log(`Couldn't read metadata for ${entry.symbol}. Revamp will still use the name and ticker.`); }
+}
+function recordLaunch(d){
+  if (launches.some(l => l.mint === d.mint)) return;
+  const entry = { mint: d.mint, name: d.name || "Unnamed", symbol: d.symbol || "?", uri: d.uri || "", devBuySol: d.solAmount || null, createdAt: Date.now() };
+  launches.unshift(entry); saveLaunches(); fillMeta(entry);
+}
+function renderLaunches(){
+  $("hList").innerHTML = launches.map((l, i) => `
+    <div class="launch">
+      ${l.image ? `<img src="${esc(l.image)}" alt="" width="48" height="48">` : `<div class="ph" role="img" aria-label="${esc(l.symbol)}">${FLAG_SVG}</div>`}
+      <div class="lmeta">
+        <b>${esc(l.name)} <span class="dim">$${esc(l.symbol)}</span></b>
+        <span class="dim">${new Date(l.createdAt).toLocaleString()} · <a href="https://pump.fun/coin/${esc(l.mint)}" target="_blank" rel="noopener">${short(l.mint)}</a>${l.devBuySol ? ` · dev buy ${Number(l.devBuySol).toFixed(3)} SOL` : ""}</span>
+        ${l.failed ? `<span class="dim">Failed txs: ${esc(l.failed)}</span>` : ""}
+        ${l.tp ? `<span class="dim">Take profit: ${esc(l.tp)}</span>` : ""}
+      </div>
+      <div class="lact"><button data-revamp="${i}" class="primary">Revamp</button><button data-remove="${i}">Remove</button></div>
+    </div>`).join("") || `<p class="note">No launches saved yet. Launches you fire while armed save here automatically, or add a past coin by its mint.</p>`;
+}
+$("hList").addEventListener("click", (e) => {
+  const r = e.target.closest("button"); if (!r) return;
+  if (r.dataset.remove !== undefined){ const l = launches[+r.dataset.remove]; ask(`Remove ${l.name} ($${l.symbol}) from history? The coin itself isn't touched.`, () => { launches.splice(+r.dataset.remove, 1); saveLaunches(); }); }
+  if (r.dataset.revamp !== undefined) revamp(launches[+r.dataset.revamp]);
+});
+
+$("hAdd").onclick = async () => {
+  const mint = $("hMint").value.trim();
+  try{ new W.PublicKey(mint); }catch{ log("Enter a valid coin mint to add."); return; }
+  if (launches.some(l => l.mint === mint)){ log("That coin is already saved."); return; }
+  try{
+    const c = await readOnchainMeta(mint);
+    const entry = { mint, name: c.name, symbol: c.symbol, uri: c.uri, devBuySol: null, createdAt: Date.now() };
+    launches.unshift(entry); saveLaunches(); fillMeta(entry);
+    $("hMint").value = ""; log(`Saved ${c.name} ($${c.symbol}).`);
+  }catch(e){ log(`Couldn't load that coin: ${e.message}. Check the mint and your RPC URL.`); }
+};
+
+// Reads name, ticker and metadata link straight from the coin's Metaplex metadata account.
+const MPL = new W.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+async function readOnchainMeta(mintStr){
+  const mint = new W.PublicKey(mintStr);
+  const [pda] = W.PublicKey.findProgramAddressSync([new TextEncoder().encode("metadata"), MPL.toBytes(), mint.toBytes()], MPL);
+  const info = await getConn().getAccountInfo(pda);
+  if (!info) throw new Error("no token metadata found for that mint");
+  const d = info.data, dv = new DataView(d.buffer, d.byteOffset, d.byteLength);
+  let o = 1 + 32 + 32;
+  const str = () => { const n = dv.getUint32(o, true); o += 4; const s = new TextDecoder().decode(d.slice(o, o + n)); o += n; return s.replace(/\0/g, "").trim(); };
+  return { name: str(), symbol: str(), uri: str() };
+}
+
+async function revamp(l){
+  let kp;
+  try{ kp = parseKey($("tpKey").value); }catch{ log("Select or create a dev wallet first. Revamps launch from it."); go("wallets"); return; }
+  const buy = Number($("hBuy").value) || 0;
+  ask(`Relaunch ${l.name} ($${l.symbol}) as a new coin from ${short(kp.publicKey.toBase58())} with a ${buy} SOL dev buy? IsraelPad arms first, so the failed txs and take profit run on the new coin.`, async () => {
+    try{
+      if (!l.uri) throw new Error("this coin has no saved metadata link. Remove it and add it again by mint");
+      log(`Revamping ${l.symbol} with its original image, description and links…`);
+      const meta = { metadataUri: l.uri };
+
+      $("dev").value = kp.publicKey.toBase58(); store.set("dev", $("dev").value);
+      if (!(await armLaunch())) log("Couldn't arm. The coin will still launch, but failed txs and take profit won't auto-run.");
+
+      const { mint, sig } = await createCoin(kp, { name: l.name, symbol: l.symbol, uri: meta.metadataUri, buy });
+      log(`Revamp sent: ${l.symbol} → ${short(mint)}. https://solscan.io/tx/${sig}`);
+    }catch(e){ log(`Revamp failed: ${e.message}`); disarm(false); }
+  });
+}
+renderLaunches();
+
+// ---- One-click launch: the selected dev wallet signs automatically (no wallet pop-ups) ----
+// Builds the create tx through PumpPortal, signs it here with the new mint key + dev key, and sends it.
+async function createCoin(kp, { name, symbol, uri, buy }){
+  const mintKp = W.Keypair.generate();
+  const res = await fetch("https://pumpportal.fun/api/trade-local", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ publicKey: kp.publicKey.toBase58(), action: "create", tokenMetadata: { name, symbol, uri },
+      mint: mintKp.publicKey.toBase58(), denominatedInSol: "true", amount: buy, slippage: 10, priorityFee: Number($("tpPrio").value) || 0.0005, pool: "pump" }) });
+  if (res.status !== 200) throw new Error(`PumpPortal returned ${res.status}: ${(await res.text()).slice(0,120)}`);
+  const tx = W.VersionedTransaction.deserialize(new Uint8Array(await res.arrayBuffer()));
+  tx.sign([mintKp, kp]);
+  const sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 });
+  return { mint: mintKp.publicKey.toBase58(), sig };
+}
+// pump.fun's metadata upload. Tries it directly, then through the IsraelPad relay if the browser blocks it.
+const RELAY = "https://israelpad-api-aislopv1-8230.vercel.app/api/ipfs";
+const fileToDataUrl = (f) => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error("couldn't read the image")); r.readAsDataURL(f); });
+async function uploadMeta(fd, fields){
+  try{
+    const r = await fetch("https://pump.fun/api/ipfs", { method: "POST", body: fd });
+    if (r.ok){ const j = await r.json(); if (j.metadataUri) return j.metadataUri; }
+    else log(`Direct upload returned ${r.status}. Trying the relay…`);
+  }catch{ log("Direct upload was blocked. Trying the relay…"); }
+  const r = await fetch(RELAY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...fields, image: await fileToDataUrl(ncFile) }) });
+  const j = await r.json().catch(() => ({}));
+  if (r.ok && j.metadataUri) return j.metadataUri;
+  throw new Error(j.error || `couldn't upload the image and metadata (relay ${r.status})`);
+}
+let ncFile = null;
+$("ncImg").onchange = () => {
+  const f = $("ncImg").files[0]; if (!f) return;
+  if (f.size > 4e6){ log("That image is over 4 MB. Pick a smaller one."); $("ncImg").value = ""; return; }
+  ncFile = f; $("ncPrev").src = URL.createObjectURL(f); $("ncPrev").hidden = false; $("ncImgTxt").hidden = true;
+};
+$("ncSym").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); });
+$("ncBuy").value = store.get("ncBuy", "0.1");
+$("ncBuy").addEventListener("input", () => store.set("ncBuy", $("ncBuy").value));
+function linkVals(){ const o = {}; Object.entries(LINKS).forEach(([id, l]) => { const v = $(id).value.trim(); if (v) o[id] = l.url(v); }); return o; }
+function ncLinksNote(){
+  const names = Object.keys(linkVals()).map(id => LINKS[id].label);
+  $("ncLinks").textContent = names.length ? `Adds your ${names.join(", ")} links from Setup to the coin.` : "Tip: add website, Telegram and X links in Setup and they're attached to every launch.";
+}
+ncLinksNote(); Object.keys(LINKS).forEach(id => $(id).addEventListener("input", ncLinksNote));
+
+$("newCoin").onsubmit = (e) => { e.preventDefault(); launchNew(); };
+function launchNew(){
+  let kp;
+  try{ kp = parseKey($("tpKey").value); }catch{ log("Unlock or create a dev wallet first. It signs the launch."); go("wallets"); return; }
+  const name = $("ncName").value.trim(), symbol = $("ncSym").value.trim(), description = $("ncDesc").value.trim();
+  const buy = Math.max(0, Number($("ncBuy").value) || 0);
+  if (!name){ log("Add a name for the coin."); $("ncName").focus(); return; }
+  if (!symbol){ log("Add a ticker for the coin."); $("ncSym").focus(); return; }
+  if (!ncFile){ log("Add an image for the coin."); $("ncImg").focus(); return; }
+  ask(`Launch ${name} ($${symbol}) from ${short(kp.publicKey.toBase58())} with a ${buy} SOL dev buy? Your dev wallet signs it automatically, then the failed txs and take profit run.`, async () => {
+    const btn = $("ncLaunch"); btn.disabled = true; btn.textContent = "Launching…";
+    try{
+      const links = linkVals(), fd = new FormData();
+      fd.append("file", ncFile); fd.append("name", name); fd.append("symbol", symbol); fd.append("description", description);
+      fd.append("twitter", links.x || ""); fd.append("telegram", links.tg || ""); fd.append("website", links.site || ""); fd.append("showName", "true");
+      log("Uploading image and metadata…");
+      const uri = await uploadMeta(fd, { name, symbol, description, twitter: links.x || "", telegram: links.tg || "", website: links.site || "" });
+      $("dev").value = kp.publicKey.toBase58(); store.set("dev", $("dev").value);
+      const armedOk = await armLaunch();
+      if (!armedOk) log("Couldn't arm on the feed. Firing directly once the coin confirms.");
+      const { mint, sig } = await createCoin(kp, { name, symbol, uri, buy });
+      log(`Mazel tov! ${symbol} sent: https://pump.fun/coin/${mint} · https://solscan.io/tx/${sig}`);
+      if (!armedOk){
+        try{ await getConn().confirmTransaction(sig, "confirmed"); }catch{}
+        recordLaunch({ mint, name, symbol, uri, solAmount: buy, signature: sig });
+        $("mint").value = mint; $("createSig").value = sig; fire(mint, sig);
+        if ($("tpKey").value.trim()){ $("tpMint").value = mint; startTP(mint, null); }
+      }
+    }catch(e){ log(`Launch failed: ${e.message}`); disarm(false); }
+    finally{ btn.disabled = false; btn.textContent = "Launch coin"; }
+  });
+}
+
+// ---- Wallet vault: multiple dev wallets, encrypted with a password ----
+const vault = { key: null, salt: null, wallets: [], active: -1, bal: {} };
+const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 200000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+async function saveVault(){
+  if (!vault.key) return;
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = new TextEncoder().encode(JSON.stringify({ active: vault.active, wallets: vault.wallets.map(w => ({ name: w.name, sk: Array.from(w.kp.secretKey) })) }));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, vault.key, data);
+  store.set("vault", { salt: vault.salt, iv: b64(iv), ct: b64(ct) });
+}
+async function unlockVault(){
+  const pass = $("wPass").value;
+  const saved = store.get("vault", null);
+  try{
+    if (!saved){
+      if (pass.length < 8){ log("Use a password with at least 8 characters."); return; }
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      vault.salt = b64(salt); vault.key = await deriveKey(pass, salt); vault.wallets = []; vault.active = -1;
+      await saveVault(); log("Wallet vault created. Create or import your first dev wallet.");
+    } else {
+      vault.salt = saved.salt;
+      const key = await deriveKey(pass, unb64(saved.salt));
+      const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(saved.iv) }, key, unb64(saved.ct));
+      const v = JSON.parse(new TextDecoder().decode(plain));
+      vault.key = key;
+      vault.wallets = v.wallets.map(w => ({ name: w.name, kp: W.Keypair.fromSecretKey(Uint8Array.from(w.sk)) }));
+      vault.active = Math.min(v.active, vault.wallets.length - 1);
+      log(`Unlocked ${vault.wallets.length} wallet${vault.wallets.length === 1 ? "" : "s"}.`);
+    }
+  }catch{ log("Wrong password. Try again."); return; }
+  $("wPass").value = "";
+  if (vault.active >= 0) selectWallet(vault.active, true); else renderWallets();
+  refreshWalletBalances();
+}
+function selectWallet(i, quiet){
+  const w = vault.wallets[i]; if (!w) return;
+  const changed = vault.active !== i;
+  vault.active = i;
+  $("dev").value = w.kp.publicKey.toBase58(); store.set("dev", $("dev").value);
+  $("tpKey").value = JSON.stringify(Array.from(w.kp.secretKey));
+  if (armed && changed){ disarm(false); log("Disarmed because the dev wallet changed. Arm again for the new wallet."); }
+  saveVault(); renderWallets();
+  if (!quiet) log(`Dev wallet: ${w.name} (${short(w.kp.publicKey.toBase58())}).`);
+}
+function addWallet(kp, name){
+  const addr = kp.publicKey.toBase58();
+  const at = vault.wallets.findIndex(w => w.kp.publicKey.toBase58() === addr);
+  if (at >= 0){ log("That wallet is already in your vault."); selectWallet(at); return; }
+  vault.wallets.push({ name: name || `Dev ${vault.wallets.length + 1}`, kp });
+  selectWallet(vault.wallets.length - 1); refreshWalletBalances();
+}
+async function refreshWalletBalances(){
+  if (!vault.wallets.length) return;
+  try{
+    const infos = await getConn().getMultipleAccountsInfo(vault.wallets.map(w => w.kp.publicKey));
+    infos.forEach((info, i) => vault.bal[vault.wallets[i].kp.publicKey.toBase58()] = info ? info.lamports : 0);
+    renderWallets();
+  }catch(e){ log("Wallet balance check failed: " + e.message); }
+}
+function renderWallets(){
+  const unlocked = !!vault.key, exists = !!store.get("vault", null);
+  $("wLocked").hidden = unlocked; $("wActions").hidden = !unlocked;
+  if (!unlocked) $("wImportBox").hidden = true;
+  $("wPassLabel").textContent = exists ? "Enter your password to unlock your dev wallets" : "Set a password (8+ characters) to store your wallets";
+  $("wUnlock").textContent = exists ? "Unlock" : "Create vault";
+  ["wCopy","wExport","wRemove"].forEach(id => $(id).disabled = vault.active < 0);
+  renderQuick(); updateChecklist();
+  if (!unlocked){ $("wTabs").innerHTML = `<span class="note">Wallets locked.</span>`; return; }
+  $("wTabs").innerHTML = vault.wallets.map((w, i) => {
+    const a = w.kp.publicKey.toBase58(), b = vault.bal[a];
+    return `<button class="wtab" role="tab" aria-selected="${i === vault.active}" data-w="${i}"><b>${esc(w.name)}</b><small>${short(a)} · ${b === undefined ? "–" : (b / 1e9).toFixed(3)} SOL</small></button>`;
+  }).join("") || `<span class="note">No wallets yet. Create or import one.</span>`;
+}
+$("wTabs").addEventListener("click", (e) => { const t = e.target.closest("[data-w]"); if (t) selectWallet(+t.dataset.w); });
+$("wUnlock").onclick = unlockVault;
+$("wPass").addEventListener("keydown", (e) => { if (e.key === "Enter") unlockVault(); });
+$("wNew").onclick = () => addWallet(W.Keypair.generate());
+$("wImportBtn").onclick = () => { $("wImportBox").hidden = !$("wImportBox").hidden; if (!$("wImportBox").hidden) $("wImportKey").focus(); };
+$("wImportSave").onclick = () => {
+  let kp; try{ kp = parseKey($("wImportKey").value); }catch{ log("That private key couldn't be read. Paste the base58 key or the 64-number array."); return; }
+  addWallet(kp, $("wImportName").value.trim());
+  $("wImportKey").value = ""; $("wImportName").value = ""; $("wImportBox").hidden = true;
+};
+$("wCopy").onclick = async () => { const w = vault.wallets[vault.active]; if (!w) return; log(await copy(w.kp.publicKey.toBase58()) ? `Copied ${w.name}'s address.` : "Copy was blocked by the browser."); };
+$("wExport").onclick = () => {
+  const w = vault.wallets[vault.active]; if (!w) return;
+  ask(`Copy ${w.name}'s private key? Anyone with it controls the wallet.`, async () => {
+    log(await copy(JSON.stringify(Array.from(w.kp.secretKey))) ? `Copied ${w.name}'s key.` : "Copy was blocked by the browser.");
+  });
+};
+$("wRemove").onclick = () => {
+  const w = vault.wallets[vault.active]; if (!w) return;
+  ask(`Remove ${w.name} (${short(w.kp.publicKey.toBase58())}) from the vault? Copy its key first if it holds SOL or coins.`, () => {
+    vault.wallets.splice(vault.active, 1);
+    if (vault.wallets.length){ selectWallet(0); }
+    else { vault.active = -1; $("dev").value = ""; $("tpKey").value = ""; saveVault(); renderWallets(); }
+    log(`Removed ${w.name}.`);
+  });
+};
+$("wLock").onclick = () => {
+  if (armed) disarm(false);
+  Object.assign(vault, { key: null, wallets: [], active: -1, bal: {} });
+  $("tpKey").value = ""; renderWallets(); log("Wallets locked.");
+};
+renderWallets();
+
+// ---- Navigation, quick wallet switch, checklist, activity drawer ----
+const TABS = ["launch","history","wallets","setup"];
+function go(tab, focusId){
+  if (!TABS.includes(tab)) tab = "launch";
+  document.querySelectorAll("[data-panel]").forEach(p => p.hidden = p.dataset.panel !== tab);
+  document.querySelectorAll("nav.tabs a").forEach(a => { if (a.dataset.tab === tab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  if (location.hash !== "#" + tab) history.replaceState(null, "", "#" + tab);
+  if (focusId){ const el = $(focusId); el.closest("details")?.setAttribute("open", ""); el.focus(); el.scrollIntoView({ block: "center" }); }
+  else window.scrollTo({ top: 0 });
+}
+document.querySelectorAll("nav.tabs a").forEach(a => a.addEventListener("click", e => { e.preventDefault(); go(a.dataset.tab); }));
+window.addEventListener("hashchange", () => go(location.hash.slice(1)));
+
+function renderQuick(){
+  const sel = $("wQuick");
+  if (!vault.key){ sel.innerHTML = `<option value="">Locked — tap to unlock</option>`; $("wQuickBal").textContent = ""; return; }
+  sel.innerHTML = vault.wallets.length ? vault.wallets.map((w, i) => `<option value="${i}"${i === vault.active ? " selected" : ""}>${esc(w.name)} · ${short(w.kp.publicKey.toBase58())}</option>`).join("")
+    : `<option value="">No wallets — tap to create</option>`;
+  const w = vault.wallets[vault.active], b = w && vault.bal[w.kp.publicKey.toBase58()];
+  $("wQuickBal").textContent = b === undefined ? "" : `${(b / 1e9).toFixed(3)} SOL`;
+}
+$("wQuick").addEventListener("change", () => { if ($("wQuick").value !== "") selectWallet(+$("wQuick").value); });
+$("wQuick").addEventListener("mousedown", () => { if (!vault.key || !vault.wallets.length) go("wallets", vault.key ? "wNew" : "wPass"); });
+$("wQuick").addEventListener("focus", () => { if (!vault.key) go("wallets", "wPass"); });
+
+function setCk(id, state, text, btn){
+  const li = $(id); li.querySelector(".mark").className = "mark " + state;
+  li.querySelector(".mark").textContent = state === "ok" ? "✓" : state === "warn" ? "!" : "×";
+  li.querySelector(".txt span").textContent = text;
+  const b = li.querySelector("button"); b.hidden = state === "ok" && id !== "ck-fund"; if (btn) b.textContent = btn;
+}
+function updateChecklist(){
+  const rpc = $("rpc").value.trim();
+  setCk("ck-rpc", rpc ? "ok" : "warn", rpc ? "Custom RPC set" : "Using the public RPC (often blocked)", rpc ? "Edit" : "Set");
+  const w = vault.key && vault.wallets[vault.active];
+  setCk("ck-vault", w ? "ok" : "bad", w ? `${w.name} selected` : vault.key ? "Create or import a wallet" : "Unlock or create your vault", w ? "Switch" : "Open");
+  const bal = w ? vault.bal[w.kp.publicKey.toBase58()] : undefined, need = (Number($("hBuy").value) || 0) + 0.03;
+  setCk("ck-fund", !w ? "bad" : bal === undefined ? "warn" : bal / 1e9 >= need ? "ok" : "warn",
+    !w ? "No wallet selected" : bal === undefined ? "Balance unknown" : `${(bal / 1e9).toFixed(3)} SOL (aim for ${need.toFixed(2)}+)`, "Copy address");
+  const n = Number($("count").value) || 20, ready = burners.filter(k => (balances[k.publicKey.toBase58()] || 0) >= minBal()).length;
+  const known = Object.keys(balances).length > 0;
+  setCk("ck-burn", !burners.length ? "bad" : !known ? "warn" : ready >= n ? "ok" : ready ? "warn" : "bad",
+    !burners.length ? "None yet" : !known ? `${burners.length} burners, balances unknown` : `${ready}/${n} funded`, burners.length ? "Fund" : "Generate");
+}
+document.querySelector(".checklist").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-fix]"); if (!b) return;
+  const f = b.dataset.fix;
+  if (f === "rpc") go("setup", "rpc");
+  if (f === "vault") go("wallets", vault.key ? "wNew" : "wPass");
+  if (f === "burn") go("wallets", burners.length ? "copyAddr" : "gen");
+  if (f === "fund"){
+    const w = vault.key && vault.wallets[vault.active];
+    if (!w){ go("wallets", vault.key ? "wNew" : "wPass"); return; }
+    log(await copy(w.kp.publicKey.toBase58()) ? `Copied ${w.name}'s address. Send SOL to it, then it updates here.` : "Copy was blocked by the browser.");
+    setTimeout(refreshWalletBalances, 15000);
+  }
+});
+["rpc","hBuy","count","prio"].forEach(id => $(id).addEventListener("input", updateChecklist));
+
+function openLog(open){
+  $("logDrawer").hidden = !open; $("logBtn").hidden = open; $("logBtn").setAttribute("aria-expanded", open);
+  if (open){ unread = 0; $("logBadge").hidden = true; $("log").scrollTop = 1e9; }
+}
+$("logBtn").onclick = () => openLog(true);
+$("logClose").onclick = () => openLog(false);
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!$("confirmBox").hidden){ closeAsk(); pending = null; } else if (!$("logDrawer").hidden) openLog(false);
+});
+
+go(location.hash.slice(1) || "launch");
+render();
+if (burners.length) refreshBalances();
+</script>
+</body>
+</html>

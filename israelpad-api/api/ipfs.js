@@ -22,16 +22,20 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
   try {
     const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const m = /^data:(image\/(png|jpeg|gif|webp));base64,(.+)$/.exec(String(b.image || ''));
-    if (!m) return res.status(400).json({ error: 'Add a PNG, JPG, GIF or WebP image.' });
-    const bytes = Buffer.from(m[3], 'base64');
-    if (bytes.length > 3.5e6) return res.status(400).json({ error: 'That image is over 3.5 MB. Use a smaller one.' });
     const s = (v, n) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
     const name = s(b.name, 32), symbol = s(b.symbol, 10).toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (!name || !symbol) return res.status(400).json({ error: 'Add a name and ticker.' });
     const slug = `${symbol.toLowerCase()}-${Date.now().toString(36)}`;
-    const ext = m[2] === 'jpeg' ? 'jpg' : m[2];
-    const image = await putFile(`media/${slug}.${ext}`, bytes, m[1]);
+    let image;
+    if (b.image) {
+      const m = /^data:(image\/(png|jpeg|gif|webp));base64,(.+)$/.exec(String(b.image));
+      if (!m) return res.status(400).json({ error: 'Add a PNG, JPG, GIF or WebP image.' });
+      const bytes = Buffer.from(m[3], 'base64');
+      if (bytes.length > 3.5e6) return res.status(400).json({ error: 'That image is over 3.5 MB. Use a smaller one.' });
+      image = await putFile(`media/${slug}.${m[2] === 'jpeg' ? 'jpg' : m[2]}`, bytes, m[1]);
+    } else if (/^(https:\/\/|ipfs:\/\/)\S{8,500}$/.test(String(b.imageUrl || ''))) {
+      image = String(b.imageUrl); // revamp: keep the original coin's image
+    } else return res.status(400).json({ error: 'Add a PNG, JPG, GIF or WebP image.' });
     const meta = { name, symbol, description: s(b.description, 500), image, showName: true, createdOn: 'https://orch.lol/israelpad',
       twitter: s(b.twitter, 200), telegram: s(b.telegram, 200), website: s(b.website, 200) };
     const metadataUri = await putFile(`meta/${slug}.json`, JSON.stringify(meta), 'application/json');

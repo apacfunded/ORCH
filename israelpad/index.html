@@ -393,7 +393,7 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
       <button id="hAdd" style="align-self:flex-end">Add coin</button>
     </div>
     <div id="hList" class="hlist"></div>
-    <p class="note">Revamp relaunches a coin with the same name, ticker, image, description and links from the selected dev wallet.</p>
+    <p class="note">Revamp relaunches a coin with the same name, ticker, image and description from the selected dev wallet. It uses the X / Website / Telegram you paste on the Launch tab, or the original coin&#39;s links if those boxes are empty.</p>
   </section>
 </div>
 
@@ -872,7 +872,7 @@ async function sellTP(){
       if (res.status !== 200) throw new Error(`PumpPortal returned ${res.status}: ${(await res.text()).slice(0,120)}`);
       const tx = W.VersionedTransaction.deserialize(new Uint8Array(await res.arrayBuffer()));
       tx.sign([tp.kp]);
-      const sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 });
+      let sig; try{ sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 }); }catch(e){ throw new Error(sendErrorText(e)); }
       log(`Sell sent (try ${attempt}): https://solscan.io/tx/${sig}`);
       let st = null;
       for (let i = 0; i < 30 && !st; i++){ await new Promise(r => setTimeout(r, 1000)); st = (await getConn().getSignatureStatuses([sig])).value[0]; }
@@ -961,18 +961,35 @@ async function readOnchainMeta(mintStr){
 async function revamp(l){
   let kp;
   try{ kp = parseKey($("tpKey").value); }catch{ log("Select or create a dev wallet first. Revamps launch from it."); go("wallets"); return; }
+  if (!l.uri) { log(`${l.symbol} has no saved metadata link. Remove it and add it again by mint.`, "problem"); return; }
   const buy = Number($("hBuy").value) || 0;
-  ask(`Relaunch ${l.name} ($${l.symbol}) as a new coin from ${short(kp.publicKey.toBase58())} with a ${buy} SOL dev buy? IsraelPad arms first, so the failed txs and take profit run on the new coin.`, async () => {
+  if (!(await checkLaunchFunds(kp, buy))){ openLog(true); return; }
+  // Read the original coin's details so the revamp keeps its image and description.
+  let orig = {};
+  try{ orig = await (await fetch(l.uri)).json(); }catch{ log(`Couldn't read ${l.symbol}'s original details. Using what was saved in History.`, "problem"); }
+  const BOX = { ncX: "x", ncTg: "tg", ncSite: "site" };
+  const pick = (box, key) => $(box).value.trim() ? LINKS[BOX[box]].url($(box).value.trim()) : (orig[key] || l[key] || "");
+  const links = { twitter: pick("ncX", "twitter"), website: pick("ncSite", "website"), telegram: pick("ncTg", "telegram") };
+  const image = orig.image || l.image || "";
+  const shown = [links.twitter && "X " + links.twitter, links.website && "website " + links.website, links.telegram && "Telegram " + links.telegram].filter(Boolean).join(", ") || "none (paste X / website on the Launch tab to add them)";
+  ask(`Relaunch ${l.name} ($${l.symbol}) as a new coin from ${short(kp.publicKey.toBase58())} with a ${buy} SOL dev buy? Links: ${shown}. Failed txs and take profit run on the new coin.`, async () => {
     try{
-      if (!l.uri) throw new Error("this coin has no saved metadata link. Remove it and add it again by mint");
-      log(`Revamping ${l.symbol} with its original image, description and links…`);
-      const meta = { metadataUri: l.uri };
+      let uri = l.uri;
+      if (image){
+        log(`Revamping ${l.symbol}: saving its image, description and links…`);
+        const r = await fetch(RELAY, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: l.name, symbol: l.symbol, description: orig.description || l.description || "", imageUrl: image, ...links }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.metadataUri){ uri = j.metadataUri; log(`Revamp details saved. Links: ${shown}.`); }
+        else log(`Couldn't save new details (${j.error || r.status}). Using the original coin's details and links.`, "problem");
+      } else log(`${l.symbol} has no image on record, so the revamp reuses its original details and links.`, "problem");
 
       $("dev").value = kp.publicKey.toBase58(); store.set("dev", $("dev").value);
       if (!(await armLaunch())) log("Couldn't arm. The coin will still launch, but failed txs and take profit won't auto-run.");
 
-      const { mint, sig } = await createCoin(kp, { name: l.name, symbol: l.symbol, uri: meta.metadataUri, buy });
+      const { mint, sig } = await createCoin(kp, { name: l.name, symbol: l.symbol, uri, buy });
       log(`Revamp sent: ${l.symbol} → ${short(mint)}. https://solscan.io/tx/${sig}`);
+      Object.values(NC_LINK).forEach(b => $(b).value = ""); ncLinksNote();
     }catch(e){ log(`Revamp failed: ${e.message}`, "error"); disarm(false); }
   });
 }
@@ -980,7 +997,26 @@ renderLaunches();
 
 // ---- One-click launch: the selected dev wallet signs automatically (no wallet pop-ups) ----
 // Builds the create tx through PumpPortal, signs it here with the new mint key + dev key, and sends it.
+// A create needs the dev buy plus ~0.025 SOL for the coin's accounts and fees. Check before spending anything.
+const LAUNCH_OVERHEAD = 0.03;
+async function checkLaunchFunds(kp, buy){
+  let bal;
+  try{ bal = (await getConn().getBalance(kp.publicKey)) / 1e9; }catch(e){ log(`Couldn't read the dev wallet balance (${e.message}). Check your RPC in Setup.`, "problem"); return false; }
+  const need = buy + LAUNCH_OVERHEAD;
+  if (bal < need){
+    log(`Not enough SOL: ${short(kp.publicKey.toBase58())} has ${bal.toFixed(4)} SOL but a ${buy} SOL dev buy needs about ${need.toFixed(3)} SOL (dev buy + ~${LAUNCH_OVERHEAD} for creating the coin and fees). Add ${(need - bal).toFixed(4)} SOL or lower the dev buy.`, "problem");
+    return false;
+  }
+  return true;
+}
+// Pulls the program logs out of a failed send so they land in the Activity log.
+function sendErrorText(e){
+  const logs = e && (e.logs || e.transactionLogs);
+  const tail = Array.isArray(logs) && logs.length ? " | Logs: " + logs.slice(-8).join(" | ") : "";
+  return String(e && e.message || e).split("\n")[0].slice(0, 300) + tail;
+}
 async function createCoin(kp, { name, symbol, uri, buy }){
+  if (!(await checkLaunchFunds(kp, buy))) throw new Error("dev wallet doesn't have enough SOL (details above)");
   const mintKp = W.Keypair.generate();
   const res = await fetch("https://pumpportal.fun/api/trade-local", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ publicKey: kp.publicKey.toBase58(), action: "create", tokenMetadata: { name, symbol, uri },
@@ -988,7 +1024,9 @@ async function createCoin(kp, { name, symbol, uri, buy }){
   if (res.status !== 200) throw new Error(`PumpPortal returned ${res.status}: ${(await res.text()).slice(0,120)}`);
   const tx = W.VersionedTransaction.deserialize(new Uint8Array(await res.arrayBuffer()));
   tx.sign([mintKp, kp]);
-  const sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 });
+  let sig;
+  try{ sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 }); }
+  catch(e){ throw new Error("create rejected: " + sendErrorText(e)); }
   return { mint: mintKp.publicKey.toBase58(), sig };
 }
 // Coin image + metadata upload (hosted by israelpad-api on Vercel Blob).
@@ -1044,7 +1082,7 @@ document.querySelectorAll(".pastebtn").forEach(b => b.onclick = async () => {
 ncLinksNote();
 
 $("newCoin").onsubmit = (e) => { e.preventDefault(); launchNew(); };
-function launchNew(){
+async function launchNew(){
   let kp;
   try{ kp = parseKey($("tpKey").value); }catch{ log("Unlock or create a dev wallet first. It signs the launch."); go("wallets"); return; }
   const name = $("ncName").value.trim(), symbol = $("ncSym").value.trim(), description = $("ncDesc").value.trim();
@@ -1052,6 +1090,7 @@ function launchNew(){
   if (!name){ log("Add a name for the coin."); $("ncName").focus(); return; }
   if (!symbol){ log("Add a ticker for the coin."); $("ncSym").focus(); return; }
   if (!ncFile){ log("Add an image for the coin."); $("ncImg").focus(); return; }
+  if (!(await checkLaunchFunds(kp, buy))){ openLog(true); return; }
   ask(`Launch ${name} ($${symbol}) from ${short(kp.publicKey.toBase58())} with a ${buy} SOL dev buy? Your dev wallet signs it automatically, then the failed txs and take profit run.`, async () => {
     const btn = $("ncLaunch"); btn.disabled = true; btn.textContent = "Launching…";
     try{

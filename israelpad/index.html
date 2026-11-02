@@ -231,7 +231,10 @@ pre#log{margin:0;background:var(--sunk);border:1px solid var(--line);border-radi
 .ncgo button.big{flex:1 1 240px;font-size:17px}
 .newcoin .note{grid-column:1/-1}
 .nclinks{grid-column:1/-1}
-.nclinks>label{flex:1 1 180px}
+.nclinks>.pastefield{flex:1 1 200px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.pf-row{display:flex;gap:6px}
+.pf-row input{flex:1;min-width:0}
+.pastebtn{min-height:44px;padding:0 12px;flex:none}
 section.hero textarea{background:rgba(255,255,255,.95);border-color:transparent;resize:vertical;font-family:var(--body)}
 @media (max-width:560px){.newcoin{grid-template-columns:96px minmax(0,1fr)}.imgpick{width:96px;height:96px}.ncfields .row>label{flex-basis:100%}}
 footer.site{margin-top:28px;text-align:center;color:var(--dim);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -294,9 +297,9 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
         <label for="ncDesc">Description<textarea id="ncDesc" rows="2" maxlength="500" placeholder="What's the coin about?"></textarea></label>
       </div>
       <div class="row nclinks">
-        <label for="ncX">X / Twitter<input id="ncX" placeholder="@handle or x.com/… post link" autocomplete="off"></label>
-        <label for="ncTg">Telegram<input id="ncTg" placeholder="@group or t.me/…" autocomplete="off"></label>
-        <label for="ncSite">Website<input id="ncSite" placeholder="yoursite.com" autocomplete="off"></label>
+        <div class="pastefield"><label for="ncX">X / Twitter</label><div class="pf-row"><input id="ncX" placeholder="Paste X link" autocomplete="off" inputmode="url"><button type="button" class="pastebtn" data-paste="ncX">Paste</button></div></div>
+        <div class="pastefield"><label for="ncSite">Website</label><div class="pf-row"><input id="ncSite" placeholder="Paste website" autocomplete="off" inputmode="url"><button type="button" class="pastebtn" data-paste="ncSite">Paste</button></div></div>
+        <div class="pastefield"><label for="ncTg">Telegram</label><div class="pf-row"><input id="ncTg" placeholder="Paste Telegram (optional)" autocomplete="off" inputmode="url"><button type="button" class="pastebtn" data-paste="ncTg">Paste</button></div></div>
       </div>
       <div class="ncgo">
         <label for="ncBuy">Dev buy (SOL)<input id="ncBuy" type="number" min="0" step="0.01" value="0.1"></label>
@@ -1018,10 +1021,22 @@ function ncLinksNote(){
   const names = Object.keys(linkVals()).map(id => LINKS[id].label);
   $("ncLinks").textContent = names.length ? `The coin's page on pump.fun will link to: ${names.join(", ")}.` : "Add an X, Telegram or website link and it shows on the coin's pump.fun page.";
 }
-Object.entries(NC_LINK).forEach(([id, box]) => {
-  $(box).value = $(id).value;
-  $(box).addEventListener("input", () => { $(box).dataset.edited = "1"; ncLinksNote(); });
-  $(id).addEventListener("input", () => { if (!$(box).dataset.edited){ $(box).value = $(id).value; ncLinksNote(); } });
+// Boxes start empty for each launch. A pasted link goes to the box it belongs in.
+function linkKind(v){ return /(^|\/\/|\.)(x|twitter)\.com\//i.test(v) ? "ncX" : /(^|\/\/)t\.me\//i.test(v) ? "ncTg" : /^@/.test(v) ? null : "ncSite"; }
+function placeLink(box, v){
+  v = String(v || "").trim(); if (!v) return;
+  const to = linkKind(v) || box;
+  $(to).value = v;
+  if (to !== box && $(box).value.trim() === v) $(box).value = "";
+  ncLinksNote();
+}
+Object.values(NC_LINK).forEach(box => {
+  $(box).addEventListener("input", ncLinksNote);
+  $(box).addEventListener("paste", e => { const v = (e.clipboardData || window.clipboardData)?.getData("text"); if (v){ e.preventDefault(); placeLink(box, v); } });
+});
+document.querySelectorAll(".pastebtn").forEach(b => b.onclick = async () => {
+  try{ placeLink(b.dataset.paste, await navigator.clipboard.readText()); }
+  catch{ $(b.dataset.paste).focus(); log("Your browser blocked the Paste button. Tap the box and paste instead."); }
 });
 ncLinksNote();
 
@@ -1047,6 +1062,7 @@ function launchNew(){
       if (!armedOk) log("Couldn't arm on the feed. Firing directly once the coin confirms.");
       const { mint, sig } = await createCoin(kp, { name, symbol, uri, buy });
       log(`Mazel tov! ${symbol} sent: https://pump.fun/coin/${mint} · https://solscan.io/tx/${sig}`);
+      Object.values(NC_LINK).forEach(b => $(b).value = ""); ncLinksNote();
       if (!armedOk){
         try{ await getConn().confirmTransaction(sig, "confirmed"); }catch{}
         recordLaunch({ mint, name, symbol, uri, solAmount: buy, signature: sig });

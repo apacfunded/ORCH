@@ -1061,6 +1061,47 @@ details p,details div{color:var(--muted)!important}
 .repCta .btn{justify-self:start;margin-top:6px}
 .inlineLaunch{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--pencil);text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
 
+/* ===== explainer: what launching from Xray does ===== */
+.pumpOnly{display:none}
+.pump .pumpOnly{display:block}
+.explain{margin:24px 0 8px;max-width:1080px}
+.explain h2{font-size:clamp(34px,4vw,52px);line-height:.95;max-width:16ch}
+.exLede{font-size:18px;line-height:1.5;color:var(--muted);max-width:58ch;margin:14px 0 28px}
+/* comparison: the Xray column is the film */
+.cmp{display:grid;border-top:2px solid var(--ink)}
+.cmpRow{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,1fr) minmax(0,1.3fr);align-items:stretch}
+.cmpRow>span{padding:14px 16px;border-bottom:1px solid var(--rule);font-size:15px;line-height:1.45}
+.cmpRow>span:first-child{font-weight:700;color:var(--ink);padding-left:0}
+.cmpRow>span:nth-child(2){color:var(--muted)}
+.cmpRow>span:nth-child(3){background:var(--film);color:#b9cbd0;border-bottom-color:rgba(232,241,238,.1)}
+.cmpRow>span:nth-child(3) b{color:var(--bone)}
+.cmpRow .no{color:#8a5a55!important}
+.cmpHead>span{font-weight:700;font-size:14px;padding-top:12px;padding-bottom:12px}
+.cmpHead>span:nth-child(2){color:var(--ink)}
+.cmpHead>span:nth-child(3){color:var(--bone)!important;font-family:"Archivo",sans-serif;font-stretch:75%;font-weight:800;font-size:18px}
+.cmp .cmpRow:last-child>span:nth-child(3){clip-path:none}
+.cmpRow:nth-child(4)>span:nth-child(3) b{box-shadow:inset 0 -2px 0 var(--clean)}
+/* steps: a real sequence */
+.exSub{font-size:26px;margin:48px 0 18px}
+.exSteps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;counter-reset:st;border-top:1px solid var(--rule)}
+.exSteps li{counter-increment:st;padding:18px 18px 4px 0;display:grid;gap:6px;align-content:start}
+.exSteps li+li{padding-left:18px;border-left:1px solid var(--rule)}
+.exSteps li::before{content:counter(st);font-family:"Archivo",sans-serif;font-stretch:65%;font-weight:800;font-size:44px;line-height:.9;color:var(--pencil)}
+.exSteps b{font-size:16px}
+.exSteps span{font-size:14px;line-height:1.5;color:var(--muted)}
+.exEnd{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:36px 0 12px}
+.exEnd span{color:var(--muted);font-size:14px}
+@media (max-width:980px){.exSteps{grid-template-columns:1fr 1fr}.exSteps li+li{border-left:0;padding-left:0}.exSteps li:nth-child(even){padding-left:18px;border-left:1px solid var(--rule)}}
+@media (max-width:640px){
+  .cmpHead{display:none}
+  .cmpRow{grid-template-columns:1fr;border-bottom:1px solid var(--rule);padding:10px 0}
+  .cmpRow>span{border:0;padding:4px 0}
+  .cmpRow>span:nth-child(2)::before{content:"pump.fun directly: ";font-weight:600;color:var(--ink)}
+  .cmpRow>span:nth-child(3){padding:10px 12px;margin-top:4px}
+  .cmpRow>span:nth-child(3)::before{content:"From Xray: ";font-weight:700;color:var(--bone)}
+  .exSteps{grid-template-columns:1fr}.exSteps li:nth-child(even){padding-left:0;border-left:0}.exSteps li{border-bottom:1px solid var(--rule);padding:14px 0}
+}
+
 </style>
 </head>
 <body>
@@ -1142,6 +1183,30 @@ details p,details div{color:var(--muted)!important}
       </figure>
       <div class="card gate" id="gate" aria-live="off"></div>
     </div>
+    <section class="explain pumpOnly" aria-labelledby="exH">
+      <h2 id="exH">What launching from Xray does</h2>
+      <p class="exLede">Your coin is a normal pump.fun coin. It trades on pump.fun and you keep the creator fees. Launching it from Xray adds one thing pump.fun doesn't have: a public scan of who bought it, running from the first block.</p>
+      <div class="cmp" role="table" aria-label="Launching on pump.fun directly compared with launching from Xray">
+        <div class="cmpRow cmpHead" role="row"><span role="columnheader"></span><span role="columnheader">pump.fun directly</span><span role="columnheader">From Xray</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Where it trades</span><span role="cell">pump.fun</span><span role="cell">pump.fun, same coin</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Creator fees</span><span role="cell">Yours</span><span role="cell">Yours. Xray takes nothing</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Bundle scan</span><span role="cell" class="no">None</span><span role="cell"><b>Live from the first block</b>, on your coin's Xray page</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Dev buy</span><span role="cell">Any size</span><span role="cell"><b>Capped at 0.5 SOL</b>, so buyers know you didn't take the supply</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Proof for buyers</span><span role="cell" class="no">Screenshots and promises</span><span role="cell"><b>One link</b> anyone can open: who bought at launch, who funded them, what they still hold</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Where buyers find it</span><span role="cell">pump.fun's feed</span><span role="cell">pump.fun's feed, plus the Xray coin list with its scan</span></div>
+        <div class="cmpRow" role="row"><span role="rowheader">Cost</span><span role="cell">About 0.02 SOL in pump.fun fees</span><span role="cell">The same. Xray adds no fee</span></div>
+      </div>
+      <h3 class="exSub">What happens when you launch</h3>
+      <ol class="exSteps">
+        <li><b>Fill in the coin.</b><span>Name, ticker, image, an optional X link and an optional dev buy.</span></li>
+        <li><b>Sign in your wallet.</b><span>Your wallet creates the coin and pays for it. Xray never holds your SOL or your keys.</span></li>
+        <li><b>It goes live on pump.fun.</b><span>Same coin, same chart, same graduation. Anyone can trade it there right away.</span></li>
+        <li><b>The scan starts.</b><span>Xray reads every early buyer, traces who funded them, and keeps the scan current as people trade.</span></li>
+        <li><b>Share the scan.</b><span>Post your coin's Xray link with the CA. A clean scan is the proof, and a bundled one is easy to spot.</span></li>
+      </ol>
+      <div class="exEnd"><a class="btn sig lg" href="#launch">Launch a coin</a><span>Takes about a minute.</span></div>
+    </section>
+
     <div class="statbar" role="group" aria-label="Live totals">
       <div><small>Taxes to liquidity</small><b id="hTax">—</b></div>
       <div><small>Bundled buys blocked</small><b id="hBlocked">—</b></div>
@@ -2823,7 +2888,7 @@ function pumpStart() {
 
   }
   const lp = document.querySelector("#v-launch .sec-head p");
-  if (lp) lp.textContent = "Your coin launches on pump.fun from your own wallet, and its Xray page shows a live bundle check. Dev buys are capped at 0.5 SOL.";
+  if (lp) lp.innerHTML = "Your coin launches on pump.fun from your own wallet, and you keep the creator fees. Xray adds a public bundle scan from the first block and lists it here. Dev buys are capped at 0.5 SOL. <a class=\"inlineLaunch\" href=\"#explore\">What launching from Xray does</a>";
   const note = `<div class="card pumpNote"><b>Right now coins launch on pump.fun.</b> Xray checks every coin for bundles. The on-chain launch rules on this page (random open slot, sniper tax, wallet caps, early-sell tax) switch on when the Xray program goes live.</div>`;
   for (const id of ["v-rules", "v-how"]) { const s = $id(id); if (s && !s.querySelector(".pumpNote")) s.querySelector(".sec-head").insertAdjacentHTML("afterend", note); }
   $id("rulesIntro").textContent = "These are the rules every coin gets once the Xray program is live. They're written into the program and can't be changed after a coin launches.";

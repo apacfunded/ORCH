@@ -3,7 +3,7 @@ import { fees } from "../config/fees.js";
 import { elements } from "../config/elements.js";
 import { heroFeed as heroCfg } from "../config/hero.js";
 import { market } from "../data/index.js";
-import { heroSource } from "../data/heroFeed.js";
+import { heroSource, tokenSnapshot } from "../data/heroFeed.js";
 import { certCard, emptyNote } from "../components/Certificate.js";
 import { periodicTable, tableLegend } from "../components/Element.js";
 import { UI } from "../components/Icons.js";
@@ -176,33 +176,30 @@ function readout() {
     if (isCoin) {
         const mint = heroCfg.coinMint;
         const poll = async (first) => {
-            const r = await getJson(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-            const pairs = (r?.pairs ?? []).filter((p) => p.chainId === "solana" && p.baseToken?.address === mint);
-            const p = pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
-            if (p) {
-                const price = Number(p.priceUsd);
-                const mc = p.marketCap ?? p.fdv ?? price * 1e9;
-                k = price ? mc / price : 1e9;
-                name.textContent = `$${p.baseToken.symbol}`;
-                if (p.info?.imageUrl && img.style.display === "none") {
-                    img.src = p.info.imageUrl;
+            const t = await tokenSnapshot(mint);
+            if (t) {
+                k = t.price ? t.mc / t.price : 1e9;
+                if (t.symbol)
+                    name.textContent = `$${t.symbol.toUpperCase()}`;
+                if (t.image && img.style.display === "none") {
+                    img.src = t.image;
                     img.style.display = "";
                 }
-                if (first) {
-                    const o = await getJson(`${GT}/${p.pairAddress}/ohlcv/minute?aggregate=15&limit=96&currency=usd`);
+                if (first && t.pair) {
+                    const o = await getJson(`${GT}/${t.pair}/ohlcv/minute?aggregate=15&limit=96&currency=usd`);
                     const rows = (o?.data?.attributes?.ohlcv_list ?? []).slice().sort((a, b) => a[0] - b[0]);
                     pts = rows.map((row) => row[4] * k).filter((v) => isFinite(v) && v > 0);
                 }
-                pts.push(mc);
+                pts.push(t.mc);
                 if (pts.length > 160)
                     pts.shift();
-                show(mc, p.priceChange?.h24 ?? null, price);
+                show(t.mc, t.change, t.price);
             }
             else if (first) {
                 draw();
             }
             if (document.contains(el) || first)
-                timer = window.setTimeout(() => void poll(false), 10000);
+                timer = window.setTimeout(() => void poll(false), 15000);
         };
         void poll(true);
     }

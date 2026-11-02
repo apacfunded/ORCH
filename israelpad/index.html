@@ -230,6 +230,8 @@ pre#log{margin:0;background:var(--sunk);border:1px solid var(--line);border-radi
 .ncgo label{flex:0 1 160px}
 .ncgo button.big{flex:1 1 240px;font-size:17px}
 .newcoin .note{grid-column:1/-1}
+.nclinks{grid-column:1/-1}
+.nclinks>label{flex:1 1 180px}
 section.hero textarea{background:rgba(255,255,255,.95);border-color:transparent;resize:vertical;font-family:var(--body)}
 @media (max-width:560px){.newcoin{grid-template-columns:96px minmax(0,1fr)}.imgpick{width:96px;height:96px}.ncfields .row>label{flex-basis:100%}}
 footer.site{margin-top:28px;text-align:center;color:var(--dim);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -290,6 +292,11 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
           <label for="ncSym">Ticker<input id="ncSym" maxlength="10" placeholder="SHABBAT" autocapitalize="characters"></label>
         </div>
         <label for="ncDesc">Description<textarea id="ncDesc" rows="2" maxlength="500" placeholder="What's the coin about?"></textarea></label>
+      </div>
+      <div class="row nclinks">
+        <label for="ncX">X / Twitter<input id="ncX" placeholder="@handle or x.com/… post link" autocomplete="off"></label>
+        <label for="ncTg">Telegram<input id="ncTg" placeholder="@group or t.me/…" autocomplete="off"></label>
+        <label for="ncSite">Website<input id="ncSite" placeholder="yoursite.com" autocomplete="off"></label>
       </div>
       <div class="ncgo">
         <label for="ncBuy">Dev buy (SOL)<input id="ncBuy" type="number" min="0" step="0.01" value="0.1"></label>
@@ -1004,12 +1011,19 @@ $("ncImg").onchange = () => {
 $("ncSym").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); });
 $("ncBuy").value = store.get("ncBuy", "0.1");
 $("ncBuy").addEventListener("input", () => store.set("ncBuy", $("ncBuy").value));
-function linkVals(){ const o = {}; Object.entries(LINKS).forEach(([id, l]) => { const v = $(id).value.trim(); if (v) o[id] = l.url(v); }); return o; }
+// Launch-form link boxes: start from the Setup links, editable per coin.
+const NC_LINK = { x: "ncX", tg: "ncTg", site: "ncSite" };
+function linkVals(){ const o = {}; Object.entries(NC_LINK).forEach(([id, box]) => { const v = $(box).value.trim(); if (v) o[id] = LINKS[id].url(v); }); return o; }
 function ncLinksNote(){
   const names = Object.keys(linkVals()).map(id => LINKS[id].label);
-  $("ncLinks").textContent = names.length ? `Adds your ${names.join(", ")} links from Setup to the coin.` : "Tip: add website, Telegram and X links in Setup and they're attached to every launch.";
+  $("ncLinks").textContent = names.length ? `The coin's page on pump.fun will link to: ${names.join(", ")}.` : "Add an X, Telegram or website link and it shows on the coin's pump.fun page.";
 }
-ncLinksNote(); Object.keys(LINKS).forEach(id => $(id).addEventListener("input", ncLinksNote));
+Object.entries(NC_LINK).forEach(([id, box]) => {
+  $(box).value = $(id).value;
+  $(box).addEventListener("input", () => { $(box).dataset.edited = "1"; ncLinksNote(); });
+  $(id).addEventListener("input", () => { if (!$(box).dataset.edited){ $(box).value = $(id).value; ncLinksNote(); } });
+});
+ncLinksNote();
 
 $("newCoin").onsubmit = (e) => { e.preventDefault(); launchNew(); };
 function launchNew(){

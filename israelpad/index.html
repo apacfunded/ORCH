@@ -529,6 +529,18 @@ const FLAG_SVG = '<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
 const W = solanaWeb3;
 const RENT = 890880, BASE_FEE = 5000, CU_LIMIT = 1000;
 const $ = (id) => document.getElementById(id);
+// Raw instruction builders. web3.js's browser build crashes ("Buffer is not defined") when its own
+// SystemProgram.transfer / ComputeBudgetProgram helpers encode amounts, so we encode the bytes ourselves.
+const SYS_ID = new W.PublicKey("11111111111111111111111111111111");
+const CB_ID = new W.PublicKey("ComputeBudget111111111111111111111111111111");
+function leBytes(n, size){ const b = new Uint8Array(size); let v = BigInt(Math.floor(Number(n))); for (let i = 0; i < size; i++){ b[i] = Number(v & 0xffn); v >>= 8n; } return b; }
+function cat(...parts){ const out = new Uint8Array(parts.reduce((a, p) => a + p.length, 0)); let o = 0; parts.forEach(p => { out.set(p, o); o += p.length; }); return out; }
+function ixTransfer(from, to, lamports, extraKeys = []){
+  return new W.TransactionInstruction({ programId: SYS_ID, data: cat(leBytes(2, 4), leBytes(lamports, 8)),
+    keys: [{ pubkey: from, isSigner: true, isWritable: true }, { pubkey: to, isSigner: false, isWritable: true }, ...extraKeys] });
+}
+const ixCuLimit = (units) => new W.TransactionInstruction({ programId: CB_ID, keys: [], data: cat([2], leBytes(units, 4)) });
+const ixCuPrice = (micro) => new W.TransactionInstruction({ programId: CB_ID, keys: [], data: cat([3], leBytes(micro, 8)) });
 const store = {
   get(k, d){ try{ const v = localStorage.getItem("misfire:"+k); return v===null?d:JSON.parse(v); }catch{ return d; } },
   set(k, v){ try{ localStorage.setItem("misfire:"+k, JSON.stringify(v)); }catch{} }
@@ -694,11 +706,10 @@ async function fire(mintStr, createSig){
     const bal = balances[k.publicKey.toBase58()];
     const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight });
     if (cuPrice > 0){
-      tx.add(W.ComputeBudgetProgram.setComputeUnitLimit({ units: CU_LIMIT }));
-      tx.add(W.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: cuPrice }));
+      tx.add(ixCuLimit(CU_LIMIT));
+      tx.add(ixCuPrice(cuPrice));
     }
-    const ix = W.SystemProgram.transfer({ fromPubkey: k.publicKey, toPubkey: W.Keypair.generate().publicKey, lamports: bal + 1e9 });
-    ix.keys.push({ pubkey: mint, isSigner: false, isWritable: false });
+    const ix = ixTransfer(k.publicKey, W.Keypair.generate().publicKey, bal + 1e9, [{ pubkey: mint, isSigner: false, isWritable: false }]);
     tx.add(ix); tx.sign(k);
     return { k, raw: tx.serialize() };
   });
@@ -1069,7 +1080,7 @@ $("fundBurners").onclick = async () => {
       for (let i = 0; i < need.length; i += PER_TX){
         const chunk = need.slice(i, i + PER_TX);
         const tx = new W.Transaction({ feePayer: kp.publicKey, blockhash, lastValidBlockHeight });
-        chunk.forEach(x => tx.add(W.SystemProgram.transfer({ fromPubkey: kp.publicKey, toPubkey: x.k.publicKey, lamports: x.add })));
+        chunk.forEach(x => tx.add(ixTransfer(kp.publicKey, x.k.publicKey, x.add)));
         tx.sign(kp);
         try{ sigs.push(await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 })); groups.push(chunk.length); }
         catch(e){ log(`Funding batch ${i / PER_TX + 1} failed to send: ${e.message}`, "error"); }
@@ -1094,7 +1105,7 @@ async function sweepAll(kps, dest, label){
     const b = infos[i] ? infos[i].lamports : 0;
     if (b <= BASE_FEE || k.publicKey.equals(dest)) return;
     const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight })
-      .add(W.SystemProgram.transfer({ fromPubkey: k.publicKey, toPubkey: dest, lamports: b - BASE_FEE }));
+      .add(ixTransfer(k.publicKey, dest, b - BASE_FEE));
     tx.sign(k);
     sends.push({ k, amt: b - BASE_FEE, p: getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 }) });
   });

@@ -210,6 +210,7 @@ th{color:var(--dim);font:600 12px var(--body);position:sticky;top:0;background:v
 .drawer .tbrow h2{flex:1}
 .logtools button{min-height:40px;font-size:13px}
 .drawer .note{font-size:12px}
+.fundbox{border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
 textarea.secret{-webkit-text-security:disc}
 #wImportKey{font-family:var(--mono);resize:vertical}
 pre#log{margin:0;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px;height:min(40vh,320px);overflow:auto;font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all}
@@ -402,6 +403,7 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
       <button id="wCopy">Copy address</button>
       <button id="wExport">Copy key</button>
       <button id="wRemove" class="danger">Remove</button>
+      <button id="wConsolidate">Consolidate here</button>
       <button id="wLock">Lock</button>
     </div>
     <div id="wImportBox" class="row" hidden>
@@ -427,6 +429,15 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
       <button id="gen" class="primary">Generate burners</button>
       <button id="bal">Refresh</button>
       <button id="copyAddr">Copy addresses</button>
+    </div>
+    <div class="fundbox">
+      <div class="row" style="align-items:flex-end">
+        <label for="fundAmt">SOL per burner
+          <input id="fundAmt" type="number" min="0.001" step="0.001" value="0.002"></label>
+        <button id="fundBurners" class="primary" style="flex:1 1 160px">Fund burners</button>
+        <button id="sweepDev" style="flex:1 1 160px">Sweep to dev wallet</button>
+      </div>
+      <p class="note" id="fundNote">Tops every burner up to this amount from your selected dev wallet. Sweep sends all burner SOL back to it.</p>
     </div>
     <div class="rack"><table><thead><tr><th>#</th><th>Address</th><th>SOL</th></tr></thead><tbody id="rackBody"></tbody></table></div>
     <p class="note">Fund each with 0.002 SOL (~200 runs). 0.00089 SOL per wallet stays locked as Solana's rent minimum.</p>
@@ -658,18 +669,8 @@ $("sweep").onclick = () => {
   let dest;
   try{ dest = new W.PublicKey($("sweepTo").value.trim()); }catch{ log("Enter a valid wallet address to sweep to."); return; }
   ask(`Send all SOL from ${burners.length} burners to ${short(dest.toBase58())}?`, async () => {
-    await refreshBalances();
-    const { blockhash, lastValidBlockHeight } = await getConn().getLatestBlockhash("confirmed");
-    let sent = 0;
-    for (const k of burners){
-      const b = balances[k.publicKey.toBase58()] || 0;
-      if (b <= BASE_FEE) continue;
-      const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight })
-        .add(W.SystemProgram.transfer({ fromPubkey: k.publicKey, toPubkey: dest, lamports: b - BASE_FEE }));
-      tx.sign(k);
-      try{ await getConn().sendRawTransaction(tx.serialize()); sent++; }catch(e){ log(`Sweep ${short(k.publicKey.toBase58())} failed: ${e.message}`); }
-    }
-    log(`Sweep sent from ${sent} burners. Refresh balances in a few seconds.`);
+    try{ await sweepAll(burners, dest, "burners"); }catch(e){ log(`Sweep failed: ${e.message}`, "error"); }
+    refreshBalances();
   });
 };
 
@@ -1031,6 +1032,102 @@ function launchNew(){
     finally{ btn.disabled = false; btn.textContent = "Launch coin"; }
   });
 }
+
+// ---- One-click funding and sweeping (signed by wallets in this browser) ----
+const PER_TX = 15; // transfers per funding transaction (keeps each tx under Solana's size limit)
+function devKp(){ try{ return parseKey($("tpKey").value); }catch{ return null; } }
+function devName(){ const w = vault.wallets[vault.active]; return w ? w.name : "dev wallet"; }
+async function waitSigs(sigs, secs = 40){
+  let st = [];
+  for (let i = 0; i < secs; i++){
+    await new Promise(r => setTimeout(r, 1000));
+    try{ st = (await getConn().getSignatureStatuses(sigs)).value; }catch{}
+    if (st.length && st.every(x => x && (x.err || x.confirmationStatus === "confirmed" || x.confirmationStatus === "finalized"))) break;
+  }
+  return sigs.map((sig, i) => ({ sig, ok: !!(st[i] && !st[i].err), err: st[i] ? st[i].err : "not confirmed" }));
+}
+$("fundAmt").value = store.get("fundAmt", $("fundAmt").value);
+$("fundAmt").addEventListener("change", () => store.set("fundAmt", $("fundAmt").value));
+
+$("fundBurners").onclick = async () => {
+  const kp = devKp();
+  if (!kp){ log("Unlock and select a dev wallet first. It pays for the funding.", "problem"); go("wallets"); return; }
+  if (!burners.length){ log("Generate burners first.", "problem"); return; }
+  const target = Math.round((Number($("fundAmt").value) || 0) * 1e9);
+  if (target < minBal()){ log(`Use at least ${sol(minBal())} SOL per burner (Solana's rent minimum plus one fee).`, "problem"); return; }
+  await refreshBalances();
+  const need = burners.map(k => ({ k, add: target - (balances[k.publicKey.toBase58()] || 0) })).filter(x => x.add > 0);
+  if (!need.length){ log(`Every burner already has ${sol(target)} SOL or more.`); return; }
+  const total = need.reduce((a, x) => a + x.add, 0), txs = Math.ceil(need.length / PER_TX), fees = txs * BASE_FEE;
+  let devBal = 0; try{ devBal = await getConn().getBalance(kp.publicKey); }catch(e){ log(`Couldn't read the dev wallet balance: ${e.message}`, "error"); return; }
+  if (devBal < total + fees + RENT){ log(`${devName()} has ${sol(devBal)} SOL but funding needs ${sol(total + fees)} SOL plus ${sol(RENT)} to stay open.`, "problem"); return; }
+  ask(`Send ${sol(total)} SOL from ${devName()} (${short(kp.publicKey.toBase58())}) to ${need.length} burner${need.length === 1 ? "" : "s"}, topping each up to ${sol(target)} SOL? ${txs} transaction${txs === 1 ? "" : "s"}, about ${sol(fees)} SOL in fees.`, async () => {
+    const btn = $("fundBurners"); btn.disabled = true; btn.textContent = "Funding…";
+    try{
+      const { blockhash, lastValidBlockHeight } = await getConn().getLatestBlockhash("confirmed");
+      const sigs = [], groups = [];
+      for (let i = 0; i < need.length; i += PER_TX){
+        const chunk = need.slice(i, i + PER_TX);
+        const tx = new W.Transaction({ feePayer: kp.publicKey, blockhash, lastValidBlockHeight });
+        chunk.forEach(x => tx.add(W.SystemProgram.transfer({ fromPubkey: kp.publicKey, toPubkey: x.k.publicKey, lamports: x.add })));
+        tx.sign(kp);
+        try{ sigs.push(await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 })); groups.push(chunk.length); }
+        catch(e){ log(`Funding batch ${i / PER_TX + 1} failed to send: ${e.message}`, "error"); }
+      }
+      log(`Funding sent in ${sigs.length} transaction${sigs.length === 1 ? "" : "s"}. Confirming…`);
+      const res = await waitSigs(sigs);
+      let funded = 0;
+      res.forEach((r, i) => { if (r.ok) funded += groups[i]; else log(`Funding tx failed: ${JSON.stringify(r.err)} https://solscan.io/tx/${r.sig}`, "error"); });
+      log(`Funded ${funded}/${need.length} burners to ${sol(target)} SOL.${res[0] ? " https://solscan.io/tx/" + res[0].sig : ""}`, funded < need.length ? "problem" : "");
+    }catch(e){ log(`Funding failed: ${e.message}`, "error"); }
+    finally{ btn.disabled = false; btn.textContent = "Fund burners"; refreshBalances(); refreshWalletBalances(); }
+  });
+};
+
+// Sends each wallet's whole SOL balance (minus its fee) to dest. Tokens are not moved.
+async function sweepAll(kps, dest, label){
+  const { blockhash, lastValidBlockHeight } = await getConn().getLatestBlockhash("confirmed");
+  const infos = [];
+  for (let i = 0; i < kps.length; i += 100) infos.push(...await getConn().getMultipleAccountsInfo(kps.slice(i, i + 100).map(k => k.publicKey)));
+  const sends = [];
+  kps.forEach((k, i) => {
+    const b = infos[i] ? infos[i].lamports : 0;
+    if (b <= BASE_FEE || k.publicKey.equals(dest)) return;
+    const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight })
+      .add(W.SystemProgram.transfer({ fromPubkey: k.publicKey, toPubkey: dest, lamports: b - BASE_FEE }));
+    tx.sign(k);
+    sends.push({ k, amt: b - BASE_FEE, p: getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 }) });
+  });
+  if (!sends.length){ log(`No ${label} have SOL to sweep.`); return; }
+  const settled = await Promise.allSettled(sends.map(x => x.p));
+  const sent = [];
+  settled.forEach((r, i) => r.status === "fulfilled" ? sent.push({ ...sends[i], sig: r.value }) : log(`Sweep from ${short(sends[i].k.publicKey.toBase58())} failed: ${r.reason?.message || r.reason}`, "error"));
+  log(`Sweeping ${sent.length} ${label}. Confirming…`);
+  const res = await waitSigs(sent.map(x => x.sig));
+  let moved = 0, n = 0;
+  res.forEach((r, i) => { if (r.ok){ moved += sent[i].amt; n++; } else log(`Sweep tx failed: https://solscan.io/tx/${r.sig}`, "error"); });
+  log(`Swept ${sol(moved)} SOL from ${n} ${label} to ${short(dest.toBase58())}.`, n < sends.length ? "problem" : "");
+}
+$("sweepDev").onclick = () => {
+  const kp = devKp();
+  if (!kp){ log("Unlock and select a dev wallet first. Burner SOL goes back to it.", "problem"); go("wallets"); return; }
+  if (!burners.length){ log("No burners to sweep."); return; }
+  ask(`Send all SOL from ${burners.length} burners back to ${devName()} (${short(kp.publicKey.toBase58())})? Burners will be empty until you fund them again.`, async () => {
+    const btn = $("sweepDev"); btn.disabled = true; btn.textContent = "Sweeping…";
+    try{ await sweepAll(burners, kp.publicKey, "burners"); }catch(e){ log(`Sweep failed: ${e.message}`, "error"); }
+    finally{ btn.disabled = false; btn.textContent = "Sweep to dev wallet"; refreshBalances(); refreshWalletBalances(); }
+  });
+};
+$("wConsolidate").onclick = () => {
+  const w = vault.wallets[vault.active]; if (!w) return;
+  const others = vault.wallets.filter((_, i) => i !== vault.active);
+  if (!others.length){ log("Only one dev wallet in the vault. Nothing to consolidate."); return; }
+  ask(`Move all SOL from your other ${others.length} dev wallet${others.length === 1 ? "" : "s"} into ${w.name} (${short(w.kp.publicKey.toBase58())})? Only SOL moves. Coins they hold stay put, but those wallets can't sell them until they get SOL again.`, async () => {
+    const btn = $("wConsolidate"); btn.disabled = true; btn.textContent = "Consolidating…";
+    try{ await sweepAll(others.map(o => o.kp), w.kp.publicKey, "dev wallets"); }catch(e){ log(`Consolidate failed: ${e.message}`, "error"); }
+    finally{ btn.disabled = false; btn.textContent = "Consolidate here"; refreshWalletBalances(); }
+  });
+};
 
 // ---- Report + health check (for sending to support) ----
 const hideSecrets = (u) => { try{ const x = new URL(u); return x.origin + (x.pathname.length > 1 || x.search ? " (key/path hidden)" : ""); }catch{ return u ? "(set, hidden)" : ""; } };

@@ -14,12 +14,15 @@ import { reducedMotion } from "../lib/motion.js";
 import { commodityIcon } from "./Icons.js";
 import { sparkline } from "./Sparkline.js";
 const LWC = () => globalThis.LightweightCharts ?? null;
-const TIMEFRAMES = ["1s", "1m", "5m", "15m", "1h", "4h", "1D"];
+const TIMEFRAMES = ["1m", "5m", "15m", "1h", "4h", "1D"];
+const UPC = () => getComputedStyle(document.documentElement).getPropertyValue("--up").trim() || "#1f8a4c";
+const DNC = () => getComputedStyle(document.documentElement).getPropertyValue("--down").trim() || "#c4362b";
+const SIG = "#ff5b1f";
 export function chartPanel(coin) {
     const com = byId(coin.commodityId);
-    const accent = com?.color ?? "#e6b84a";
+    const accent = SIG;
     const quoteSym = com?.symbol ?? "QUOTE";
-    let res = "1m";
+    let res = "5m";
     let mode = "price";
     let denom = "usd";
     let offBars = null;
@@ -35,11 +38,11 @@ export function chartPanel(coin) {
     const insetSpark = sparkline([], { color: accent, fill: false });
     const insetPrice = h("b", null, "—");
     const insetChg = h("span", null, "");
-    const inset = h("div", { class: "inset", "aria-label": `${quoteSym} price` }, h("div", { style: "display:flex;align-items:center;gap:6px" }, svg(commodityIcon(com?.icon ?? ""), "ico"), `${quoteSym} · board price`), insetPrice, insetChg, insetSpark.el);
+    const inset = h("div", { class: "inset", "aria-label": `${quoteSym} price` }, h("div", null, `${quoteSym} · element price`), insetPrice, insetChg, insetSpark.el);
     const gradMark = h("div", { class: "gradmark", style: "display:none" }, "GRADUATED");
     const chartHost = h("div", { style: "position:absolute;inset:0" });
     const wrap = h("div", { class: "chartwrap" }, legend, inset, gradMark, chartHost);
-    const el = h("div", { class: "card chartpanel" }, h("div", { class: "chartbar" }, h("div", { class: "seg", role: "group", "aria-label": "Timeframe" }, tfBtns), h("div", { class: "right" }, h("div", { class: "seg", role: "group", "aria-label": "Price or market cap" }, modeBtns), h("div", { class: "seg", role: "group", "aria-label": "Denomination" }, denomBtns))), wrap);
+    const el = h("div", { class: "chartpanel" }, h("div", { class: "chartbar" }, h("div", { class: "seg", role: "group", "aria-label": "Timeframe" }, tfBtns), h("div", { class: "right" }, h("div", { class: "seg", role: "group", "aria-label": "Price or market cap" }, modeBtns), h("div", { class: "seg", role: "group", "aria-label": "Denomination" }, denomBtns))), wrap);
     // ---- rendering backend ----
     const lwc = LWC();
     let chart = null;
@@ -48,24 +51,24 @@ export function chartPanel(coin) {
     let fallback = null;
     const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     const toLwc = (b) => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c });
-    const toVol = (b) => ({ time: b.t, value: b.v, color: b.c >= b.o ? "rgba(88,214,141,.35)" : "rgba(255,138,92,.35)" });
+    const toVol = (b) => ({ time: b.t, value: b.v, color: b.c >= b.o ? "rgba(31,138,76,.3)" : "rgba(196,54,43,.3)" });
     const scale = () => (mode === "mcap" ? coin.supply : 1);
     const scaled = (b) => ({ ...b, o: b.o * scale(), h: b.h * scale(), l: b.l * scale(), c: b.c * scale() });
     const fmtVal = (v) => (mode === "mcap" ? (denom === "usd" ? fmtUsd(v) : `${fmtNum(v, 2)} ${quoteSym}`) : denom === "usd" ? `$${fmtSmall(v)}` : `${fmtSmall(v)} ${quoteSym}`);
     const buildChart = () => {
         if (lwc) {
             chart = lwc.createChart(chartHost, {
-                layout: { background: { type: lwc.ColorType.Solid, color: "transparent" }, textColor: css("--text-3") || "#8f866f", fontFamily: "IBM Plex Mono, monospace", fontSize: 11 },
-                grid: { vertLines: { color: "rgba(246,233,234,.04)" }, horzLines: { color: "rgba(246,233,234,.05)" } },
+                layout: { background: { type: lwc.ColorType.Solid, color: "transparent" }, textColor: css("--ink-3") || "#6e6a60", fontFamily: "JetBrains Mono, monospace", fontSize: 11 },
+                grid: { vertLines: { color: css("--chart-grid") || "rgba(20,20,20,.06)" }, horzLines: { color: css("--chart-grid") || "rgba(20,20,20,.06)" } },
                 crosshair: { mode: lwc.CrosshairMode.Normal },
-                rightPriceScale: { borderColor: "rgba(246,233,234,.1)" },
-                timeScale: { borderColor: "rgba(246,233,234,.1)", timeVisible: true, secondsVisible: res === "1s", rightOffset: 4 },
+                rightPriceScale: { borderColor: css("--rule") || "#d8d2c4" },
+                timeScale: { borderColor: css("--rule") || "#d8d2c4", timeVisible: true, secondsVisible: res === "1s", rightOffset: 4 },
                 localization: { priceFormatter: (p) => fmtVal(p) },
                 handleScroll: true,
                 handleScale: true,
             });
             candles = chart.addCandlestickSeries({
-                upColor: "#58d68d", downColor: "#ff8a5c", wickUpColor: "#58d68d", wickDownColor: "#ff8a5c", borderVisible: false,
+                upColor: UPC(), downColor: DNC(), wickUpColor: UPC(), wickDownColor: DNC(), borderVisible: false,
                 priceLineVisible: true, priceLineStyle: lwc.LineStyle.Dashed, priceLineColor: accent, lastValueVisible: true,
                 priceFormat: { type: "custom", formatter: (p) => fmtVal(p), minMove: 1e-12 },
             });
@@ -169,7 +172,7 @@ export function chartPanel(coin) {
     };
     let pulseTimer = 0;
     const pulsePriceLine = (dir) => {
-        candles?.applyOptions({ priceLineColor: dir === "up" ? "#58d68d" : "#ff8a5c" });
+        candles?.applyOptions({ priceLineColor: dir === "up" ? UPC() : DNC() });
         window.clearTimeout(pulseTimer);
         pulseTimer = window.setTimeout(() => candles?.applyOptions({ priceLineColor: accent }), 350);
     };
@@ -211,7 +214,7 @@ class FallbackChart {
         this.bars = [];
         this.raf = 0;
         this.canvas = h("canvas", { class: "fallbackchart" });
-        this.note = h("div", { style: "position:absolute;left:10px;bottom:8px;font:10px IBM Plex Mono,monospace;color:var(--text-3)" }, "basic chart · chart library did not load");
+        this.note = h("div", { style: "position:absolute;left:10px;bottom:8px;font:10px JetBrains Mono,monospace;color:var(--ink-3)" }, "basic chart · chart library did not load");
         host.append(this.canvas, this.note);
         this.ro = new ResizeObserver(() => this.draw());
         this.ro.observe(host);
@@ -248,10 +251,10 @@ class FallbackChart {
         const span = max - min || max * 0.01 || 1;
         const bw = plotW / this.bars.length;
         const y = (v) => top + (1 - (v - min) / span) * (plotH - volH - 8);
-        c.strokeStyle = "rgba(246,233,234,.06)";
+        c.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--chart-grid").trim() || "rgba(20,20,20,.06)";
         c.lineWidth = 1;
-        c.font = "10px IBM Plex Mono, monospace";
-        c.fillStyle = "#8f866f";
+        c.font = "10px JetBrains Mono, monospace";
+        c.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--ink-3").trim() || "#6e6a60";
         c.textAlign = "left";
         for (let i = 0; i <= 5; i++) {
             const v = min + (span * i) / 5;
@@ -265,7 +268,7 @@ class FallbackChart {
         this.bars.forEach((b, i) => {
             const x = i * bw + bw / 2;
             const up = b.c >= b.o;
-            c.strokeStyle = c.fillStyle = up ? "#58d68d" : "#ff8a5c";
+            c.strokeStyle = c.fillStyle = up ? UPC() : DNC();
             c.beginPath();
             c.moveTo(x, y(b.h));
             c.lineTo(x, y(b.l));
@@ -287,7 +290,7 @@ class FallbackChart {
         c.setLineDash([]);
         c.fillStyle = this.accent;
         c.fillRect(plotW, y(last.c) - 8, right, 16);
-        c.fillStyle = "#1a1304";
+        c.fillStyle = "#141414";
         c.fillText(this.fmt(last.c), plotW + 4, y(last.c) + 4);
     }
     destroy() { this.ro.disconnect(); if (this.raf)

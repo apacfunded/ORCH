@@ -2,7 +2,7 @@
 // ICONS — custom-drawn commodity SVGs (one consistent 24px stroke style) and
 // a handful of UI glyphs. Everything is inline: no icon packages, no network.
 // ============================================================
-const wrap = (inner, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ${extra}>${inner}</svg>`;
+const wrap = (inner, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ${extra}>${inner}</svg>`;
 const COMMODITY = {
     // gold bar
     gold: wrap(`<path d="M6 8h12l3 8H3z"/><path d="M8 8l1-3h6l1 3"/><path d="M3 16h18v2H3z"/><path d="M9 12h6"/>`),
@@ -64,8 +64,8 @@ const COMMODITY = {
 export function commodityIcon(id) {
     return COMMODITY[id] ?? wrap(`<circle cx="12" cy="12" r="8"/>`);
 }
-/** Quarry mark (Ingot Stack). Bars use the brand crimsons; the tip follows the text colour so it works in both themes. */
-export const LOGO = `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 72h40l8 16H22z" style="fill:var(--accent-2)"/><path d="M34 50h32l7 16H27z" fill="#b3203a"/><path d="M40 28h22l7 16H33z" style="fill:var(--accent)"/><path d="M51 8l12 14H39z" style="fill:var(--text)"/></svg>`;
+/** Quarry mark: an assay element tile, "Qy" with the number 00. Ink follows the theme. */
+export const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="1.5" y="1.5" width="61" height="61" fill="none" stroke="currentColor" stroke-width="3"/><rect x="1.5" y="1.5" width="61" height="7" fill="#ff5b1f"/><text x="8" y="22" font-family="JetBrains Mono, monospace" font-size="9" font-weight="500" fill="currentColor">00</text><text x="32" y="52" text-anchor="middle" font-family="Instrument Serif, Times New Roman, serif" font-size="34" fill="currentColor">Qy</text></svg>`;
 export const UI = {
     search: wrap(`<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>`),
     copy: wrap(`<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>`),

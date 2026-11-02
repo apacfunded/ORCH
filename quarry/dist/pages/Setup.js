@@ -14,18 +14,18 @@ async function call(init) {
     return j;
 }
 export async function setupPage() {
-    const box = h("div", { class: "card", style: "max-width:640px;margin:24px auto;display:grid;gap:14px;padding:22px" });
+    const box = h("div", { class: "panel setup", style: "display:grid;gap:14px;padding:22px" });
     const render = async () => {
         let st;
         try {
             st = await call();
         }
         catch (e) {
-            box.replaceChildren(h("h2", null, "Setup"), h("p", { class: "err" }, e.message));
+            box.replaceChildren(h("h2", { class: "serif", style: "font-size:36px" }, "Setup"), h("p", { class: "err" }, e.message));
             return;
         }
         const row = (k, v) => h("div", null, h("span", null, k), h("span", { class: "num" }, v ?? "not set"));
-        const btn = h("button", { class: "btn primary block" }, st.lut ? "Done: launches are live" : "Create lookup table (~0.006 SOL)");
+        const btn = h("button", { class: "btn primary block lg" }, st.lut ? "Done: launches are live" : "Create lookup table (~0.006 SOL)");
         if (st.lut || !st.buybackWallet || !st.holderWallet)
             btn.disabled = true;
         btn.onclick = async () => {
@@ -35,7 +35,7 @@ export async function setupPage() {
             }
             const p = connectedProvider();
             if (!p?.signTransaction) {
-                toast("This wallet cannot sign transactions.", { color: "#ff8a5c" });
+                toast("This wallet cannot sign transactions.", { color: "#c4362b" });
                 return;
             }
             btn.disabled = true;
@@ -47,16 +47,16 @@ export async function setupPage() {
                 const signed = p.signAllTransactions ? await p.signAllTransactions(txs) : await Promise.all(txs.map((t) => p.signTransaction(t)));
                 btn.textContent = "Sending…";
                 await call({ method: "POST", body: JSON.stringify({ lut: res.lut, txs: signed.map((t) => cosign(t, [])) }) });
-                toast("Setup complete. Launches are live.", { color: "#58d68d" });
+                toast("Setup complete. Launches are live.", { color: "#1f8a4c" });
                 await render();
             }
             catch (e) {
-                toast(e.message, { color: "#ff8a5c" });
+                toast(e.message, { color: "#c4362b" });
                 btn.disabled = false;
                 btn.textContent = "Try again";
             }
         };
-        box.replaceChildren(h("div", { class: "eyebrow" }, "Admin"), h("h2", null, st.ready ? "Launchpad is live" : "Finish launchpad setup"), h("div", { class: "kv" }, row("Buyback & burn wallet", st.buybackWallet), row("Holder rewards wallet", st.holderWallet), row("Split (creator / buyback / holders)", st.split.map((b) => `${b / 100}%`).join(" / ")), row("Admin wallet", st.admin), row("Lookup table", st.lut), row("Connected", wallet.get().address ? shortAddr(wallet.get().address) : null)), h("p", { class: "hint" }, "Connect the admin wallet and approve. This creates a public lookup table holding pump.fun's fixed addresses plus the two fee wallets, so each launch fits in one transaction. It only needs to run once."), btn);
+        box.replaceChildren(h("span", { class: "label" }, "Admin · one-time setup"), h("h2", { class: "serif", style: "font-size:40px;line-height:1" }, st.ready ? "Launchpad is live" : "Finish launchpad setup"), h("div", { class: "kv", style: "border-top:1px solid var(--ink)" }, row("Buyback & burn wallet", st.buybackWallet), row("Holder rewards wallet", st.holderWallet), row("Split (creator / buyback / holders)", st.split.map((b) => `${b / 100}%`).join(" / ")), row("Admin wallet", st.admin), row("Lookup table", st.lut), row("Connected", wallet.get().address ? shortAddr(wallet.get().address) : null)), h("p", { class: "hint" }, "Connect the admin wallet and approve. This creates a public lookup table holding pump.fun's fixed addresses plus the two fee wallets, so each launch fits in one transaction. It only needs to run once."), btn);
     };
     await render();
     wallet.on(() => void render());

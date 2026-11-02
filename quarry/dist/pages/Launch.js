@@ -1,18 +1,20 @@
-import { tierBadge } from "../components/Badge.js";
-import { coinCard } from "../components/CoinCard.js";
-import { UI, commodityIcon } from "../components/Icons.js";
+import { certCard } from "../components/Certificate.js";
+import { filterTable, periodicTable } from "../components/Element.js";
+import { UI } from "../components/Icons.js";
 import { toast } from "../components/Toasts.js";
 import { connectedProvider, openWalletModal, refreshBalance, wallet } from "../components/WalletButton.js";
 import { brand, houseDisclaimer, pairNote } from "../config/brand.js";
-import { fees, fmtFee } from "../config/fees.js";
-import { boardCommodities, byId, categoryLabel } from "../config/commodities.js";
+import { fees } from "../config/fees.js";
+import { byId } from "../config/commodities.js";
+import { elNum, elementOf } from "../config/elements.js";
 import { flags, isDemo } from "../config/flags.js";
 import { cosign, deserializeTx, newMintKeypair } from "../lib/solana.js";
 import { market, mockMarket } from "../data/index.js";
-import { h, svg } from "../lib/dom.js";
+import { h, onRemove, svg } from "../lib/dom.js";
+import { shortAddr } from "../lib/format.js";
 import { reducedMotion } from "../lib/motion.js";
-import { href } from "../lib/router.js";
-import { art, artImg } from "../config/art.js";
+import { href, query } from "../lib/router.js";
+import { sealSvg } from "./Coin.js";
 async function api(path, init) {
     const r = await fetch(`${flags.apiUrl}${path}`, { ...init, headers: { "content-type": "application/json", ...(init?.headers ?? {}) } });
     const j = (await r.json().catch(() => ({})));
@@ -76,210 +78,158 @@ async function launchCoin(d, phase) {
     };
 }
 const mainCoin = () => (brand.platformTicker ? `$${brand.platformTicker}` : `$${brand.name.toUpperCase()}`);
-export async function launchPage(ctx) {
-    const d = { name: "", ticker: "", description: "", image: "", x: "", website: "", telegram: "", commodityId: null, devBuy: "", rewards: false };
+const PHASE = { "UPLOADING…": "Uploading…", "BUILDING…": "Building…", "APPROVE IN WALLET…": "Approve in wallet…", "SENDING IT…": "Sending…", "CONFIRMING…": "Confirming…" };
+export async function launchPage() {
+    const preset = query().get("board");
+    const d = { name: "", ticker: "", description: "", image: "", x: "", website: "", telegram: "", commodityId: preset && byId(preset) ? preset : null, devBuy: "", rewards: false };
     let step = 0;
-    const steps = h("div", { class: "wsteps", "aria-hidden": "true" }, [0, 1, 2, 3].map(() => h("div")));
-    const stage = h("div");
-    const preview = h("div", { class: "preview" }, h("div", { class: "pcap" }, "Live preview"));
-    const previewCard = h("div");
-    preview.appendChild(previewCard);
-    const header = h("div", { class: "art-header" }, artImg(art.foundry, "art-header-img"), h("div", { class: "art-header-shade", "aria-hidden": "true" }), h("div", { class: "art-header-copy" }, h("div", { class: "eyebrow" }, "Launch a coin · pump.fun"), h("h1", null, "SEND ", h("span", { class: "loud-hot" }, "IT."), h("br"), "PRICE IT IN ", h("span", { class: "loud-gold" }, "GOLD.")), h("p", null, "Name it. Pick a commodity. Launch on pump.fun. Your coin gets its own board and commodity price here.")));
-    const el = h("div", { class: "page launch-loud" }, header, h("div", { class: "wizard" }, h("div", { style: "display:grid;gap:14px" }, steps, stage), preview));
+    const LABELS = ["Sample", "Element", "Weigh-in", "Certify"];
+    const stepper = h("div", { class: "stepper", "aria-label": "Progress" }, LABELS.map((l, i) => h("div", null, h("b", null, `0${i + 1}`), h("span", null, l))));
+    const stage = h("div", { class: "wstep" });
+    const previewHost = h("div");
+    const sealHost = h("div", { class: "seal pending", style: "width:110px;height:110px;justify-self:end;margin-top:-50px;position:relative", html: sealSvg("PENDING ASSAY", "--/--/--") });
+    const previewCol = h("div", { class: "previewcol" }, h("span", { class: "label" }, "Live certificate"), previewHost, sealHost);
+    const head = h("div", { class: "launch-head" }, h("div", null, h("span", { class: "label" }, "Submit a sample"), h("h1", { style: "margin-top:8px" }, "Launch a coin."), h("p", null, "Name it, pick an element, launch it on pump.fun. It gets a certificate here and a live price in its element.")), h("div", { class: "label", style: "text-align:right" }, "Launches on pump.fun", h("br"), `Creator fees ${fees.creatorSharePct}/${fees.buybackBurnPct}/${fees.mainHolderSolPct}, locked`));
+    const el = h("div", { class: "page" }, head, stepper, h("div", { class: "wizard" }, stage, previewCol));
     const renderPreview = () => {
         const com = d.commodityId ? byId(d.commodityId) : null;
         const fake = {
             mint: "PREVIEW", pairAddress: "PREVIEW", name: d.name || "Your coin", ticker: (d.ticker || "TICKER").toUpperCase(),
-            image: d.image || placeholderImage(com?.color ?? "#e6b84a"), commodityId: com?.id ?? "gold", status: "curve", bondingProgress: 0.02,
-            priceUsd: 0.0000042, priceQuote: 0, marketCapUsd: 4200, volume24hUsd: 0, change24hPct: 0, holders: 1, createdAt: Date.now(), rewards: d.rewards, spark: [1, 1.02, 1.01, 1.04, 1.03, 1.06, 1.05, 1.08],
+            image: d.image || placeholderImage(), commodityId: com?.id ?? "", status: "curve", bondingProgress: 0,
+            priceUsd: 0.0000042, priceQuote: 0, marketCapUsd: 4200, volume24hUsd: 0, change24hPct: 0, holders: 1, createdAt: Date.now(), rewards: true, spark: [1, 1],
         };
-        previewCard.replaceChildren(coinCard(fake, { live: false }));
-        if (com)
-            ctx.tint(com.color);
+        previewHost.replaceChildren(certCard(fake, { preview: true }));
     };
-    const renderSteps = () => steps.querySelectorAll("div").forEach((s, i) => { s.className = i < step ? "done" : i === step ? "cur" : ""; });
-    const go = (n) => { step = n; renderSteps(); stage.replaceChildren(STEPS[n]()); stage.animate([{ opacity: 0, transform: "translateX(8px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "ease-out" }); window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" }); };
+    const renderStepper = () => stepper.querySelectorAll(":scope > div").forEach((s, i) => { s.className = i < step ? "done" : i === step ? "cur" : ""; s.setAttribute("aria-current", i === step ? "step" : "false"); });
+    const go = (n) => {
+        step = n;
+        renderStepper();
+        stage.replaceChildren(STEPS[n]());
+        if (!reducedMotion())
+            stage.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 160, easing: "ease-out" });
+        window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" });
+    };
     const field = (label, input, hint) => h("div", { class: "field" }, h("label", { for: input.id }, h("span", null, label), hint ? h("span", { class: "muted" }, hint) : null), input);
     const txt = (id, key, placeholder, max) => {
-        const i = h("input", { type: "text", id, placeholder, maxlength: max ? String(max) : undefined, value: String(d[key] ?? "") });
+        const i = h("input", { type: "text", id, placeholder, maxlength: max ? String(max) : undefined, value: String(d[key] ?? ""), autocomplete: "off" });
         i.addEventListener("input", () => { d[key] = key === "ticker" ? i.value.toUpperCase().replace(/[^A-Z0-9]/g, "") : i.value; if (key === "ticker")
             i.value = String(d.ticker); renderPreview(); });
         return i;
     };
+    const nav = (back, nextLabel, onNext) => h("div", { class: "wnav" }, back === null ? h("span") : h("button", { class: "btn", onclick: () => go(back) }, svg(UI.back), "Back"), onNext ? h("button", { class: "btn primary", onclick: onNext }, nextLabel, svg(UI.arrow)) : h("span"));
     const STEPS = [
-        // 1 — details
+        // 01 — sample
         () => {
             const name = txt("f-name", "name", "e.g. Golden Walrus", 32);
             const ticker = txt("f-ticker", "ticker", "WALRUS", 10);
-            const desc = h("textarea", { id: "f-desc", placeholder: "What is this coin about?", maxlength: "280" });
+            const desc = h("textarea", { id: "f-desc", placeholder: "What is this coin? One or two lines.", maxlength: "280" });
             desc.value = d.description;
             desc.addEventListener("input", () => { d.description = desc.value; });
-            const img = h("img", { alt: "", style: d.image ? "" : "display:none", src: d.image || undefined });
-            const circ = h("div", { class: "circ" }, img, d.image ? null : svg(UI.plus));
+            const img = h("img", { alt: "", src: d.image || undefined, style: d.image ? "" : "display:none" });
+            const ph = h("span", { class: "ph" }, img, d.image ? null : svg(UI.plus));
             const file = h("input", { type: "file", accept: "image/*", id: "f-img" });
             file.addEventListener("change", () => { const f = file.files?.[0]; if (!f)
-                return; const r = new FileReader(); r.onload = () => { d.image = String(r.result); img.src = d.image; img.style.display = ""; circ.querySelector(".svgwrap")?.remove(); renderPreview(); }; r.readAsDataURL(f); });
-            const err = h("div", { class: "err" });
-            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 1/4"), h("h2", null, "NAME YOUR COIN."), h("p", { class: "hint" }, "Name, ticker, image. Socials optional. Make it loud."), field("Name", name), field("Ticker", ticker, "letters and numbers"), h("div", { class: "field" }, h("label", { for: "f-img" }, h("span", null, "Image"), h("span", { class: "muted" }, "cropped to a circle")), h("label", { class: "upload", for: "f-img" }, circ, h("span", { class: "btn sm" }, "Choose image"), file)), field("Description", desc), h("div", { class: "twocol" }, field("X link", txt("f-x", "x", "https://x.com/…")), field("Website", txt("f-web", "website", "https://…")), field("Telegram", txt("f-tg", "telegram", "https://t.me/…"))), err, h("div", { class: "wnav" }, h("span"), h("button", { class: "btn primary", onclick: () => { if (!d.name.trim() || d.ticker.length < 2) {
-                    err.textContent = "Add a name and a ticker of at least 2 characters to continue.";
-                    name.focus();
+                return; const r = new FileReader(); r.onload = () => { d.image = String(r.result); img.src = d.image; img.style.display = ""; ph.querySelector(".svgwrap")?.remove(); renderPreview(); }; r.readAsDataURL(f); });
+            const err = h("div", { class: "err", role: "alert" });
+            return h("div", null, h("h2", null, "The sample"), h("p", { class: "hint" }, "Name, ticker and image are required. Socials are optional."), h("div", { class: "fields" }, h("div", { class: "twocol" }, field("Name", name), field("Ticker", ticker, "A–Z, 0–9")), h("div", { class: "field" }, h("label", { for: "f-img" }, h("span", null, "Image"), h("span", { class: "muted" }, "PNG, JPG or GIF")), h("label", { class: "upload", for: "f-img" }, ph, h("span", null, h("b", null, d.image ? "Change image" : "Choose image"), h("br"), h("span", { class: "hint" }, "Square works best")), file)), field("Description", desc, "optional"), h("div", { class: "threecol" }, field("X link", txt("f-x", "x", "https://x.com/…")), field("Website", txt("f-web", "website", "https://…")), field("Telegram", txt("f-tg", "telegram", "https://t.me/…")))), err, nav(null, "Choose an element", () => {
+                if (!d.name.trim() || d.ticker.length < 2) {
+                    err.textContent = "Add a name and a ticker of at least 2 characters.";
+                    (d.name.trim() ? ticker : name).focus();
                     return;
-                } if (!d.image && !isDemo()) {
+                }
+                if (!d.image && !isDemo()) {
                     err.textContent = "Add an image. pump.fun needs one for every coin.";
                     return;
-                } err.textContent = ""; go(1); } }, "PICK A COMMODITY", svg(UI.arrow))));
+                }
+                err.textContent = "";
+                go(1);
+            }));
         },
-        // 2 — pair
+        // 02 — element
         () => {
-            const disc = h("div", { class: "disc-box", style: d.commodityId && byId(d.commodityId)?.tier === "house" ? "" : "display:none" }, h("b", null, "House pair · "), houseDisclaimer);
-            const allBoards = boardCommodities();
-            const tiles = allBoards.map((c) => {
-                const locked = c.status !== "live";
-                const b = h("button", { class: `pick ${d.commodityId === c.id ? "active" : ""}`, style: `--c:${c.color}`, disabled: locked, "aria-pressed": d.commodityId === c.id ? "true" : "false",
-                    onclick: () => { d.commodityId = c.id; tiles.forEach((t, i) => { const on = allBoards[i].id === c.id; t.classList.toggle("active", on); t.setAttribute("aria-pressed", on ? "true" : "false"); }); disc.style.display = c.tier === "house" ? "" : "none"; renderPreview(); materialBurst(b, c); } }, svg(commodityIcon(c.icon), "ico"), h("div", { class: "nm" }, c.name, tierBadge(c, { tooltip: false })), h("div", { class: "st" }, locked ? `Locked · $${c.symbol} curve ${Math.round(c.unlockProgress * 100)}%` : `Shown as ${(d.ticker || "TICKER")} / ${c.symbol}`));
-                return b;
-            });
-            const err = h("div", { class: "err" });
-            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 2/4"), h("h2", null, "PICK YOUR COMMODITY."), h("p", { class: "hint" }, "Your coin lives on this board and gets priced in this commodity here. On pump.fun it trades in SOL like any coin."), pickerSearch(allBoards, tiles), Object.keys(categoryLabel).map((cat) => {
-                const idx = allBoards.map((c, i) => (c.category === cat ? i : -1)).filter((i) => i >= 0);
-                return idx.length ? h("div", { class: "pick-group" }, h("h3", { class: "group-title" }, categoryLabel[cat]), h("div", { class: "picker" }, idx.map((i) => tiles[i]))) : null;
-            }), h("p", { class: "hint" }, pairNote), disc, err, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(0) }, svg(UI.back), "Back"), h("button", { class: "btn primary", onclick: () => { if (!d.commodityId) {
-                    err.textContent = "Choose a commodity to continue.";
-                    return;
-                } go(2); } }, "SETTINGS", svg(UI.arrow))));
+            const table = periodicTable([], { mode: "pick", mini: true, selected: d.commodityId });
+            const disc = h("div", { class: "note house", style: d.commodityId && byId(d.commodityId)?.tier === "house" ? "margin-top:14px" : "display:none" }, h("b", null, "House element. "), houseDisclaimer);
+            const picked = h("span", { class: "label" }, "");
+            const showPicked = () => { const com = d.commodityId ? byId(d.commodityId) : null; picked.textContent = com ? `Selected: ${(d.ticker || "TICKER")} / ${com.symbol}` : "Nothing selected"; };
+            showPicked();
+            table.tiles.forEach((t, id) => t.addEventListener("click", () => {
+                d.commodityId = id;
+                table.tiles.forEach((x, xid) => x.setAttribute("aria-pressed", xid === id ? "true" : "false"));
+                const com = byId(id);
+                disc.style.cssText = com.tier === "house" ? "margin-top:14px" : "display:none";
+                showPicked();
+                renderPreview();
+            }));
+            const search = h("input", { type: "search", class: "search", placeholder: "Find an element", "aria-label": "Find an element" });
+            search.addEventListener("input", () => filterTable(table.el, table.tiles, search.value));
+            const err = h("div", { class: "err", role: "alert" });
+            return h("div", null, h("h2", null, "Choose your element"), h("p", { class: "hint" }, "Your coin lives on this board and is priced in it here. On pump.fun it trades in SOL like any coin."), h("div", { class: "picktools" }, search, picked), table.el, disc, h("p", { class: "hint", style: "margin-top:14px" }, pairNote), err, nav(0, "Weigh-in", () => { if (!d.commodityId) {
+                err.textContent = "Pick an element to continue.";
+                return;
+            } go(2); }));
         },
-        // 3 — settings
+        // 03 — weigh-in
         () => {
-            const com = byId(d.commodityId);
             const dev = h("input", { type: "number", id: "f-dev", inputmode: "decimal", min: "0", step: "any", placeholder: "0", value: d.devBuy });
-            dev.addEventListener("input", () => { d.devBuy = dev.value; });
-            const tog = h("button", { class: `toggle ${d.rewards ? "on" : ""}`, role: "switch", "aria-checked": d.rewards ? "true" : "false", "aria-label": "Holder rewards", disabled: !fees.holderRewardsAvailable, onclick: () => { d.rewards = !d.rewards; tog.classList.toggle("on", d.rewards); tog.setAttribute("aria-checked", d.rewards ? "true" : "false"); renderPreview(); } });
-            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 3/4"), h("h2", null, "LOAD IT UP."), h("p", { class: "hint" }, "pump.fun charges its own trading fee. This is how your coin's creator fees get split. It is written into the launch transaction and locked on-chain forever."), h("div", { class: "field" }, h("label", { for: "f-dev" }, h("span", null, "Dev buy (optional)"), h("span", { class: "muted" }, "in SOL")), h("div", { class: "inp" }, dev, h("span", { class: "unit" }, "SOL"))), h("p", { class: "hint" }, "A dev buy goes in the same transaction as the launch, so snipers can't buy before you."), h("div", { class: "feegrid" }, h("div", null, h("span", null, "Creator fees → your wallet"), h("b", null, fmtFee(fees.creatorSharePct))), h("div", null, h("span", null, `Creator fees → buy back & burn ${mainCoin()}`), h("b", null, fmtFee(fees.buybackBurnPct))), h("div", null, h("span", null, `Creator fees → ${mainCoin()} holders, paid in SOL`), h("b", null, fmtFee(fees.mainHolderSolPct)))), com.tier === "house" ? h("div", { class: "disc-box" }, h("b", null, "House pair · "), houseDisclaimer) : null, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(1) }, svg(UI.back), "Back"), h("button", { class: "btn primary", onclick: () => go(3) }, "REVIEW", svg(UI.arrow))));
+            const cost = h("span", null, "");
+            const renderCost = () => { cost.textContent = `${Number(d.devBuy) > 0 ? `${d.devBuy} SOL dev buy + ` : ""}~0.02 SOL rent & fees`; };
+            dev.addEventListener("input", () => { d.devBuy = dev.value; renderCost(); });
+            renderCost();
+            const quick = h("div", { class: "quickamt" }, ["0", "0.1", "0.5", "1", "2"].map((v) => h("button", { type: "button", onclick: () => { dev.value = v === "0" ? "" : v; d.devBuy = dev.value; renderCost(); } }, v === "0" ? "None" : `${v} SOL`)));
+            return h("div", null, h("h2", null, "Weigh-in"), h("p", { class: "hint" }, "An optional dev buy goes in the same transaction as the launch, so nobody can buy before you."), h("div", { class: "fields" }, h("div", { class: "field" }, h("label", { for: "f-dev" }, h("span", null, "Dev buy"), h("span", { class: "muted" }, "optional")), h("div", { class: "inp" }, dev, h("span", { class: "unit" }, "SOL")), quick)), h("div", { class: "feerows" }, h("div", null, h("span", null, h("b", { style: "font-family:var(--font-ui);font-size:15px;font-weight:600" }, "To you, the creator"), h("small", null, "Paid to your wallet by pump.fun")), h("b", null, `${fees.creatorSharePct}%`)), h("div", null, h("span", null, h("b", { style: "font-family:var(--font-ui);font-size:15px;font-weight:600" }, `Buy back & burn ${mainCoin()}`), h("small", null, "Bought on the market, then burned")), h("b", null, `${fees.buybackBurnPct}%`)), h("div", null, h("span", null, h("b", { style: "font-family:var(--font-ui);font-size:15px;font-weight:600" }, `${mainCoin()} holders`), h("small", null, "Paid out in SOL")), h("b", null, `${fees.mainHolderSolPct}%`))), h("p", { class: "hint", style: "margin-top:10px;display:flex;gap:6px;align-items:center" }, svg(UI.lock), "Your coin's creator-fee split. Written into the launch transaction and locked on-chain."), h("div", { class: "costline" }, h("span", { class: "label", style: "color:var(--ink)" }, "You pay"), cost), byId(d.commodityId)?.tier === "house" ? h("div", { class: "note house", style: "margin-top:14px" }, h("b", null, "House element. "), houseDisclaimer) : null, nav(1, "Certify", () => go(3)));
         },
-        // 4 — review & launch
+        // 04 — certify
         () => {
             const com = byId(d.commodityId);
-            const btn = h("button", { class: "btn primary block", onclick: async () => {
+            const e = elementOf(d.commodityId);
+            const btn = h("button", { class: "btn primary block launchbtn", onclick: async () => {
                     if (!wallet.get().address) {
                         openWalletModal();
                         return;
                     }
                     btn.setAttribute("disabled", "");
-                    btn.textContent = "SENDING IT…";
+                    btn.textContent = "Starting…";
                     try {
-                        const coin = await launchCoin(d, (label) => { btn.textContent = label; });
+                        const coin = await launchCoin(d, (label) => { btn.textContent = PHASE[label] ?? label; });
                         stage.replaceChildren(successScreen(coin, com));
-                        steps.querySelectorAll("div").forEach((s) => (s.className = "done"));
+                        stepper.querySelectorAll(":scope > div").forEach((s) => (s.className = "done"));
+                        sealHost.innerHTML = sealSvg();
+                        sealHost.classList.remove("pending");
+                        sealHost.classList.add("stamp-in");
                     }
-                    catch (e) {
-                        toast(e.message, { color: "#ff8a5c" });
+                    catch (err) {
+                        toast(err.message, { color: "#c4362b", ms: 6000 });
                         btn.removeAttribute("disabled");
-                        btn.textContent = "SEND IT";
+                        btn.textContent = "Launch on pump.fun";
                     }
-                } }, svg(UI.rocket), isDemo() ? "SEND IT (DEMO)" : "SEND IT ON PUMP.FUN");
+                } }, isDemo() ? "Launch (demo)" : "Launch on pump.fun");
             if (!isDemo()) {
                 btn.setAttribute("disabled", "");
+                btn.textContent = "Checking launchpad…";
                 void fetch(`${flags.apiUrl}/setup`).then((r) => r.json()).then((st) => {
-                    if (st.ready)
+                    if (st.ready) {
                         btn.removeAttribute("disabled");
+                        btn.textContent = "Launch on pump.fun";
+                    }
                     else
-                        btn.replaceChildren(svg(UI.rocket), "LAUNCHING OPENS SOON");
-                }).catch(() => btn.removeAttribute("disabled"));
+                        btn.textContent = "Launching opens soon";
+                }).catch(() => { btn.removeAttribute("disabled"); btn.textContent = "Launch on pump.fun"; });
             }
-            return h("div", { class: "card wstep" }, h("div", { class: "loud-step" }, "STEP 4/4"), h("h2", null, "LAST LOOK. THEN SEND IT."), h("p", { class: "hint" }, isDemo() ? "Demo mode: this creates a simulated coin on this site only. Nothing is sent to pump.fun." : "This launches your coin on pump.fun and lists it on the board you picked."), h("div", { class: "kv" }, h("div", null, h("span", null, "Name"), h("span", null, d.name)), h("div", null, h("span", null, "Ticker"), h("span", null, `$${d.ticker}`)), h("div", null, h("span", null, "Launches on"), h("span", null, "pump.fun (trades in SOL)")), h("div", null, h("span", null, "Shown here as"), h("span", null, `${d.ticker} / ${com.symbol} (${com.tier})`)), h("div", null, h("span", null, "Dev buy"), h("span", null, d.devBuy ? `${d.devBuy} SOL` : "None")), h("div", null, h("span", null, "Creator fees"), h("span", null, `${fees.creatorSharePct}% you · ${fees.buybackBurnPct}% burn · ${fees.mainHolderSolPct}% holders (locked)`)), h("div", null, h("span", null, "You pay"), h("span", null, `${d.devBuy ? `${d.devBuy} SOL dev buy + ` : ""}~0.02 SOL rent & fees`)), h("div", null, h("span", null, "Site fee"), h("span", null, fees.launchCostSol === null ? "None" : `${fees.launchCostSol} SOL`))), isDemo() ? h("span", { class: "demo-tag" }, "DEMO") : null, btn, h("div", { class: "wnav" }, h("button", { class: "btn", onclick: () => go(2) }, svg(UI.back), "Back"), h("span")));
+            const walletLine = h("span", null, wallet.get().address ? shortAddr(wallet.get().address, 5) : "Not connected");
+            const offW = wallet.on((s) => { walletLine.textContent = s.address ? shortAddr(s.address, 5) : "Not connected"; });
+            const box = h("div", null, h("h2", null, "Certify"), h("p", { class: "hint" }, isDemo() ? "Demo mode: this makes a simulated coin on this site only." : "One transaction from your wallet creates the coin on pump.fun, locks the fee split, and lists it here."), h("div", { class: "kv", style: "margin-top:18px;border-top:1px solid var(--ink)" }, h("div", null, h("span", null, "Name"), h("span", null, d.name)), h("div", null, h("span", null, "Ticker"), h("span", null, `$${d.ticker}`)), h("div", null, h("span", null, "Element"), h("span", null, `${e ? elNum(e.n) : ""} ${com.name} · ${com.tier}`)), h("div", null, h("span", null, "Shown here as"), h("span", null, `${d.ticker} / ${com.symbol}`)), h("div", null, h("span", null, "Launches on"), h("span", null, "pump.fun, trades in SOL")), h("div", null, h("span", null, "Dev buy"), h("span", null, Number(d.devBuy) > 0 ? `${d.devBuy} SOL` : "None")), h("div", null, h("span", null, "Creator fees"), h("span", null, `${fees.creatorSharePct}% you · ${fees.buybackBurnPct}% burn · ${fees.mainHolderSolPct}% holders`)), h("div", null, h("span", null, "You pay"), h("span", null, `${Number(d.devBuy) > 0 ? `${d.devBuy} SOL + ` : ""}~0.02 SOL`)), h("div", null, h("span", null, "Site fee"), h("span", null, fees.launchCostSol === null ? "None" : `${fees.launchCostSol} SOL`)), h("div", null, h("span", null, "Wallet"), walletLine)), btn, h("p", { class: "hint", style: "margin-top:10px;text-align:center" }, "Your wallet shows the full transaction before you approve."), nav(2, "", null));
+            onRemove(box, () => offW?.());
+            return box;
         },
     ];
     const successScreen = (coin, com) => {
-        const canvas = h("canvas");
         const text = encodeURIComponent(`Just launched $${coin.ticker} on the ${com.name} board on ${brand.name}. ${brand.siteUrl}/#/coin/${coin.mint}`);
-        const el = h("div", { class: "card success" }, canvas, isDemo() ? h("span", { class: "demo-tag" }, "DEMO · simulated coin") : null, h("h2", null, `$${coin.ticker} is live on the ${com.name} board`), h("p", { style: "color:var(--text-2)" }, `Trading on pump.fun in SOL. Priced in ${com.symbol} here.`), h("div", { style: "display:flex;gap:10px;flex-wrap:wrap;justify-content:center" }, h("a", { class: "btn primary", href: href(`/coin/${coin.mint}`) }, svg(UI.chart), "Open coin page"), isDemo() ? null : h("a", { class: "btn", href: `https://pump.fun/coin/${coin.mint}`, target: "_blank", rel: "noopener" }, "View on pump.fun", svg(UI.external)), h("a", { class: "btn", href: `https://x.com/intent/post?text=${text}`, target: "_blank", rel: "noopener" }, "Share on X")));
-        confetti(canvas, com);
-        return el;
+        return h("div", { class: "success" }, h("span", { class: "label" }, isDemo() ? "Demo · simulated coin" : "Assay complete"), h("h2", null, `$${coin.ticker} is on the table.`), h("p", { class: "muted" }, `Trading on pump.fun in SOL. Priced in ${com.symbol} here.`), certCard(coin, { live: false }), h("div", { class: "actions" }, h("a", { class: "btn primary", href: href(`/coin/${coin.mint}`) }, "View coin", svg(UI.arrow)), isDemo() ? null : h("a", { class: "btn", href: `https://pump.fun/coin/${coin.mint}`, target: "_blank", rel: "noopener" }, "View on pump.fun", svg(UI.external)), h("a", { class: "btn", href: `https://x.com/intent/post?text=${text}`, target: "_blank", rel: "noopener" }, "Share on X")));
     };
     renderPreview();
     go(0);
     return el;
 }
-function pickerSearch(boards, tiles) {
-    const i = h("input", { type: "search", id: "f-board-search", class: "board-search", placeholder: `Search ${boards.length} commodities…`, "aria-label": "Search commodities" });
-    i.addEventListener("input", () => {
-        const q = i.value.trim().toLowerCase();
-        boards.forEach((c, n) => { tiles[n].style.display = !q || c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q) ? "" : "none"; });
-        document.querySelectorAll(".pick-group").forEach((g) => { g.style.display = [...g.querySelectorAll(".pick")].some((t) => t.style.display !== "none") ? "" : "none"; });
-    });
-    return i;
-}
-function placeholderImage(color) {
-    return "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}" opacity=".35"/><circle cx="32" cy="32" r="14" fill="none" stroke="${color}" stroke-width="3"/></svg>`);
-}
-/** Short material burst inside a picker tile (gold dust, oil drip, uranium pulse…). */
-function materialBurst(tile, c) {
-    if (reducedMotion())
-        return;
-    for (let i = 0; i < 14; i++) {
-        const p = h("i", { style: `position:absolute;left:${50 + (Math.random() - 0.5) * 40}%;top:50%;width:${c.material === "oilslick" ? 4 : 5}px;height:${c.material === "oilslick" ? 9 : 5}px;border-radius:${c.material === "oilslick" ? "40% 40% 50% 50%" : "50%"};background:${c.color};pointer-events:none` });
-        tile.appendChild(p);
-        const dx = (Math.random() - 0.5) * 90, dy = c.material === "oilslick" ? 60 + Math.random() * 30 : -40 - Math.random() * 50;
-        p.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(${c.material === "glow" ? 2.4 : 0.4})`, opacity: 0 }], { duration: 650 + Math.random() * 300, easing: "cubic-bezier(.16,1,.3,1)" }).onfinish = () => p.remove();
-    }
-}
-/** Confetti made of the commodity's own particles. */
-function confetti(canvas, c) {
-    if (reducedMotion())
-        return;
-    const w = canvas.clientWidth || 600, hgt = canvas.clientHeight || 300;
-    canvas.width = w;
-    canvas.height = hgt;
-    const ctx = canvas.getContext("2d");
-    if (!ctx)
-        return;
-    const ps = Array.from({ length: 140 }, () => ({ x: w / 2 + (Math.random() - 0.5) * 60, y: hgt * 0.6, vx: (Math.random() - 0.5) * 9, vy: -Math.random() * 11 - 3, r: 2 + Math.random() * 4, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, a: 1 }));
-    const shape = c.material === "oilslick" ? "drop" : c.material === "glow" ? "glow" : c.id === "coffee" || c.id === "cocoa" ? "bean" : "flake";
-    let frames = 0;
-    const loop = () => {
-        if (!document.contains(canvas) || frames++ > 180)
-            return;
-        ctx.clearRect(0, 0, w, hgt);
-        for (const p of ps) {
-            p.vy += 0.22;
-            p.x += p.vx;
-            p.y += p.vy;
-            p.rot += p.vr;
-            p.a -= 0.005;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot);
-            ctx.globalAlpha = Math.max(0, p.a);
-            ctx.fillStyle = c.color;
-            if (shape === "glow") {
-                ctx.shadowColor = c.color;
-                ctx.shadowBlur = 10;
-                ctx.beginPath();
-                ctx.arc(0, 0, p.r * 0.8, 0, 7);
-                ctx.fill();
-            }
-            else if (shape === "drop") {
-                ctx.beginPath();
-                ctx.ellipse(0, 0, p.r * 0.6, p.r, 0, 0, 7);
-                ctx.fill();
-            }
-            else if (shape === "bean") {
-                ctx.beginPath();
-                ctx.ellipse(0, 0, p.r * 0.7, p.r * 1.1, 0, 0, 7);
-                ctx.fill();
-                ctx.strokeStyle = "#120607";
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(0, -p.r);
-                ctx.lineTo(0, p.r);
-                ctx.stroke();
-            }
-            else {
-                ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
-            }
-            ctx.restore();
-        }
-        requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+function placeholderImage() {
+    return "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#ebe6da"/><path d="M0 0L64 64M64 0L0 64" stroke="#c4bdac" stroke-width="1"/></svg>`);
 }

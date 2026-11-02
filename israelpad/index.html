@@ -210,6 +210,8 @@ th{color:var(--dim);font:600 12px var(--body);position:sticky;top:0;background:v
 .drawer .tbrow h2{flex:1}
 .logtools button{min-height:40px;font-size:13px}
 .drawer .note{font-size:12px}
+textarea.secret{-webkit-text-security:disc}
+#wImportKey{font-family:var(--mono);resize:vertical}
 pre#log{margin:0;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px;height:min(40vh,320px);overflow:auto;font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all}
 
 /* One-click launch form (in hero) */
@@ -403,11 +405,15 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
       <button id="wLock">Lock</button>
     </div>
     <div id="wImportBox" class="row" hidden>
-      <label for="wImportKey" class="grow">Private key
-        <input id="wImportKey" type="password" placeholder="Base58 key or [64 numbers]" autocomplete="off"></label>
+      <label for="wImportKey" class="grow">Private keys (one per line)
+        <textarea id="wImportKey" class="secret" rows="4" spellcheck="false" autocomplete="off" placeholder="Paste one or many keys: base58, [64 numbers], or a JSON list"></textarea></label>
       <label for="wImportName">Name
-        <input id="wImportName" placeholder="Dev 2" autocomplete="off"></label>
-      <button id="wImportSave" style="align-self:flex-end">Add wallet</button>
+        <input id="wImportName" placeholder="Dev" autocomplete="off"></label>
+      <div class="row" style="flex-basis:100%;align-items:center">
+        <button id="wImportSave" class="primary">Add wallets</button>
+        <label style="flex-direction:row;align-items:center;gap:6px;flex:0 0 auto"><input id="wImportShow" type="checkbox" style="width:auto;min-height:0"> Show keys</label>
+        <span id="wImportCount" class="note"></span>
+      </div>
     </div>
     <p class="note">Encrypted with your password, stored in this browser only. Back up keys for wallets that hold SOL.</p>
   </section>
@@ -1194,10 +1200,40 @@ $("wUnlock").onclick = unlockVault;
 $("wPass").addEventListener("keydown", (e) => { if (e.key === "Enter") unlockVault(); });
 $("wNew").onclick = () => addWallet(W.Keypair.generate());
 $("wImportBtn").onclick = () => { $("wImportBox").hidden = !$("wImportBox").hidden; if (!$("wImportBox").hidden) $("wImportKey").focus(); };
-$("wImportSave").onclick = () => {
-  let kp; try{ kp = parseKey($("wImportKey").value); }catch{ log("That private key couldn't be read. Paste the base58 key or the 64-number array."); return; }
-  addWallet(kp, $("wImportName").value.trim());
-  $("wImportKey").value = ""; $("wImportName").value = ""; $("wImportBox").hidden = true;
+// Bulk import: base58 keys and/or [64-number] arrays, separated by lines, spaces, commas, or a JSON list.
+function parseManyKeys(text){
+  const found = [], bad = [];
+  let rest = String(text || "").trim();
+  if (/^\[\s*["\[]/.test(rest)){ try{ const arr = JSON.parse(rest); if (Array.isArray(arr)){ rest = ""; arr.forEach(v => found.push(typeof v === "string" ? v : JSON.stringify(v))); } }catch{} }
+  rest = rest.replace(/\[[\d\s,]+\]/g, m => { found.push(m); return " "; });
+  rest.split(/[\s,;"']+/).filter(Boolean).forEach(t => found.push(t));
+  const kps = [];
+  found.forEach((t, i) => { try{ kps.push(parseKey(t)); }catch{ bad.push(i + 1); } });
+  return { kps, bad };
+}
+$("wImportKey").addEventListener("input", () => {
+  const { kps, bad } = parseManyKeys($("wImportKey").value);
+  $("wImportCount").textContent = $("wImportKey").value.trim() ? `${kps.length} key${kps.length === 1 ? "" : "s"} found${bad.length ? `, ${bad.length} unreadable` : ""}` : "";
+});
+$("wImportShow").onchange = () => $("wImportKey").classList.toggle("secret", !$("wImportShow").checked);
+$("wImportSave").onclick = async () => {
+  const { kps, bad } = parseManyKeys($("wImportKey").value);
+  if (!kps.length){ log("No readable private keys found. Paste base58 keys or [64-number] arrays, one per line."); return; }
+  const base = $("wImportName").value.trim();
+  const have = new Set(vault.wallets.map(w => w.kp.publicKey.toBase58()));
+  let added = 0, dup = 0, first = -1;
+  kps.forEach(kp => {
+    const a = kp.publicKey.toBase58();
+    if (have.has(a)){ dup++; return; }
+    have.add(a);
+    const n = vault.wallets.length + 1;
+    const name = base ? (kps.length === 1 ? base : `${base} ${added + 1}`) : `Dev ${n}`;
+    vault.wallets.push({ name, kp }); added++;
+    if (first < 0) first = vault.wallets.length - 1;
+  });
+  if (first >= 0){ if (vault.active < 0) selectWallet(first, true); else { await saveVault(); renderWallets(); } refreshWalletBalances(); }
+  log(`Imported ${added} dev wallet${added === 1 ? "" : "s"}${dup ? `, skipped ${dup} already in your vault` : ""}${bad.length ? `, ${bad.length} couldn't be read (entry ${bad.slice(0,10).join(", ")}${bad.length > 10 ? "…" : ""})` : ""}.`, bad.length ? "problem" : "");
+  $("wImportKey").value = ""; $("wImportName").value = ""; $("wImportCount").textContent = ""; $("wImportBox").hidden = true;
 };
 $("wCopy").onclick = async () => { const w = vault.wallets[vault.active]; if (!w) return; log(await copy(w.kp.publicKey.toBase58()) ? `Copied ${w.name}'s address.` : "Copy was blocked by the browser."); };
 $("wExport").onclick = () => {

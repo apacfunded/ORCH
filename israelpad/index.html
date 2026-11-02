@@ -208,6 +208,8 @@ th{color:var(--dim);font:600 12px var(--body);position:sticky;top:0;background:v
 .drawer{position:fixed;z-index:35;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(12,28,63,.1);
   padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px}
 .drawer .tbrow h2{flex:1}
+.logtools button{min-height:40px;font-size:13px}
+.drawer .note{font-size:12px}
 pre#log{margin:0;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px;height:min(40vh,320px);overflow:auto;font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all}
 
 /* One-click launch form (in hero) */
@@ -492,7 +494,14 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
 <button id="logBtn" class="logbtn" aria-controls="logDrawer" aria-expanded="false">Activity <span id="logBadge" class="badge" hidden>0</span></button>
 <div id="logDrawer" class="drawer" hidden>
   <div class="tbrow"><h2>Activity</h2><button id="logClose">Close</button></div>
-  <pre id="log">Ready.</pre>
+  <div class="row logtools">
+    <button id="logCheck" class="primary">Check everything</button>
+    <button id="logReport">Copy report</button>
+    <button id="logDownload">Download log</button>
+    <button id="logClear" class="danger">Clear</button>
+  </div>
+  <p class="note">The log is saved in this browser and survives reloads. Copy report gives you everything to send for help. It never includes private keys.</p>
+  <pre id="log"></pre>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
@@ -544,11 +553,21 @@ $("shareLink").onclick = async () => {
 };
 renderLinks();
 
-let unread = 0;
-function log(msg, cls){
-  const t = new Date().toLocaleTimeString(); $("log").textContent += `\n[${t}] ${msg}`; $("log").scrollTop = 1e9;
+// ---- Saved log: kept in this browser (last 1,500 lines) so problems can be reported later ----
+const APP_VERSION = "israelpad-2026.11.02";
+const LOG_MAX = 1500;
+let unread = 0, logLines = store.get("log", []);
+function stamp(){ const d = new Date(); return d.toLocaleDateString() + " " + d.toLocaleTimeString(); }
+function log(msg, level){
+  const line = `[${stamp()}]${level ? " " + level.toUpperCase() + ":" : ""} ${msg}`;
+  logLines.push(line); if (logLines.length > LOG_MAX) logLines = logLines.slice(-LOG_MAX);
+  store.set("log", logLines);
+  $("log").textContent += (($("log").textContent ? "\n" : "") + line); $("log").scrollTop = 1e9;
   if ($("logDrawer").hidden){ unread++; $("logBadge").textContent = unread; $("logBadge").hidden = false; }
 }
+$("log").textContent = logLines.join("\n");
+window.addEventListener("error", e => log(`${e.message} (${(e.filename||"").split("/").pop()}:${e.lineno})`, "error"));
+window.addEventListener("unhandledrejection", e => log(`Unhandled: ${e.reason?.message || e.reason}`, "error"));
 function getConn(){
   const url = $("rpc").value.trim() || W.clusterApiUrl("mainnet-beta");
   if (!conn) conn = new W.Connection(url, "confirmed");
@@ -805,9 +824,11 @@ function startTP(mint, baseMcap){
     if (d.mint !== mint || typeof d.marketCapSol !== "number") return;
     if (!tp.base){ tp.base = d.marketCapSol; $("tpBase").textContent = fmt(tp.base); $("tpTarget").textContent = fmt(tp.base * mult); }
     $("tpLive").textContent = fmt(d.marketCapSol);
-    if (!tp.done && d.marketCapSol >= tp.base * mult){ tp.done = true; sellTP(); }
+    if (!tp.done && d.marketCapSol >= tp.base * mult){ tp.done = true; log(`Take profit target hit: ${fmt(d.marketCapSol)} SOL mcap ≥ ${fmt(tp.base * mult)}.`); sellTP(); }
   };
-  tp.ws.onerror = () => tpSet("Couldn't reach the pump.fun price feed. Press Start again.", false);
+  tp.ws.onerror = () => { tpSet("Couldn't reach the pump.fun price feed. Press Start again.", false); log("Take profit price feed error.", "problem"); };
+  const sock = tp.ws;
+  tp.ws.onclose = () => { if (tp.ws === sock && !tp.done) log("Take profit price feed closed before selling. Press Start take profit again.", "problem"); };
 }
 
 async function sellTP(){
@@ -832,7 +853,7 @@ async function sellTP(){
         log("Mazel tov! Take profit filled."); updateLaunch(tp.mint, { tp: `sold ${body.amount} at ${$("tpLive").textContent} SOL mcap` }); stopTP(true); return;
       }
       throw new Error(st ? "sell failed on-chain (slippage?)" : "sell not confirmed");
-    }catch(e){ log(`Sell try ${attempt} failed: ${e.message}`); }
+    }catch(e){ log(`Sell try ${attempt} failed: ${e.message}`, "error"); }
   }
   $("tpResult").textContent = "failed"; tpSet("Sell failed 3 times. Sell manually on pump.fun.", false); stopTP(true);
 }
@@ -924,7 +945,7 @@ async function revamp(l){
 
       const { mint, sig } = await createCoin(kp, { name: l.name, symbol: l.symbol, uri: meta.metadataUri, buy });
       log(`Revamp sent: ${l.symbol} → ${short(mint)}. https://solscan.io/tx/${sig}`);
-    }catch(e){ log(`Revamp failed: ${e.message}`); disarm(false); }
+    }catch(e){ log(`Revamp failed: ${e.message}`, "error"); disarm(false); }
   });
 }
 renderLaunches();
@@ -1000,10 +1021,95 @@ function launchNew(){
         $("mint").value = mint; $("createSig").value = sig; fire(mint, sig);
         if ($("tpKey").value.trim()){ $("tpMint").value = mint; startTP(mint, null); }
       }
-    }catch(e){ log(`Launch failed: ${e.message}`); disarm(false); }
+    }catch(e){ log(`Launch failed: ${e.message}`, "error"); disarm(false); }
     finally{ btn.disabled = false; btn.textContent = "Launch coin"; }
   });
 }
+
+// ---- Report + health check (for sending to support) ----
+const hideSecrets = (u) => { try{ const x = new URL(u); return x.origin + (x.pathname.length > 1 || x.search ? " (key/path hidden)" : ""); }catch{ return u ? "(set, hidden)" : ""; } };
+function reportText(){
+  const ready = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal()).length;
+  const lines = [
+    `IsraelPad report · ${APP_VERSION} · ${new Date().toISOString()}`,
+    `Page: ${location.origin}${location.pathname}`,
+    `Browser: ${navigator.userAgent}`,
+    `RPC: ${hideSecrets($("rpc").value.trim()) || "public (default)"}`,
+    `Vault: ${vault.key ? "unlocked" : "locked"}, ${vault.wallets.length} dev wallet(s); selected ${$("dev").value.trim() || "none"}`,
+    `Burners: ${burners.length} total, ${Object.keys(balances).length ? ready : "?"} ready; failed txs per launch ${$("count").value}; priority ${$("prio").value} µlamports/CU`,
+    `Armed: ${armed ? "yes" : "no"}`,
+    `Take profit: ${tp.ws ? "watching " + (tp.mint || "?") : "off"}; sell at ${$("tpMult").value}×, ${$("tpPct").value}%; slippage ${$("tpSlip").value}%; priority ${$("tpPrio").value} SOL; base ${$("tpBase").textContent}, live ${$("tpLive").textContent}, result ${$("tpResult").textContent}`,
+    `Last launches: ${launches.slice(0,5).map(l => `${l.symbol} ${l.mint}${l.failed ? " [failed txs " + l.failed + "]" : ""}${l.tp ? " [tp " + l.tp + "]" : ""}`).join(" | ") || "none"}`,
+    `---- Log (last 300 lines) ----`,
+    ...logLines.slice(-300)
+  ];
+  return lines.join("\n");
+}
+$("logReport").onclick = async () => {
+  const ok = await copy(reportText());
+  log(ok ? "Report copied. Paste it to Claude to get help." : "Copy was blocked. Use Download log instead.");
+};
+$("logDownload").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([reportText()], { type: "text/plain" }));
+  a.download = `israelpad-log-${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+};
+$("logClear").onclick = () => ask("Clear the saved log? Copy or download it first if you need it.", () => { logLines = []; store.set("log", []); $("log").textContent = ""; log("Log cleared."); });
+
+function wsCheck(url, sendMsg, ms = 6000){
+  return new Promise(resolve => {
+    let done = false, s; const t0 = performance.now();
+    const end = (ok, why) => { if (done) return; done = true; try{ s.close(); }catch{} resolve({ ok, why, ms: Math.round(performance.now() - t0) }); };
+    try{ s = new WebSocket(url); }catch(e){ return end(false, e.message); }
+    s.onopen = () => { if (sendMsg) s.send(JSON.stringify(sendMsg)); end(true); };
+    s.onerror = () => end(false, "couldn't connect");
+    setTimeout(() => end(false, "timed out"), ms);
+  });
+}
+async function healthCheck(){
+  const btn = $("logCheck"); btn.disabled = true; btn.textContent = "Checking…";
+  log("---- Check everything ----");
+  let problems = 0; const bad = (m) => { problems++; log(m, "problem"); };
+  // RPC
+  try{
+    const t0 = performance.now(); const slot = await getConn().getSlot(); const ms = Math.round(performance.now() - t0);
+    log(`RPC OK: slot ${slot}, ${ms} ms${$("rpc").value.trim() ? "" : " (public RPC: set a paid one in Setup for real launches)"}.`);
+    if (ms > 1500) bad(`RPC is slow (${ms} ms). Failed txs may land late.`);
+  }catch(e){ bad(`RPC failed: ${e.message}. Set a working RPC URL in Setup.`); }
+  // pump.fun feed (launch detection + take profit prices)
+  const f = await wsCheck("wss://pumpportal.fun/api/data", { method: "subscribeNewToken" });
+  f.ok ? log(`pump.fun feed OK (${f.ms} ms).`) : bad(`pump.fun feed ${f.why}. Launch detection and take profit won't work until it connects.`);
+  // PumpPortal trade API (builds create + sell txs)
+  try{ const r = await fetch("https://pumpportal.fun/api/trade-local", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    log(`PumpPortal trade API reachable (status ${r.status}).`); }catch(e){ bad(`PumpPortal trade API unreachable: ${e.message}. Launch and take profit sells need it.`); }
+  // upload relay
+  try{ const r = await fetch(RELAY, { method: "GET" }); log(`Upload relay reachable (status ${r.status}).`); }
+  catch(e){ bad(`Upload relay unreachable: ${e.message}. Uploads will only work if pump.fun allows the direct upload.`); }
+  // dev wallet
+  if (!vault.key) bad("Wallet vault is locked. Unlock it in Wallets so the dev wallet can sign.");
+  let devKey = null; try{ devKey = parseKey($("tpKey").value); }catch{}
+  if (!devKey) bad("No dev wallet selected to sign launches and sells.");
+  else{
+    try{ const b = await getConn().getBalance(devKey.publicKey); const buy = Number($("ncBuy").value) || 0;
+      log(`Dev wallet ${short(devKey.publicKey.toBase58())}: ${(b/1e9).toFixed(4)} SOL.`);
+      if (b/1e9 < buy + 0.03) bad(`Dev wallet needs about ${(buy + 0.03).toFixed(3)} SOL for a ${buy} SOL dev buy plus fees.`);
+    }catch(e){ bad(`Couldn't read dev wallet balance: ${e.message}`); }
+  }
+  // burners
+  await refreshBalances();
+  const ready = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal()).length;
+  const want = Math.max(1, Number($("count").value) || 20);
+  if (!burners.length) bad("No burners. Generate them in Wallets.");
+  else if (ready < want) bad(`Only ${ready}/${want} burners are funded enough to fire.`);
+  else log(`Burners OK: ${ready} ready.`);
+  // take profit
+  log(tp.ws ? `Take profit is watching ${short(tp.mint || "")}. Keep this tab open.` : "Take profit is off (it starts on its own when a launch fires).");
+  log(problems ? `Check finished: ${problems} problem(s) above.` : "Check finished: everything looks good.", problems ? "problem" : "");
+  btn.disabled = false; btn.textContent = "Check everything";
+}
+$("logCheck").onclick = healthCheck;
+log(`Page opened (${APP_VERSION}).`);
 
 // ---- Wallet vault: multiple dev wallets, encrypted with a password ----
 const vault = { key: null, salt: null, wallets: [], active: -1, bal: {} };

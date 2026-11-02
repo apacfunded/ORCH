@@ -991,20 +991,23 @@ async function createCoin(kp, { name, symbol, uri, buy }){
   const sig = await getConn().sendRawTransaction(tx.serialize(), { maxRetries: 3 });
   return { mint: mintKp.publicKey.toBase58(), sig };
 }
-// pump.fun's metadata upload. Tries it directly, then through the IsraelPad relay if the browser blocks it.
+// Coin image + metadata upload (hosted by israelpad-api on Vercel Blob).
 const RELAY = "https://israelpad-api-aislopv1-8230.vercel.app/api/ipfs";
 const fileToDataUrl = (f) => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error("couldn't read the image")); r.readAsDataURL(f); });
 async function uploadMeta(fd, fields){
+  // IsraelPad's own host first (pump.fun's upload rejects requests from other sites), pump.fun direct as a backup.
   try{
-    const r = await fetch("https://pump.fun/api/ipfs", { method: "POST", body: fd });
-    if (r.ok){ const j = await r.json(); if (j.metadataUri) return j.metadataUri; }
-    else log(`Direct upload returned ${r.status}. Trying the relay…`);
-  }catch{ log("Direct upload was blocked. Trying the relay…"); }
-  const r = await fetch(RELAY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...fields, image: await fileToDataUrl(ncFile) }) });
+    const r = await fetch(RELAY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...fields, image: await fileToDataUrl(ncFile) }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.metadataUri){ log(`Image and metadata saved: ${j.metadataUri}`); return j.metadataUri; }
+    log(`Upload host returned ${r.status}${j.error ? ": " + j.error : ""}. Trying pump.fun directly…`, "problem");
+  }catch(e){ log(`Upload host unreachable (${e.message}). Trying pump.fun directly…`, "problem"); }
+  const r = await fetch("https://pump.fun/api/ipfs", { method: "POST", body: fd });
   const j = await r.json().catch(() => ({}));
   if (r.ok && j.metadataUri) return j.metadataUri;
-  throw new Error(j.error || `couldn't upload the image and metadata (relay ${r.status})`);
+  throw new Error(`couldn't upload the image and metadata (pump.fun returned ${r.status})`);
 }
+
 let ncFile = null;
 $("ncImg").onchange = () => {
   const f = $("ncImg").files[0]; if (!f) return;

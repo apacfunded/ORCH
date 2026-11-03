@@ -443,14 +443,14 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
     <div class="fundbox">
       <div class="row" style="align-items:flex-end">
         <label for="fundAmt">SOL per burner
-          <input id="fundAmt" type="number" min="0.001" step="0.001" value="0.002"></label>
+          <input id="fundAmt" type="number" min="0.001" step="0.001" value="0.004"></label>
         <button id="fundBurners" class="primary" style="flex:1 1 160px">Fund burners</button>
         <button id="sweepDev" style="flex:1 1 160px">Sweep to dev wallet</button>
       </div>
       <p class="note" id="fundNote">Tops every burner up to this amount from your selected dev wallet. Sweep sends all burner SOL back to it.</p>
     </div>
     <div class="rack"><table><thead><tr><th>#</th><th>Address</th><th>SOL</th></tr></thead><tbody id="rackBody"></tbody></table></div>
-    <p class="note">Fund each with 0.002 SOL (~200 runs). 0.00089 SOL per wallet stays locked as Solana's rent minimum.</p>
+    <p class="note">Fund each with 0.004 SOL (~30 runs at the default priority). 0.00089 SOL stays locked as Solana's rent minimum, and 0.002 SOL must sit free so each buy can open its token account before pump.fun rejects it. Keep burners well under the buy size.</p>
     <details>
       <summary>Sweep, back up or delete burners</summary>
       <div class="inner">
@@ -481,10 +481,12 @@ footer.site .he{font:500 16px var(--display);color:var(--accent)}
         <div class="row">
           <label for="count">Failed txs per launch
             <input id="count" type="number" min="1" max="100" value="20"></label>
+          <label for="buySol">Buy size (SOL)
+            <input id="buySol" value="0.5" placeholder="0.5 or 0.2-1.5" autocomplete="off"></label>
           <label for="prio">Priority (µlamports/CU)
             <input id="prio" type="number" min="0" value="200000"></label>
         </div>
-        <p class="note">Priority adds <span id="prioLamports">200</span> lamports per failed tx on top of the 5,000 base fee.</p>
+        <p class="note">Each failed tx is a pump.fun buy of the buy size (a range like 0.2-1.5 picks a random size per tx). It asks for the whole curve, so pump.fun rejects it. Burners holding the buy size or more are skipped, so a buy can never go through. Priority adds <span id="prioLamports">200</span> lamports per failed tx on top of the 5,000 base fee.</p>
         <label for="dev">Dev wallet address (set by the wallet bar)
           <input id="dev" placeholder="Creator wallet address" autocomplete="off"></label>
         <label for="tpKey">Dev wallet key (set by the wallet bar; memory only)
@@ -537,7 +539,7 @@ const FLAG_SVG = '<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
 </script>
 <script>
 const W = solanaWeb3;
-const RENT = 890880, BASE_FEE = 5000, CU_LIMIT = 1000;
+const RENT = 890880, BASE_FEE = 5000, CU_LIMIT = 150000, ATA_RENT = 2074080;
 const $ = (id) => document.getElementById(id);
 // Raw instruction builders. web3.js's browser build crashes ("Buffer is not defined") when its own
 // SystemProgram.transfer / ComputeBudgetProgram helpers encode amounts, so we encode the bytes ourselves.
@@ -551,6 +553,80 @@ function ixTransfer(from, to, lamports, extraKeys = []){
 }
 const ixCuLimit = (units) => new W.TransactionInstruction({ programId: CB_ID, keys: [], data: cat([2], leBytes(units, 4)) });
 const ixCuPrice = (micro) => new W.TransactionInstruction({ programId: CB_ID, keys: [], data: cat([3], leBytes(micro, 8)) });
+
+// ---- pump.fun buy builder (mirrors @pump-fun/pump-sdk 4.3.1 legacy `buy`) ----
+// Needs `W` (solanaWeb3), `leBytes`, `cat` in scope.
+const PUMP_ID = new W.PublicKey("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P");
+const PUMP_FEE_ID = new W.PublicKey("pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ");
+const ATA_ID = new W.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+const TOKEN_2022_ID = new W.PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+const PUMP_FEE_RECIPIENTS = ["62qc2CNXwrYqQScmEdiZFFAnJR262PxWEuNQtxfafNgV","7VtfL8fvgNfhz17qKRMjzQEXgbdpnHHHQRh54R9jP2RJ","7hTckgnGnLQR6sdH7YkqFTAA7VwTfYFaZ6EhEsU3saCX","9rPYyANsfQZw3DnDmKE3YCQF5E8oD89UXoHn9JFEhJUz","AVmoTthdrX6tKt4nDjco2D775W2YK3sDhxPcMmzUAmTY","CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM","FWsW1xNtWscwNmKv6wVsU1iTzRN6wmmk3MjxRP5tT7hz","G5UZAVbAf46s7cKWoyKu8kYTip9DGTpbLZ2qa9Aq69dP"];
+const PUMP_BUYBACK_RECIPIENTS = ["5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD","9M4giFFMxmFGXtc3feFzRai56WbBqehoSeRE5GK7gf7","GXPFM2caqTtQYC2cJ5yJRi9VDkpsYZXzYdwYpGnLmtDL","3BpXnfJaUTiwXnJNe7Ej1rcbzqTTQUvLShZaWazebsVR","5cjcW9wExnJJiqgLjq7DEG75Pm6JBgE1hNv4B2vHXUW6","EHAAiTxcdDwQ3U4bU6YcMsQGaekdzLS3B5SmYo46kJtL","5eHhjP8JaYkz83CWwvGU2uMUXefd3AazWGx4gpcuEEYD","A7hAgCzFw14fejgCp387JUJRMNyz4j89JKnhtKU8piqW"];
+const BUY_DISC = [102, 6, 61, 18, 1, 218, 235, 234];
+const FEE_CONFIG_SEED = [1,86,224,246,147,102,90,207,68,219,21,104,191,23,91,170,81,137,203,151,245,210,255,59,101,93,43,182,253,109,24,176];
+const INITIAL_REAL_TOKENS = 793100000000000n; // a fresh curve's real token reserves (6 decimals)
+const enc = (s) => new TextEncoder().encode(s);
+const pda = (seeds, prog = PUMP_ID) => W.PublicKey.findProgramAddressSync(seeds, prog)[0];
+const pick = (arr) => new W.PublicKey(arr[Math.floor(Math.random() * arr.length)]);
+const PUMP_GLOBAL = pda([enc("global")]);
+const PUMP_EVENT_AUTH = pda([enc("__event_authority")]);
+const PUMP_GLOBAL_VOL = pda([enc("global_volume_accumulator")]);
+const PUMP_FEE_CONFIG = pda([enc("fee_config"), Uint8Array.from(FEE_CONFIG_SEED)], PUMP_FEE_ID);
+const ataOf = (owner, mint, tokenProgram) => pda([owner.toBytes(), tokenProgram.toBytes(), mint.toBytes()], ATA_ID);
+const u64 = (v) => leBytes(v, 8);
+
+// Reads what a buy needs from the mint + bonding curve accounts. Falls back to
+// sensible launch-time defaults if the RPC hasn't caught up with a brand-new coin.
+async function pumpCoinInfo(mint, fallbackCreator){
+  const curve = pda([enc("bonding-curve"), mint.toBytes()]);
+  let mintInfo = null, curveInfo = null;
+  for (let i = 0; i < 4 && !(mintInfo && curveInfo); i++){
+    try{ [mintInfo, curveInfo] = await getConn().getMultipleAccountsInfo([mint, curve], "processed"); }catch{}
+    if (!(mintInfo && curveInfo)) await new Promise(r => setTimeout(r, 150));
+  }
+  const tokenProgram = mintInfo ? mintInfo.owner : TOKEN_2022_ID;
+  let creator = fallbackCreator || null, realTokens = INITIAL_REAL_TOKENS, mayhem = false, complete = false;
+  if (curveInfo){
+    const d = curveInfo.data;
+    let r = 0n; for (let i = 7; i >= 0; i--) r = (r << 8n) | BigInt(d[24 + i]);
+    if (r > 0n) realTokens = r;
+    complete = d[48] === 1;
+    creator = new W.PublicKey(d.slice(49, 81));
+    mayhem = d[81] === 1;
+  }
+  return { curve, tokenProgram, creator, realTokens, mayhem, complete, found: !!curveInfo };
+}
+
+// One pump.fun buy that tries to take the whole remaining curve for `maxSolLamports`.
+// That costs far more SOL than offered, so the program rejects it on-chain.
+function ixPumpBuy(user, mint, info, maxSolLamports){
+  const assocUser = ataOf(user, mint, info.tokenProgram);
+  const createAta = new W.TransactionInstruction({ programId: ATA_ID, data: Uint8Array.from([1]), keys: [
+    { pubkey: user, isSigner: true, isWritable: true },
+    { pubkey: assocUser, isSigner: false, isWritable: true },
+    { pubkey: user, isSigner: false, isWritable: false },
+    { pubkey: mint, isSigner: false, isWritable: false },
+    { pubkey: SYS_ID, isSigner: false, isWritable: false },
+    { pubkey: info.tokenProgram, isSigner: false, isWritable: false },
+  ]});
+  const k = (pubkey, w) => ({ pubkey, isSigner: false, isWritable: !!w });
+  const buy = new W.TransactionInstruction({ programId: PUMP_ID,
+    data: cat(Uint8Array.from(BUY_DISC), u64(info.realTokens), u64(maxSolLamports), [1], [0]),
+    keys: [
+      k(PUMP_GLOBAL), k(pick(PUMP_FEE_RECIPIENTS), 1), k(mint),
+      k(info.curve, 1), k(ataOf(info.curve, mint, info.tokenProgram), 1), k(assocUser, 1),
+      { pubkey: user, isSigner: true, isWritable: true },
+      k(SYS_ID), k(info.tokenProgram),
+      k(pda([enc("creator-vault"), info.creator.toBytes()]), 1),
+      k(PUMP_EVENT_AUTH), k(PUMP_ID), k(PUMP_GLOBAL_VOL),
+      k(pda([enc("user_volume_accumulator"), user.toBytes()]), 1),
+      k(PUMP_FEE_CONFIG), k(PUMP_FEE_ID),
+      k(pda([enc("bonding-curve-v2"), mint.toBytes()])),
+      k(pick(PUMP_BUYBACK_RECIPIENTS), 1),
+    ]});
+  return [createAta, buy];
+}
+
 const store = {
   get(k, d){ try{ const v = localStorage.getItem("misfire:"+k); return v===null?d:JSON.parse(v); }catch{ return d; } },
   set(k, v){ try{ localStorage.setItem("misfire:"+k, JSON.stringify(v)); }catch{} }
@@ -559,7 +635,7 @@ let burners = store.get("burners", []).map(a => W.Keypair.fromSecretKey(Uint8Arr
 let balances = {};
 let conn = null, ws = null, armed = false, cachedHash = null, hashTimer = null;
 
-["rpc","dev","count","prio","sweepTo"].forEach(id => {
+["rpc","dev","count","prio","sweepTo","buySol"].forEach(id => {
   $(id).value = store.get(id, $(id).value);
   $(id).addEventListener("change", () => { store.set(id, $(id).value); conn = null; render(); });
 });
@@ -593,7 +669,7 @@ $("shareLink").onclick = async () => {
 renderLinks();
 
 // ---- Saved log: kept in this browser (last 1,500 lines) so problems can be reported later ----
-const APP_VERSION = "israelpad-2026.11.02";
+const APP_VERSION = "israelpad-2026.11.03";
 const LOG_MAX = 1500;
 let unread = 0, logLines = store.get("log", []);
 function stamp(){ const d = new Date(); return d.toLocaleDateString() + " " + d.toLocaleTimeString(); }
@@ -614,7 +690,8 @@ function getConn(){
 }
 const prioLamports = () => Math.ceil((Number($("prio").value)||0) * CU_LIMIT / 1e6);
 const feePerTx = () => BASE_FEE + prioLamports();
-const minBal = () => RENT + feePerTx();
+// A burner needs its own rent minimum, room for the token account the buy opens, and one fee.
+const minBal = () => RENT + ATA_RENT + feePerTx();
 const short = (s) => s.slice(0,4)+"…"+s.slice(-4);
 const sol = (l) => (l/1e9).toFixed(6);
 function saveBurners(){ store.set("burners", burners.map(k => Array.from(k.secretKey))); }
@@ -627,7 +704,7 @@ function render(){
   const ready = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal());
   $("nReady").textContent = Object.keys(balances).length ? ready.length : "–";
   const vals = burners.map(k => balances[k.publicKey.toBase58()]).filter(v => v !== undefined);
-  $("runsLeft").textContent = vals.length ? Math.max(0, Math.floor((Math.min(...vals) - RENT) / feePerTx())) : "–";
+  $("runsLeft").textContent = vals.length ? Math.max(0, Math.floor((Math.min(...vals) - RENT - ATA_RENT) / feePerTx())) : "–";
   updateChecklist();
   $("rackBody").innerHTML = burners.map((k,i) => {
     const a = k.publicKey.toBase58(), b = balances[a];
@@ -653,7 +730,7 @@ $("gen").onclick = () => {
   const add = n - burners.length;
   if (add <= 0){ log(`You already have ${burners.length} burners.`); return; }
   for (let i = 0; i < add; i++) burners.push(W.Keypair.generate());
-  saveBurners(); render(); log(`Generated ${add} burners. Copy the addresses and fund each with 0.002 SOL.`);
+  saveBurners(); render(); log(`Generated ${add} burners. Fund each with 0.004 SOL (Fund burners does it from your dev wallet).`);
 };
 $("bal").onclick = refreshBalances;
 $("copyAddr").onclick = async () => {
@@ -702,34 +779,54 @@ async function refreshHash(){
 
 function setStatus(text, live){ $("statusText").textContent = text; $("dot").classList.toggle("live", !!live); $("chipArm").textContent = live ? "Armed" : "Idle"; $("chipArm").className = "chip" + (live ? " ok" : ""); }
 
-async function fire(mintStr, createSig){
+// Buy size: "0.5" or a range "0.2-1.5" (SOL). Returns [minLamports, maxLamports] or null.
+function buyRange(){
+  const v = String($("buySol").value || "0.5").trim();
+  const [a, b] = (v.includes("-") ? v.split("-") : [v, v]).map(x => Number(x.trim()));
+  if (!(a > 0) || !(b >= a)) return null;
+  return [Math.round(a * 1e9), Math.round(b * 1e9)];
+}
+
+async function fire(mintStr, createSig, creatorStr){
   let mint;
   try{ mint = new W.PublicKey(mintStr); }catch{ log("That mint address isn't valid."); return; }
+  const range = buyRange();
+  if (!range){ log("Buy size isn't valid. Use a number like 0.5 or a range like 0.2-1.5 (Setup → Advanced).", "problem"); return; }
   const n = Math.max(1, Number($("count").value)||20);
-  const ready = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal()).slice(0, n);
-  if (!ready.length){ log("No burner can cover rent + fee. Fund them and refresh balances."); return; }
+  const funded = burners.filter(k => (balances[k.publicKey.toBase58()]||0) >= minBal());
+  // Safety: a burner that can't afford the buy size can never complete the buy.
+  const tooRich = funded.filter(k => balances[k.publicKey.toBase58()] >= range[0]);
+  if (tooRich.length) log(`Skipped ${tooRich.length} burner${tooRich.length === 1 ? "" : "s"} holding ${sol(range[0])} SOL or more (the buy size). Sweep them or raise the buy size.`, "problem");
+  const ready = funded.filter(k => balances[k.publicKey.toBase58()] < range[0]).slice(0, n);
+  if (!ready.length){ log("No burner is ready. Each needs at least " + sol(minBal()) + " SOL and less than the buy size. Fund them and refresh balances."); return; }
   if (!cachedHash) await refreshHash();
   const { blockhash, lastValidBlockHeight } = cachedHash;
   const cuPrice = Number($("prio").value)||0;
 
-  const signed = ready.map(k => {
-    const bal = balances[k.publicKey.toBase58()];
+  let creator = null;
+  try{ creator = new W.PublicKey(creatorStr || $("dev").value.trim()); }catch{}
+  const info = await pumpCoinInfo(mint, creator);
+  if (!info.creator){ log("Couldn't read this coin's creator yet. Check the mint is a pump.fun coin, or set the dev wallet.", "problem"); return; }
+  if (info.complete) log("Heads up: this coin already left the bonding curve, so pump.fun rejects every curve buy anyway.", "problem");
+  if (!info.found) log("Coin not visible on your RPC yet. Firing with launch defaults.");
+
+  const signed = ready.map((k, i) => {
+    const lamports = range[0] + Math.floor(Math.random() * (range[1] - range[0] + 1)) + i; // + i keeps each tx unique
     const tx = new W.Transaction({ feePayer: k.publicKey, blockhash, lastValidBlockHeight });
-    if (cuPrice > 0){
-      tx.add(ixCuLimit(CU_LIMIT));
-      tx.add(ixCuPrice(cuPrice));
-    }
-    const ix = ixTransfer(k.publicKey, W.Keypair.generate().publicKey, bal + 1e9, [{ pubkey: mint, isSigner: false, isWritable: false }]);
-    tx.add(ix); tx.sign(k);
-    return { k, raw: tx.serialize() };
+    tx.add(ixCuLimit(CU_LIMIT));
+    if (cuPrice > 0) tx.add(ixCuPrice(cuPrice));
+    ixPumpBuy(k.publicKey, mint, info, lamports).forEach(ix => tx.add(ix));
+    tx.sign(k);
+    return { k, raw: tx.serialize(), lamports };
   });
 
   const t0 = performance.now();
   const sends = await Promise.allSettled(signed.map(s => getConn().sendRawTransaction(s.raw, { skipPreflight: true, maxRetries: 2 })));
   const sent = [];
   sends.forEach((r,i) => r.status === "fulfilled" ? sent.push({ ...signed[i], sig: r.value }) : log(`Send failed ${short(signed[i].k.publicKey.toBase58())}: ${r.reason?.message||r.reason}`));
-  log(`Sent ${sent.length}/${signed.length} failed txs at ${short(mint.toBase58())} in ${Math.round(performance.now()-t0)} ms.`);
-  setStatus(`Fired ${sent.length} txs. Waiting for slots…`, false);
+  const sizes = signed.map(s => s.lamports);
+  log(`Sent ${sent.length}/${signed.length} failing pump.fun buys (${sol(Math.min(...sizes))}–${sol(Math.max(...sizes))} SOL each) at ${short(mint.toBase58())} in ${Math.round(performance.now()-t0)} ms.`);
+  setStatus(`Fired ${sent.length} buys. Waiting for slots…`, false);
   await report(sent, createSig);
 }
 
@@ -785,7 +882,7 @@ function armLaunch(){
         if (!armed || !d.mint || d.traderPublicKey !== dev) return;
         armed = false; log(`New coin ${d.symbol||""} ${short(d.mint)} from dev. Firing.`);
         $("mint").value = d.mint; $("createSig").value = d.signature || "";
-        disarm(true); recordLaunch(d); fire(d.mint, d.signature || null);
+        disarm(true); recordLaunch(d); fire(d.mint, d.signature || null, d.traderPublicKey);
         if ($("tpKey").value.trim()){ $("tpMint").value = d.mint; startTP(d.mint, d.marketCapSol || null); }
       };
       ws.onerror = () => { log("Couldn't reach the pump.fun feed. Use Fire now with the mint instead."); resolve(false); };
@@ -1108,7 +1205,7 @@ async function launchNew(){
       if (!armedOk){
         try{ await getConn().confirmTransaction(sig, "confirmed"); }catch{}
         recordLaunch({ mint, name, symbol, uri, solAmount: buy, signature: sig });
-        $("mint").value = mint; $("createSig").value = sig; fire(mint, sig);
+        $("mint").value = mint; $("createSig").value = sig; fire(mint, sig, kp.publicKey.toBase58());
         if ($("tpKey").value.trim()){ $("tpMint").value = mint; startTP(mint, null); }
       }
     }catch(e){ log(`Launch failed: ${e.message}`, "error"); disarm(false); }
@@ -1137,7 +1234,7 @@ $("fundBurners").onclick = async () => {
   if (!kp){ log("Unlock and select a dev wallet first. It pays for the funding.", "problem"); go("wallets"); return; }
   if (!burners.length){ log("Generate burners first.", "problem"); return; }
   const target = Math.round((Number($("fundAmt").value) || 0) * 1e9);
-  if (target < minBal()){ log(`Use at least ${sol(minBal())} SOL per burner (Solana's rent minimum plus one fee).`, "problem"); return; }
+  if (target < minBal()){ log(`Use at least ${sol(minBal())} SOL per burner (rent minimum, token account room and one fee).`, "problem"); return; }
   await refreshBalances();
   const need = burners.map(k => ({ k, add: target - (balances[k.publicKey.toBase58()] || 0) })).filter(x => x.add > 0);
   if (!need.length){ log(`Every burner already has ${sol(target)} SOL or more.`); return; }

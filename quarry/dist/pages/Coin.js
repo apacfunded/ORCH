@@ -16,8 +16,8 @@ import { href } from "../lib/router.js";
 import { mainTicker } from "./Home.js";
 import { notFoundPage } from "./NotFound.js";
 export function sealSvg(top = "VERIFIED SPLIT", mid = `${fees.creatorSharePct}/${fees.buybackBurnPct}/${fees.mainHolderSolPct}`) {
-    const ring = `${top} · LOCKED ON-CHAIN · ${top} · LOCKED ON-CHAIN · `;
-    return `<svg viewBox="0 0 160 160" aria-hidden="true"><defs><path id="sealp" d="M80 80m-60 0a60 60 0 1 1 120 0a60 60 0 1 1-120 0"/></defs><circle cx="80" cy="80" r="76" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="80" cy="80" r="46" fill="none" stroke="currentColor" stroke-width="1"/><text font-family="JetBrains Mono, monospace" font-size="10.5" letter-spacing="1.6" fill="currentColor"><textPath href="#sealp">${ring}</textPath></text><text x="80" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="600" fill="currentColor">${mid}</text><text x="80" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="1.5" fill="currentColor">ASSAYED</text></svg>`;
+    const ring = `${top} · LOCKED ON-CHAIN · `;
+    return `<svg viewBox="0 0 160 160" aria-hidden="true"><defs><path id="sealp" d="M80 80m-60 0a60 60 0 1 1 120 0a60 60 0 1 1-120 0"/></defs><circle cx="80" cy="80" r="76" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="80" cy="80" r="46" fill="none" stroke="currentColor" stroke-width="1"/><text font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor"><textPath href="#sealp" textLength="372" lengthAdjust="spacing">${ring}</textPath></text><text x="80" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="600" fill="currentColor">${mid}</text><text x="80" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="1.5" fill="currentColor">ASSAYED</text></svg>`;
 }
 function meter(p) {
     const ticks = Array.from({ length: 21 }, (_, i) => {

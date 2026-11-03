@@ -119,6 +119,16 @@ footer{padding-block:32px;color:var(--muted);font-size:13px;border-top:1px solid
 .seg button[aria-pressed="true"]{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--fg)}
 .chip{border:2px solid var(--line);box-shadow:2px 2px 0 var(--line)}
 @media (prefers-reduced-motion:reduce){.nav-cta,.btn,.seg button{transition:none}}
+
+/* contract address bar */
+.ca{margin-top:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:2px solid var(--fg);border-radius:12px;box-shadow:3px 3px 0 var(--fg);padding:10px 12px;max-width:560px}
+.ca-k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.ca code{font:500 13px var(--mono);flex:1;min-width:0;overflow-wrap:anywhere}
+.ca .mini{font:600 13px var(--body);background:var(--accent);color:var(--accent-ink);border:2px solid var(--fg);border-radius:9px;box-shadow:2px 2px 0 var(--fg);padding:6px 12px;cursor:pointer;text-decoration:none;transition:transform .12s,box-shadow .12s}
+.ca .mini:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--fg)}
+.ca .mini:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--fg)}
+.ca .mini.ghost{background:transparent;color:var(--fg)}
+.ca.soon code{color:var(--muted)}
 </style>
 
 <div class="wrap">
@@ -134,6 +144,12 @@ footer{padding-block:32px;color:var(--muted);font-size:13px;border-top:1px solid
       <p class="lede">Share a single pay link. Each payer gets a fresh receive address on SOL, ETH, BTC or LTC, derived from a seed that never leaves your device.</p>
       <div class="chains" aria-label="Supported chains">
         <span class="chip">SOL</span><span class="chip">ETH</span><span class="chip">BTC</span><span class="chip">LTC</span><span class="chip">USDC</span><span class="chip">+ any SPL / ERC-20</span>
+      </div>
+      <div class="ca soon" id="ca-bar" data-ca="">
+        <span class="ca-k">$CLOAK CA</span>
+        <code id="ca-text">Dropping soon</code>
+        <button class="mini" id="ca-copy" type="button" hidden>Copy</button>
+        <a class="mini ghost" id="ca-pump" href="#" target="_blank" rel="noopener" hidden>pump.fun ↗</a>
       </div>
     </div>
 
@@ -273,5 +289,19 @@ $("tok").addEventListener("change",quote);
 $("amt").addEventListener("input",quote);
 $("pay").addEventListener("submit",e=>{e.preventDefault();$("q-addr").textContent=addr(chain)});
 fillTokens();quote();$("q-addr").textContent=addr(chain);
+
+(function(){
+  const bar=document.getElementById("ca-bar"),ca=(bar.dataset.ca||"").trim();
+  if(!ca)return;
+  bar.classList.remove("soon");
+  document.getElementById("ca-text").textContent=ca;
+  const cp=document.getElementById("ca-copy"),pf=document.getElementById("ca-pump");
+  cp.hidden=false;pf.hidden=false;pf.href="https://pump.fun/coin/"+ca;
+  cp.addEventListener("click",()=>{
+    const done=()=>{cp.textContent="Copied";setTimeout(()=>cp.textContent="Copy",1500)};
+    if(navigator.clipboard)navigator.clipboard.writeText(ca).then(done,sel);else sel();
+    function sel(){const r=document.createRange();r.selectNodeContents(document.getElementById("ca-text"));const g=getSelection();g.removeAllRanges();g.addRange(r)}
+  });
+})();
 </script>
 </body></html>

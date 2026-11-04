@@ -412,7 +412,7 @@ show(0);
 /* ---- live board ---- */
 function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";return Math.floor(s/86400)+"d ago"}
 /* $PAIRED itself: set its CA here and it shows first on the board and in the bottom bar */
-const PAIRED_CA="C7VctvbvQM4L5VquKdRFHgArsQMmYD84MRdnDkixpump";
+const PAIRED_CA="";
 if(PAIRED_CA){$("ca").textContent="$PAIRED · "+PAIRED_CA;$("ca").dataset.ca=PAIRED_CA}
 async function loadBoard(){
   try{

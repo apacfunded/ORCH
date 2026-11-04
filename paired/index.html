@@ -204,6 +204,45 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-bet
 @media(max-width:520px){.hero{padding-block:52px 48px}section{padding-block:56px}.facts{gap:18px 40px;margin-top:48px}.fact b{font-size:34px}}
 </style>
 
+<style>
+/* ---------- launch sheet + live board ---------- */
+.coinrow{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--bg)}
+.coinrow img{width:52px;height:52px;border-radius:14px;object-fit:cover;background:var(--raise2)}
+.coinrow b{display:block;font-size:16.5px}
+.coinrow small{display:block;color:var(--mute);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coinrow .go{font-size:14px;color:var(--them);font-weight:600;white-space:nowrap}
+.coinrow .tk{color:var(--mute);font-weight:500}
+.boardlist{display:flex;flex-direction:column;gap:10px}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+@media(max-width:720px){.steps3{grid-template-columns:1fr}}
+.steps3 .g .n{font-family:var(--mono);font-size:13px;color:var(--them);letter-spacing:.14em;margin-bottom:14px;display:block}
+.feeline{margin-top:22px;color:var(--mute);font-size:15px;max-width:44em}
+.feeline b{color:var(--fg);font-weight:600}
+dialog.sheet{border:1px solid var(--line);border-radius:26px;background:var(--raise);color:var(--fg);padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 32px)}
+dialog.sheet::backdrop{background:rgba(6,5,10,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sheet-in{padding:24px 22px 22px;overflow:auto;max-height:calc(100dvh - 34px)}
+.sheet-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.sheet-top h3{margin:0;font-family:var(--display);font-stretch:72%;font-weight:800;font-size:36px;line-height:1}
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fld label{font-size:14px;color:var(--mute);font-weight:500}
+.fld input,.fld select,.fld textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;width:100%}
+.fld textarea{resize:vertical;min-height:72px}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--them)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:480px){.row3{grid-template-columns:1fr}}
+.imgpick{display:flex;align-items:center;gap:14px;border:1.5px dashed var(--line);border-radius:16px;padding:12px;cursor:pointer}
+.imgpick img{width:56px;height:56px;border-radius:14px;object-fit:cover;background:var(--raise2)}
+.imgpick span{color:var(--mute);font-size:14.5px}
+.err{color:var(--burn);font-size:14.5px;min-height:20px;margin:4px 0 10px}
+.paybox{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:18px;margin:6px 0 14px}
+.paybox small{display:block;color:var(--mute);font-size:13.5px;margin-bottom:4px}
+.paybox .amt{font-family:var(--display);font-stretch:80%;font-weight:800;font-size:40px;line-height:1.05}
+.paybox code{display:block;font-family:var(--mono);font-size:14px;word-break:break-all;margin:6px 0 12px;color:var(--fg)}
+.stat{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:15px}
+.stat .pulse{flex:none}
+.muted{color:var(--mute);font-size:14px}
+</style>
 <header>
   <div class="wrap nav">
     <a class="brand" href="#top" aria-label="Paired home">
@@ -211,76 +250,59 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-bet
       <span class="word">Paired</span>
     </a>
     <span class="sp"></span>
-    <button class="circ opt" type="button" aria-label="Search coins"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
     <a class="circ" href="https://x.com/paired_lol" target="_blank" rel="noopener" aria-label="Paired on X"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L2.8 2h6.4l4.4 5.8zm-1.1 18.1h1.7L7.3 3.8H5.5z"/></svg></a>
-    <button class="btn solid" type="button">Sign in</button>
+    <button class="btn solid" type="button" data-launch>Launch</button>
   </div>
 </header>
 
 <main id="top">
   <div class="wrap hero">
     <h1>Launch a coin.<br>Pair it with anyone.</h1>
-    <p class="lede">Every coin is made for someone: a streamer, a dev, a brand, an AI model. You set how each trade's fee is split between <span class="y">you</span>, <span class="t">them</span>, holders and burns, and it's locked on-chain for good.</p>
+    <p class="lede">Every coin is made for someone: a <span class="y">streamer</span>, a dev, a brand, an AI model, a wallet. Tag who it's for, send a little SOL, and it goes live on <span class="t">pump.fun</span>.</p>
     <div class="ctas">
-      <button class="btn solid big" type="button">Launch a coin</button>
+      <button class="btn solid big" type="button" data-launch>Launch a coin</button>
       <a class="btn line big" href="#how">How it works</a>
     </div>
     <div class="facts">
-      <div class="fact"><small>Creator fee</small><b>1%</b></div>
+      <div class="fact"><small>Cost to launch</small><b id="costFact">~0.035 SOL</b></div>
       <div class="fact"><small>Supply</small><b>1B fixed</b></div>
-      <div class="fact"><small>Liftoff at</small><b>85 SOL</b></div>
+      <div class="fact"><small>Trades on</small><b>pump.fun</b></div>
     </div>
   </div>
 
-
-  <section class="tight">
+  <section class="tight" id="coins">
     <div class="wrap">
       <div class="live">
-        <div class="live-head"><span class="pulse" aria-hidden="true"></span><h3>Launching now</h3><a href="#coins">Live board →</a></div>
-        <div class="skrows">
-          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">MC — SOL</span></div>
-          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">MC — SOL</span></div>
-          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">MC — SOL</span></div>
-          <div class="sk-over"><b>No launches yet</b><span>New coins show up here the second they go live, with their ticker, age and market cap.</span></div>
-        </div>
-      </div>
-      <div class="apex">
-        <div class="apex-top"><span class="apex-tag"><svg width="18" height="16" viewBox="0 0 18 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 2 16.5 14.5h-15z"/></svg>APEX</span><small>Closest to liftoff</small></div>
-        <div class="apex-body">
-          <div class="apex-pfp" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
-          <div>
-            <h3>Up for grabs</h3>
-            <p>The coin with the most fuel in its ignition pool takes this spot.</p>
-            <div class="fuelbar" role="img" aria-label="0 of 85 SOL"><i></i></div>
-            <div class="fuel-l"><span>0 SOL</span><span>85 SOL · liftoff</span></div>
-          </div>
+        <div class="live-head"><span class="pulse" aria-hidden="true"></span><h3>Launched on Paired</h3><span class="muted" id="boardCount"></span></div>
+        <div class="boardlist" id="board" hidden></div>
+        <div class="skrows" id="boardEmpty">
+          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">$—</span></div>
+          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">$—</span></div>
+          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">$—</span></div>
+          <div class="sk-over"><b>No launches yet</b><span>New coins show up here the second they go live on pump.fun.</span></div>
         </div>
       </div>
     </div>
   </section>
+
   <section id="how">
     <div class="wrap">
-      <div class="kicker">Follow one trade</div>
-      <h2>Every trade, split the same way.</h2>
-      <p class="sub">Each buy and sell pays a creator fee of about 1%. The split is written on-chain at launch and applied identically to every trade, before and after liftoff. Network fees are separate.</p>
-
-      <div class="trade">
-        <div class="flowbox">
-          <div class="ends"><span>0.1 SOL</span><span id="sizeOut">1 SOL trade</span><span>100 SOL</span></div>
-          <input id="size" type="range" min="0" max="1000" value="333" aria-label="Trade size">
-          <svg class="flowsvg" id="flow" viewBox="0 0 550 300" role="img" aria-label="How one trade's creator fee splits"></svg>
-        </div>
-        <div class="legs" id="legs"></div>
-        <div class="trade-foot">Drag the sliders to set your split. Anything you don't assign burns the coin.</div>
+      <div class="kicker">How it works</div>
+      <h2>Three steps. Live on pump.fun.</h2>
+      <div class="steps3">
+        <div class="g"><span class="n">01</span><h3>Make the coin</h3><p>Name, ticker, picture, and who it's paired with: an X handle, a channel, a repo, a brand, a wallet.</p></div>
+        <div class="g"><span class="n">02</span><h3>Send the SOL</h3><p>You get a launch wallet made just for your coin. Send the amount shown from any wallet.</p></div>
+        <div class="g"><span class="n">03</span><h3>It goes live</h3><p>As soon as the SOL lands, Paired creates the coin on pump.fun and it shows up on the board.</p></div>
       </div>
+      <p class="feeline"><b>Fees:</b> Paired launches each coin from its own launch wallet, so pump.fun's creator fees from coins launched here go to the Paired treasury.</p>
     </div>
   </section>
 
   <section>
     <div class="wrap">
       <div class="kicker">Pair it with anyone</div>
-      <h2>They don't need to sign up first.</h2>
-      <p class="sub">Pick who the coin is for. Their share starts building from the very first trade, even if they've never heard of the coin.</p>
+      <h2>Made for someone.</h2>
+      <p class="sub">Pick who the coin is for. Their tag rides with the coin on the board, so everyone knows who it's for.</p>
       <div class="tabs" role="tablist" id="tabs" aria-label="Account type"></div>
       <div class="pair-card" role="tabpanel" id="panel">
         <div class="pair-head">
@@ -297,68 +319,17 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-bet
   </section>
 
   <section>
-    <div class="wrap lift">
-      <div>
-        <div class="kicker">Ignite it</div>
-        <h2>Lift off for good.</h2>
-        <p class="sub" style="margin-bottom:0">Every coin opens at the same price, about a 30 SOL market cap, with an empty ignition pool. Every buy adds fuel. When 85 SOL sits in the pool (about a 420 SOL market cap), the coin lifts off to an open AMM pool automatically and keeps paying the same split.</p>
-      </div>
-      <div class="curve">
-        <svg viewBox="0 0 400 230" role="img" aria-label="Market cap rises from about 30 SOL to about 420 SOL as the ignition pool fills from 0 to 85 SOL">
-          <defs>
-            <linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#f1eefb"/><stop offset="1" stop-color="#9d5cff"/></linearGradient>
-            <linearGradient id="fillg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#9d5cff" stop-opacity=".22"/><stop offset="1" stop-color="#9d5cff" stop-opacity="0"/></linearGradient>
-          </defs>
-          <g stroke="#2a2840" stroke-width="1"><line x1="40" y1="20" x2="40" y2="190"/><line x1="40" y1="190" x2="380" y2="190"/><line x1="40" y1="105" x2="380" y2="105" stroke-dasharray="3 5"/><line x1="40" y1="20" x2="380" y2="20" stroke-dasharray="3 5"/></g>
-          <path d="M40 178 C 150 172, 260 120, 360 30 L360 190 L40 190 Z" fill="url(#fillg)"/>
-          <path d="M40 178 C 150 172, 260 120, 360 30" fill="none" stroke="url(#lg)" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="40" cy="178" r="6" fill="#f1eefb"/>
-          <circle cx="360" cy="30" r="7" fill="#9d5cff"/><circle cx="360" cy="30" r="13" fill="none" stroke="#9d5cff" stroke-opacity=".4" stroke-width="2"/>
-          <line x1="360" y1="30" x2="360" y2="190" stroke="#9d5cff" stroke-opacity=".5" stroke-dasharray="4 4"/>
-          <g fill="#8f8ba8" font-family="JetBrains Mono,monospace" font-size="11">
-            <text x="34" y="182" text-anchor="end">30</text>
-            <text x="34" y="34" text-anchor="end">420</text>
-            <text x="40" y="208" text-anchor="middle">0</text>
-            <text x="360" y="208" text-anchor="middle">85 SOL</text>
-            <text x="210" y="226" text-anchor="middle">SOL in ignition pool</text>
-          </g>
-          <text x="352" y="22" fill="#ebe8f6" font-family="Figtree,sans-serif" font-size="12" font-weight="600" text-anchor="end">Liftoff → AMM</text>
-        </svg>
-        <div class="curve-legend"><span>Left axis: market cap in SOL</span><span><b>Same fee split</b> before and after</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
     <div class="wrap">
-      <div class="kicker">Locked at launch</div>
-      <h2>Nobody holds the keys.</h2>
+      <div class="kicker">The basics</div>
+      <h2>A real pump.fun coin.</h2>
       <div class="gs" style="margin-top:32px">
-        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f1eefb" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h3>1 billion, forever</h3><p>Supply is fixed at launch. There's no mint authority, so nobody can print more.</p></div>
-        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9d5cff" stroke-width="1.8" stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><h3>No one buys before you</h3><p>Your launch buy lands in the same atomic bundle as the launch itself. Snipers can't sandwich it.</p></div>
-        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a294f5" stroke-width="1.8" stroke-linecap="round"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg><h3>Split can't change</h3><p>The fee split is written on-chain and its one-time admin key is erased. Nobody can edit it later.</p></div>
-        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ee7b8c" stroke-width="1.8" stroke-linecap="round"><path d="M12 22c4 0 7-3 7-7 0-3-2-5-3-7-1 2-2 3-3 3 0-3-1-6-4-8 0 4-4 7-4 12 0 4 3 7 7 7z"/></svg><h3>$PAIRED burns</h3><p>Half of Paired's locked platform share buys back and burns $PAIRED, on every trade of every coin.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="coins">
-    <div class="wrap">
-      <div class="kicker">Unclaimed</div>
-      <h2>Most Wanted.</h2>
-      <p class="sub">They haven't claimed yet. Their coins are paying them anyway.</p>
-      <div class="wanted">
-        <div class="wrow ghost"><span class="rk">#1</span><span class="av"></span><span class="skel-txt"><i></i><i></i></span><span class="w-r"><small>WAITING</small><b>— SOL</b></span></div>
-        <div class="wrow ghost"><span class="rk">#2</span><span class="av"></span><span class="skel-txt"><i></i><i></i></span><span class="w-r"><small>WAITING</small><b>— SOL</b></span></div>
-        <div class="wrow ghost"><span class="rk">#3</span><span class="av"></span><span class="skel-txt"><i></i><i></i></span><span class="w-r"><small>WAITING</small><b>— SOL</b></span></div>
-      </div>
-      <div class="wanted-msg">
-        <p>Nobody's on the board yet. Launch a coin for someone and they'll show up here with how much is waiting for them.</p>
-        <button class="btn solid" type="button">Launch the first coin</button>
+        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f1eefb" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h3>1 billion, forever</h3><p>Every coin is a standard pump.fun token with a fixed 1B supply. Nobody can print more.</p></div>
+        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9d5cff" stroke-width="1.8" stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><h3>Trades right away</h3><p>The moment it's created it's live on pump.fun's curve, and it graduates like any other pump.fun coin.</p></div>
       </div>
     </div>
   </section>
 </main>
+
 
 <footer><div class="wrap"><span>Paired · launch a coin, pair it with anyone · <a href="https://x.com/paired_lol" target="_blank" rel="noopener" style="color:var(--fg)">@paired_lol</a></span><span>Memecoins are volatile. Nothing here is financial advice.</span></div></footer>
 
@@ -370,107 +341,140 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-bet
   </div>
 </div>
 
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+  <div class="sheet-in">
+    <div class="sheet-top"><h3 id="sheetTitle">Launch a coin</h3><button class="circ" type="button" id="sheetX" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <form id="lf" novalidate>
+      <div class="row2">
+        <div class="fld"><label for="fName">Name</label><input id="fName" maxlength="32" autocomplete="off" required></div>
+        <div class="fld"><label for="fTicker">Ticker</label><input id="fTicker" maxlength="11" autocomplete="off" placeholder="$TICKER" required></div>
+      </div>
+      <div class="fld"><label>Picture</label><label class="imgpick" for="fImg"><img id="fImgPrev" alt=""><span id="fImgTxt">Tap to add a PNG, JPG, GIF or WEBP (under 3 MB)</span></label><input id="fImg" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden></div>
+      <div class="row2">
+        <div class="fld"><label for="fType">Paired with</label><select id="fType"></select></div>
+        <div class="fld"><label for="fWith" id="fWithL">Handle</label><input id="fWith" maxlength="64" autocomplete="off" required></div>
+      </div>
+      <div class="fld"><label for="fDesc">Description (optional)</label><textarea id="fDesc" maxlength="500"></textarea></div>
+      <div class="row3">
+        <div class="fld"><label for="fX">X link</label><input id="fX" maxlength="200" inputmode="url" placeholder="optional"></div>
+        <div class="fld"><label for="fTg">Telegram</label><input id="fTg" maxlength="200" inputmode="url" placeholder="optional"></div>
+        <div class="fld"><label for="fWeb">Website</label><input id="fWeb" maxlength="200" inputmode="url" placeholder="optional"></div>
+      </div>
+      <div class="err" id="fErr" role="alert"></div>
+      <button class="btn solid big" type="submit" id="fGo" style="width:100%">Create launch wallet</button>
+    </form>
+    <div id="pay" hidden>
+      <p class="muted" style="margin:0 0 4px">Send exactly this much SOL to your coin's launch wallet:</p>
+      <div class="paybox">
+        <small>Amount</small><div class="amt" id="pAmt"></div>
+        <small style="margin-top:14px">Launch wallet</small><code id="pWallet"></code>
+        <button class="btn line" type="button" id="pCopy">Copy address</button>
+      </div>
+      <div class="stat" id="pStat"><span class="pulse" aria-hidden="true"></span><span id="pStatTxt">Waiting for your SOL…</span></div>
+      <p class="muted" style="margin:14px 0 0">Keep this open. Your coin goes live on pump.fun about a minute after the SOL lands. Launch id: <span id="pId" style="font-family:var(--mono)"></span></p>
+    </div>
+  </div>
+</dialog>
+
 <script>
 document.querySelector(".tokenbar .mark").src=document.querySelector("header .mark").src;
+const API="https://paired-api-aislopv1-8230.vercel.app";
 const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]);
 
-/* ---- follow one trade ---- */
-let size=1;
-$("size").addEventListener("input",()=>{size=+(0.1*Math.pow(10,3*$("size").value/1000)).toPrecision(2);render()});
-const legs=[
-  {k:"you",name:"Creator",desc:"Your cut as the person who launched the coin.",c:"--you",v:56,edit:true},
-  {k:"them",name:"Paired account",desc:"Paid out right away, or held in escrow until the account verifies.",c:"--them",v:24,edit:true},
-  {k:"hold",name:"Holders",desc:"Shared out to holders by bag size.",c:"--hold",v:0,edit:true},
-  {k:"burn",name:"Coin burn",desc:"Buys back and burns this coin. Gets whatever you leave unassigned.",c:"--burn",v:0},
-  {k:"plat",name:"Paired",desc:"Locked platform share. Half buys back and burns $PAIRED.",c:"--dim",v:20,locked:true}
-];
-$("legs").innerHTML=legs.map(l=>`<div class="leg${l.locked?" locked":""}"><span class="sw" style="background:var(${l.c})"></span><div><b>${l.name} <em id="p_${l.k}"></em></b><p>${l.desc}</p></div><span class="amt" id="a_${l.k}"></span>${l.edit?`<input type="range" id="r_${l.k}" min="0" max="80" step="1" value="${l.v}" aria-label="${l.name} share">`:""}</div>`).join("");
-
-
-const short={you:"Creator",them:"Paired acct",hold:"Holders",burn:"Burn",plat:"Platform"};
-function drawFlow(fee){
-  const on=legs.filter(l=>l.v>0), n=on.length, cs=getComputedStyle(document.documentElement);
-  const top=40,bot=262, gap=n>1?(bot-top)/(n-1):0;
-  let stack=150-on.reduce((a,l)=>a+3+l.v*.16,0)/2, out="";
-  on.forEach((l,i)=>{
-    const th=3+l.v*.16, ys=stack+th/2; stack+=th;
-    const yt=n>1?top+gap*i:150, col=cs.getPropertyValue(l.c).trim()||"#888", d=`M100 ${ys} L190 ${ys} C 255 ${ys}, 255 ${yt}, 320 ${yt} L392 ${yt}`;
-    const dot=Math.max(4,Math.min(12,th*.9));
-    out+=`<path d="${d}" fill="none" stroke="${col}" stroke-opacity=".22" stroke-width="${th+8}" stroke-linecap="round"/>
-<path class="dots" d="${d}" fill="none" stroke="${col}" stroke-width="${dot}" stroke-linecap="round" stroke-dasharray="0 16"/>
-<text x="404" y="${yt-3}" fill="${col}" font-family="Figtree,sans-serif" font-size="14" font-weight="600">${short[l.k]} ${l.v}%</text>
-<text x="404" y="${yt+16}" fill="${cs.getPropertyValue("--mute").trim()}" font-family="JetBrains Mono,monospace" font-size="13">${(fee*l.v/100).toPrecision(2)} SOL</text>`;
-  });
-  out+=`<rect x="2" y="120" width="98" height="60" rx="12" fill="${cs.getPropertyValue("--raise2").trim()}" stroke="${cs.getPropertyValue("--line").trim()}"/>
-<text x="51" y="143" text-anchor="middle" fill="${cs.getPropertyValue("--mute").trim()}" font-family="Figtree,sans-serif" font-size="11.5">creator fee</text>
-<text x="51" y="166" text-anchor="middle" fill="${cs.getPropertyValue("--fg").trim()}" font-family="JetBrains Mono,monospace" font-size="16">${fee.toPrecision(2)}</text>`;
-  $("flow").innerHTML=out;
-}
-function render(changed){
-  const ed=legs.filter(l=>l.edit);
-  ed.forEach(l=>l.v=+$("r_"+l.k).value);
-  let total=ed.reduce((a,l)=>a+l.v,0);
-  if(total>80){ // trim the other sliders, last first
-    for(const l of [...ed].reverse()){if(l.k===changed)continue;const cut=Math.min(l.v,total-80);l.v-=cut;total-=cut;$("r_"+l.k).value=l.v;if(total<=80)break}
-  }
-  legs.find(l=>l.k==="burn").v=80-ed.reduce((a,l)=>a+l.v,0);
-  const fee=size*0.01;
-  $("sizeOut").textContent=size+" SOL trade";
-  legs.forEach(l=>{$("p_"+l.k).textContent=l.v+"%";$("a_"+l.k).textContent=(fee*l.v/100).toFixed(5)+" SOL"});
-  drawFlow(fee);
-}
-legs.filter(l=>l.edit).forEach(l=>$("r_"+l.k).addEventListener("input",()=>render(l.k)));
-render();
-
-/* ---- pair it with anyone ---- */
+/* ---- who it's paired with ---- */
 const T=[
- {tab:"X (Twitter)",ini:"X",title:"A coin for your favourite poster",sub:"Paired to any X handle",
-  wait:"Their share builds up from the first trade, even if they've never seen the coin.",
-  prove:"From the wallet menu → Paired account claim, they sign in with X. Typing a handle proves nothing, so nobody else can take it."},
- {tab:"GitHub",ini:"GH",title:"A coin for a repo you rely on",sub:"Paired to a GitHub user or org",
-  wait:"The maintainers' share collects while the coin trades.",
-  prove:"An owner of the user or org signs in with GitHub. Forks and lookalike names can't claim."},
- {tab:"YouTube",ini:"YT",title:"A coin for a channel you watch",sub:"Paired to a YouTube channel",
-  wait:"The channel's share collects from the first trade.",
-  prove:"They sign in with the Google account that owns the channel."},
- {tab:"Twitch",ini:"TV",title:"A coin for a streamer you never miss",sub:"Paired to a Twitch channel",
-  wait:"The streamer's share builds up while chat trades.",
-  prove:"The channel owner signs in with Twitch."},
- {tab:"AI model",ini:"AI",title:"A coin for a model you trust",sub:"Paired to an AI model (LLM)",
-  wait:"The model's share collects in escrow under its lab's name.",
-  prove:"The lab signs a message from its official domain to claim for the model."},
- {tab:"Company",ini:"CO",title:"A coin for a brand",sub:"Paired to a company domain",
-  wait:"The company's share collects in escrow.",
-  prove:"They add a DNS TXT record to their domain. Only whoever controls the domain can do that."},
- {tab:"Solana wallet",ini:"SOL",title:"A coin for a wallet",sub:"Paired to any Solana address",
-  wait:"No escrow needed. A wallet address is already proof of who it is.",
-  prove:"Nothing to do. The share is sent straight to the wallet on every trade.",direct:true},
- {tab:"Token",ini:"TKN",title:"A coin paired to another token",sub:"TOKEN/pair",
-  wait:"The paired share is collected for that token's side.",
-  prove:"No claim needed. The share buys the paired token and routes it on-chain.",direct:true},
- {tab:"Stock",ini:"STK",title:"A coin paired to a stock",sub:"TOKEN/stock, using tokenized stocks",
-  wait:"The paired share is collected for the stock's side.",
-  prove:"No claim needed. The share buys the tokenized stock into the coin's vault.",direct:true}
+ {k:"x",tab:"X (Twitter)",ini:"X",title:"A coin for your favourite poster",sub:"Paired to an X handle",ph:"@handle",lab:"X handle"},
+ {k:"github",tab:"GitHub",ini:"GH",title:"A coin for a repo you rely on",sub:"Paired to a GitHub user or org",ph:"user or org",lab:"GitHub user/org"},
+ {k:"youtube",tab:"YouTube",ini:"YT",title:"A coin for a channel you watch",sub:"Paired to a YouTube channel",ph:"@channel",lab:"Channel"},
+ {k:"twitch",tab:"Twitch",ini:"TV",title:"A coin for a streamer you never miss",sub:"Paired to a Twitch channel",ph:"channel",lab:"Twitch channel"},
+ {k:"ai",tab:"AI model",ini:"AI",title:"A coin for a model you trust",sub:"Paired to an AI model",ph:"model name",lab:"Model"},
+ {k:"company",tab:"Company",ini:"CO",title:"A coin for a brand",sub:"Paired to a company",ph:"example.com",lab:"Company domain"},
+ {k:"wallet",tab:"Solana wallet",ini:"SOL",title:"A coin for a wallet",sub:"Paired to a Solana address",ph:"wallet address",lab:"Wallet"},
+ {k:"token",tab:"Token",ini:"TKN",title:"A coin paired to another token",sub:"Paired to a token",ph:"$TICKER or mint",lab:"Token"},
+ {k:"stock",tab:"Stock",ini:"STK",title:"A coin paired to a stock",sub:"Paired to a stock ticker",ph:"TSLA",lab:"Stock ticker"}
 ];
+const TK=Object.fromEntries(T.map(t=>[t.k,t]));
 $("tabs").innerHTML=T.map((t,i)=>`<button class="tab" role="tab" type="button" data-i="${i}" aria-selected="${i===0}" aria-controls="panel">${t.tab}</button>`).join("");
 function show(i){
   const t=T[i];
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",+b.dataset.i===i));
   $("duoB").textContent=t.ini;$("duoB").style.fontSize=t.ini.length>2?"12px":"16px";
   $("pTitle").textContent=t.title;$("pSub").textContent=t.sub;
-  $("s1t").textContent=t.direct?"Paid from the first trade":"Waits in escrow";$("s1").textContent=t.wait;
-  $("s2t").textContent=t.direct?"Nothing to verify":"They sign in to prove it";$("s2").textContent=t.prove;
-  $("s3t").textContent=t.direct?"Keeps flowing":"Paid now, then automatically";
-  $("s3").textContent=t.direct?"Every trade sends the share on its own, before and after liftoff.":"Everything waiting goes out at once, network fee on us. After that, shares arrive on their own.";
+  $("s1t").textContent="Pick who it's for";$("s1").textContent=`Choose "${t.tab}" and enter the ${t.lab.toLowerCase()}.`;
+  $("s2t").textContent="Launch it";$("s2").textContent="Send the launch SOL and Paired creates the coin on pump.fun.";
+  $("s3t").textContent="Tagged on the board";$("s3").textContent=`The coin shows on the board as paired to ${t.ph}.`;
 }
 $("tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(b)show(+b.dataset.i)});
 show(0);
+
+/* ---- live board ---- */
+function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";return Math.floor(s/86400)+"d ago"}
+async function loadBoard(){
+  try{
+    const coins=await fetch(API+"/api/coins").then(r=>r.ok?r.json():[]);
+    if(!Array.isArray(coins)||!coins.length)return;
+    $("boardEmpty").hidden=true;$("board").hidden=false;
+    $("boardCount").textContent=coins.length+" coin"+(coins.length>1?"s":"");
+    $("board").innerHTML=coins.slice(0,30).map(c=>`<a class="coinrow" href="https://pump.fun/coin/${esc(c.mint)}" target="_blank" rel="noopener"><img src="${esc(c.image)}" alt="" loading="lazy"><span style="min-width:0"><b>${esc(c.name)} <span class="tk">$${esc(c.ticker)}</span></b><small>Paired to ${esc(c.pairWith)} · ${esc((TK[c.pairType]||{}).tab||c.pairType)} · ${ago(c.created_at)}</small></span><span class="go">pump.fun →</span></a>`).join("");
+  }catch(e){}
+}
+loadBoard();setInterval(loadBoard,30000);
+fetch(API+"/api/tick",{keepalive:true}).catch(()=>{});
+
+/* ---- launch sheet ---- */
+const sheet=$("sheet");
+$("fType").innerHTML=T.map(t=>`<option value="${t.k}">${t.tab}</option>`).join("");
+const syncType=()=>{const t=TK[$("fType").value];$("fWithL").textContent=t.lab;$("fWith").placeholder=t.ph};
+$("fType").addEventListener("change",syncType);syncType();
+document.querySelectorAll("[data-launch]").forEach(b=>b.addEventListener("click",()=>{sheet.showModal()}));
+$("sheetX").addEventListener("click",()=>sheet.close());
+let img=null;
+$("fImg").addEventListener("change",()=>{
+  const f=$("fImg").files[0];if(!f)return;
+  if(f.size>3*1024*1024){$("fErr").textContent="That picture is over 3 MB. Pick a smaller one.";return}
+  const r=new FileReader();r.onload=()=>{img={type:f.type,b64:String(r.result).split(",")[1]};$("fImgPrev").src=r.result;$("fImgTxt").textContent=f.name;$("fErr").textContent=""};r.readAsDataURL(f);
+});
+$("lf").addEventListener("submit",async e=>{
+  e.preventDefault();$("fErr").textContent="";
+  if(!$("fName").value.trim()){$("fErr").textContent="Add a name for the coin.";return}
+  if(!$("fTicker").value.trim()){$("fErr").textContent="Add a ticker.";return}
+  if(!img){$("fErr").textContent="Add a picture for the coin.";return}
+  if(!$("fWith").value.trim()){$("fErr").textContent="Add who the coin is paired with.";return}
+  $("fGo").disabled=true;$("fGo").textContent="Creating launch wallet…";
+  try{
+    const r=await fetch(API+"/api/launch",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
+      name:$("fName").value,ticker:$("fTicker").value,description:$("fDesc").value,pairType:$("fType").value,pairWith:$("fWith").value,
+      imageBase64:img.b64,imageType:img.type,socials:{x:$("fX").value,tg:$("fTg").value,web:$("fWeb").value}})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error||"Couldn't create the launch. Try again in a minute.");
+    try{localStorage.setItem("paired:lastLaunch",j.id)}catch(_){}
+    startPay(j);
+  }catch(err){$("fErr").textContent=err.message;$("fGo").disabled=false;$("fGo").textContent="Create launch wallet"}
+});
+$("pCopy").addEventListener("click",()=>{navigator.clipboard.writeText($("pWallet").textContent).then(()=>{$("pCopy").textContent="Copied";setTimeout(()=>$("pCopy").textContent="Copy address",1500)})});
+let poll=null;
+function startPay(j){
+  $("lf").hidden=true;$("pay").hidden=false;$("sheetTitle").textContent="Send the SOL";
+  $("pAmt").textContent=j.needSol+" SOL";$("pWallet").textContent=j.wallet;$("pId").textContent=j.id;
+  clearInterval(poll);
+  poll=setInterval(async()=>{
+    fetch(API+"/api/tick?claims=0").catch(()=>{});
+    try{
+      const s=await fetch(API+"/api/launch/"+j.id).then(r=>r.json());
+      if(s.status==="launching")$("pStatTxt").textContent="SOL received. Creating your coin on pump.fun…";
+      if(s.status==="live"){clearInterval(poll);$("sheetTitle").textContent="It's live";$("pStat").innerHTML=`<span>$${esc(s.ticker)} is live. <a href="https://pump.fun/coin/${esc(s.mint)}" target="_blank" rel="noopener" style="color:var(--them);font-weight:600">Open on pump.fun →</a></span>`;loadBoard()}
+      if(s.status==="failed"){clearInterval(poll);$("pStat").innerHTML=`<span style="color:var(--burn)">${esc(s.error||"The launch failed.")} DM @paired_lol with your launch id.</span>`}
+    }catch(_){}
+  },5000);
+}
 
 /* ---- copy CA ---- */
 $("copy").addEventListener("click",()=>{
   const ca=$("ca").dataset.ca;
   if(!ca){$("copy").textContent="Not live yet";setTimeout(()=>$("copy").textContent="Copy CA",1600);return}
-  navigator.clipboard.writeText(ca).then(()=>{$("copy").textContent="Copied"},()=>{const r=document.createRange();r.selectNodeContents($("ca"));getSelection().removeAllRanges();getSelection().addRange(r)});
+  navigator.clipboard.writeText(ca).then(()=>{$("copy").textContent="Copied"});
 });
 </script>
 

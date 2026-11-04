@@ -12,6 +12,7 @@ import { clear, h } from "./lib/dom.js";
 import { currentPath, matchRoute, navigate } from "./lib/router.js";
 import { boardPage, boardsIndexPage } from "./pages/Board.js";
 import { coinPage } from "./pages/Coin.js";
+import { coinsPage } from "./pages/Coins.js";
 import { docsPage } from "./pages/Docs.js";
 import { homePage } from "./pages/Home.js";
 import { launchPage } from "./pages/Launch.js";
@@ -25,6 +26,7 @@ installPaletteShortcut();
 market(); // start the data layer early so the first paint has numbers
 const routes = [
     { path: "/", render: () => homePage(ctx) },
+    { path: "/coins", render: () => coinsPage() },
     { path: "/boards", render: () => boardsIndexPage(ctx) },
     { path: "/board/:id", render: (p) => boardPage(ctx, p) },
     { path: "/coin/:mint", render: (p) => coinPage(ctx, p) },
@@ -63,6 +65,8 @@ async function render() {
 function titleFor(path) {
     if (path === "/")
         return brand.tagline;
+    if (path.startsWith("/coins"))
+        return "Coins";
     if (path.startsWith("/boards"))
         return "The table";
     if (path.startsWith("/board"))

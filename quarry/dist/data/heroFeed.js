@@ -67,7 +67,7 @@ export async function tokenSnapshot(mint) {
         const p = pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
         const price = Number(p.priceUsd);
         if (Number.isFinite(price))
-            return { price, mc: p.marketCap ?? p.fdv ?? price * 1e9, change: p.priceChange?.h24 ?? null, pair: p.pairAddress, symbol: p.baseToken.symbol, name: p.baseToken.name, image: p.info?.imageUrl ?? null };
+            return { price, mc: p.marketCap ?? p.fdv ?? price * 1e9, change: p.priceChange?.h24 ?? null, pair: p.pairAddress, symbol: p.baseToken.symbol, name: p.baseToken.name, image: p.info?.imageUrl ?? null, volume: Number(p.volume?.h24) || 0, liquidity: Number(p.liquidity?.usd) || 0 };
     }
     const g = await json(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${mint}/pools?page=1`);
     const pool = g?.data?.[0];
@@ -80,7 +80,7 @@ export async function tokenSnapshot(mint) {
     const mc = Number(a.market_cap_usd ?? a.fdv_usd) || price * 1e9;
     const sym = String(a.name ?? "").split("/")[0].trim();
     const ch = Number(a.price_change_percentage?.h24);
-    return { price, mc, change: Number.isFinite(ch) ? ch : null, pair: a.address, symbol: sym, name: sym, image: null };
+    return { price, mc, change: Number.isFinite(ch) ? ch : null, pair: a.address, symbol: sym, name: sym, image: null, volume: Number(a.volume_usd?.h24) || 0, liquidity: Number(a.reserve_in_usd) || 0 };
 }
 function tokenFeed(mint) {
     const quote = async () => {

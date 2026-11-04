@@ -8,12 +8,15 @@ import { openPalette } from "./CommandPalette.js";
 import { LOGO, UI } from "./Icons.js";
 import { walletButton } from "./WalletButton.js";
 const NAV = [
+    { label: "Coins", path: "/coins" },
     { label: "Table", path: "/boards" },
     { label: "Launch", path: "/launch" },
     { label: "Method", path: "/docs" },
 ];
 export function logoTile(cls = "logo-tile") {
-    return h("span", { class: cls, html: LOGO });
+    if (!brand.logo)
+        return h("span", { class: cls, html: LOGO });
+    return h("span", { class: cls }, h("img", { src: brand.logo, alt: "", width: "34", height: "34", onerror: (e) => { e.target.parentElement.innerHTML = LOGO; } }));
 }
 function currentTheme() {
     const t = document.documentElement.getAttribute("data-theme");
@@ -70,5 +73,5 @@ export function mobileNav() {
 }
 export function footer() {
     const year = new Date().getFullYear();
-    return h("footer", { class: "footer" }, h("div", { class: "inner" }, h("div", null, h("div", { style: "display:flex;align-items:center;gap:12px" }, logoTile(), h("span", { class: "word" }, brand.name)), h("p", null, "An assay office for memecoins. Every coin launches on pump.fun and is priced here against a real-world element."), h("p", null, brand.riskLine), h("p", null, `House elements: ${houseDisclaimer}`)), h("div", { class: "col" }, h("span", { class: "label" }, "Index"), h("a", { href: href("/boards") }, "The table"), h("a", { href: href("/launch") }, "Submit a sample"), h("a", { href: href("/docs") }, "Method"), h("a", { href: href("/docs#faq") }, "FAQ")), h("div", { class: "col" }, h("span", { class: "label" }, "Elsewhere"), brand.mainCoinMint ? h("a", { href: `https://pump.fun/coin/${brand.mainCoinMint}`, target: "_blank", rel: "noopener" }, `$${brand.platformTicker} on pump.fun`) : null, brand.xHandle ? h("a", { href: `https://x.com/${brand.xHandle}`, target: "_blank", rel: "noopener" }, `X @${brand.xHandle}`) : null, brand.telegram ? h("a", { href: brand.telegram, target: "_blank", rel: "noopener" }, "Telegram") : null, h("a", { href: href("/docs#terms") }, "Terms")), h("div", { class: "base" }, h("span", null, `© ${year} ${brand.name} · ${brand.siteUrl.replace(/^https?:\/\//, "")}`), h("span", null, "Assayed live · Prices are informational"))));
+    return h("footer", { class: "footer" }, h("div", { class: "inner" }, h("div", null, h("div", { style: "display:flex;align-items:center;gap:12px" }, logoTile(), h("span", { class: "word" }, brand.name)), h("p", null, "An assay office for memecoins. Every coin launches on pump.fun and is priced here against a real-world element."), h("p", null, brand.riskLine), h("p", null, `House elements: ${houseDisclaimer}`)), h("div", { class: "col" }, h("span", { class: "label" }, "Index"), h("a", { href: href("/coins") }, "Coins"), h("a", { href: href("/boards") }, "The table"), h("a", { href: href("/launch") }, "Submit a sample"), h("a", { href: href("/docs") }, "Method"), h("a", { href: href("/docs#faq") }, "FAQ")), h("div", { class: "col" }, h("span", { class: "label" }, "Elsewhere"), brand.mainCoinMint ? h("a", { href: `https://pump.fun/coin/${brand.mainCoinMint}`, target: "_blank", rel: "noopener" }, `$${brand.platformTicker} on pump.fun`) : null, brand.xHandle ? h("a", { href: `https://x.com/${brand.xHandle}`, target: "_blank", rel: "noopener" }, `X @${brand.xHandle}`) : null, brand.telegram ? h("a", { href: brand.telegram, target: "_blank", rel: "noopener" }, "Telegram") : null, h("a", { href: href("/docs#terms") }, "Terms")), h("div", { class: "base" }, h("span", null, `© ${year} ${brand.name} · ${brand.siteUrl.replace(/^https?:\/\//, "")}`), h("span", null, "Assayed live · Prices are informational"))));
 }

@@ -5,6 +5,7 @@ import { heroFeed as heroCfg } from "../config/hero.js";
 import { market } from "../data/index.js";
 import { heroSource, tokenSnapshot } from "../data/heroFeed.js";
 import { certCard, emptyNote } from "../components/Certificate.js";
+import { mainCoinCard } from "../components/MainCoin.js";
 import { periodicTable, tableLegend } from "../components/Element.js";
 import { UI } from "../components/Icons.js";
 import { odometer } from "../components/Odometer.js";
@@ -19,7 +20,7 @@ export async function homePage() {
     const hero = h("section", { class: "hero" }, h("div", { class: "copy" }, h("div", { class: "kicker" }, h("span", { class: "label" }, "Assay office · Solana"), h("span", { class: "label" }, "Launches on pump.fun")), h("h1", null, "Every coin, ", h("em", null, "weighed"), " against the real world."), h("div", { style: "display:grid;gap:20px" }, h("p", { class: "sub" }, brand.subline), h("div", { class: "ctas" }, h("a", { class: "btn primary lg", href: href("/launch") }, "Launch a coin", svg(UI.arrow)), h("a", { class: "btn lg", href: href("/boards") }, "Browse the table"))), h("div", { class: "facts" }, h("div", null, h("span", { class: "label" }, "Elements"), h("b", null, String(elements().length))), h("div", null, h("span", { class: "label" }, "Fee split, locked"), h("b", null, `${fees.creatorSharePct}/${fees.buybackBurnPct}/${fees.mainHolderSolPct}`)), h("div", null, h("span", { class: "label" }, "Samples listed"), h("b", null, String(listed.length))))), h("div", { class: "readout-col" }, readout()));
     // ---------- table ----------
     const table = periodicTable(coins);
-    const tableSec = h("section", { class: "section", id: "table" }, h("div", { class: "sechead" }, h("span", { class: "no" }, "§ 01"), h("h2", null, "The table"), h("div", { class: "side" }, `${elements().length} elements · `, h("a", { href: href("/boards") }, "open full table"))), table.el, tableLegend());
+    const tableSec = h("section", { class: "section", id: "table" }, h("div", { class: "sechead" }, h("span", { class: "no" }, "§ 02"), h("h2", null, "The table"), h("div", { class: "side" }, `${elements().length} elements · `, h("a", { href: href("/boards") }, "open full table"))), table.el, tableLegend());
     // ---------- fresh assays ----------
     const fresh = [...listed].sort((a, b) => b.createdAt - a.createdAt).slice(0, 8);
     const freshGrid = h("div", { class: "certs" }, fresh.map((c) => certCard(c)));
@@ -33,7 +34,9 @@ export async function homePage() {
         while (freshGrid.children.length > 8)
             freshGrid.lastElementChild?.remove();
     });
-    const freshSec = h("section", { class: "section" }, h("div", { class: "sechead" }, h("span", { class: "no" }, "§ 02"), h("h2", null, "Fresh assays"), h("div", { class: "side" }, "Newest launches, live")), freshBody);
+    const coinsSec = h("section", { class: "section", id: "coins" }, h("div", { class: "sechead" }, h("span", { class: "no" }, "§ 01"), h("h2", null, "Coins"), h("div", { class: "side" }, `${listed.length} listed · `, h("a", { href: href("/coins") }, "see every coin"))), mainCoinCard(), h("div", { class: "subhead" }, h("h3", null, "Fresh assays"), h("span", { class: "label" }, "Newest launches, live")), freshBody);
+    // ---------- plate (specimen photo) ----------
+    const plate = brand.plateArt ? h("figure", { class: "plate" }, h("img", { src: brand.plateArt, alt: "Ceramic element tiles, a brass assay scale and commodity samples on paper", loading: "eager" }), h("figcaption", null, h("span", null, "Plate I · The specimen set"), h("span", null, `${elements().length} elements on the table`))) : null;
     // ---------- fees ----------
     const feeSec = h("section", { class: "section" }, h("div", { class: "sechead" }, h("span", { class: "no" }, "§ 03"), h("h2", null, "How fees flow"), h("div", { class: "side" }, "Per coin, forever")), feeFlow());
     // ---------- method strip ----------
@@ -44,7 +47,7 @@ export async function homePage() {
         ["Get weighed", "Here, your price is shown in your element, live, next to USD."],
     ];
     const methodSec = h("section", { class: "section" }, h("div", { class: "sechead" }, h("span", { class: "no" }, "§ 04"), h("h2", null, "Method, short"), h("div", { class: "side" }, h("a", { href: href("/docs") }, "read the full method"))), h("div", { class: "stats", style: "margin-top:0;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))" }, steps.map(([t, d], i) => h("div", { style: "padding:16px 14px 18px" }, h("span", { class: "label" }, `Step ${String(i + 1).padStart(2, "0")}`), h("div", { class: "serif", style: "font-size:26px;line-height:1.05;margin-top:8px" }, t), h("p", { class: "muted", style: "font-size:13.5px;margin-top:8px" }, d)))));
-    const page = h("div", { class: "page" }, hero, tableSec, freshSec, feeSec, methodSec);
+    const page = h("div", { class: "page" }, hero, plate, coinsSec, tableSec, feeSec, methodSec);
     onRemove(page, offLaunch);
     return page;
 }

@@ -17,7 +17,10 @@ export const brand = {
     /** CONFIG: Telegram invite URL. null hides the link. */
     telegram: null,
     /** CONFIG: path to a logo image (svg/png) relative to the site root. null uses the text mark. */
-    logo: null,
+    logo: "https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261104_093001_329c80c2-4832-4e9d-bc5d-a4b489a39734_min.webp",
+    /** Ceramic tile render and the specimen-set photo used as page art. */
+    tileArt: "https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261104_093001_9f92ab4a-0ff3-4e3d-8edb-63c3f15d4172_min.webp",
+    plateArt: "https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261104_093001_a8320320-455b-4e9e-8ba2-0fca581b3390_min.webp",
     /** Public site URL used for share links. */
     siteUrl: "https://quary.lol",
     /** Shown in the footer and on the docs page. */

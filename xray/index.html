@@ -1102,6 +1102,44 @@ details p,details div{color:var(--muted)!important}
   .exSteps{grid-template-columns:1fr}.exSteps li:nth-child(even){padding-left:0;border-left:0}.exSteps li{border-bottom:1px solid var(--rule);padding:14px 0}
 }
 
+/* ===== 10x pass: the scanner hero ===== */
+.heroSplit{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px;align-items:center}
+.heroSplit h1{font-size:clamp(52px,6.6vw,104px);max-width:9ch}
+.heroPoint{font-size:19px!important;line-height:1.45!important;color:var(--ink)!important;max-width:34ch!important}
+.scanner{margin:0;position:relative}
+.scanStage{position:relative;aspect-ratio:1/1;border-radius:6px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;box-shadow:0 40px 70px -40px rgba(9,20,26,.65),0 0 0 1px rgba(19,34,42,.12);user-select:none}
+.scanStage svg{display:block;width:100%;height:100%}
+.scanPlain{position:absolute;inset:0}
+.scanXray{position:absolute;inset:0;clip-path:inset(0 0 0 45%)}
+.scanBar{position:absolute;top:0;bottom:0;left:45%;width:0;pointer-events:none}
+.scanBar::before{content:"";position:absolute;top:0;bottom:0;left:-1px;width:3px;background:#e8f1ee;box-shadow:0 0 0 1px rgba(19,34,42,.25),0 0 24px 4px rgba(232,241,238,.55)}
+.scanBar span{position:absolute;top:50%;left:-22px;width:44px;height:44px;margin-top:-22px;border-radius:50%;background:var(--ink);border:3px solid #e8f1ee;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.scanBar span::before,.scanBar span::after{content:"";position:absolute;top:50%;margin-top:-6px;border:6px solid transparent}
+.scanBar span::before{left:5px;border-right-color:#e8f1ee}
+.scanBar span::after{right:5px;border-left-color:#e8f1ee}
+.scanRange{position:absolute;left:0;right:0;bottom:0;width:100%;opacity:0;height:44px;margin:0;cursor:ew-resize}
+.scanRange:focus-visible{opacity:1;accent-color:var(--pencil)}
+.scanner figcaption{margin-top:12px;font-size:14px;line-height:1.45;color:var(--muted);max-width:52ch}
+.scanner .ring{stroke-dasharray:460;stroke-dashoffset:460;animation:pencil 1.2s 2.4s ease-out forwards}
+@media (prefers-reduced-motion:reduce){.scanner .ring{animation:none;stroke-dashoffset:0}}
+@media (max-width:900px){.heroSplit{grid-template-columns:1fr;gap:28px}.scanner{order:-1}}
+
+/* three beats: the whole idea in one row */
+.beats{list-style:none;padding:0;margin:44px 0 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink)}
+.beats li{padding:18px 20px 6px 0;display:grid;gap:6px}
+.beats li+li{padding-left:20px;border-left:1px solid var(--rule)}
+.beats b{font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:800;font-size:40px;line-height:.95}
+.beats li:nth-child(3) b{box-shadow:inset 0 -4px 0 var(--clean);justify-self:start}
+.beats span{color:var(--muted);font-size:15px;line-height:1.45;max-width:30ch}
+@media (max-width:640px){.beats{grid-template-columns:1fr}.beats li+li{border-left:0;padding-left:0;border-top:1px solid var(--rule)}}
+
+/* every coin image is x-rayed when you point at it */
+.card.coin .av img,.list .av img,.cpWho .av img{transition:filter .25s}
+.card.coin:hover .av img,.rowLink:hover .av img,.cpWho .av:hover img{filter:invert(1) grayscale(1) contrast(1.25) brightness(1.05) sepia(.25) hue-rotate(150deg)}
+@media (prefers-reduced-motion:reduce){.card.coin .av img{transition:none}}
+.pump .beats.pumpOnly{display:grid}
+@media (max-width:900px){.scanner{order:0}}
+
 </style>
 </head>
 <body>
@@ -1160,29 +1198,55 @@ details p,details div{color:var(--muted)!important}
   <section class="view" id="v-explore">
     <div class="hero heroSplit">
       <div class="heroCopy">
-        <h1>Launch with nothing to hide.</h1>
-        <p>Launch your coin on pump.fun from Xray and it gets a public scan from the first block. Buyers see who bought at launch and who funded them, so a clean launch can prove it's clean.</p>
+        <h1>Every coin gets an X-ray.</h1>
+        <p class="heroPoint">Launch on pump.fun from Xray and anyone can see inside your launch: who bought first, and who funded them. Clean coins can finally prove it.</p>
         <div class="heroLaunch"><a class="btn sig lg" href="#launch">Launch a coin</a><span>About a minute from your own wallet. Costs about 0.03 SOL plus any dev buy.</span></div>
         <div class="heroCheck" id="heroCheck"></div>
       </div>
-      <figure class="film" aria-label="Example scan of a bundled launch">
-        <span class="clip" aria-hidden="true"></span>
-        <svg class="sheet" viewBox="0 0 520 420" role="img" aria-label="Wallet map: three wallets funded by one source, circled in red">
-          <rect width="520" height="420" fill="#0e1a20"/>
-          <g stroke="#e8f1ee" stroke-opacity=".22" stroke-width="1.2" fill="none">
-            <path d="M70 300 L150 250 L230 290 L300 230 L380 270 L470 300"/><path d="M150 250 L120 170 L200 130"/><path d="M230 290 L250 360"/><path d="M300 230 L280 150"/><path d="M380 270 L420 340"/><path d="M90 360 L150 250"/>
-          </g>
-          <g stroke="#e8f1ee" stroke-opacity=".55" stroke-width="1.4"><path d="M330 110 L392 96 M330 110 L404 150 M330 110 L366 182"/></g>
-          <g fill="#e8f1ee"><circle cx="70" cy="300" r="5" opacity=".7"/><circle cx="150" cy="250" r="6" opacity=".8"/><circle cx="230" cy="290" r="5" opacity=".7"/><circle cx="300" cy="230" r="6" opacity=".75"/><circle cx="380" cy="270" r="5" opacity=".7"/><circle cx="470" cy="300" r="5" opacity=".6"/><circle cx="120" cy="170" r="4" opacity=".5"/><circle cx="200" cy="130" r="4" opacity=".5"/><circle cx="250" cy="360" r="4" opacity=".5"/><circle cx="280" cy="150" r="4" opacity=".55"/><circle cx="420" cy="340" r="4" opacity=".5"/><circle cx="90" cy="360" r="4" opacity=".45"/>
-            <circle cx="330" cy="110" r="7"/><circle cx="392" cy="96" r="6"/><circle cx="404" cy="150" r="6"/><circle cx="366" cy="182" r="6"/></g>
-          <path class="ring" d="M318 84 C350 58 430 66 440 112 C452 168 400 214 352 204 C300 194 286 116 322 88" fill="none" stroke="#cf3f36" stroke-width="3.2" stroke-linecap="round"/>
-          <text x="342" y="236" fill="#ff8a80" font-family="Archivo, sans-serif" font-style="italic" font-weight="700" font-size="17" transform="rotate(-4 342 236)">3 wallets, 1 funder</text>
-          <text x="22" y="404" fill="#e8f1ee" fill-opacity=".45" font-family="Archivo, sans-serif" font-stretch="70%" font-weight="700" font-size="12" letter-spacing="2">XRAY  ·  LAUNCH BLOCK  ·  L</text>
-        </svg>
-        <figcaption>This is what buyers see on a bundled launch: one wallet funded three others, and all three bought in the first block. Launch from Xray and your scan shows them yours has nothing like it.</figcaption>
+      <figure class="scanner" id="scanner" aria-label="A coin shown normally on the left and as an X-ray on the right, where three wallets funded by one source are circled in red">
+        <div class="scanStage" id="scanStage">
+          <svg class="scanPlain" viewBox="0 0 520 520" aria-hidden="true">
+            <defs>
+              <radialGradient id="cgold" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ffe7a3"/><stop offset=".45" stop-color="#e8b64a"/><stop offset="1" stop-color="#9a6a17"/></radialGradient>
+              <radialGradient id="cface" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f6cf6b"/><stop offset="1" stop-color="#c38d26"/></radialGradient>
+            </defs>
+            <rect width="520" height="520" fill="#cbdbe1"/>
+            <ellipse cx="268" cy="478" rx="170" ry="18" fill="#13222a" opacity=".18"/>
+            <circle cx="260" cy="260" r="205" fill="url(#cgold)"/>
+            <circle cx="260" cy="260" r="178" fill="url(#cface)" stroke="#a87416" stroke-width="3"/>
+            <g fill="#8a5c10" opacity=".9"><circle cx="210" cy="232" r="16"/><circle cx="310" cy="232" r="16"/><path d="M190 300 Q260 360 330 300" stroke="#8a5c10" stroke-width="14" fill="none" stroke-linecap="round"/></g>
+            <text x="260" y="148" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="800" font-size="34" fill="#8a5c10" letter-spacing="2">$MEME</text>
+            <path d="M120 170 A170 170 0 0 1 220 92" stroke="#fff6d6" stroke-width="10" fill="none" stroke-linecap="round" opacity=".55"/>
+          </svg>
+          <div class="scanXray" id="scanXray" aria-hidden="true">
+            <svg viewBox="0 0 520 520">
+              <defs><radialGradient id="xglow" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#1d3640"/><stop offset="1" stop-color="#0b161b"/></radialGradient></defs>
+              <rect width="520" height="520" fill="url(#xglow)"/>
+              <circle cx="260" cy="260" r="205" fill="none" stroke="#e8f1ee" stroke-opacity=".28" stroke-width="10"/>
+              <circle cx="260" cy="260" r="178" fill="none" stroke="#e8f1ee" stroke-opacity=".14" stroke-width="2"/>
+              <g fill="none" stroke="#e8f1ee" stroke-opacity=".1" stroke-width="10"><circle cx="210" cy="232" r="16"/><circle cx="310" cy="232" r="16"/><path d="M190 300 Q260 360 330 300" stroke-linecap="round"/></g>
+              <g stroke="#e8f1ee" stroke-opacity=".35" stroke-width="1.6"><line x1="170" y1="180" x2="215" y2="140"/><line x1="215" y1="140" x2="300" y2="150"/><line x1="300" y1="150" x2="340" y2="210"/><line x1="170" y1="180" x2="190" y2="270"/><line x1="190" y1="270" x2="260" y2="250"/><line x1="260" y1="250" x2="300" y2="150"/><line x1="260" y1="250" x2="320" y2="300"/><line x1="320" y1="300" x2="370" y2="280"/><line x1="190" y1="270" x2="160" y2="330"/><line x1="160" y1="330" x2="230" y2="340"/><line x1="230" y1="340" x2="260" y2="250"/><line x1="230" y1="340" x2="290" y2="370"/><line x1="320" y1="300" x2="290" y2="370"/><line x1="170" y1="180" x2="140" y2="220"/><line x1="140" y1="220" x2="190" y2="270"/></g>
+              <g fill="#e8f1ee" fill-opacity=".8"><circle cx="170" cy="180" r="5"/><circle cx="215" cy="140" r="4"/><circle cx="300" cy="150" r="5"/><circle cx="340" cy="210" r="4"/><circle cx="190" cy="270" r="6"/><circle cx="260" cy="250" r="7"/><circle cx="320" cy="300" r="5"/><circle cx="230" cy="340" r="5"/><circle cx="160" cy="330" r="4"/><circle cx="290" cy="370" r="4"/><circle cx="370" cy="280" r="4"/><circle cx="140" cy="220" r="4"/></g>
+              <g stroke="#ff8a80" stroke-opacity=".8" stroke-width="2"><line x1="352" y1="150" x2="392" y2="128"/><line x1="352" y1="150" x2="404" y2="182"/><line x1="352" y1="150" x2="360" y2="206"/></g>
+              <g fill="#ffd7d2"><circle cx="352" cy="150" r="7"/><circle cx="392" cy="128" r="6"/><circle cx="404" cy="182" r="6"/><circle cx="360" cy="206" r="6"/></g>
+              <path class="ring" d="M334 104 C380 84 438 110 432 168 C428 222 372 238 340 214 C308 190 300 126 336 106" fill="none" stroke="#cf3f36" stroke-width="4" stroke-linecap="round"/>
+              <text x="300" y="262" fill="#ff8a80" font-family="Archivo, sans-serif" font-style="italic" font-weight="700" font-size="19" transform="rotate(-5 300 262)">3 wallets, 1 funder</text>
+              <text x="24" y="500" fill="#e8f1ee" fill-opacity=".4" font-family="Archivo, sans-serif" font-weight="700" font-size="12" letter-spacing="3">XRAY  ·  $MEME  ·  LAUNCH BLOCK</text>
+            </svg>
+          </div>
+          <div class="scanBar" id="scanBar" aria-hidden="true"><span></span></div>
+          <input class="scanRange" id="scanRange" type="range" min="0" max="100" value="45" aria-label="Move the scanner across the coin">
+        </div>
+        <figcaption>Drag across the coin. On the outside it's a normal launch. Inside, one wallet funded three others that all bought in the first block.</figcaption>
       </figure>
       <div class="card gate" id="gate" aria-live="off"></div>
     </div>
+
+    <ol class="beats pumpOnly" aria-label="How Xray works in three steps">
+      <li><b>Launch</b><span>Your coin goes live on pump.fun from your own wallet.</span></li>
+      <li><b>Scan</b><span>Xray reads every early buyer and traces who funded them.</span></li>
+      <li><b>Prove it</b><span>Buyers open one link and see the coin is clean, or that it isn't.</span></li>
+    </ol>
     <section class="explain pumpOnly" aria-labelledby="exH">
       <h2 id="exH">What launching from Xray does</h2>
       <p class="exLede">Your coin is a normal pump.fun coin. It trades on pump.fun and you keep the creator fees. Launching it from Xray adds one thing pump.fun doesn't have: a public scan of who bought it, running from the first block.</p>
@@ -2459,6 +2523,28 @@ if (PRELAUNCH) {
 syncWalletBtn(); lfWalletUI(); renderRules(); devHint();
 go(location.hash.slice(1) || "explore", false);
 requestAnimationFrame(loop);
+
+// ===== hero scanner: drag (or let it sweep) to x-ray the coin =====
+(function () {
+  const stage = document.getElementById("scanStage"), xr = document.getElementById("scanXray"), bar = document.getElementById("scanBar"), rng = document.getElementById("scanRange");
+  if (!stage) return;
+  let pos = 45, touched = false, t0 = performance.now();
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const set = (p) => { pos = Math.max(0, Math.min(100, p)); xr.style.clipPath = `inset(0 0 0 ${pos}%)`; bar.style.left = pos + "%"; rng.value = Math.round(pos); };
+  const fromEvent = (e) => { const r = stage.getBoundingClientRect(); set(((e.clientX - r.left) / r.width) * 100); };
+  stage.addEventListener("pointerdown", (e) => { touched = true; stage.setPointerCapture(e.pointerId); fromEvent(e); });
+  stage.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "mouse") { touched = true; fromEvent(e); } });
+  rng.addEventListener("input", () => { touched = true; set(+rng.value); });
+  set(reduce ? 40 : 92);
+  if (reduce) return;
+  // one slow sweep on load to show what it does, then it waits for the visitor
+  (function sweep(now) {
+    if (touched) return;
+    const k = Math.min(1, (now - t0) / 2600), e = 1 - Math.pow(1 - k, 3);
+    set(92 - 42 * e);
+    if (k < 1) requestAnimationFrame(sweep);
+  })(t0);
+})();
 
 
 // ===== Live mode: real coins from the Xray program (uses window.FG from live.js) =====

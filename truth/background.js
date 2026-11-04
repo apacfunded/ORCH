@@ -864,15 +864,29 @@ async function balances(rpcUrl, addresses) {
   return out;
 }
 
-async function prepareBuy(s, address, mint, lamports) {
+// When several wallets buy at the same moment, every transaction is quoted at the same starting price,
+// but whichever lands later pays the price after the others' buys. With normal slippage those later buys
+// fail on-chain with pump.fun error 6002 (TooMuchSolRequired). So each wallet gets extra room for the SOL
+// the rest of the bundle can push in ahead of it. Price on the bonding curve grows with (V+x)^2/V^2; the
+// curve's smallest virtual SOL reserve (30) is used, which overestimates the move and so never undershoots.
+const BUNDLE_SLIP_CAP_PCT = 100;
+function bundleSlippagePct(basePct, othersLamports) {
+  const x = Number(othersLamports) / 1e9;
+  if (!(x > 0)) return basePct;
+  const impactPct = (((30 + x) / 30) ** 2 - 1) * 100;
+  return Math.min(BUNDLE_SLIP_CAP_PCT, Math.round((basePct + impactPct) * 10) / 10);
+}
+
+async function prepareBuy(s, address, mint, lamports, slipOverride) {
   const seed = await seedFor(address);
-  const { tx, route } = await buildBuyTx({ route: s.buyRoute, wallet: address, mint, lamports, slippagePct: Number(s.slippagePct), priorityFeeSol: Number(s.buyPriorityFeeSol), jupKey: s.jupKey });
+  const slip = slipOverride ?? Number(s.slippagePct);
+  const { tx, route } = await buildBuyTx({ route: s.buyRoute, wallet: address, mint, lamports, slippagePct: slip, priorityFeeSol: Number(s.buyPriorityFeeSol), jupKey: s.jupKey });
   const { signerKeys, numSigs } = S.splitTx(tx);
   if (signerKeys[0] !== address || numSigs !== 1) throw new Error(`${route} returned a transaction for the wrong wallet`);
   // Safety net: simulate and refuse if it would take more SOL than the buy + slippage + fees.
   const sim = await simulate(s.rpc, tx, address);
   if (sim.error) throw new Error(sim.error);
-  const maxLossSol = Number(lamports) / 1e9 * (1 + Number(s.slippagePct) / 100) + Number(s.buyPriorityFeeSol) + 0.015;
+  const maxLossSol = Number(lamports) / 1e9 * (1 + slip / 100) + Number(s.buyPriorityFeeSol) + 0.015;
   if (sim.solChange != null && -sim.solChange > maxLossSol) throw new Error(`Refused: would spend ${(-sim.solChange).toFixed(4)} SOL`);
   const { message } = S.splitTx(tx);
   const signed = S.applySignature(tx, address, await K.sign(seed, message));

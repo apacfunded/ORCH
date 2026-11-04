@@ -87,7 +87,7 @@ export async function launchPage() {
     const stepper = h("div", { class: "stepper", "aria-label": "Progress" }, LABELS.map((l, i) => h("div", null, h("b", null, `0${i + 1}`), h("span", null, l))));
     const stage = h("div", { class: "wstep" });
     const previewHost = h("div");
-    const sealHost = h("div", { class: "seal pending", style: "width:110px;height:110px;justify-self:end;margin-top:-50px;position:relative", html: sealSvg("PENDING ASSAY", "--/--/--") });
+    const sealHost = h("div", { class: "seal pending", style: "width:96px;height:96px;justify-self:end;margin-top:4px;position:relative", html: sealSvg("PENDING ASSAY", "--/--/--") });
     const previewCol = h("div", { class: "previewcol" }, h("span", { class: "label" }, "Live certificate"), previewHost, sealHost);
     const head = h("div", { class: "launch-head" }, h("div", null, h("span", { class: "label" }, "Submit a sample"), h("h1", { style: "margin-top:8px" }, "Launch a coin."), h("p", null, "Name it, pick an element, launch it on pump.fun. It gets a certificate here and a live price in its element.")), h("div", { class: "label", style: "text-align:right" }, "Launches on pump.fun", h("br"), `Creator fees ${fees.creatorSharePct}/${fees.buybackBurnPct}/${fees.mainHolderSolPct}, locked`));
     const el = h("div", { class: "page" }, head, stepper, h("div", { class: "wizard" }, stage, previewCol));

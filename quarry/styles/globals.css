@@ -526,3 +526,9 @@ canvas.spark { display: block; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
   .tape .track { animation: none; }
 }
+
+/* phone fixes: keep grid children from growing past the viewport */
+.ptable { grid-template-columns: minmax(0, 1fr); }
+.pgroup, .coingrid > div, .wizard > *, .boardtop > *, .hero > * { min-width: 0; }
+@media (max-width: 960px) { .hero { grid-template-columns: minmax(0, 1fr); } .hero .facts b { font-size: 17px; } }
+@media (max-width: 640px) { .pgrid.scroll { max-width: 100%; } .hero .facts > div { padding-right: 8px; } .hero .facts > div + div { padding-left: 8px; } }

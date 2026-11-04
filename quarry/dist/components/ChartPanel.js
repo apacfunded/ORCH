@@ -58,6 +58,7 @@ export function chartPanel(coin) {
     const buildChart = () => {
         if (lwc) {
             chart = lwc.createChart(chartHost, {
+                autoSize: true,
                 layout: { background: { type: lwc.ColorType.Solid, color: "transparent" }, textColor: css("--ink-3") || "#6e6a60", fontFamily: "JetBrains Mono, monospace", fontSize: 11 },
                 grid: { vertLines: { color: css("--chart-grid") || "rgba(20,20,20,.06)" }, horzLines: { color: css("--chart-grid") || "rgba(20,20,20,.06)" } },
                 crosshair: { mode: lwc.CrosshairMode.Normal },

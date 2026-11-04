@@ -1,0 +1,477 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Paired</title><meta name="description" content="Launch a coin. Pair it with anyone. $PAIRED drops soon."><meta property="og:title" content="Paired"><meta property="og:description" content="Launch a coin. Pair it with anyone. $PAIRED drops soon."><meta property="og:image" content="https://orch.lol/paired/og.png"><meta property="og:url" content="https://orch.lol/paired/"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@paired_lol"><meta name="twitter:image" content="https://orch.lol/paired/og.png"></head><body>
+<title>Paired</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,500..900&family=Figtree:wght@400;500;600;700&family=Nunito:wght@800;900&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single quiet column like a trading app — condensed hero, one live split tool, pairing steps, liftoff curve, guarantees, sticky $PAIRED bar */
+:root{
+  --bg:#0c0a13; --raise:#15121f; --raise2:#1d1830; --line:#2a2342; --fg:#ebe8f6; --mute:#8f8ba8; --dim:#5f5b78;
+  --you:#f1eefb; --them:#a970ff; --hold:#d2b3ff; --burn:#ee7b8c; --up:#74e2a6;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --round:"Nunito",ui-rounded,system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--them);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* ---------- header ---------- */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:10px;height:72px}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:44px;height:44px;border-radius:13px;background:#000;display:block;flex:none;object-fit:cover;box-shadow:0 0 0 1px var(--line),0 0 24px color-mix(in srgb,var(--them) 30%,transparent)}
+.word{font-family:var(--round);font-weight:900;font-size:27px;letter-spacing:.005em;line-height:1}
+.word .i{position:relative;display:inline-block}
+.word .i::after{content:"";position:absolute;left:50%;top:.08em;width:.22em;height:.22em;border-radius:50%;background:var(--you);transform:translateX(-50%)}
+.word .dot2{display:inline-block;width:.22em;height:.22em;border-radius:50%;background:var(--them);margin-left:.06em;vertical-align:baseline}
+.sp{flex:1}
+.circ{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--fg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 22px;font-weight:600;font-size:16px;white-space:nowrap}
+.btn.solid{background:var(--fg);color:var(--bg)}
+.btn.line{border:1.5px solid var(--line);color:var(--fg)}
+.btn.big{padding:18px 32px;font-size:18px}
+@media(max-width:480px){.nav .circ.opt{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding-block:72px 64px;position:relative}
+.hero::before{content:"";position:absolute;inset:-40px 0 auto auto;width:min(520px,80vw);height:420px;background:radial-gradient(closest-side,color-mix(in srgb,var(--them) 24%,transparent),transparent);pointer-events:none;z-index:-1}
+h1{font-family:var(--display);font-weight:800;font-stretch:62%;font-size:clamp(64px,13.5vw,148px);line-height:.86;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lede{color:var(--mute);font-size:clamp(19px,2.5vw,24px);line-height:1.6;max-width:30em;margin:32px 0 40px}
+.lede .y{color:var(--you)}.lede .t{color:var(--them)}
+.ctas{display:flex;flex-wrap:wrap;gap:14px}
+.facts{display:flex;flex-wrap:wrap;gap:20px 64px;margin-top:64px}
+.fact small{display:block;color:var(--mute);font-size:15px;margin-bottom:2px}
+.fact b{font-family:var(--display);font-stretch:80%;font-weight:700;font-size:40px;letter-spacing:-.01em;line-height:1.1;font-variant-numeric:tabular-nums}
+
+/* ---------- section scaffolding ---------- */
+section{padding-block:72px;border-top:1px solid var(--line)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:16px;height:2px;border-radius:2px;background:var(--them)}
+h2{font-family:var(--display);font-weight:800;font-stretch:64%;font-size:clamp(46px,8.5vw,84px);line-height:.9;letter-spacing:-.02em;margin:14px 0 18px;text-wrap:balance}
+.sub{color:var(--mute);font-size:17.5px;max-width:36em;margin:0 0 36px}
+
+/* ---------- follow one trade ---------- */
+.trade{background:var(--raise);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+.trade-top{padding:24px 24px 8px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.size small{display:block;color:var(--mute);font-size:14px}
+.size output{font-family:var(--display);font-stretch:72%;font-weight:800;font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums}
+.chip[aria-pressed=true]{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:600}
+.fee-line{padding:6px 24px 0;color:var(--mute);font-size:14.5px}
+.fee-line b{color:var(--fg);font-family:var(--mono);font-weight:500}
+.splitbar{display:flex;gap:4px;height:18px;margin:22px 24px 6px}
+.splitbar i{display:block;border-radius:6px;min-width:4px;transition:flex-grow .3s ease}
+.legs{display:flex;flex-direction:column}
+.leg{display:grid;grid-template-columns:14px 1fr auto;gap:14px;align-items:start;padding:18px 24px;border-top:1px solid var(--line)}
+.leg:first-child{border-top:0}
+.leg .sw{width:14px;height:14px;border-radius:5px;margin-top:5px}
+.leg b{display:block;font-size:17px;font-weight:600}
+.leg b em{font-style:normal;color:var(--mute);font-weight:500}
+.leg p{margin:2px 0 0;color:var(--mute);font-size:14.5px;line-height:1.45}
+.leg .amt{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap;padding-top:2px}
+.leg input[type=range]{grid-column:2/4;width:100%;margin:10px 0 0;accent-color:var(--fg)}
+.leg.locked .amt{color:var(--mute)}
+.trade-foot{padding:16px 24px 22px;border-top:1px solid var(--line);color:var(--dim);font-size:13.5px}
+
+/* ---------- pair it with anyone ---------- */
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:1.5px solid var(--line);border-radius:999px;padding:10px 18px;font-size:15px;color:var(--mute);font-weight:500}
+.tab[aria-selected=true]{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:600}
+.pair-card{margin-top:22px;background:var(--raise);border:1px solid var(--line);border-radius:24px;padding:26px 24px}
+.pair-head{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.pair-head .duo{position:relative;width:58px;height:40px;flex:none}
+.pair-head .duo span{position:absolute;top:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--round);font-weight:900;font-size:16px;color:var(--bg);border:3px solid var(--raise)}
+.pair-head .duo span:first-child{left:0;background:var(--you)}
+.pair-head .duo span:last-child{left:18px;background:var(--them)}
+.pair-head h3{margin:0;font-family:var(--display);font-stretch:80%;font-weight:700;font-size:26px;line-height:1.1}
+.pair-head small{color:var(--mute);font-size:14.5px}
+.flow{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.flow li{display:grid;grid-template-columns:36px 1fr;gap:16px;position:relative;padding-bottom:24px}
+.flow li:last-child{padding-bottom:0}
+.flow li:not(:last-child)::before{content:"";position:absolute;left:17px;top:38px;bottom:4px;width:2px;background:var(--line)}
+.flow .num{width:36px;height:36px;border-radius:50%;background:var(--raise2);border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:14px;color:var(--them)}
+.flow b{display:block;font-size:18px;margin-top:5px}
+.flow p{margin:4px 0 0;color:var(--mute);font-size:15.5px;max-width:42em}
+
+/* ---------- liftoff ---------- */
+.lift{display:grid;grid-template-columns:1fr 1.1fr;gap:36px;align-items:center}
+@media(max-width:800px){.lift{grid-template-columns:1fr}}
+.curve{background:var(--raise);border:1px solid var(--line);border-radius:24px;padding:20px 20px 16px;min-width:0}
+.curve svg{display:block;width:100%;height:auto}
+.curve-legend{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--mute);margin-top:10px}
+.curve-legend b{color:var(--fg);font-weight:600}
+
+/* ---------- guarantees ---------- */
+.gs{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+@media(max-width:640px){.gs{grid-template-columns:1fr}}
+.g{background:var(--bg);padding:28px 26px}
+.g h3{font-family:var(--display);font-stretch:72%;font-weight:800;font-size:32px;line-height:1;margin:0 0 10px;letter-spacing:-.01em}
+.g p{margin:0;color:var(--mute);font-size:16px;max-width:30em}
+.g .ico{margin-bottom:18px;display:block}
+
+/* ---------- empty launch board ---------- */
+.board{border:1.5px dashed var(--line);border-radius:24px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.board .duo-lg{display:flex}
+.board .duo-lg span{width:52px;height:52px;border-radius:50%;border:4px solid var(--bg)}
+.board .duo-lg span:first-child{background:var(--you)}
+.board .duo-lg span:last-child{background:var(--them);margin-left:-18px}
+.board h3{margin:6px 0 0;font-family:var(--display);font-stretch:72%;font-weight:800;font-size:34px;line-height:1}
+.board p{margin:0;color:var(--mute);max-width:26em}
+
+/* ---------- footer + sticky token bar ---------- */
+footer{border-top:1px solid var(--line);padding-block:32px;color:var(--dim);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}
+.tokenbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:color-mix(in srgb,var(--raise) 94%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);border-radius:22px 22px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tokenbar .wrap{display:flex;align-items:center;gap:14px;height:84px}
+.tokenbar .mark{width:52px;height:52px;border-radius:15px;background:#0b0a12}
+.tb-name{min-width:0;flex:1}
+.tb-name b{display:block;font-size:18px;font-weight:700}
+.tb-name small{display:block;color:var(--mute);font-family:var(--mono);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-act{display:flex;gap:8px}
+.tb-act .btn{padding:10px 16px;font-size:14.5px}
+
+
+/* ---------- live board + apex ---------- */
+.tight{padding-block:8px 64px;border-top:0}
+.live{background:var(--raise);border:1px solid var(--line);border-radius:28px;padding:22px 18px 18px}
+.live-head{display:flex;align-items:center;gap:12px;padding:4px 6px 18px}
+.live-head h3{margin:0;font-size:22px;font-weight:600;flex:1}
+.live-head a{color:var(--mute);font-size:16px}
+.pulse{width:10px;height:10px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 color-mix(in srgb,var(--up) 60%,transparent);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.skrows{position:relative;display:flex;flex-direction:column;gap:10px}
+.skel{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:18px;opacity:.55}
+.skel:nth-child(2){opacity:.35}.skel:nth-child(3){opacity:.18}
+.sk-pfp{width:52px;height:52px;border-radius:14px;background:var(--raise2)}
+.sk-lines{display:flex;flex-direction:column;gap:8px}
+.sk-lines i{display:block;height:11px;border-radius:6px;background:var(--raise2);width:60%}
+.sk-lines i+i{width:36%;height:9px}
+.sk-mc{color:var(--dim);font-size:15px;font-variant-numeric:tabular-nums}
+.sk-over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding:0 20px}
+.sk-over b{font-size:18px}
+.sk-over span{color:var(--mute);font-size:14.5px;max-width:26em}
+.apex{margin-top:20px;position:relative;border-radius:28px;padding:24px 22px;background:var(--raise)}
+.apex::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(110deg,var(--you),var(--them));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.apex-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.apex-tag{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;letter-spacing:.2em;color:var(--them);font-weight:500}
+.apex-top small{color:var(--mute);font-size:14.5px}
+.apex-body{display:grid;grid-template-columns:96px 1fr;gap:18px;align-items:center}
+.apex-pfp{width:96px;height:96px;border-radius:22px;background:var(--raise2);border:1.5px dashed var(--line);display:grid;place-items:center;color:var(--dim)}
+.apex-body h3{margin:0;font-family:var(--display);font-stretch:80%;font-weight:800;font-size:30px;line-height:1.05}
+.apex-body p{margin:4px 0 12px;color:var(--mute);font-size:14.5px}
+.fuelbar{height:10px;border-radius:999px;background:var(--raise2);overflow:hidden}
+.fuelbar i{display:block;height:100%;width:0}
+.fuel-l{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:8px}
+
+/* ---------- fee flow ---------- */
+.flowbox{padding:18px 18px 4px}
+.ends{display:flex;justify-content:space-between;color:var(--mute);font-size:14.5px;font-variant-numeric:tabular-nums}
+#size{width:100%;accent-color:var(--them);margin:8px 0 4px}
+.flowsvg{display:block;width:100%;height:auto;overflow:visible}
+.flowsvg .dots{animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-16}}
+
+/* ---------- most wanted ---------- */
+.wanted{display:flex;flex-direction:column;gap:14px;position:relative}
+.wrow{display:grid;grid-template-columns:auto 64px 1fr auto;gap:16px;align-items:center;padding:20px;border:1px solid var(--line);border-radius:22px;background:var(--raise)}
+.wrow:first-child{border-color:color-mix(in srgb,var(--them) 60%,transparent);box-shadow:0 0 30px color-mix(in srgb,var(--them) 14%,transparent)}
+.wrow .rk{font-weight:700;color:var(--mute);align-self:start}
+.wrow:first-child .rk{color:var(--them)}
+.wrow .av{width:64px;height:64px;border-radius:50%;background:var(--raise2)}
+.wrow:first-child .av{box-shadow:0 0 0 3px var(--them)}
+.wrow .w-r{text-align:right}
+.wrow .w-r small{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:var(--mute)}
+.wrow .w-r b{font-family:var(--display);font-stretch:85%;font-size:28px;color:var(--them);font-variant-numeric:tabular-nums}
+.wanted .skel-txt{display:flex;flex-direction:column;gap:8px}
+.wanted .skel-txt i{display:block;height:12px;border-radius:6px;background:var(--raise2);width:70%}
+.wanted .skel-txt i+i{width:40%;height:10px}
+.wrow.ghost{opacity:.5}.wrow.ghost+.wrow.ghost{opacity:.3}
+.wanted-msg{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px}
+.wanted-msg p{margin:0;color:var(--mute);max-width:28em}
+@media(max-width:480px){.wrow{grid-template-columns:auto 48px 1fr auto;gap:12px;padding:16px}.wrow .av{width:48px;height:48px}.wrow .w-r b{font-size:22px}.apex-body{grid-template-columns:72px 1fr}.apex-pfp{width:72px;height:72px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.splitbar i{transition:none}.flowsvg .dots,.pulse{animation:none}}
+@media(max-width:520px){.hero{padding-block:52px 48px}section{padding-block:56px}.facts{gap:18px 40px;margin-top:48px}.fact b{font-size:34px}}
+</style>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Paired home">
+      <img class="mark" src="data:image/webp;base64,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" alt="" width="44" height="44">
+      <span class="word">Paired</span>
+    </a>
+    <span class="sp"></span>
+    <button class="circ opt" type="button" aria-label="Search coins"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    <a class="circ" href="https://x.com/paired_lol" target="_blank" rel="noopener" aria-label="Paired on X"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L2.8 2h6.4l4.4 5.8zm-1.1 18.1h1.7L7.3 3.8H5.5z"/></svg></a>
+    <button class="btn solid" type="button">Sign in</button>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <h1>Launch a coin.<br>Pair it with anyone.</h1>
+    <p class="lede">Every coin is made for someone: a streamer, a dev, a brand, an AI model. You set how each trade's fee is split between <span class="y">you</span>, <span class="t">them</span>, holders and burns, and it's locked on-chain for good.</p>
+    <div class="ctas">
+      <button class="btn solid big" type="button">Launch a coin</button>
+      <a class="btn line big" href="#how">How it works</a>
+    </div>
+    <div class="facts">
+      <div class="fact"><small>Creator fee</small><b>1%</b></div>
+      <div class="fact"><small>Supply</small><b>1B fixed</b></div>
+      <div class="fact"><small>Liftoff at</small><b>85 SOL</b></div>
+    </div>
+  </div>
+
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="live">
+        <div class="live-head"><span class="pulse" aria-hidden="true"></span><h3>Launching now</h3><a href="#coins">Live board →</a></div>
+        <div class="skrows">
+          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">MC — SOL</span></div>
+          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">MC — SOL</span></div>
+          <div class="skel"><span class="sk-pfp"></span><span class="sk-lines"><i></i><i></i></span><span class="sk-mc">MC — SOL</span></div>
+          <div class="sk-over"><b>No launches yet</b><span>New coins show up here the second they go live, with their ticker, age and market cap.</span></div>
+        </div>
+      </div>
+      <div class="apex">
+        <div class="apex-top"><span class="apex-tag"><svg width="18" height="16" viewBox="0 0 18 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 2 16.5 14.5h-15z"/></svg>APEX</span><small>Closest to liftoff</small></div>
+        <div class="apex-body">
+          <div class="apex-pfp" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div>
+            <h3>Up for grabs</h3>
+            <p>The coin with the most fuel in its ignition pool takes this spot.</p>
+            <div class="fuelbar" role="img" aria-label="0 of 85 SOL"><i></i></div>
+            <div class="fuel-l"><span>0 SOL</span><span>85 SOL · liftoff</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="how">
+    <div class="wrap">
+      <div class="kicker">Follow one trade</div>
+      <h2>Every trade, split the same way.</h2>
+      <p class="sub">Each buy and sell pays a creator fee of about 1%. The split is written on-chain at launch and applied identically to every trade, before and after liftoff. Network fees are separate.</p>
+
+      <div class="trade">
+        <div class="flowbox">
+          <div class="ends"><span>0.1 SOL</span><span id="sizeOut">1 SOL trade</span><span>100 SOL</span></div>
+          <input id="size" type="range" min="0" max="1000" value="333" aria-label="Trade size">
+          <svg class="flowsvg" id="flow" viewBox="0 0 550 300" role="img" aria-label="How one trade's creator fee splits"></svg>
+        </div>
+        <div class="legs" id="legs"></div>
+        <div class="trade-foot">Drag the sliders to set your split. Anything you don't assign burns the coin.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="kicker">Pair it with anyone</div>
+      <h2>They don't need to sign up first.</h2>
+      <p class="sub">Pick who the coin is for. Their share starts building from the very first trade, even if they've never heard of the coin.</p>
+      <div class="tabs" role="tablist" id="tabs" aria-label="Account type"></div>
+      <div class="pair-card" role="tabpanel" id="panel">
+        <div class="pair-head">
+          <div class="duo" aria-hidden="true"><span>Y</span><span id="duoB">X</span></div>
+          <div><h3 id="pTitle"></h3><small id="pSub"></small></div>
+        </div>
+        <ol class="flow">
+          <li><span class="num">1</span><div><b id="s1t"></b><p id="s1"></p></div></li>
+          <li><span class="num">2</span><div><b id="s2t"></b><p id="s2"></p></div></li>
+          <li><span class="num">3</span><div><b id="s3t"></b><p id="s3"></p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap lift">
+      <div>
+        <div class="kicker">Ignite it</div>
+        <h2>Lift off for good.</h2>
+        <p class="sub" style="margin-bottom:0">Every coin opens at the same price, about a 30 SOL market cap, with an empty ignition pool. Every buy adds fuel. When 85 SOL sits in the pool (about a 420 SOL market cap), the coin lifts off to an open AMM pool automatically and keeps paying the same split.</p>
+      </div>
+      <div class="curve">
+        <svg viewBox="0 0 400 230" role="img" aria-label="Market cap rises from about 30 SOL to about 420 SOL as the ignition pool fills from 0 to 85 SOL">
+          <defs>
+            <linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#f1eefb"/><stop offset="1" stop-color="#9d5cff"/></linearGradient>
+            <linearGradient id="fillg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#9d5cff" stop-opacity=".22"/><stop offset="1" stop-color="#9d5cff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <g stroke="#2a2840" stroke-width="1"><line x1="40" y1="20" x2="40" y2="190"/><line x1="40" y1="190" x2="380" y2="190"/><line x1="40" y1="105" x2="380" y2="105" stroke-dasharray="3 5"/><line x1="40" y1="20" x2="380" y2="20" stroke-dasharray="3 5"/></g>
+          <path d="M40 178 C 150 172, 260 120, 360 30 L360 190 L40 190 Z" fill="url(#fillg)"/>
+          <path d="M40 178 C 150 172, 260 120, 360 30" fill="none" stroke="url(#lg)" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="40" cy="178" r="6" fill="#f1eefb"/>
+          <circle cx="360" cy="30" r="7" fill="#9d5cff"/><circle cx="360" cy="30" r="13" fill="none" stroke="#9d5cff" stroke-opacity=".4" stroke-width="2"/>
+          <line x1="360" y1="30" x2="360" y2="190" stroke="#9d5cff" stroke-opacity=".5" stroke-dasharray="4 4"/>
+          <g fill="#8f8ba8" font-family="JetBrains Mono,monospace" font-size="11">
+            <text x="34" y="182" text-anchor="end">30</text>
+            <text x="34" y="34" text-anchor="end">420</text>
+            <text x="40" y="208" text-anchor="middle">0</text>
+            <text x="360" y="208" text-anchor="middle">85 SOL</text>
+            <text x="210" y="226" text-anchor="middle">SOL in ignition pool</text>
+          </g>
+          <text x="352" y="22" fill="#ebe8f6" font-family="Figtree,sans-serif" font-size="12" font-weight="600" text-anchor="end">Liftoff → AMM</text>
+        </svg>
+        <div class="curve-legend"><span>Left axis: market cap in SOL</span><span><b>Same fee split</b> before and after</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="kicker">Locked at launch</div>
+      <h2>Nobody holds the keys.</h2>
+      <div class="gs" style="margin-top:32px">
+        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f1eefb" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h3>1 billion, forever</h3><p>Supply is fixed at launch. There's no mint authority, so nobody can print more.</p></div>
+        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9d5cff" stroke-width="1.8" stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><h3>No one buys before you</h3><p>Your launch buy lands in the same atomic bundle as the launch itself. Snipers can't sandwich it.</p></div>
+        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a294f5" stroke-width="1.8" stroke-linecap="round"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg><h3>Split can't change</h3><p>The fee split is written on-chain and its one-time admin key is erased. Nobody can edit it later.</p></div>
+        <div class="g"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ee7b8c" stroke-width="1.8" stroke-linecap="round"><path d="M12 22c4 0 7-3 7-7 0-3-2-5-3-7-1 2-2 3-3 3 0-3-1-6-4-8 0 4-4 7-4 12 0 4 3 7 7 7z"/></svg><h3>$PAIRED burns</h3><p>Half of Paired's locked platform share buys back and burns $PAIRED, on every trade of every coin.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="coins">
+    <div class="wrap">
+      <div class="kicker">Unclaimed</div>
+      <h2>Most Wanted.</h2>
+      <p class="sub">They haven't claimed yet. Their coins are paying them anyway.</p>
+      <div class="wanted">
+        <div class="wrow ghost"><span class="rk">#1</span><span class="av"></span><span class="skel-txt"><i></i><i></i></span><span class="w-r"><small>WAITING</small><b>— SOL</b></span></div>
+        <div class="wrow ghost"><span class="rk">#2</span><span class="av"></span><span class="skel-txt"><i></i><i></i></span><span class="w-r"><small>WAITING</small><b>— SOL</b></span></div>
+        <div class="wrow ghost"><span class="rk">#3</span><span class="av"></span><span class="skel-txt"><i></i><i></i></span><span class="w-r"><small>WAITING</small><b>— SOL</b></span></div>
+      </div>
+      <div class="wanted-msg">
+        <p>Nobody's on the board yet. Launch a coin for someone and they'll show up here with how much is waiting for them.</p>
+        <button class="btn solid" type="button">Launch the first coin</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Paired · launch a coin, pair it with anyone · <a href="https://x.com/paired_lol" target="_blank" rel="noopener" style="color:var(--fg)">@paired_lol</a></span><span>Memecoins are volatile. Nothing here is financial advice.</span></div></footer>
+
+<div class="tokenbar">
+  <div class="wrap">
+    <img class="mark" src="" alt="" width="52" height="52">
+    <div class="tb-name"><b>Paired launchpad</b><small id="ca">$PAIRED · CA coming soon</small></div>
+    <div class="tb-act"><a class="btn line" href="https://x.com/paired_lol" target="_blank" rel="noopener" aria-label="Paired on X"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L2.8 2h6.4l4.4 5.8zm-1.1 18.1h1.7L7.3 3.8H5.5z"/></svg></a><button class="btn line" id="copy" type="button">Copy CA</button></div>
+  </div>
+</div>
+
+<script>
+document.querySelector(".tokenbar .mark").src=document.querySelector("header .mark").src;
+const $=id=>document.getElementById(id);
+
+/* ---- follow one trade ---- */
+let size=1;
+$("size").addEventListener("input",()=>{size=+(0.1*Math.pow(10,3*$("size").value/1000)).toPrecision(2);render()});
+const legs=[
+  {k:"you",name:"Creator",desc:"Your cut as the person who launched the coin.",c:"--you",v:56,edit:true},
+  {k:"them",name:"Paired account",desc:"Paid out right away, or held in escrow until the account verifies.",c:"--them",v:24,edit:true},
+  {k:"hold",name:"Holders",desc:"Shared out to holders by bag size.",c:"--hold",v:0,edit:true},
+  {k:"burn",name:"Coin burn",desc:"Buys back and burns this coin. Gets whatever you leave unassigned.",c:"--burn",v:0},
+  {k:"plat",name:"Paired",desc:"Locked platform share. Half buys back and burns $PAIRED.",c:"--dim",v:20,locked:true}
+];
+$("legs").innerHTML=legs.map(l=>`<div class="leg${l.locked?" locked":""}"><span class="sw" style="background:var(${l.c})"></span><div><b>${l.name} <em id="p_${l.k}"></em></b><p>${l.desc}</p></div><span class="amt" id="a_${l.k}"></span>${l.edit?`<input type="range" id="r_${l.k}" min="0" max="80" step="1" value="${l.v}" aria-label="${l.name} share">`:""}</div>`).join("");
+
+
+const short={you:"Creator",them:"Paired acct",hold:"Holders",burn:"Burn",plat:"Platform"};
+function drawFlow(fee){
+  const on=legs.filter(l=>l.v>0), n=on.length, cs=getComputedStyle(document.documentElement);
+  const top=40,bot=262, gap=n>1?(bot-top)/(n-1):0;
+  let stack=150-on.reduce((a,l)=>a+3+l.v*.16,0)/2, out="";
+  on.forEach((l,i)=>{
+    const th=3+l.v*.16, ys=stack+th/2; stack+=th;
+    const yt=n>1?top+gap*i:150, col=cs.getPropertyValue(l.c).trim()||"#888", d=`M100 ${ys} L190 ${ys} C 255 ${ys}, 255 ${yt}, 320 ${yt} L392 ${yt}`;
+    const dot=Math.max(4,Math.min(12,th*.9));
+    out+=`<path d="${d}" fill="none" stroke="${col}" stroke-opacity=".22" stroke-width="${th+8}" stroke-linecap="round"/>
+<path class="dots" d="${d}" fill="none" stroke="${col}" stroke-width="${dot}" stroke-linecap="round" stroke-dasharray="0 16"/>
+<text x="404" y="${yt-3}" fill="${col}" font-family="Figtree,sans-serif" font-size="14" font-weight="600">${short[l.k]} ${l.v}%</text>
+<text x="404" y="${yt+16}" fill="${cs.getPropertyValue("--mute").trim()}" font-family="JetBrains Mono,monospace" font-size="13">${(fee*l.v/100).toPrecision(2)} SOL</text>`;
+  });
+  out+=`<rect x="2" y="120" width="98" height="60" rx="12" fill="${cs.getPropertyValue("--raise2").trim()}" stroke="${cs.getPropertyValue("--line").trim()}"/>
+<text x="51" y="143" text-anchor="middle" fill="${cs.getPropertyValue("--mute").trim()}" font-family="Figtree,sans-serif" font-size="11.5">creator fee</text>
+<text x="51" y="166" text-anchor="middle" fill="${cs.getPropertyValue("--fg").trim()}" font-family="JetBrains Mono,monospace" font-size="16">${fee.toPrecision(2)}</text>`;
+  $("flow").innerHTML=out;
+}
+function render(changed){
+  const ed=legs.filter(l=>l.edit);
+  ed.forEach(l=>l.v=+$("r_"+l.k).value);
+  let total=ed.reduce((a,l)=>a+l.v,0);
+  if(total>80){ // trim the other sliders, last first
+    for(const l of [...ed].reverse()){if(l.k===changed)continue;const cut=Math.min(l.v,total-80);l.v-=cut;total-=cut;$("r_"+l.k).value=l.v;if(total<=80)break}
+  }
+  legs.find(l=>l.k==="burn").v=80-ed.reduce((a,l)=>a+l.v,0);
+  const fee=size*0.01;
+  $("sizeOut").textContent=size+" SOL trade";
+  legs.forEach(l=>{$("p_"+l.k).textContent=l.v+"%";$("a_"+l.k).textContent=(fee*l.v/100).toFixed(5)+" SOL"});
+  drawFlow(fee);
+}
+legs.filter(l=>l.edit).forEach(l=>$("r_"+l.k).addEventListener("input",()=>render(l.k)));
+render();
+
+/* ---- pair it with anyone ---- */
+const T=[
+ {tab:"X (Twitter)",ini:"X",title:"A coin for your favourite poster",sub:"Paired to any X handle",
+  wait:"Their share builds up from the first trade, even if they've never seen the coin.",
+  prove:"From the wallet menu → Paired account claim, they sign in with X. Typing a handle proves nothing, so nobody else can take it."},
+ {tab:"GitHub",ini:"GH",title:"A coin for a repo you rely on",sub:"Paired to a GitHub user or org",
+  wait:"The maintainers' share collects while the coin trades.",
+  prove:"An owner of the user or org signs in with GitHub. Forks and lookalike names can't claim."},
+ {tab:"YouTube",ini:"YT",title:"A coin for a channel you watch",sub:"Paired to a YouTube channel",
+  wait:"The channel's share collects from the first trade.",
+  prove:"They sign in with the Google account that owns the channel."},
+ {tab:"Twitch",ini:"TV",title:"A coin for a streamer you never miss",sub:"Paired to a Twitch channel",
+  wait:"The streamer's share builds up while chat trades.",
+  prove:"The channel owner signs in with Twitch."},
+ {tab:"AI model",ini:"AI",title:"A coin for a model you trust",sub:"Paired to an AI model (LLM)",
+  wait:"The model's share collects in escrow under its lab's name.",
+  prove:"The lab signs a message from its official domain to claim for the model."},
+ {tab:"Company",ini:"CO",title:"A coin for a brand",sub:"Paired to a company domain",
+  wait:"The company's share collects in escrow.",
+  prove:"They add a DNS TXT record to their domain. Only whoever controls the domain can do that."},
+ {tab:"Solana wallet",ini:"SOL",title:"A coin for a wallet",sub:"Paired to any Solana address",
+  wait:"No escrow needed. A wallet address is already proof of who it is.",
+  prove:"Nothing to do. The share is sent straight to the wallet on every trade.",direct:true},
+ {tab:"Token",ini:"TKN",title:"A coin paired to another token",sub:"TOKEN/pair",
+  wait:"The paired share is collected for that token's side.",
+  prove:"No claim needed. The share buys the paired token and routes it on-chain.",direct:true},
+ {tab:"Stock",ini:"STK",title:"A coin paired to a stock",sub:"TOKEN/stock, using tokenized stocks",
+  wait:"The paired share is collected for the stock's side.",
+  prove:"No claim needed. The share buys the tokenized stock into the coin's vault.",direct:true}
+];
+$("tabs").innerHTML=T.map((t,i)=>`<button class="tab" role="tab" type="button" data-i="${i}" aria-selected="${i===0}" aria-controls="panel">${t.tab}</button>`).join("");
+function show(i){
+  const t=T[i];
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",+b.dataset.i===i));
+  $("duoB").textContent=t.ini;$("duoB").style.fontSize=t.ini.length>2?"12px":"16px";
+  $("pTitle").textContent=t.title;$("pSub").textContent=t.sub;
+  $("s1t").textContent=t.direct?"Paid from the first trade":"Waits in escrow";$("s1").textContent=t.wait;
+  $("s2t").textContent=t.direct?"Nothing to verify":"They sign in to prove it";$("s2").textContent=t.prove;
+  $("s3t").textContent=t.direct?"Keeps flowing":"Paid now, then automatically";
+  $("s3").textContent=t.direct?"Every trade sends the share on its own, before and after liftoff.":"Everything waiting goes out at once, network fee on us. After that, shares arrive on their own.";
+}
+$("tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(b)show(+b.dataset.i)});
+show(0);
+
+/* ---- copy CA ---- */
+$("copy").addEventListener("click",()=>{
+  const ca=$("ca").dataset.ca;
+  if(!ca){$("copy").textContent="Not live yet";setTimeout(()=>$("copy").textContent="Copy CA",1600);return}
+  navigator.clipboard.writeText(ca).then(()=>{$("copy").textContent="Copied"},()=>{const r=document.createRange();r.selectNodeContents($("ca"));getSelection().removeAllRanges();getSelection().addRange(r)});
+});
+</script>
+
+</body></html>

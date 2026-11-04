@@ -22,7 +22,7 @@ export function mainCoinCard() {
     copyBtn.innerHTML = UI.copy;
     let pair = null;
     const chartLink = h("a", { class: "btn", href: `https://dexscreener.com/solana/${mint}`, target: "_blank", rel: "noopener" }, "Chart", svg(UI.external));
-    const el = h("div", { class: "maincoin" }, h("div", { class: "mc-band" }, h("span", null, "Main coin · reference sample"), h("span", null, "Nº 00000")), h("div", { class: "mc-body" }, h("div", { class: "mc-id" }, h("img", { src: brand.logo ?? "", alt: "" }), h("div", null, h("div", { class: "mc-tk" }, tk), h("div", { class: "muted" }, `${brand.name} · launches on pump.fun`), h("div", { class: "mc-ca" }, h("span", { class: "mono" }, shortAddr(mint, 6)), copyBtn))), h("div", { class: "mc-stats" }, h("div", null, h("span", { class: "label" }, "Market cap"), h("div", { class: "v" }, mc.el), chg), h("div", null, h("span", { class: "label" }, "Price"), h("div", { class: "v" }, px.el)), h("div", null, h("span", { class: "label" }, "24H volume"), vol), h("div", null, h("span", { class: "label" }, "Liquidity"), liq)), h("div", { class: "mc-spark" }, spark.el), h("div", { class: "mc-cta" }, h("a", { class: "btn primary lg", href: `https://pump.fun/coin/${mint}`, target: "_blank", rel: "noopener" }, `Buy ${tk}`, svg(UI.external)), chartLink)), h("div", { class: "mc-foot" }, h("span", null, svg(UI.lock), `Every coin launched here sends ${fees.buybackBurnPct}% of its creator fees to buy back & burn ${tk}, and ${fees.mainHolderSolPct}% to ${tk} holders in SOL.`)));
+    const el = h("div", { class: "maincoin" }, h("div", { class: "mc-band" }, h("span", null, "Main coin · reference sample"), h("span", null, "Nº 00000")), h("div", { class: "mc-body" }, h("div", { class: "mc-id" }, h("img", { src: brand.logo ?? "", alt: "" }), h("div", null, h("div", { class: "mc-tk" }, tk), h("div", { class: "muted" }, `${brand.name} · launches on pump.fun`), h("div", { class: "mc-ca" }, h("span", { class: "mono" }, shortAddr(mint, 6)), copyBtn))), h("div", { class: "mc-stats" }, h("div", null, h("span", { class: "label" }, "Market cap"), h("div", { class: "v" }, mc.el), chg), h("div", null, h("span", { class: "label" }, "Price"), h("div", { class: "v" }, px.el)), h("div", null, h("span", { class: "label" }, "24H volume"), vol)), h("div", { class: "mc-spark" }, spark.el), h("div", { class: "mc-cta" }, h("a", { class: "btn primary lg", href: `https://pump.fun/coin/${mint}`, target: "_blank", rel: "noopener" }, `Buy ${tk}`, svg(UI.external)), chartLink)), h("div", { class: "mc-foot" }, h("span", null, svg(UI.lock), `Every coin launched here sends ${fees.buybackBurnPct}% of its creator fees to buy back & burn ${tk}, and ${fees.mainHolderSolPct}% to ${tk} holders in SOL.`)));
     let last = 0, timer = 0;
     const tick = async (first) => {
         const t = await tokenSnapshot(mint).catch(() => null);
@@ -35,7 +35,6 @@ export function mainCoinCard() {
                 chg.className = t.change >= 0 ? "up" : "down";
             }
             vol.textContent = t.volume ? fmtUsd(t.volume) : "—";
-            liq.textContent = t.liquidity ? fmtUsd(t.liquidity) : "—";
             if (first && t.pair) {
                 pair = t.pair;
                 chartLink.href = `https://www.geckoterminal.com/solana/pools/${pair}`;

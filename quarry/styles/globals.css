@@ -566,16 +566,16 @@ canvas.spark { display: block; }
 /* main coin featured certificate */
 .maincoin { border: 1px solid var(--ink); background: var(--card); box-shadow: 6px 6px 0 var(--ink); margin-bottom: 30px; }
 .maincoin .mc-band { display: flex; justify-content: space-between; padding: 8px 16px; background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; }
-.maincoin .mc-body { display: grid; grid-template-columns: minmax(240px, 1.1fr) minmax(0, 2fr) 200px auto; gap: 24px; align-items: center; padding: 20px 16px; }
+.maincoin .mc-body { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 1.8fr) 180px auto; gap: 24px; align-items: center; padding: 20px 16px; }
 .maincoin .mc-id { display: flex; gap: 14px; align-items: center; min-width: 0; }
 .maincoin .mc-id img { width: 76px; height: 76px; border: 1px solid var(--ink); object-fit: cover; flex: none; }
 .maincoin .mc-tk { font-family: var(--font-display); font-size: 42px; line-height: .95; }
 .maincoin .mc-id .muted { font-size: 13px; margin-top: 4px; }
 .maincoin .mc-ca { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; }
-.maincoin .mc-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-left: 1px solid var(--rule); }
+.maincoin .mc-stats { display: grid; grid-template-columns: 1fr 1.25fr 1fr; border-left: 1px solid var(--rule); }
 .maincoin .mc-stats > div { padding: 2px 14px; min-width: 0; }
 .maincoin .mc-stats > div + div { border-left: 1px solid var(--rule); }
-.maincoin .mc-stats .v { font-family: var(--font-mono); font-size: 24px; font-weight: 500; letter-spacing: -0.02em; margin-top: 4px; white-space: nowrap; }
+.maincoin .mc-stats .v { overflow: hidden; font-family: var(--font-mono); font-size: clamp(18px, 1.6vw, 24px); font-weight: 500; letter-spacing: -0.02em; margin-top: 4px; white-space: nowrap; }
 .maincoin .mc-stats b { display: block; font-family: var(--font-mono); font-size: 18px; font-weight: 500; margin-top: 6px; }
 .maincoin .mc-stats > div > span:last-child:not(.label) { font-family: var(--font-mono); font-size: 12px; display: block; margin-top: 2px; }
 .maincoin .mc-spark canvas { width: 100%; height: 64px; }

@@ -467,6 +467,8 @@ function jobBanner() {
     const n = t.rows.filter(r => r.state === 'posted').length;
     out.push(`<button class="banner" data-go="callouts">${statusDot('posting')}<span class="grow"><span class="t">Posting callouts · ${n}/${t.rows.length}</span><span class="d">Keep the pump.fun tab open</span></span><span class="chev">${I.right}</span></button>`);
   }
+  const tpj = st.jobs?.tp;
+  if (tpj && !tpj.done && !(b && b.side === 'launch' && !b.done)) out.push(`<button class="banner" data-go="${tpTab()}">${statusDot(tpj.state === 'selling' ? 'selling' : 'buying')}<span class="grow"><span class="t">Take profit · $${esc(tpj.symbol)} ${tpj.pnlPct != null ? `${tpj.pnlPct > 0 ? '+' : ''}${tpj.pnlPct.toFixed(1)}%` : ''} / +${fmtNum(tpj.targetPct, 1)}%</span><span class="d">${tpj.state === 'selling' ? 'Selling everything' : 'Sells everything at the target'}</span></span><span class="chev">${I.right}</span></button>`);
   if (out.length) pollWhileRunning();
   return out.join('');
 }
@@ -481,6 +483,7 @@ function launchJobHtml(job, p) {
     <div class="row"><h2 style="margin:0">${!job.done ? 'Launching' : landed ? `Launched · bought from ${okN} of ${job.rows.length}` : 'Launch didn\'t go through'}</h2>${job.done ? '' : '<span class="badge on live"><span class="dot"></span>' + esc(LAUNCH_STAGE[job.stage] || 'running') + '</span>'}</div>
     <div class="coinline"><b>${esc(job.name)}</b><span class="muted">$${esc(job.symbol)}</span><span class="mono muted trunc">${short(job.mint)}</span>${landed ? `<button class="btn icon ghost" id="copyCa" title="Copy CA" aria-label="Copy CA">${I.copy}</button><a class="btn icon ghost" title="Open on pump.fun" target="_blank" rel="noopener" href="https://pump.fun/coin/${job.mint}">${I.ext}</a>` : ''}</div>
     ${job.done && job.error && !landed ? `<div class="note bad">${esc(job.error)}</div>` : ''}
+    ${job.tp && st.jobs?.tp?.mint === job.mint ? tpCardHtml(st.jobs.tp) : ''}${job.tpError ? `<div class="note warn">Take profit didn't start: ${esc(job.tpError)}</div>` : ''}
     <div class="list" style="margin-top:12px">${job.rows.map(r => `<div class="item">${statusDot(r.state)}<div class="grow">
       <div class="name">${esc(nameOf(r.address))}</div>
       <div class="sub num">${fromRaw(BigInt(r.lamports), 9)} SOL · ${role(r)}</div>
@@ -1297,6 +1300,7 @@ function viewBundle() {
     v.innerHTML = jobHtml(job, '');
     on('#done', 'click', async () => { st = await send({ type: 'clearJob', kind: 'buy' }); trade.stage = 'form'; bundle.action = null; resetData(); render(); });
     on('#copyCa', 'click', () => copy(job.mint, 'CA copied'));
+    wireTp();
     pollWhileRunning();
     return;
   }
@@ -1441,11 +1445,46 @@ function viewBundleSell(v) {
   on('#review', 'click', () => { trade.stage = 'review'; render(); });
 }
 
+// ---------------- take profit card ----------------
+const tpIsWeb = () => typeof IS_WEB !== 'undefined' && IS_WEB;
+const tpTab = () => (typeof TAB_IDS !== 'undefined' && TAB_IDS.includes('blaunch')) ? 'blaunch' : 'bundle';
+const TP_LABEL = { watching: 'Watching', selling: 'Selling', done: 'Sold', stopped: 'Stopped', error: 'Needs you' };
+function tpCardHtml(tp) {
+  if (!tp) return '';
+  const live = !tp.done, now = tp.pnlPct, cost = Number(tp.costLamports) / 1e9;
+  const pct = (x) => (x > 0 ? '+' : '') + Number(x).toFixed(1) + '%';
+  return `<div class="card" style="margin:12px 0">
+    <div class="row"><b>Take profit · $${esc(tp.symbol)}</b><span class="badge ${tp.state === 'done' ? 'good' : tp.state === 'error' ? 'bad' : live ? 'on live' : ''}">${live ? '<span class="dot"></span>' : ''}${esc(TP_LABEL[tp.state] || tp.state)}</span></div>
+    <div class="summary" style="margin-top:8px">
+      <div class="kv"><span class="k">Sells everything at</span><span class="v">+${fmtNum(tp.targetPct, 1)}%</span></div>
+      <div class="kv"><span class="k">Put in (buys + tip)</span><span class="v num">${fmtNum(cost, 4)} SOL</span></div>
+      <div class="kv"><span class="k">Whole bag would sell for</span><span class="v num">${tp.fillSol != null ? fmtNum(tp.fillSol, 4) + ' SOL' : '—'}</span></div>
+      <div class="kv"><span class="k">Profit now</span><span class="v num ${now != null ? tone(now) : ''}">${now != null ? pct(now) : '—'}${tp.peakPct != null ? ` · peak ${pct(tp.peakPct)}` : ''}</span></div>
+    </div>
+    ${tp.msg ? `<p class="hint" style="margin:6px 0 0">${esc(tp.msg)}</p>` : ''}
+    ${live && tp.state === 'watching' ? `
+      <div class="with" style="margin-top:10px"><input id="tpNew" inputmode="decimal" placeholder="Change target %" autocomplete="off"><button class="btn sm" id="tpSet">Set</button></div>
+      <div class="actions"><button class="btn" id="tpStop">Stop watching</button><button class="btn primary" id="tpNow">Sell all now</button></div>` : ''}
+    ${!live ? `<div class="actions end">${tp.state === 'stopped' ? '<button class="btn sm" id="tpResume">Resume</button>' : ''}<button class="btn sm" id="tpClear">Dismiss</button></div>` : ''}
+    ${live ? `<p class="hint" style="margin:6px 0 0">${tpIsWeb() ? 'Keep this page open and unlocked while it watches.' : 'Truth stays unlocked while this watches. Locking it pauses the sell.'}</p>` : ''}
+  </div>`;
+}
+function wireTp() {
+  const tp = st.jobs?.tp; if (!tp) return;
+  const act = async (m) => { try { st = await send(m); render(); } catch (e) { toast(e.message); } };
+  on('#tpStop', 'click', () => act({ type: 'tpStop' }));
+  on('#tpClear', 'click', () => act({ type: 'tpClear' }));
+  on('#tpResume', 'click', () => act({ type: 'tpTarget', targetPct: tp.targetPct }));
+  on('#tpSet', 'click', () => { const v = $('#tpNew')?.value.trim(); if (!(Number(v) > 0)) return toast('Enter a percent above 0'); act({ type: 'tpTarget', targetPct: v }); });
+  on('#tpNow', 'click', () => { if (confirm(`Sell all $${tp.symbol} from ${plural(tp.wallets.length, 'wallet')} now?`)) act({ type: 'tpSellNow' }); });
+  pollWhileRunning();
+}
+
 // ---------------- Launch + snipe ----------------
 // The dev wallet creates the coin; the first 4 sniper wallets are in the same Jito bundle (same block, before
 // anyone else). Sniper wallets past 4 buy right after it lands.
 const LAUNCH_BLOCK0 = 4;
-const launch = { dev: '', name: '', symbol: '', desc: '', twitter: '', telegram: '', website: '', image: '', devBuy: '0.5', tip: '0.003', snipe: {}, order: [], same: '', stage: 'form', busy: false };
+const launch = { dev: '', name: '', symbol: '', desc: '', twitter: '', telegram: '', website: '', image: '', devBuy: '0.5', tip: '0.003', tp: '', snipe: {}, order: [], same: '', stage: 'form', busy: false };
 const launchSnipers = () => launch.order.filter(a => a !== launch.dev && st.wallets.some(w => w.address === a) && launch.snipe[a] != null);
 const solOk = (x) => /^\d*\.?\d+$/.test(String(x || '').trim()) && Number(x) > 0;
 function launchPlan() {
@@ -1460,7 +1499,7 @@ function launchPlan() {
   });
   const devErr = !launch.dev ? 'Pick a dev wallet' : !/^\d*\.?\d*$/.test(launch.devBuy || '0') ? 'Dev buy must be a number'
     : have(launch.dev) != null && toRaw(launch.devBuy || '0', 9) + toRaw(solOk(launch.tip) ? launch.tip : '0', 9) + 30_000_000n > have(launch.dev) ? 'Dev wallet needs more SOL (buy + tip + ~0.03)' : '';
-  const formErr = !launch.image ? 'Add an image' : !launch.name.trim() ? 'Add a name' : !launch.symbol.trim() ? 'Add a ticker' : !(Number(launch.tip) >= 0.001) ? 'Jito tip must be at least 0.001 SOL' : devErr || (sn.some(r => r.block0 && r.err) ? 'Fix the block 0 wallets' : '');
+  const formErr = !launch.image ? 'Add an image' : !launch.name.trim() ? 'Add a name' : !launch.symbol.trim() ? 'Add a ticker' : !(Number(launch.tip) >= 0.001) ? 'Jito tip must be at least 0.001 SOL' : String(launch.tp || '').trim() && !(Number(launch.tp) > 0) ? 'Take profit must be a percent above 0' : devErr || (sn.some(r => r.block0 && r.err) ? 'Fix the block 0 wallets' : '');
   const total = sn.filter(r => !r.err).reduce((t, r) => t + toRaw(r.sol, 9), 0n) + (solOk(launch.devBuy) ? toRaw(launch.devBuy, 9) : 0n);
   return { ready, sn, formErr, total };
 }
@@ -1481,6 +1520,7 @@ function viewBundleLaunch(v) {
         <div class="kv"><span class="k">Right after</span><span class="v">${p.sn.filter(r => !r.block0).length}</span></div>
         <div class="kv"><span class="k">Total buys</span><span class="v num">${fromRaw(p.total, 9)} SOL</span></div>
         <div class="kv"><span class="k">Jito tip</span><span class="v">${esc(launch.tip)} SOL</span></div>
+        <div class="kv"><span class="k">Take profit</span><span class="v">${String(launch.tp || '').trim() ? `Sell everything at +${esc(launch.tp)}%` : 'Off'}</span></div>
       </div>
       <div class="list">
         <div class="item">${avatar(walletOf(launch.dev), 'sm')}<div class="grow"><div class="name">${esc(nameOf(launch.dev))}</div><div class="sub">Creates the coin</div></div><div class="right"><span class="badge on">Block 0</span></div></div>
@@ -1495,7 +1535,7 @@ function viewBundleLaunch(v) {
       if (launch.busy) return;
       launch.busy = true; $('#go').disabled = true; $('#go').textContent = 'Uploading…';
       try {
-        await send({ type: 'launchRun', dev: launch.dev, name: launch.name.trim(), symbol: launch.symbol.trim(), description: launch.desc, twitter: launch.twitter.trim(), telegram: launch.telegram.trim(), website: launch.website.trim(), image: launch.image, devBuySol: launch.devBuy || '0', tipSol: launch.tip, snipers: p.sn.filter(r => !r.err).map(r => ({ address: r.address, sol: r.sol })) });
+        await send({ type: 'launchRun', dev: launch.dev, name: launch.name.trim(), symbol: launch.symbol.trim(), description: launch.desc, twitter: launch.twitter.trim(), telegram: launch.telegram.trim(), website: launch.website.trim(), image: launch.image, devBuySol: launch.devBuy || '0', tipSol: launch.tip, takeProfitPct: String(launch.tp || '').trim(), snipers: p.sn.filter(r => !r.err).map(r => ({ address: r.address, sol: r.sol })) });
         launch.busy = false; launch.stage = 'form'; await refresh();
       } catch (e) { launch.busy = false; render(); const el = $('#err'); if (el) el.textContent = e.message; }
     });
@@ -1506,6 +1546,7 @@ function viewBundleLaunch(v) {
   v.innerHTML = `
     ${bundleHead('Launch + snipe')}
     <p class="hint" style="margin-top:0">Creates the coin from your dev wallet and buys it from your sniper wallets in the same block, before any other bot.</p>
+    ${st.jobs?.tp ? tpCardHtml(st.jobs.tp) : ''}
     <h3 class="sec">Coin</h3>
     <label class="field"><span class="lbl">Image</span>
       <div class="with">${launch.image ? `<img src="${esc(launch.image)}" alt="" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none">` : ''}<input id="lImg" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></div></label>
@@ -1536,13 +1577,19 @@ function viewBundleLaunch(v) {
     <label class="field"><span class="lbl">Jito tip (paid by the dev wallet)</span><div class="with"><input id="lTip" inputmode="decimal" value="${esc(launch.tip)}" placeholder="0.003" autocomplete="off"><span class="unit">SOL</span></div>
       <div class="chips">${['0.001', '0.003', '0.01'].map(x => `<button data-tip="${x}" class="${launch.tip === x ? 'active' : ''}">${x}</button>`).join('')}</div></label>
     <p class="hint">A higher tip makes the bundle more likely to land in the next block. Slippage for each snipe is raised automatically for the buys ahead of it.</p>
+    <h3 class="sec" style="margin-top:20px">Take profit</h3>
+    <label class="field"><span class="lbl">Sell everything when profit hits</span><div class="with"><input id="lTp" inputmode="decimal" value="${esc(launch.tp)}" placeholder="Off" autocomplete="off"><span class="unit">%</span></div>
+      <div class="chips">${['50', '100', '200', '500'].map(x => `<button data-tpc="${x}" class="${launch.tp === x ? 'active' : ''}">+${x}%</button>`).join('')}<button data-tpc="" class="${!launch.tp ? 'active' : ''}">Off</button></div></label>
+    <p class="hint">Profit is what the dev and every sniper wallet's tokens would sell for together, as one sell with price impact and fees, against the SOL that went in (buys + tip). At the target it sells 100% from all of them at once.</p>
     ${p.formErr ? `<p class="hint" style="color:var(--warn)">${esc(p.formErr)}</p>` : ''}
     <div class="actions"><button class="btn primary" id="review" ${p.formErr ? 'disabled' : ''}>Review</button></div>`;
 
   on('#bHub', 'click', () => { bundle.action = null; render(); });
   on('#rl', 'click', loadBalances);
   const bind = (sel, key) => on(sel, 'input', (e) => { launch[key] = e.target.value; render(); });
-  bind('#lName', 'name'); bind('#lSym', 'symbol'); bind('#lDesc', 'desc'); bind('#lTw', 'twitter'); bind('#lTg', 'telegram'); bind('#lWeb', 'website'); bind('#lDevBuy', 'devBuy'); bind('#lTip', 'tip'); bind('#lSame', 'same');
+  bind('#lName', 'name'); bind('#lSym', 'symbol'); bind('#lDesc', 'desc'); bind('#lTw', 'twitter'); bind('#lTg', 'telegram'); bind('#lWeb', 'website'); bind('#lDevBuy', 'devBuy'); bind('#lTip', 'tip'); bind('#lSame', 'same'); bind('#lTp', 'tp');
+  $$('[data-tpc]').forEach(b => b.onclick = (e) => { e.preventDefault(); launch.tp = b.dataset.tpc; render(); });
+  wireTp();
   on('#lDev', 'change', (e) => { launch.dev = e.target.value; delete launch.snipe[launch.dev]; render(); });
   on('#lImg', 'change', (e) => {
     const f = e.target.files?.[0]; if (!f) return;

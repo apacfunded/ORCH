@@ -145,7 +145,7 @@ async function state() {
     settings: await settings(),
     connected: (await local.get('connectedOrigins')) || [],
     taught: teachInfo(await local.get('pumpTpl')),
-    jobs: { thesis: await session.get('job_thesis'), buy: await session.get('job_buy'), follow: await session.get('job_follow'), like: await session.get('job_like'), likes: await likeRunList() },
+    jobs: { tp: await tpView(), thesis: await session.get('job_thesis'), buy: await session.get('job_buy'), follow: await session.get('job_follow'), like: await session.get('job_like'), likes: await likeRunList() },
     teachLog: (await session.get('teachLog')) || [],
   };
 }
@@ -154,7 +154,11 @@ async function touchLock() {
   const s = await settings();
   chrome.alarms.create('autolock', { delayInMinutes: Math.max(1, Number(s.autoLockMinutes) || 15) });
 }
-chrome.alarms.onAlarm.addListener(a => { if (a.name === 'autolock') lock(); });
+chrome.alarms.onAlarm.addListener(a => {
+  if (a.name === 'autolock') tpGet().then(tp => tpLive(tp) ? touchLock() : lock()).catch(() => lock());
+  if (a.name === 'tp') tpGet().then(tp => { if (tpLive(tp)) tpRun(); }).catch(() => {});
+});
+tpGet().then(tp => { if (tpLive(tp)) tpRun(); }).catch(() => {});
 async function lock() { await session.del('keys'); }
 
 async function unlock(password) {
@@ -934,13 +938,13 @@ async function fireTogether(s, job, save, prepare, doneState) {
   await save();
 }
 
-async function runSell({ mint, addresses, pct }) {
+async function runSell({ mint, addresses, pct, slippagePct }) {
   { const cur = await session.get('job_buy'); if (cur && !cur.done) throw new Error('A trade is already running. Wait for it to finish.'); }
   if (!b58.isAddress(mint)) throw new Error('That isn\'t a valid coin address');
   if (!addresses.length) throw new Error('Pick at least one wallet');
   pct = Number(pct);
   if (!(pct > 0 && pct <= 100)) throw new Error('Percent must be 1–100');
-  const s = await settings();
+  const s = slippagePct ? { ...(await settings()), slippagePct } : await settings();
   const [bal, toks] = await Promise.all([balances(s.rpc, addresses), tokenBalances(s.rpc, mint, addresses)]);
   const job = { side: 'sell', pct, mint, startedAt: Date.now(), done: false, rows: [] };
   for (const a of addresses) {
@@ -1053,6 +1057,9 @@ async function runLaunch(msg) {
   if (new Set(snipers.map(x => x.address)).size !== snipers.length) throw new Error('A wallet is listed twice');
   for (const x of snipers) if (x.lamports < 1_000_000n) throw new Error('Each sniper wallet needs at least 0.001 SOL to spend');
   const block0 = snipers.slice(0, BLOCK0_MAX), after = snipers.slice(BLOCK0_MAX);
+  const tpPct = String(msg.takeProfitPct ?? '').trim() === '' ? 0 : Number(msg.takeProfitPct);
+  if (!(tpPct >= 0)) throw new Error('Take profit must be a number (percent)');
+  if (tpPct > 0) { const cur = await tpGet(); if (tpLive(cur)) throw new Error(`Take profit is still watching $${cur.symbol}. Stop it first.`); }
 
   const s = await settings();
   const bal = await balances(s.rpc, [dev, ...snipers.map(x => x.address)]);
@@ -1134,8 +1141,100 @@ async function runLaunch(msg) {
       for (const r of job.rows) if (!['bought', 'failed', 'skipped'].includes(r.state)) { const afterLaunch = job.stage === 'after'; r.state = r.role === 'after' && !afterLaunch ? 'skipped' : 'failed'; r.error ||= r.role === 'after' && !afterLaunch ? 'Launch didn\'t go through' : e.message; }
     }
     job.stage = 'done'; job.done = true; await save(); await logTrade(job);
+    if (tpPct > 0 && job.rows[0]?.state === 'bought') {
+      const got = job.rows.filter(r => r.state === 'bought');
+      const cost = got.reduce((t, r) => t + BigInt(r.lamports), 0n) + tipLamports;
+      try { await tpStart({ mint, symbol, wallets: got.map(r => r.address), costLamports: cost, targetPct: tpPct }); job.tp = true; await save(); }
+      catch (e) { job.tpError = e.message; await save(); }
+    }
   })());
   return job;
+}
+
+// ---------------- take profit: sell the whole launch bag at a target ----------------
+// After a launch lands, Truth watches what every launch wallet's tokens would fill for if sold together
+// (same math as the all-wallets value: one combined sell, price impact and fees included). When that is
+// at least the target over what went in (buys + Jito tip), it sells 100% from every launch wallet at once.
+// The vault stays unlocked while this watches (auto-lock waits), since selling needs the keys.
+const TP_EVERY_MS = 4000, TP_SELL_SLIP = 40, TP_SELL_TRIES = 3;
+let tpLoop = null;
+async function tpGet() { return (await local.get('tp')) || null; }
+async function tpSave(tp) { await local.set('tp', tp); }
+const tpLive = (tp) => !!tp && (tp.state === 'watching' || tp.state === 'selling');
+async function tpView() { const tp = await tpGet(); return tp ? { ...tp, done: !tpLive(tp) } : null; }
+
+async function tpStart({ mint, symbol, wallets, costLamports, targetPct }) {
+  const pct = Number(targetPct);
+  if (!(pct > 0 && pct <= 100000)) throw new Error('Take profit must be above 0%');
+  await tpSave({ mint, symbol, wallets, costLamports: String(costLamports), targetPct: pct, state: 'watching', startedAt: Date.now(), lastAt: null, fillSol: null, peakPct: null, tries: 0, msg: '' });
+  tpRun();
+}
+
+function tpRun() {
+  if (tpLoop) return;
+  tpLoop = keepAlive((async () => {
+    try {
+      for (;;) {
+        const tp = await tpGet();
+        if (!tpLive(tp)) return;
+        chrome.alarms.create('tp', { delayInMinutes: 1 });
+        try { await tpTick(tp); } catch (e) { tp.msg = e.message; await tpSave(tp); }
+        await sleep(TP_EVERY_MS);
+      }
+    } finally { tpLoop = null; }
+  })());
+}
+
+async function tpTick(tp) {
+  if (!(await session.get('keys'))) { tp.msg = 'Truth is locked. Unlock it so take profit can sell.'; tp.lastAt = Date.now(); await tpSave(tp); return; }
+  const s = await settings();
+  if (tp.state === 'selling') {
+    const job = await session.get('job_buy');
+    if (job && !job.done) return; // our sell (or another trade) still running
+    const toks = await tokenBalances(s.rpc, tp.mint, tp.wallets);
+    const left = tp.wallets.filter(a => BigInt(toks[a]?.raw || 0) > 0n);
+    if (!left.length) { tp.state = 'done'; tp.msg = 'Sold everything.'; tp.doneAt = Date.now(); await tpSave(tp); return; }
+    if (++tp.tries > TP_SELL_TRIES) { tp.state = 'error'; tp.msg = `Couldn't sell from ${left.length} wallet(s) after ${TP_SELL_TRIES} tries. Sell them from Bundle sell.`; await tpSave(tp); return; }
+    tp.msg = `Selling from ${left.length} wallet(s), try ${tp.tries} of ${TP_SELL_TRIES}`;
+    await tpSave(tp);
+    await runSell({ mint: tp.mint, addresses: left, pct: 100, slippagePct: Math.max(TP_SELL_SLIP, Number(s.slippagePct)) });
+    return;
+  }
+  // watching
+  const toks = await tokenBalances(s.rpc, tp.mint, tp.wallets);
+  const raw = tp.wallets.reduce((t, a) => t + BigInt(toks[a]?.raw || 0), 0n);
+  if (raw === 0n) { tp.state = 'stopped'; tp.msg = 'The launch wallets no longer hold this coin, so take profit stopped.'; await tpSave(tp); return; }
+  const fills = await exitFills(s.rpc, [{ mint: tp.mint, raw: raw.toString() }], { fresh: true });
+  const fill = fills[tp.mint];
+  if (fill == null) { tp.msg = 'Couldn\'t price the bag this round. Retrying.'; tp.lastAt = Date.now(); await tpSave(tp); return; }
+  const cost = Number(tp.costLamports) / 1e9;
+  const pnlPct = cost > 0 ? (fill / cost - 1) * 100 : 0;
+  tp.fillSol = fill; tp.pnlPct = pnlPct; tp.peakPct = Math.max(tp.peakPct ?? -100, pnlPct); tp.lastAt = Date.now(); tp.msg = '';
+  if (pnlPct >= tp.targetPct) {
+    tp.state = 'selling'; tp.hitAt = Date.now(); tp.hitPct = pnlPct; tp.tries = 0;
+    tp.msg = `Hit +${pnlPct.toFixed(1)}%. Selling everything.`;
+    await tpSave(tp);
+    return tpTick(tp);
+  }
+  await tpSave(tp);
+}
+
+async function tpCall(msg) {
+  const tp = await tpGet();
+  if (msg.type === 'tpStop') { if (tp && tpLive(tp)) { tp.state = 'stopped'; tp.msg = 'Stopped by you.'; await tpSave(tp); } return state(); }
+  if (msg.type === 'tpClear') { if (tp && !tpLive(tp)) await local.remove('tp'); return state(); }
+  if (msg.type === 'tpTarget') {
+    const pct = Number(msg.targetPct);
+    if (!(pct > 0)) throw new Error('Take profit must be above 0%');
+    if (!tp) throw new Error('No take profit set');
+    tp.targetPct = pct; if (tp.state === 'stopped') { tp.state = 'watching'; tp.msg = ''; }
+    await tpSave(tp); tpRun(); return state();
+  }
+  if (msg.type === 'tpSellNow') {
+    if (!tp || !tpLive(tp)) throw new Error('Take profit isn\'t running');
+    tp.state = 'selling'; tp.tries = 0; tp.hitAt = Date.now(); tp.msg = 'Selling everything now.'; await tpSave(tp); tpRun(); return state();
+  }
+  throw new Error('Unknown take profit action');
 }
 
 // USD prices from Jupiter (best effort; the UI shows nothing when this fails).
@@ -1444,12 +1543,12 @@ const PUMP_PROGRAM = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const PUMP_SELL_FEE = 0.0125; // pump.fun bonding-curve sell fees (protocol + creator), approx.
 const exitCache = new Map(); // mint:raw -> { sol, at }
 const u64 = (d, o) => { let v = 0n; for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(d[o + i]); return v; };
-async function exitFills(rpcUrl, items) {
+async function exitFills(rpcUrl, items, opts = {}) {
   const out = {}, need = [];
   for (const it of items) {
     if (!(BigInt(it.raw) > 0n)) continue;
     const c = exitCache.get(it.mint + ':' + it.raw);
-    if (c && Date.now() - c.at < 20000) out[it.mint] = c.sol; else need.push(it);
+    if (!opts.fresh && c && Date.now() - c.at < 20000) out[it.mint] = c.sol; else need.push(it);
   }
   if (!need.length) return out;
   const seed = new TextEncoder().encode('bonding-curve');
@@ -2031,6 +2130,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case 'buyRun': return runBuy(msg);
       case 'sellRun': return runSell(msg);
       case 'launchRun': return runLaunch(msg);
+      case 'tpStop': case 'tpClear': case 'tpTarget': case 'tpSellNow': return tpCall(msg);
       case 'tokenBalances': return tokenBalances((await settings()).rpc, msg.mint, msg.addresses);
       case 'clearJob': await session.del('job_' + msg.kind); return state();
       case 'forgetTeach': await local.set('pumpTpl', {}); await session.del('teachLog'); await setRecording(true); return state();

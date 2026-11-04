@@ -594,3 +594,6 @@ canvas.spark { display: block; }
 .launch-art img { width: 120px; height: 120px; object-fit: cover; border: 1px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-3deg); }
 @media (max-width: 640px) { .launch-art img { width: 84px; height: 84px; } .launch-art { justify-content: space-between; flex-direction: row-reverse; } }
 @media (prefers-reduced-motion: reduce) { .el:not(.pick):hover, .cert:hover, .btn.primary:hover { transform: none; } }
+
+.maincoin .mc-img { width: 76px; height: 76px; flex: none; overflow: hidden; border: 1px solid var(--ink); }
+.maincoin .mc-img img { width: 100%; height: 100%; border: 0; object-fit: cover; transform: scale(1.3); }

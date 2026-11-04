@@ -411,13 +411,18 @@ show(0);
 
 /* ---- live board ---- */
 function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";return Math.floor(s/86400)+"d ago"}
+/* $PAIRED itself: set its CA here and it shows first on the board and in the bottom bar */
+const PAIRED_CA="";
+if(PAIRED_CA){$("ca").textContent="$PAIRED · "+PAIRED_CA;$("ca").dataset.ca=PAIRED_CA}
 async function loadBoard(){
   try{
-    const coins=await fetch(API+"/api/coins").then(r=>r.ok?r.json():[]);
-    if(!Array.isArray(coins)||!coins.length)return;
+    let coins=await fetch(API+"/api/coins").then(r=>r.ok?r.json():[]).catch(()=>[]);
+    if(!Array.isArray(coins))coins=[];
+    if(PAIRED_CA)coins=[{mint:PAIRED_CA,name:"Paired",ticker:"PAIRED",image:document.querySelector("header .mark").src,pairType:"x",pairWith:"paired_lol",created_at:0,pinned:true},...coins.filter(c=>c.mint!==PAIRED_CA)];
+    if(!coins.length)return;
     $("boardEmpty").hidden=true;$("board").hidden=false;
-    $("boardCount").textContent=coins.length+" coin"+(coins.length>1?"s":"");
-    $("board").innerHTML=coins.slice(0,30).map(c=>`<a class="coinrow" href="https://pump.fun/coin/${esc(c.mint)}" target="_blank" rel="noopener"><img src="${esc(c.image)}" alt="" loading="lazy"><span style="min-width:0"><b>${esc(c.name)} <span class="tk">$${esc(c.ticker)}</span></b><small>Paired to ${esc(c.pairWith)} · ${esc((TK[c.pairType]||{}).tab||c.pairType)} · ${ago(c.created_at)}</small></span><span class="go">pump.fun →</span></a>`).join("");
+    
+    $("board").innerHTML=coins.slice(0,30).map(c=>`<a class="coinrow" href="https://pump.fun/coin/${esc(c.mint)}" target="_blank" rel="noopener"><img src="${esc(c.image)}" alt="" loading="lazy"><span style="min-width:0"><b>${esc(c.name)} <span class="tk">$${esc(c.ticker)}</span></b><small>Paired to ${esc(c.pairWith)} · ${esc((TK[c.pairType]||{}).tab||c.pairType)} · ${c.pinned?"the Paired coin":ago(c.created_at)}</small></span><span class="go">pump.fun →</span></a>`).join("");
   }catch(e){}
 }
 loadBoard();setInterval(loadBoard,30000);

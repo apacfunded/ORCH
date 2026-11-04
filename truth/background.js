@@ -1003,11 +1003,27 @@ const JITO_ENGINES = ['mainnet', 'ny.mainnet', 'amsterdam.mainnet', 'frankfurt.m
 const BLOCK0_MAX = 4;                     // sniper wallets in the bundle (plus the dev = 5 transactions)
 const DEV_CREATE_RESERVE = 30_000_000n;   // ~0.03 SOL for creating the coin's accounts + fees
 
+// On the website, pump.fun refuses uploads (and Jito refuses bundles) sent straight from the page, so both go
+// through a small Truth helper on Vercel. The extension talks to pump.fun and Jito directly.
+const LAUNCH_HELPER = 'https://truth-launchpad-helper.vercel.app/api';
+const VIA_HELPER = /web/.test(chrome.runtime.getManifest?.().version || '');
+async function helperPost(path, body, what) {
+  let r;
+  try { r = await fetch(`${LAUNCH_HELPER}/${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(60000) }); }
+  catch (e) { throw new Error(`Couldn't reach the Truth launch helper for the ${what} (${e.message})`); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.ok) throw new Error(j.error || `${what} failed (HTTP ${r.status})`);
+  return j;
+}
 async function uploadMetadata({ name, symbol, description, twitter, telegram, website, image }) {
+  if (VIA_HELPER) {
+    if (!/^data:image\//.test(image || '')) throw new Error('Add an image for the coin');
+    return (await helperPost('ipfs', { image, name, symbol, description: description || '', twitter, telegram, website }, 'image upload')).metadataUri;
+  }
   const m = /^data:([^;]+);base64,(.*)$/.exec(image || '');
   if (!m) throw new Error('Add an image for the coin');
   const bytes = Uint8Array.from(atob(m[2]), c => c.charCodeAt(0));
-  if (bytes.length > 4_500_000) throw new Error('Image is too big (keep it under ~4 MB)');
+  if (bytes.length > 3_000_000) throw new Error('Image is too big (keep it under 3 MB)');
   const fd = new FormData();
   fd.append('file', new Blob([bytes], { type: m[1] }), 'image.' + (m[1].split('/')[1] || 'png'));
   fd.append('name', name); fd.append('symbol', symbol); fd.append('description', description || '');
@@ -1025,6 +1041,7 @@ async function uploadMetadata({ name, symbol, description, twitter, telegram, we
 
 async function sendJitoBundle(txs) {
   const encoded = txs.map(t => b58.encode(t));
+  if (VIA_HELPER) return (await helperPost('jito', { txs: encoded }, 'Jito bundle')).bundleId;
   const body = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'sendBundle', params: [encoded] });
   // Same bundle to several regions: whichever leader is up next gets it. Duplicates are ignored.
   const results = await Promise.allSettled(JITO_ENGINES.map(async (url) => {

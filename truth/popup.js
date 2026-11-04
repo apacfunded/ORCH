@@ -1593,7 +1593,7 @@ function viewBundleLaunch(v) {
   on('#lDev', 'change', (e) => { launch.dev = e.target.value; delete launch.snipe[launch.dev]; render(); });
   on('#lImg', 'change', (e) => {
     const f = e.target.files?.[0]; if (!f) return;
-    if (f.size > 4_500_000) { toast('Image is too big (keep it under ~4 MB)'); return; }
+    if (f.size > 3_000_000) { toast('Image is too big (keep it under 3 MB)'); return; }
     const rd = new FileReader(); rd.onload = () => { launch.image = String(rd.result); render(); }; rd.readAsDataURL(f);
   });
   $$('[data-snipe]').forEach(cb => cb.onchange = () => {

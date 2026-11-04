@@ -49,7 +49,7 @@ const runtime = {
   id: ID,
   lastError: undefined,
   getURL: (p = '') => BASE + String(p).replace(/^\//, ''),
-  getManifest: () => ({ name: 'Truth', version: '3.14.0 web' }),
+  getManifest: () => ({ name: 'Truth', version: '3.14.1 web' }),
   getPlatformInfo: (cb) => { const r = { os: 'web' }; if (cb) cb(r); return Promise.resolve(r); },
   onMessage,
   sendMessage(msg, cb) {

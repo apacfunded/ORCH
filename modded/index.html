@@ -17,7 +17,7 @@
 :root{
   --bg:#0b0b0e; --panel:#131318; --panel2:#1a1a21; --line:#26262f; --line2:#33333d;
   --fg:#f2f1ec; --mute:#9a99a3; --dim:#6c6b75;
-  --o1:#ff8a3d; --o2:#ff5a1f; --ok:#4ade80; --bad:#f43f5e;
+  --o1:#ff6ac1; --o2:#ff2d95; --ok:#4ade80; --bad:#f43f5e;
   --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:dark;
@@ -34,8 +34,8 @@ h1,h2,h3{font-weight:700;line-height:1.02;margin:0;letter-spacing:-.02em;text-wr
 :focus-visible{outline:2px solid var(--o1);outline-offset:3px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:12px;font-weight:600;font-size:16px;text-decoration:none;border:1px solid var(--line2);background:var(--panel2);color:var(--fg);cursor:pointer;transition:transform .12s,background .15s,border-color .15s}
 .btn:hover{border-color:#4a4a56;transform:translateY(-1px)}
-.btn.primary{background:var(--o2);border-color:var(--o2);color:#140700}
-.btn.primary:hover{background:#ff6a33}
+.btn.primary{background:var(--o2);border-color:var(--o2);color:#1a0010}
+.btn.primary:hover{background:#ff4aa6}
 .eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--o1)}
 
 /* nav */
@@ -51,7 +51,7 @@ nav .wrap{display:flex;align-items:center;gap:14px;min-height:66px}
 
 /* hero */
 .hero{position:relative;padding-block:64px 72px;overflow:hidden}
-.hero::before{content:"";position:absolute;inset:-20% -10% auto auto;width:720px;height:720px;background:radial-gradient(closest-side,rgba(255,90,31,.18),transparent);pointer-events:none}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto auto;width:720px;height:720px;background:radial-gradient(closest-side,rgba(255,45,149,.18),transparent);pointer-events:none}
 .hero .wrap{position:relative;display:grid;grid-template-columns:1fr 1.02fr;gap:44px;align-items:center}
 @media(max-width:960px){.hero .wrap{grid-template-columns:1fr}}
 .hero .wrap>*,.launch>*{min-width:0}
@@ -63,13 +63,13 @@ nav .wrap{display:flex;align-items:center;gap:14px;min-height:66px}
 .fact b{color:var(--fg);font-weight:500}
 
 /* console */
-.console{background:var(--panel);border:1px solid var(--line2);border-radius:18px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(255,90,31,.35),0 0 0 1px rgba(255,255,255,.02)}
+.console{background:var(--panel);border:1px solid var(--line2);border-radius:18px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(255,45,149,.35),0 0 0 1px rgba(255,255,255,.02)}
 .c-top{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .c-dots{display:flex;gap:7px}.c-dots i{width:11px;height:11px;border-radius:50%;background:#3a3a44}
 .c-title{font-family:var(--mono);font-size:13px;color:var(--mute);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .c-tag{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line2);border-radius:6px;padding:3px 7px;flex:none}
 .c-head{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:18px 18px 6px}
-.c-game{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:15px;color:#140700;background:linear-gradient(135deg,var(--o1),var(--o2))}
+.c-game{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:15px;color:#1a0010;background:linear-gradient(135deg,var(--o1),var(--o2))}
 .c-mod{min-width:0}
 .c-mod b{display:block;font-size:19px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .c-mod span{font-family:var(--mono);font-size:13px;color:var(--mute)}
@@ -114,7 +114,7 @@ label.f{display:grid;gap:7px;font-weight:600;font-size:15px}
 .hint{font-weight:400;color:var(--dim);font-size:13px}
 input[type=text],textarea{width:100%;min-height:48px;padding:11px 14px;border:1px solid var(--line2);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:16px}
 textarea{min-height:92px;resize:vertical}
-input[type=text]:focus,textarea:focus{outline:none;border-color:var(--o2);box-shadow:0 0 0 3px rgba(255,90,31,.22)}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--o2);box-shadow:0 0 0 3px rgba(255,45,149,.22)}
 input::placeholder,textarea::placeholder{color:var(--dim)}
 .upload{display:flex;align-items:center;gap:14px}
 .pic{width:56px;height:56px;border:1px dashed var(--line2);border-radius:12px;display:grid;place-items:center;overflow:hidden;flex:none;color:var(--dim);font-size:22px}
@@ -136,8 +136,8 @@ input[type=file]{font:inherit;font-size:14px;color:var(--mute);width:100%;min-wi
 .bp-banner{height:120px;position:relative;background:
   repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 28px),
   repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 28px),
-  linear-gradient(135deg,#2a1206,#120a07 60%,#0b0b0e);border-bottom:1px solid var(--line)}
-.bp-av{position:absolute;left:18px;bottom:-26px;width:64px;height:64px;border-radius:14px;border:3px solid var(--panel);background:linear-gradient(135deg,var(--o1),var(--o2));display:grid;place-items:center;font-family:var(--mono);font-weight:600;color:#140700;overflow:hidden}
+  linear-gradient(135deg,#2a0618,#12070d 60%,#0b0b0e);border-bottom:1px solid var(--line)}
+.bp-av{position:absolute;left:18px;bottom:-26px;width:64px;height:64px;border-radius:14px;border:3px solid var(--panel);background:linear-gradient(135deg,var(--o1),var(--o2));display:grid;place-items:center;font-family:var(--mono);font-weight:600;color:#1a0010;overflow:hidden}
 .bp-av img{width:100%;height:100%;object-fit:cover}
 .bp-status{position:absolute;right:14px;top:14px;font-family:var(--mono);font-size:12px;color:var(--fg);background:rgba(0,0,0,.5);border:1px solid var(--line2);border-radius:999px;padding:4px 10px;display:flex;align-items:center;gap:6px}
 .bp-status i{width:7px;height:7px;border-radius:50%;background:#facc15}
@@ -257,7 +257,7 @@ footer .small{width:100%;color:var(--dim);font-size:14px}
   </div>
 </section>
 
-<section id="launch" style="background:linear-gradient(180deg,transparent,rgba(255,90,31,.04));border-block:1px solid var(--line)">
+<section id="launch" style="background:linear-gradient(180deg,transparent,rgba(255,45,149,.04));border-block:1px solid var(--line)">
   <div class="wrap">
     <div class="sec-h"><span class="eyebrow">Launch</span><h2>What should get modded?</h2><p>Fill it in and your coin's build page builds itself on the right.</p></div>
     <div class="launch">

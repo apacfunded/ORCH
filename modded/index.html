@@ -184,6 +184,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-con
 .ca span{font-family:var(--mono);font-size:12px;color:var(--dim)}
 .ca code{font-family:var(--mono);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .ca .btn{min-height:38px;padding:0 14px;font-size:14px}
+.hero-ca{margin-top:18px;width:fit-content;max-width:100%}
 footer .small{width:100%;color:var(--dim);font-size:14px}
 
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);background:var(--panel2);color:var(--fg);border:1px solid var(--line2);border-radius:12px;padding:13px 18px;font-weight:600;z-index:80;transition:transform .25s;max-width:calc(100% - 32px)}
@@ -201,6 +202,7 @@ footer .small{width:100%;color:var(--dim);font-size:14px}
       <a href="#builds">Builds</a>
       <a href="#rules">Rules</a>
       <a href="#faq">FAQ</a>
+      <a href="https://x.com/modded_crypto" target="_blank" rel="noopener">X</a>
     </div>
     <a class="btn primary" href="#launch">Launch a mod</a>
   </div>
@@ -214,8 +216,9 @@ footer .small{width:100%;color:var(--dim);font-size:14px}
       <p class="lede">Every coin on Modded is a mod for a game you love. Its fees pay AI to build it, and you watch it happen live.</p>
       <div class="cta">
         <a class="btn primary" href="#launch">Launch a mod</a>
-        <a class="btn" href="#how">How it works</a>
+        <a class="btn" href="https://x.com/modded_crypto" target="_blank" rel="noopener">Follow @modded_crypto</a>
       </div>
+      <div class="ca hero-ca"><span>$MODDED CA</span><code class="caText">Coming soon</code><button class="btn copyCa" type="button">Copy</button></div>
       <div class="facts">
         <span class="fact"><b>Any</b> single-player game</span>
         <span class="fact">Fees <b>fund the build</b></span>
@@ -350,7 +353,8 @@ footer .small{width:100%;color:var(--dim);font-size:14px}
 <footer>
   <div class="wrap">
     <a class="logo" href="#top"><img src="pfp.png?v=pink" alt="">Modded</a>
-    <div class="ca"><span>$MODDED CA</span><code id="caText">Coming soon</code><button class="btn" type="button" id="copyCa">Copy</button></div>
+    <div class="ca"><span>$MODDED CA</span><code class="caText">Coming soon</code><button class="btn copyCa" type="button">Copy</button></div>
+    <a class="btn" href="https://x.com/modded_crypto" target="_blank" rel="noopener">Follow @modded_crypto</a>
     <div class="small">Modded is an independent project, not affiliated with any game publisher. Memecoins are risky. Only spend what you can lose.</div>
   </div>
 </footer>
@@ -432,11 +436,11 @@ $("form").addEventListener("submit",e=>{
   say(`$${$("fTicker").value} is ready. Launching opens when Modded goes live.`);
 });
 
-$("copyCa").onclick=()=>{
-  const t=$("caText").textContent;
+document.querySelectorAll(".copyCa").forEach(btn=>btn.onclick=()=>{
+  const el=btn.parentElement.querySelector(".caText"),t=el.textContent;
   if(t==="Coming soon"){say("The CA posts here at launch.");return}
-  navigator.clipboard.writeText(t).then(()=>say("CA copied")).catch(()=>{const r=document.createRange();r.selectNodeContents($("caText"));const s=getSelection();s.removeAllRanges();s.addRange(r);say("Press copy on your keyboard")});
-};
+  navigator.clipboard.writeText(t).then(()=>say("CA copied")).catch(()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);say("Press copy on your keyboard")});
+});
 </script>
 </body>
 </html>

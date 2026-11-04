@@ -610,7 +610,7 @@ canvas.spark { display: block; }
 .megacta .mc-l .label { color: var(--on-signal); opacity: .75; }
 .megacta .big { font-family: var(--font-display); font-size: clamp(48px, 7.2vw, 112px); line-height: .9; letter-spacing: -0.02em; }
 .megacta .mc-r { display: flex; align-items: center; gap: 24px; }
-.megacta .mc-r .mono { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; max-width: 180px; text-align: right; }
+.megacta .mc-r .mono { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; max-width: 260px; text-align: right; line-height: 1.7; }
 .megacta .arrow { font-family: var(--font-display); font-size: clamp(56px, 7vw, 110px); line-height: 1; transition: transform var(--dur); }
 .megacta:hover .arrow { transform: translateX(10px); }
 .hero-under { display: grid; grid-template-columns: 5fr 7fr; gap: 28px; margin-top: 40px; align-items: stretch; }

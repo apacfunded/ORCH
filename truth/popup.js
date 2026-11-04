@@ -82,14 +82,14 @@ const avatarAll = (size = '') => `<span class="av all ${size}" aria-hidden="true
 let st = null;
 const TABS = [
   ['Wallet', [['home', 'Portfolio', 'home'], ['wallets', 'Wallets', 'wallets'], ['receive', 'Receive', 'receive'], ['send', 'Send', 'send'], ['swap', 'Swap', 'swap'], ['sweep', 'Sweep', 'sweep']]],
-  ['Bundle', [['bbuy', 'Bundle buy', 'receive'], ['bsell', 'Bundle sell', 'send']]],
+  ['Bundle', [['bbuy', 'Bundle buy', 'receive'], ['bsell', 'Bundle sell', 'send'], ['blaunch', 'Launch + snipe', 'bundle']]],
   ['pump.fun', [['callouts', 'Callouts', 'callouts'], ['reply', 'Quick reply', 'edit'], ['templates', 'Templates', 'copy'], ['follow', 'Follow', 'stack'], ['like', 'Like', 'like']]],
   ['Insights', [['activity', 'Activity', 'activity'], ['pnl', 'PnL', 'bundle']]],
   ['', [['settings', 'Settings', 'settings']]],
 ];
 const TAB_IDS = TABS.flatMap(([, items]) => items.map(([id]) => id));
 const TAB_TITLE = Object.fromEntries(TABS.flatMap(([, items]) => items.map(([id, l]) => [id, l])));
-const TAB_SUB = { home: 'Balances and coins across your wallets', wallets: 'Add, rename, group and remove wallets', receive: 'Addresses to fund your wallets', send: 'Send SOL or a coin to one wallet or many', swap: 'Buy or sell a coin from the active wallet', sweep: 'Pull SOL or a coin from many wallets into one', bbuy: 'Buy one coin from every wallet at once', bsell: 'Sell a share of the bag from every wallet', callouts: 'Post a different callout from each wallet', reply: 'Post one callout from the active wallet', templates: 'Saved callout text', follow: 'Have your wallets follow each other', like: 'Like a callout from every wallet', activity: 'Trades, sends and callouts', pnl: 'Profit and loss across your wallets', settings: 'RPC, trading defaults and look' };
+const TAB_SUB = { home: 'Balances and coins across your wallets', wallets: 'Add, rename, group and remove wallets', receive: 'Addresses to fund your wallets', send: 'Send SOL or a coin to one wallet or many', swap: 'Buy or sell a coin from the active wallet', sweep: 'Pull SOL or a coin from many wallets into one', bbuy: 'Buy one coin from every wallet at once', bsell: 'Sell a share of the bag from every wallet', blaunch: 'Make a coin and buy it first from your wallets', callouts: 'Post a different callout from each wallet', reply: 'Post one callout from the active wallet', templates: 'Saved callout text', follow: 'Have your wallets follow each other', like: 'Like a callout from every wallet', activity: 'Trades, sends and callouts', pnl: 'Profit and loss across your wallets', settings: 'RPC, trading defaults and look' };
 const DOCKS = ['receive', 'send', 'swap', 'sweep'];
 let navOpen = false;
 let tab = store.get('tab', 'home');
@@ -105,7 +105,7 @@ const callout = { info: null, text: '', error: '', status: '', autoSubmit: null 
 const thesis = { stage: 'edit' };
 const teach = { text: '', watching: false };
 let drafts = null;
-const bundle = { action: null }; // null = hub | 'buy' | 'sell'
+const bundle = { action: null }; // null = hub | 'buy' | 'sell' | 'launch'
 const trade = { side: 'buy', mint: '', mode: 'sol', amount: '', sellPct: '', picked: null, bal: null, balErr: '', toks: null, toksMint: '', stage: 'form' };
 const swap = { side: 'buy', mint: '', mode: 'sol', amount: '', sellPct: '', step: 'coin', bal: null, toks: null, toksMint: '', started: false };
 const split = { asset: null, mode: 'total', amount: '', picked: null, extra: [], step: 'what', results: null, busy: false };
@@ -276,7 +276,7 @@ function viewKey() {
   if (tab === 'wallets') return `wallets:${wal.select}:${wal.confirm}`;
   if (page) return page;
   if (DOCKS.includes(tab)) return tab + ':' + (SHEET_STEP[tab]?.() || '');
-  if (tab === 'bbuy' || tab === 'bsell') return `${tab}:${bundle.action}:${trade.stage}:${st.jobs?.buy ? 'job' : ''}`;
+  if (tab === 'bbuy' || tab === 'bsell' || tab === 'blaunch') return `${tab}:${bundle.action}:${trade.stage}:${launch.stage}:${st.jobs?.buy ? 'job' : ''}`;
   if (tab === 'callouts') return `callouts:${thesis.stage}:${st.jobs?.thesis ? 'job' : ''}`;
   if (tab === 'like') return `like:${st.jobs?.like ? 'job' : ''}`; // web like runs keep the scroll position while they update
   if (tab === 'activity') return 'activity:' + act.mode;
@@ -287,7 +287,7 @@ function acctBtn() {
   const w = selectedWallet(), all = isAll();
   return `<button class="acct" id="acctBtn" aria-label="Switch wallet or group" aria-haspopup="dialog">${all ? avatarAll('sm') : avatar(w, 'sm')}<span class="acct-txt">${st.groups?.length > 1 ? `<span class="acct-grp trunc">${esc(activeGroup().name)}</span>` : ''}<span class="trunc">${!st.wallets.length ? 'No wallets' : all ? 'All wallets' : esc(w?.name || 'Wallet')}</span></span>${I.chev}</button>`;
 }
-const runningJob = (id) => { const j = st.jobs && ({ bbuy: st.jobs.buy, bsell: st.jobs.buy, callouts: st.jobs.thesis, follow: st.jobs.follow, like: st.jobs.like })[id]; return !!(j && !j.done) || (id === 'like' && !!st.jobs?.likes?.some(r => !r.done)); };
+const runningJob = (id) => { const j = st.jobs && ({ bbuy: st.jobs.buy, bsell: st.jobs.buy, blaunch: st.jobs.buy, callouts: st.jobs.thesis, follow: st.jobs.follow, like: st.jobs.like })[id]; return !!(j && !j.done) || (id === 'like' && !!st.jobs?.likes?.some(r => !r.done)); };
 const navHtml = () => TABS.map(([label, items]) => `<div class="sgrp">${label ? `<div class="sgl">${esc(label)}</div>` : ''}${items.map(([id, l, ico]) => `<button class="sitem${tab === id ? ' active' : ''}" data-tab="${id}" ${tab === id ? 'aria-current="page"' : ''}>${I[ico] || ''}<span>${esc(l)}</span>${runningJob(id) ? '<span class="sdot" title="Running"></span>' : ''}</button>`).join('')}</div>`).join('');
 const tabShell = () => `<div class="app${navOpen ? ' nav-open' : ''}">
   <aside class="side" aria-label="Main">
@@ -460,7 +460,8 @@ function jobBanner() {
   if (b) {
     const ok = b.rows.filter(r => r.state === 'bought' || r.state === 'sold').length;
     const sell = b.side === 'sell';
-    out.push(`<button class="banner" data-go="bundle">${statusDot(!b.done ? 'buying' : ok === b.rows.length ? 'bought' : 'failed')}<span class="grow"><span class="t">${b.done ? `${sell ? 'Sold' : 'Bought'} from ${ok} of ${b.rows.length}` : `${sell ? 'Selling' : 'Buying'} ${esc(mintLabel(b.mint))}`}</span><span class="d">${b.done ? 'Tap to review' : plural(b.rows.length, 'wallet') + ' · keeps running if you close this'}</span></span><span class="chev">${I.right}</span></button>`);
+    if (b.side === 'launch') out.push(`<button class="banner" data-go="blaunch">${statusDot(!b.done ? 'buying' : b.rows[0]?.state === 'bought' ? 'bought' : 'failed')}<span class="grow"><span class="t">${b.done ? (b.rows[0]?.state === 'bought' ? `Launched $${esc(b.symbol)}` : 'Launch didn\'t go through') : `Launching $${esc(b.symbol)}`}</span><span class="d">${b.done ? 'Tap to review' : 'Keeps running if you close this'}</span></span><span class="chev">${I.right}</span></button>`);
+    else out.push(`<button class="banner" data-go="bundle">${statusDot(!b.done ? 'buying' : ok === b.rows.length ? 'bought' : 'failed')}<span class="grow"><span class="t">${b.done ? `${sell ? 'Sold' : 'Bought'} from ${ok} of ${b.rows.length}` : `${sell ? 'Selling' : 'Buying'} ${esc(mintLabel(b.mint))}`}</span><span class="d">${b.done ? 'Tap to review' : plural(b.rows.length, 'wallet') + ' · keeps running if you close this'}</span></span><span class="chev">${I.right}</span></button>`);
   }
   if (t && !t.done) {
     const n = t.rows.filter(r => r.state === 'posted').length;
@@ -471,7 +472,24 @@ function jobBanner() {
 }
 const wireBanner = () => $$('[data-go]').forEach(b => b.onclick = () => go({ tab: b.dataset.go }));
 
+const LAUNCH_STAGE = { uploading: 'Uploading image', building: 'Building the bundle', sending: 'Waiting for the bundle to land', after: 'Buying from the rest', done: '' };
+function launchJobHtml(job, p) {
+  const landed = job.rows[0]?.state === 'bought';
+  const okN = job.rows.filter(r => r.state === 'bought').length;
+  const role = (r) => r.role === 'dev' ? 'Dev · creates the coin' : r.role === 'block0' ? 'Block 0' : 'Right after';
+  return `
+    <div class="row"><h2 style="margin:0">${!job.done ? 'Launching' : landed ? `Launched · bought from ${okN} of ${job.rows.length}` : 'Launch didn\'t go through'}</h2>${job.done ? '' : '<span class="badge on live"><span class="dot"></span>' + esc(LAUNCH_STAGE[job.stage] || 'running') + '</span>'}</div>
+    <div class="coinline"><b>${esc(job.name)}</b><span class="muted">$${esc(job.symbol)}</span><span class="mono muted trunc">${short(job.mint)}</span>${landed ? `<button class="btn icon ghost" id="copyCa" title="Copy CA" aria-label="Copy CA">${I.copy}</button><a class="btn icon ghost" title="Open on pump.fun" target="_blank" rel="noopener" href="https://pump.fun/coin/${job.mint}">${I.ext}</a>` : ''}</div>
+    ${job.done && job.error && !landed ? `<div class="note bad">${esc(job.error)}</div>` : ''}
+    <div class="list" style="margin-top:12px">${job.rows.map(r => `<div class="item">${statusDot(r.state)}<div class="grow">
+      <div class="name">${esc(nameOf(r.address))}</div>
+      <div class="sub num">${fromRaw(BigInt(r.lamports), 9)} SOL · ${role(r)}</div>
+      ${r.error && (landed || r.role !== 'after') && !(job.done && !landed && r.error === job.error) ? `<div class="sub" style="color:var(--loss)">${esc(r.error)}</div>` : ''}</div>
+      ${r.signature && r.state === 'bought' ? `<a class="btn icon ghost" title="View on Solscan" target="_blank" rel="noopener" href="https://solscan.io/tx/${r.signature}">${I.ext}</a>` : ''}</div>`).join('')}</div>
+    ${job.done ? `<div class="actions"><button class="btn primary" id="${p}done">Done</button></div>` : '<p class="hint">You can close this popup. It keeps running.</p>'}`;
+}
 function jobHtml(job, p = '') {
+  if (job.side === 'launch') return launchJobHtml(job, p);
   const sell = job.side === 'sell';
   const okN = job.rows.filter(r => r.state === 'bought' || r.state === 'sold').length;
   const failN = job.rows.filter(r => r.state === 'failed').length;
@@ -517,15 +535,15 @@ function viewHome() {
   }
   let usd, sol, solUsd, p = null;
   if (all) {
-    usd = port.totals.usd; sol = port.totals.sol; solUsd = port.wallets.reduce((x, r) => x + (r.solUsd || 0), 0);
-    if (pnlReady()) p = pnl.totals.pnl;
+    usd = port.totals.exitUsd ?? port.totals.usd; sol = port.totals.sol; solUsd = port.wallets.reduce((x, r) => x + (r.solUsd || 0), 0);
+    if (pnlReady()) p = pnl.totals.pnl - (port.totals.pnlImpactUsd || 0);
   } else {
     const x = port.wallets.find(r => r.address === w.address) || { sol: 0, solUsd: 0, tokenUsd: 0 };
     usd = (x.solUsd || 0) + (x.tokenUsd || 0); sol = x.sol; solUsd = x.solUsd;
     const pw = pnlReady() ? pnl.wallets.find(r => r.address === w.address) : null;
     if (pw && !pw.error) p = pw.realized + pw.unrealized;
   }
-  const coins = (all ? port.coins.map(c => ({ ...c, amt: c.totalUi, usd: c.totalUsd, p: c.hasPnl ? c.pnlUsd : null }))
+  const coins = (all ? port.coins.map(c => ({ ...c, amt: c.totalUi, usd: c.exitUsd ?? c.totalUsd, p: c.hasPnl ? (c.exitPnlUsd ?? c.pnlUsd) : null }))
     : port.coins.filter(c => c.holders.some(h => h.address === w.address)).map(c => { const h = c.holders.find(x => x.address === w.address); return { ...c, amt: h.ui, usd: h.usd, p: h.pnlUsd }; }))
     .sort((a, b) => (b.usd || 0) - (a.usd || 0));
   const bad = all ? port.wallets.filter(x => x.error) : port.wallets.filter(x => x.error && x.address === w.address);
@@ -536,7 +554,8 @@ function viewHome() {
     <section class="hero">
       <div class="hero-label">${all ? `All ${plural(st.wallets.length, 'wallet')}` : esc(w.name)}</div>
       <div class="hero-usd num">${fmtUsd(usd) || '$0.00'}</div>
-      <div class="hero-sub"><span class="num">${fmtNum(sol, 4)} SOL</span>${p != null ? `<span class="pill ${tone(p)} num" title="Profit and loss from pump.fun">${signed(p)} PnL</span>` : ''}</div>
+      <div class="hero-sub"><span class="num">${fmtNum(sol, 4)} SOL</span>${p != null ? `<span class="pill ${tone(p)} num" title="${all ? 'As if every wallet sold everything at once, price impact included' : 'Profit and loss from pump.fun'}">${signed(p)} PnL</span>` : ''}</div>
+      ${all && port.totals.impactUsd > 0.005 ? `<div class="hint center" style="margin:4px 0 0">Valued as one combined sell · ${fmtUsd(port.totals.impactUsd)} below market cap</div>` : ''}
     </section>
     ${actsHtml()}
     ${!sol && !coins.length ? `<div class="cta"><div class="grow"><div class="t">Fund ${all ? 'your wallets' : 'this wallet'}</div><div class="d">Send SOL to ${all ? 'a wallet' : 'it'} to start trading.</div></div><button class="btn sm primary" id="fund">Receive</button></div>` : ''}
@@ -627,7 +646,7 @@ function sheetToken(b) {
   const c = portReady() ? port.coins.find(x => x.mint === sheet.mint) : null;
   if (!c) { b.innerHTML = sheetHead(mintLabel(sheet.mint)) + '<div class="empty"><b>Not in your wallets</b>None of your wallets hold this coin right now.</div>'; wireHead(); return; }
   const mine = c.holders.find(h => h.address === st.selected);
-  const amt = all ? c.totalUi : mine?.ui || 0, usd = all ? c.totalUsd : mine?.usd, p = all ? (c.hasPnl ? c.pnlUsd : null) : mine?.pnlUsd;
+  const amt = all ? c.totalUi : mine?.ui || 0, usd = all ? (c.exitUsd ?? c.totalUsd) : mine?.usd, p = all ? (c.hasPnl ? (c.exitPnlUsd ?? c.pnlUsd) : null) : mine?.pnlUsd;
   const missing = st.wallets.filter(x => !c.holders.some(h => h.address === x.address));
   b.innerHTML = sheetHead(coinLabel(c)) + `
     <div class="tok-hero">${coinIco(c, 'lg')}<div class="big num">${usd ? fmtUsd(usd) : '—'}</div><div class="sub num">${fmtNum(amt)} ${esc(c.symbol || 'tokens')}${c.price != null ? ' · ' + fmtPrice(c.price) : ''}</div>${p != null ? `<span class="pill ${tone(p)} num">${signed(p)} PnL</span>` : ''}</div>
@@ -1277,6 +1296,7 @@ function viewBundle() {
   if (job) {
     v.innerHTML = jobHtml(job, '');
     on('#done', 'click', async () => { st = await send({ type: 'clearJob', kind: 'buy' }); trade.stage = 'form'; bundle.action = null; resetData(); render(); });
+    on('#copyCa', 'click', () => copy(job.mint, 'CA copied'));
     pollWhileRunning();
     return;
   }
@@ -1287,6 +1307,7 @@ function viewBundle() {
   if (trade.busy) { v.innerHTML = '<h2>Starting…</h2><div class="sk row"></div><div class="sk row"></div><p class="hint">Starting the trade. This can take a few seconds on the public RPC.</p>'; return; }
   if (bundle.action === 'buy') return viewBundleBuy(v);
   if (bundle.action === 'sell') return viewBundleSell(v);
+  if (bundle.action === 'launch') return viewBundleLaunch(v);
 
   const mintOk = isAddress(trade.mint);
   v.innerHTML = `
@@ -1296,6 +1317,7 @@ function viewBundle() {
     <div class="bcards">
       <button class="bcard" data-b="buy"><span class="bico">${I.receive}</span><span class="grow"><span class="bt">Bundle buy</span><span class="bd">Buy this coin from every wallet</span></span><span class="chev">${I.right}</span></button>
       <button class="bcard" data-b="sell"><span class="bico">${I.send}</span><span class="grow"><span class="bt">Bundle sell</span><span class="bd">Sell a % of the bag from every wallet</span></span><span class="chev">${I.right}</span></button>
+      <button class="bcard" data-b="launch"><span class="bico">${I.bundle}</span><span class="grow"><span class="bt">Launch + snipe</span><span class="bd">Make a coin and buy it first from your wallets</span></span><span class="chev">${I.right}</span></button>
       <button class="bcard" data-b="callout"><span class="bico">${I.callouts}</span><span class="grow"><span class="bt">Bundle callout</span><span class="bd">Post a different callout from each wallet</span></span><span class="chev">${I.right}</span></button>
     </div>
     <p class="hint">Route: ${esc(routeLabel())} · slippage ${esc(st.settings.slippagePct)}% · change in Settings</p>`;
@@ -1417,6 +1439,126 @@ function viewBundleSell(v) {
   on('#pct', 'input', (e) => { trade.sellPct = e.target.value.trim(); render(); });
   $$('[data-pct]').forEach(b => b.onclick = (e) => { e.preventDefault(); trade.sellPct = b.dataset.pct; render(); });
   on('#review', 'click', () => { trade.stage = 'review'; render(); });
+}
+
+// ---------------- Launch + snipe ----------------
+// The dev wallet creates the coin; the first 4 sniper wallets are in the same Jito bundle (same block, before
+// anyone else). Sniper wallets past 4 buy right after it lands.
+const LAUNCH_BLOCK0 = 4;
+const launch = { dev: '', name: '', symbol: '', desc: '', twitter: '', telegram: '', website: '', image: '', devBuy: '0.5', tip: '0.003', snipe: {}, order: [], same: '', stage: 'form', busy: false };
+const launchSnipers = () => launch.order.filter(a => a !== launch.dev && st.wallets.some(w => w.address === a) && launch.snipe[a] != null);
+const solOk = (x) => /^\d*\.?\d+$/.test(String(x || '').trim()) && Number(x) > 0;
+function launchPlan() {
+  const ready = trade.bal && trade.bal !== 'loading';
+  const have = (a) => ready ? BigInt(trade.bal[a] || 0) : null;
+  const sn = launchSnipers().map((a, i) => {
+    const sol = launch.snipe[a];
+    let err = '';
+    if (!solOk(sol)) err = 'Enter SOL';
+    else if (have(a) != null && toRaw(sol, 9) + 12_000_000n > have(a)) err = 'Not enough SOL';
+    return { address: a, sol, block0: i < LAUNCH_BLOCK0, err };
+  });
+  const devErr = !launch.dev ? 'Pick a dev wallet' : !/^\d*\.?\d*$/.test(launch.devBuy || '0') ? 'Dev buy must be a number'
+    : have(launch.dev) != null && toRaw(launch.devBuy || '0', 9) + toRaw(solOk(launch.tip) ? launch.tip : '0', 9) + 30_000_000n > have(launch.dev) ? 'Dev wallet needs more SOL (buy + tip + ~0.03)' : '';
+  const formErr = !launch.image ? 'Add an image' : !launch.name.trim() ? 'Add a name' : !launch.symbol.trim() ? 'Add a ticker' : !(Number(launch.tip) >= 0.001) ? 'Jito tip must be at least 0.001 SOL' : devErr || (sn.some(r => r.block0 && r.err) ? 'Fix the block 0 wallets' : '');
+  const total = sn.filter(r => !r.err).reduce((t, r) => t + toRaw(r.sol, 9), 0n) + (solOk(launch.devBuy) ? toRaw(launch.devBuy, 9) : 0n);
+  return { ready, sn, formErr, total };
+}
+
+function viewBundleLaunch(v) {
+  if (trade.bal === null && !trade.balErr) loadBalances();
+  if (!launch.dev || !st.wallets.some(w => w.address === launch.dev)) launch.dev = st.wallets[0]?.address || '';
+  const p = launchPlan();
+  const balTxt = (a) => p.ready ? fmtNum(fromRaw(BigInt(trade.bal[a] || 0), 9), 3) + ' SOL' : '<span class="sk inline"></span>';
+
+  if (launch.stage === 'review' && !p.formErr) {
+    v.innerHTML = `
+      ${bundleHead('Review launch')}
+      <div class="coinline" style="margin-top:4px"><img src="${esc(launch.image)}" alt="" style="width:40px;height:40px;border-radius:10px;object-fit:cover"><b>${esc(launch.name)}</b><span class="muted">$${esc(launch.symbol.replace(/^\$/, ''))}</span></div>
+      <div class="summary">
+        <div class="kv"><span class="k">Dev wallet</span><span class="v">${esc(nameOf(launch.dev))} · ${esc(launch.devBuy || '0')} SOL</span></div>
+        <div class="kv"><span class="k">Block 0 snipers</span><span class="v">${p.sn.filter(r => r.block0).length}</span></div>
+        <div class="kv"><span class="k">Right after</span><span class="v">${p.sn.filter(r => !r.block0).length}</span></div>
+        <div class="kv"><span class="k">Total buys</span><span class="v num">${fromRaw(p.total, 9)} SOL</span></div>
+        <div class="kv"><span class="k">Jito tip</span><span class="v">${esc(launch.tip)} SOL</span></div>
+      </div>
+      <div class="list">
+        <div class="item">${avatar(walletOf(launch.dev), 'sm')}<div class="grow"><div class="name">${esc(nameOf(launch.dev))}</div><div class="sub">Creates the coin</div></div><div class="right"><span class="badge on">Block 0</span></div></div>
+        ${p.sn.map(r => `<div class="item">${avatar(walletOf(r.address), 'sm')}<div class="grow"><div class="name">${esc(nameOf(r.address))}</div><div class="sub num">${esc(r.sol)} SOL${r.err ? ` · <span style="color:var(--loss)">${esc(r.err)}, skipped</span>` : ''}</div></div><div class="right">${r.block0 ? '<span class="badge on">Block 0</span>' : '<span class="badge">Right after</span>'}</div></div>`).join('')}
+      </div>
+      <div class="note">Block 0 lands together with the create, or nothing lands and nothing is spent. Wallets marked “Right after” buy as soon as it lands.</div>
+      <p class="err" id="err"></p>
+      <div class="actions"><button class="btn" id="back2">Back</button><button class="btn primary" id="go">Launch + snipe</button></div>`;
+    on('#bHub', 'click', () => { launch.stage = 'form'; render(); });
+    on('#back2', 'click', () => { launch.stage = 'form'; render(); });
+    on('#go', 'click', async () => {
+      if (launch.busy) return;
+      launch.busy = true; $('#go').disabled = true; $('#go').textContent = 'Uploading…';
+      try {
+        await send({ type: 'launchRun', dev: launch.dev, name: launch.name.trim(), symbol: launch.symbol.trim(), description: launch.desc, twitter: launch.twitter.trim(), telegram: launch.telegram.trim(), website: launch.website.trim(), image: launch.image, devBuySol: launch.devBuy || '0', tipSol: launch.tip, snipers: p.sn.filter(r => !r.err).map(r => ({ address: r.address, sol: r.sol })) });
+        launch.busy = false; launch.stage = 'form'; await refresh();
+      } catch (e) { launch.busy = false; render(); const el = $('#err'); if (el) el.textContent = e.message; }
+    });
+    return;
+  }
+  launch.stage = 'form';
+  const n0 = p.sn.filter(r => r.block0).length;
+  v.innerHTML = `
+    ${bundleHead('Launch + snipe')}
+    <p class="hint" style="margin-top:0">Creates the coin from your dev wallet and buys it from your sniper wallets in the same block, before any other bot.</p>
+    <h3 class="sec">Coin</h3>
+    <label class="field"><span class="lbl">Image</span>
+      <div class="with">${launch.image ? `<img src="${esc(launch.image)}" alt="" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none">` : ''}<input id="lImg" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></div></label>
+    <label class="field"><span class="lbl">Name</span><input id="lName" maxlength="32" value="${esc(launch.name)}" placeholder="e.g. Truth" autocomplete="off"></label>
+    <label class="field"><span class="lbl">Ticker</span><input id="lSym" maxlength="10" value="${esc(launch.symbol)}" placeholder="e.g. TRUTH" autocomplete="off"></label>
+    <label class="field"><span class="lbl">Description</span><textarea id="lDesc" placeholder="Optional">${esc(launch.desc)}</textarea></label>
+    <label class="field"><span class="lbl">X / Twitter link</span><input id="lTw" value="${esc(launch.twitter)}" placeholder="Optional" autocomplete="off"></label>
+    <label class="field"><span class="lbl">Telegram link</span><input id="lTg" value="${esc(launch.telegram)}" placeholder="Optional" autocomplete="off"></label>
+    <label class="field"><span class="lbl">Website</span><input id="lWeb" value="${esc(launch.website)}" placeholder="Optional" autocomplete="off"></label>
+
+    <h3 class="sec" style="margin-top:20px">Dev wallet</h3>
+    <label class="field"><span class="lbl">Launches the coin</span>
+      <select id="lDev">${st.wallets.map(w => `<option value="${w.address}" ${w.address === launch.dev ? 'selected' : ''}>${esc(w.name)}${p.ready ? ' · ' + fmtNum(fromRaw(BigInt(trade.bal[w.address] || 0), 9), 3) + ' SOL' : ''}</option>`).join('')}</select></label>
+    <label class="field"><span class="lbl">Dev buy</span><div class="with"><input id="lDevBuy" inputmode="decimal" value="${esc(launch.devBuy)}" placeholder="e.g. 0.5" autocomplete="off"><span class="unit">SOL</span></div></label>
+
+    <div class="row sec-row" style="margin-top:20px"><h3 class="sec">Sniper wallets · ${p.sn.length}</h3><span class="inline"><button class="btn icon ghost" id="rl" title="Refresh balances" aria-label="Refresh balances">${I.refresh}</button></span></div>
+    <p class="hint" style="margin-top:0">The first ${LAUNCH_BLOCK0} you tick buy in block 0 with the create (${n0}/${LAUNCH_BLOCK0} used). Any more buy right after it lands.</p>
+    <label class="field"><span class="lbl">Same amount for every ticked wallet</span><div class="with"><input id="lSame" inputmode="decimal" value="${esc(launch.same)}" placeholder="e.g. 0.25" autocomplete="off"><button class="btn sm" id="lApply">Apply</button></div></label>
+    ${trade.balErr ? `<div class="note bad">Couldn't load balances: ${esc(trade.balErr)}</div>` : ''}
+    <div class="list" style="margin-top:8px">${st.wallets.filter(w => w.address !== launch.dev).map(w => {
+      const r = p.sn.find(x => x.address === w.address), ticked = !!r;
+      return `<div class="item ${ticked ? 'selected' : ''}"><input type="checkbox" data-snipe="${w.address}" ${ticked ? 'checked' : ''} aria-label="Snipe with ${esc(w.name)}">${avatar(w, 'sm')}
+        <div class="grow"><div class="name">${esc(w.name)} ${ticked ? (r.block0 ? '<span class="badge on">Block 0</span>' : '<span class="badge">Right after</span>') : ''}</div><div class="sub num">${balTxt(w.address)}${r?.err && launch.snipe[w.address] ? ` · <span style="color:var(--loss)">${esc(r.err)}</span>` : ''}</div></div>
+        ${ticked ? `<div class="right" style="width:96px"><div class="with"><input id="sn_${w.address}" data-amt="${w.address}" inputmode="decimal" value="${esc(launch.snipe[w.address])}" placeholder="SOL" autocomplete="off"></div></div>` : ''}</div>`;
+    }).join('')}</div>
+
+    <h3 class="sec" style="margin-top:20px">Speed</h3>
+    <label class="field"><span class="lbl">Jito tip (paid by the dev wallet)</span><div class="with"><input id="lTip" inputmode="decimal" value="${esc(launch.tip)}" placeholder="0.003" autocomplete="off"><span class="unit">SOL</span></div>
+      <div class="chips">${['0.001', '0.003', '0.01'].map(x => `<button data-tip="${x}" class="${launch.tip === x ? 'active' : ''}">${x}</button>`).join('')}</div></label>
+    <p class="hint">A higher tip makes the bundle more likely to land in the next block. Slippage for each snipe is raised automatically for the buys ahead of it.</p>
+    ${p.formErr ? `<p class="hint" style="color:var(--warn)">${esc(p.formErr)}</p>` : ''}
+    <div class="actions"><button class="btn primary" id="review" ${p.formErr ? 'disabled' : ''}>Review</button></div>`;
+
+  on('#bHub', 'click', () => { bundle.action = null; render(); });
+  on('#rl', 'click', loadBalances);
+  const bind = (sel, key) => on(sel, 'input', (e) => { launch[key] = e.target.value; render(); });
+  bind('#lName', 'name'); bind('#lSym', 'symbol'); bind('#lDesc', 'desc'); bind('#lTw', 'twitter'); bind('#lTg', 'telegram'); bind('#lWeb', 'website'); bind('#lDevBuy', 'devBuy'); bind('#lTip', 'tip'); bind('#lSame', 'same');
+  on('#lDev', 'change', (e) => { launch.dev = e.target.value; delete launch.snipe[launch.dev]; render(); });
+  on('#lImg', 'change', (e) => {
+    const f = e.target.files?.[0]; if (!f) return;
+    if (f.size > 4_500_000) { toast('Image is too big (keep it under ~4 MB)'); return; }
+    const rd = new FileReader(); rd.onload = () => { launch.image = String(rd.result); render(); }; rd.readAsDataURL(f);
+  });
+  $$('[data-snipe]').forEach(cb => cb.onchange = () => {
+    const a = cb.dataset.snipe;
+    if (cb.checked) { launch.snipe[a] = launch.same || ''; launch.order = [...launch.order.filter(x => x !== a), a]; }
+    else { delete launch.snipe[a]; launch.order = launch.order.filter(x => x !== a); }
+    render();
+  });
+  $$('[data-amt]').forEach(inp => inp.oninput = () => { launch.snipe[inp.dataset.amt] = inp.value.trim(); render(); });
+  on('#lApply', 'click', (e) => { e.preventDefault(); for (const a of launchSnipers()) launch.snipe[a] = launch.same.trim(); render(); });
+  $$('[data-tip]').forEach(b => b.onclick = (e) => { e.preventDefault(); launch.tip = b.dataset.tip; render(); });
+  on('#review', 'click', () => { launch.stage = 'review'; render(); });
 }
 
 // ---------------- Callout templates ----------------
@@ -1966,7 +2108,10 @@ function viewPnl(v, seg) {
   if (pnl === null) loadPnl();
   if (pnl === 'loading' || pnl === null) { v.innerHTML = seg + '<div class="pnlhero glass"><div class="sk big"></div><div class="sk" style="width:40%;margin-top:10px"></div></div><p class="hint center">Reading your wallets\' trade history. The first time can take up to a minute; after that only new trades are fetched.</p><div class="sk row"></div><div class="sk row"></div>'; return; }
   if (pnl.error) { v.innerHTML = seg + `<div class="note bad"><b>Couldn't load PnL from pump.fun.</b> ${esc(pnl.error)}<div class="actions end"><button class="btn sm" id="rl">Try again</button></div></div>`; on('#rl', 'click', () => loadPnl(true)); return; }
-  const t = pnl.totals;
+  // Open bags are valued as one combined sell across the wallets (price impact), not at market cap.
+  const imp = portReady() ? port.totals.pnlImpactUsd || 0 : 0;
+  const t = imp ? { ...pnl.totals, pnl: pnl.totals.pnl - imp, unrealized: pnl.totals.unrealized - imp, valueUsd: pnl.totals.valueUsd != null ? pnl.totals.valueUsd - imp : null } : pnl.totals;
+  if (imp) { t.pct = t.bought > 0 ? t.pnl / t.bought * 100 : null; t.pnlSol = pnl.solPrice ? t.pnl / pnl.solPrice : null; }
   const open = pnl.positions.filter(x => !x.exited);
   const best = pnl.positions[0], worst = pnl.positions[pnl.positions.length - 1];
   v.innerHTML = `${seg}
@@ -1976,7 +2121,7 @@ function viewPnl(v, seg) {
       <div class="pnl-sub num">${t.pnlSol != null ? `<b class="${tone(t.pnlSol)}">${t.pnlSol > 0 ? '+' : ''}${fmtNum(t.pnlSol, 2)} SOL</b> · ` : ''}${t.pct == null ? '' : `<span class="${tone(t.pct)}">${t.pct > 0 ? '+' : ''}${t.pct.toFixed(1)}%</span> on `}${fmtUsd(t.bought)} bought${pnl.solPrice ? ` · SOL ${fmtUsd(pnl.solPrice)}` : ''}</div>
       <div class="pnl-grid">
         <div><span class="k">Realized</span><span class="v num ${tone(t.realized)}">${signed(t.realized)}</span></div>
-        <div><span class="k">Unrealized</span><span class="v num ${tone(t.unrealized)}">${signed(t.unrealized)}</span></div>
+        <div><span class="k" title="As if every wallet sold at once">Unrealized${imp ? ' (sell fill)' : ''}</span><span class="v num ${tone(t.unrealized)}">${signed(t.unrealized)}</span></div>
         <div><span class="k">Portfolio</span><span class="v num">${fmtUsd(t.valueUsd)}</span></div>
         <div><span class="k">Positions</span><span class="v num">${t.open} open · ${t.closed} closed</span></div>
         ${t.fees ? `<div><span class="k">Creator fees</span><span class="v num pos">${signed(t.fees)} · ${fmtNum(t.feeSol, 3)} SOL</span></div>` : ''}
@@ -2495,6 +2640,7 @@ const VIEWS = {
   receive: viewReceive, send: viewDock('send'), swap: viewDock('swap'), sweep: viewDock('sweep'),
   bbuy: () => { if (bundle.action !== 'buy') { bundle.action = 'buy'; trade.side = 'buy'; trade.stage = 'form'; } viewBundle(); },
   bsell: () => { if (bundle.action !== 'sell') { bundle.action = 'sell'; trade.side = 'sell'; trade.stage = 'form'; } viewBundle(); },
+  blaunch: () => { bundle.action = 'launch'; viewBundle(); },
   follow: () => { const v = $('#view'); const h = followCard(); v.innerHTML = h || '<div class="empty"><b>Add a second wallet</b>Following needs at least two wallets in this group.</div>'; wireFollow(); },
   activity: () => { act.mode = 'activity'; viewActivity(); },
   pnl: () => { act.mode = 'pnl'; viewActivity(); },

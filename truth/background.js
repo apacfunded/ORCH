@@ -991,6 +991,153 @@ async function runBuy({ mint, addresses, mode, amount }) {
   return job;
 }
 
+// ---------------- launch + snipe: create a coin and buy it first ----------------
+// The create and the first buys go out as ONE Jito bundle: they land in the same block, in this order,
+// or not at all, so no outside sniper can get in between. A bundle holds at most 5 transactions:
+// the dev's create (+ dev buy) and up to 4 sniper wallets. Any more wallets buy right after it lands.
+const JITO_ENGINES = ['mainnet', 'ny.mainnet', 'amsterdam.mainnet', 'frankfurt.mainnet', 'tokyo.mainnet', 'slc.mainnet'].map(h => `https://${h}.block-engine.jito.wtf/api/v1/bundles`);
+const BLOCK0_MAX = 4;                     // sniper wallets in the bundle (plus the dev = 5 transactions)
+const DEV_CREATE_RESERVE = 30_000_000n;   // ~0.03 SOL for creating the coin's accounts + fees
+
+async function uploadMetadata({ name, symbol, description, twitter, telegram, website, image }) {
+  const m = /^data:([^;]+);base64,(.*)$/.exec(image || '');
+  if (!m) throw new Error('Add an image for the coin');
+  const bytes = Uint8Array.from(atob(m[2]), c => c.charCodeAt(0));
+  if (bytes.length > 4_500_000) throw new Error('Image is too big (keep it under ~4 MB)');
+  const fd = new FormData();
+  fd.append('file', new Blob([bytes], { type: m[1] }), 'image.' + (m[1].split('/')[1] || 'png'));
+  fd.append('name', name); fd.append('symbol', symbol); fd.append('description', description || '');
+  if (twitter) fd.append('twitter', twitter);
+  if (telegram) fd.append('telegram', telegram);
+  if (website) fd.append('website', website);
+  fd.append('showName', 'true');
+  let res;
+  try { res = await fetch('https://pump.fun/api/ipfs', { method: 'POST', body: fd, signal: AbortSignal.timeout(30000) }); }
+  catch (e) { throw new Error('Couldn\'t upload the coin image to pump.fun (' + e.message + ')'); }
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || !j.metadataUri) throw new Error('pump.fun image upload failed' + (j.message || j.error ? ': ' + (j.message || j.error) : ` (HTTP ${res.status})`));
+  return j.metadataUri;
+}
+
+async function sendJitoBundle(txs) {
+  const encoded = txs.map(t => b58.encode(t));
+  const body = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'sendBundle', params: [encoded] });
+  // Same bundle to several regions: whichever leader is up next gets it. Duplicates are ignored.
+  const results = await Promise.allSettled(JITO_ENGINES.map(async (url) => {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal: AbortSignal.timeout(8000) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || j.error) throw new Error(j.error?.message || `HTTP ${r.status}`);
+    return j.result;
+  }));
+  const ok = results.find(r => r.status === 'fulfilled');
+  if (!ok) throw new Error('Jito refused the bundle: ' + (results[0].reason?.message || 'no response'));
+  return ok.value;
+}
+
+const firstSig = (tx) => { const { sigOffset } = S.splitTx(tx); return b58.encode(tx.slice(sigOffset, sigOffset + 64)); };
+const solToLamports = (x, what) => { try { return S.toRaw(String(x ?? '').trim() || '0', 9); } catch { throw new Error(`${what}: enter an amount in SOL`); } };
+
+async function runLaunch(msg) {
+  { const cur = await session.get('job_buy'); if (cur && !cur.done) throw new Error('A trade is already running. Wait for it to finish.'); }
+  const name = String(msg.name || '').trim(), symbol = String(msg.symbol || '').trim().replace(/^\$/, '');
+  if (!name) throw new Error('Give the coin a name');
+  if (!symbol) throw new Error('Give the coin a ticker');
+  if (name.length > 32) throw new Error('Name is too long (32 characters max)');
+  if (symbol.length > 10) throw new Error('Ticker is too long (10 characters max)');
+  const dev = msg.dev;
+  if (!b58.isAddress(dev)) throw new Error('Pick the wallet that launches the coin');
+  const devLamports = solToLamports(msg.devBuySol, 'Dev buy');
+  const tipLamports = solToLamports(msg.tipSol, 'Jito tip');
+  if (tipLamports < 1_000_000n) throw new Error('Jito tip must be at least 0.001 SOL');
+  const snipers = (msg.snipers || []).filter(x => x.address !== dev).map(x => ({ address: x.address, lamports: solToLamports(x.sol, 'Snipe amount') }));
+  if (new Set(snipers.map(x => x.address)).size !== snipers.length) throw new Error('A wallet is listed twice');
+  for (const x of snipers) if (x.lamports < 1_000_000n) throw new Error('Each sniper wallet needs at least 0.001 SOL to spend');
+  const block0 = snipers.slice(0, BLOCK0_MAX), after = snipers.slice(BLOCK0_MAX);
+
+  const s = await settings();
+  const bal = await balances(s.rpc, [dev, ...snipers.map(x => x.address)]);
+  const devNeed = devLamports + tipLamports + DEV_CREATE_RESERVE;
+  if (BigInt(bal[dev]) < devNeed) throw new Error(`The dev wallet needs about ${S.fromRaw(devNeed, 9)} SOL (has ${S.fromRaw(BigInt(bal[dev]), 9)})`);
+  for (const x of block0) if (BigInt(bal[x.address]) < x.lamports + RESERVE_LAMPORTS) throw new Error(`${x.address.slice(0, 4)}… needs ${S.fromRaw(x.lamports + RESERVE_LAMPORTS, 9)} SOL for its snipe (has ${S.fromRaw(BigInt(bal[x.address]), 9)}). Block 0 is all-or-nothing, so fix it or untick it.`);
+
+  // Fresh mint address for the coin.
+  const kp = await crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
+  const mintSeed = new Uint8Array(await crypto.subtle.exportKey('pkcs8', kp.privateKey)).slice(16);
+  const mint = b58.encode(new Uint8Array(await crypto.subtle.exportKey('raw', kp.publicKey)));
+
+  const job = { side: 'launch', mint, name, symbol, startedAt: Date.now(), done: false, stage: 'uploading', rows: [] };
+  job.rows.push({ address: dev, role: 'dev', lamports: devLamports.toString(), state: 'waiting' });
+  for (const x of block0) job.rows.push({ address: x.address, role: 'block0', lamports: x.lamports.toString(), state: 'waiting' });
+  for (const x of after) {
+    const row = { address: x.address, role: 'after', lamports: x.lamports.toString(), state: 'waiting' };
+    if (BigInt(bal[x.address]) < x.lamports + RESERVE_LAMPORTS) { row.state = 'skipped'; row.error = `Not enough SOL (has ${S.fromRaw(BigInt(bal[x.address]), 9)})`; }
+    job.rows.push(row);
+  }
+  const save = () => session.set('job_buy', job);
+  await save();
+
+  keepAlive((async () => {
+    const bundleRows = job.rows.filter(r => r.role !== 'after');
+    try {
+      const uri = await uploadMetadata({ ...msg, name, symbol });
+      job.stage = 'building'; for (const r of bundleRows) r.state = 'preparing'; await save();
+
+      // Each buy in the bundle lands after the dev buy and the snipes ahead of it, so it gets room for that.
+      const base = Number(s.slippagePct);
+      let ahead = devLamports;
+      const args = [{ publicKey: dev, action: 'create', tokenMetadata: { name, symbol, uri }, mint, denominatedInSol: 'true', amount: Number(devLamports) / 1e9, slippage: base, priorityFee: Number(tipLamports) / 1e9, pool: 'pump' }];
+      for (const r of bundleRows.slice(1)) {
+        r.slippagePct = bundleSlippagePct(base, ahead);
+        args.push({ publicKey: r.address, action: 'buy', mint, denominatedInSol: 'true', amount: Number(BigInt(r.lamports)) / 1e9, slippage: r.slippagePct, priorityFee: 0.00001, pool: 'pump' });
+        ahead += BigInt(r.lamports);
+      }
+      const res = await fetch('https://pumpportal.fun/api/trade-local', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(args), signal: AbortSignal.timeout(15000) });
+      if (res.status !== 200) throw new Error('PumpPortal: ' + ((await res.text()).slice(0, 160) || `HTTP ${res.status}`));
+      const list = await res.json();
+      if (!Array.isArray(list) || list.length !== args.length) throw new Error('PumpPortal returned the wrong number of transactions');
+
+      const signedTxs = [];
+      for (let i = 0; i < list.length; i++) {
+        const tx = b58.decode(list[i]), row = bundleRows[i];
+        const { signerKeys, message } = S.splitTx(tx);
+        if (signerKeys[0] !== row.address) throw new Error('PumpPortal returned a transaction for the wrong wallet');
+        let out = S.applySignature(tx, row.address, await K.sign(await seedFor(row.address), message));
+        if (i === 0) {
+          if (!signerKeys.includes(mint)) throw new Error('PumpPortal\'s create transaction is for a different coin');
+          out = S.applySignature(out, mint, await K.sign(mintSeed, message));
+        }
+        row.signature = firstSig(out); row.route = i === 0 ? 'create · Jito' : 'block 0 · Jito';
+        signedTxs.push(out);
+      }
+
+      job.stage = 'sending'; for (const r of bundleRows) r.state = 'buying'; await save();
+      job.bundleId = await sendJitoBundle(signedTxs);
+      await save();
+
+      // Never re-send these through a normal RPC: the create could then land without the snipes.
+      let landed = false;
+      await S.confirmMany(s.rpc, bundleRows.map(row => ({ signature: row.signature, row })), {
+        timeoutMs: 45000,
+        onDone: (e, err) => { if (err) { e.row.state = 'failed'; e.row.error = /Not confirmed/.test(err.message) ? 'Bundle didn\'t land, so nothing was spent. Try again with a higher Jito tip.' : err.message; } else { e.row.state = 'bought'; if (e.row.role === 'dev') landed = true; } save(); },
+      });
+      if (!landed) throw Object.assign(new Error('The launch bundle didn\'t land, so nothing was spent and no coin was made. Try again with a higher Jito tip.'), { quiet: true });
+
+      job.stage = 'after'; await save();
+      if (job.rows.some(r => r.role === 'after' && r.state === 'waiting')) {
+        // Brand-new coin: Jupiter can't see it yet, so go straight through PumpPortal.
+        const s2 = { ...s, buyRoute: 'pumpportal' };
+        const total = job.rows.filter(r => r.role === 'after' && r.state === 'waiting').reduce((t, r) => t + BigInt(r.lamports), 0n);
+        await fireTogether(s2, job, save, (row) => { row.slippagePct = bundleSlippagePct(base, total - BigInt(row.lamports)); return prepareBuy(s2, row.address, mint, BigInt(row.lamports), row.slippagePct); }, 'bought');
+      }
+    } catch (e) {
+      job.error = e.message;
+      for (const r of job.rows) if (!['bought', 'failed', 'skipped'].includes(r.state)) { const afterLaunch = job.stage === 'after'; r.state = r.role === 'after' && !afterLaunch ? 'skipped' : 'failed'; r.error ||= r.role === 'after' && !afterLaunch ? 'Launch didn\'t go through' : e.message; }
+    }
+    job.stage = 'done'; job.done = true; await save(); await logTrade(job);
+  })());
+  return job;
+}
+
 // USD prices from Jupiter (best effort; the UI shows nothing when this fails).
 const WSOL_MINT = 'So11111111111111111111111111111111111111112';
 const priceCache = new Map(); // mint -> { usd, at }
@@ -1236,7 +1383,7 @@ async function distributeLogged(msg) {
 async function logTrade(job) {
   try {
     const log = (await local.get('tradeLog')) || [];
-    log.unshift({ at: job.startedAt, side: job.side, mint: job.mint, pct: job.pct || null,
+    log.unshift({ at: job.startedAt, side: job.side === 'launch' ? 'buy' : job.side, mint: job.mint, pct: job.pct || null,
       rows: job.rows.map(r => ({ address: r.address, state: r.state, lamports: r.lamports || null, tokenRaw: r.tokenRaw || null, decimals: r.decimals ?? null, signature: r.signature || null, solChange: r.solChange ?? null, error: r.error || null })) });
     await local.set('tradeLog', log.slice(0, 60));
   } catch {}
@@ -1288,6 +1435,53 @@ async function tokenAccounts(rpcUrl, a) {
 
 let portCache = { at: 0, key: '', data: null };
 const TOK_MAX_AGE = 120000; // re-scan a wallet's coins at least every 2 minutes even if its SOL didn't move
+// ---------------- what a coin would actually fill for if every wallet sold it at once ----------------
+// Market-cap value (held × price) ignores price impact: selling 10 wallets' bags drops the price as it
+// goes. Here the group's whole bag is quoted as ONE sell, like it all sat in one wallet.
+// Bonding-curve coins: exact curve math from the on-chain curve account (fees included).
+// Graduated coins: a Jupiter quote for the full amount.
+const PUMP_PROGRAM = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
+const PUMP_SELL_FEE = 0.0125; // pump.fun bonding-curve sell fees (protocol + creator), approx.
+const exitCache = new Map(); // mint:raw -> { sol, at }
+const u64 = (d, o) => { let v = 0n; for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(d[o + i]); return v; };
+async function exitFills(rpcUrl, items) {
+  const out = {}, need = [];
+  for (const it of items) {
+    if (!(BigInt(it.raw) > 0n)) continue;
+    const c = exitCache.get(it.mint + ':' + it.raw);
+    if (c && Date.now() - c.at < 20000) out[it.mint] = c.sol; else need.push(it);
+  }
+  if (!need.length) return out;
+  const seed = new TextEncoder().encode('bonding-curve');
+  const curves = await Promise.all(need.map(async it => (await S.findProgramAddress([seed, b58.decode(it.mint)], PUMP_PROGRAM))[0]));
+  const accs = {};
+  for (let i = 0; i < curves.length; i += 100) {
+    try {
+      const r = await S.rpc(rpcUrl, 'getMultipleAccounts', [curves.slice(i, i + 100), { encoding: 'base64', commitment: 'confirmed' }], 3);
+      r.value.forEach((v, k) => { if (v?.data?.[0]) accs[need[i + k].mint] = Uint8Array.from(atob(v.data[0]), ch => ch.charCodeAt(0)); });
+    } catch {}
+  }
+  const viaJup = [];
+  for (const it of need) {
+    const d = accs[it.mint];
+    if (d && d.length >= 49 && d[48] === 0) {
+      const vTok = u64(d, 8), vSol = u64(d, 16), realSol = u64(d, 32), amt = BigInt(it.raw);
+      let lam = vSol * amt / (vTok + amt);
+      if (lam > realSol) lam = realSol;
+      out[it.mint] = Number(lam) / 1e9 * (1 - PUMP_SELL_FEE);
+      exitCache.set(it.mint + ':' + it.raw, { sol: out[it.mint], at: Date.now() });
+    } else viaJup.push(it);
+  }
+  await pool(viaJup, 3, async (it) => {
+    try {
+      const q = new URLSearchParams({ inputMint: it.mint, outputMint: WSOL_MINT, amount: String(it.raw), slippageBps: '50' });
+      const j = await fetchJson('https://lite-api.jup.ag/swap/v1/quote?' + q);
+      if (j?.outAmount) { out[it.mint] = Number(j.outAmount) / 1e9; exitCache.set(it.mint + ':' + it.raw, { sol: out[it.mint], at: Date.now() }); }
+    } catch {}
+  });
+  return out;
+}
+
 async function portfolioAll(force) {
   const wallets = await scopedWallets();
   const addresses = wallets.map(w => w.address);
@@ -1347,8 +1541,23 @@ async function portfolioAll(force) {
   });
   const coinList = [...coins.values()].map(c => ({ ...c, holders: c.holders.sort((x, y) => (y.usd ?? 0) - (x.usd ?? 0)) }))
     .sort((x, y) => (y.totalUsd - x.totalUsd) || (y.holders.length - x.holders.length));
+  // Value every coin as one combined sell of all the group's tokens (price impact included).
+  if (solPrice) {
+    let fills = {};
+    try { fills = await exitFills(s.rpc, coinList.map(c => ({ mint: c.mint, raw: c.holders.reduce((t, h) => t + BigInt(h.raw || 0), 0n).toString() }))); } catch {}
+    for (const c of coinList) {
+      const f = fills[c.mint];
+      if (f == null) continue;
+      c.exitSol = f;
+      c.exitUsd = c.totalUsd > 0 ? Math.min(c.totalUsd, f * solPrice) : f * solPrice;
+      c.impactUsd = c.totalUsd > 0 ? c.totalUsd - c.exitUsd : 0;
+      c.exitPnlUsd = c.hasPnl ? c.pnlUsd - c.impactUsd : null;
+    }
+  }
+  const tokenUsd = walletRows.reduce((x, w) => x + w.tokenUsd, 0), impactUsd = coinList.reduce((x, c) => x + (c.impactUsd || 0), 0);
   const data = { at: Date.now(), solPrice, wallets: walletRows, coins: coinList,
-    totals: { sol: walletRows.reduce((x, w) => x + w.sol, 0), usd: walletRows.reduce((x, w) => x + (w.solUsd || 0) + w.tokenUsd, 0), tokenUsd: walletRows.reduce((x, w) => x + w.tokenUsd, 0), coins: coinList.length } };
+    totals: { sol: walletRows.reduce((x, w) => x + w.sol, 0), usd: walletRows.reduce((x, w) => x + (w.solUsd || 0) + w.tokenUsd, 0), tokenUsd, coins: coinList.length,
+      impactUsd, pnlImpactUsd: coinList.reduce((x, c) => x + (c.hasPnl ? c.impactUsd || 0 : 0), 0), exitUsd: walletRows.reduce((x, w) => x + (w.solUsd || 0), 0) + tokenUsd - impactUsd } };
   portCache = { at: Date.now(), key, data };
   saveSnap('portSnap', key, data);
   return data;
@@ -1821,6 +2030,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case 'selfView': return keepAlive(runSelfView(msg));
       case 'buyRun': return runBuy(msg);
       case 'sellRun': return runSell(msg);
+      case 'launchRun': return runLaunch(msg);
       case 'tokenBalances': return tokenBalances((await settings()).rpc, msg.mint, msg.addresses);
       case 'clearJob': await session.del('job_' + msg.kind); return state();
       case 'forgetTeach': await local.set('pumpTpl', {}); await session.del('teachLog'); await setRecording(true); return state();

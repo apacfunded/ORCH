@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RobloxPad</title>
+<meta name="description" content="Launch a coin and our AI builds it its own Roblox game. Game revenue buys back and burns the coin. $RBXPAD">
+<meta property="og:title" content="RobloxPad">
+<meta property="og:description" content="Every coin gets a game. Game revenue buys back and burns the coin.">
+<meta property="og:image" content="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/abe4431e-5523-48c5-b81a-22ead8e6c096.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/8647b512-f675-4869-9b6e-f550d191ddc7.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Fredoka:wght@400;500;600&display=swap">
+<style>
+img{max-width:100%}[hidden]{display:none!important}
+/* Layout: Poster — loud cartoon hero with block-island scene, then launch form, game grid, burn log. Single bright theme by choice. */
+:root{
+  --sky:#0a1fb8; --deep:#030c5c; --sky2:#8fdcff; --paper:#ffffff; --ink:#04103f; --ink2:#43517f;
+  --red:#22c4ff; --yellow:#8fe6ff; --green:#4fd8ff; --blue:#1f4bff; --purple:#6b7cff;
+  --glow:#3fb8ff; --line:#04103f; --shadow:0 5px 0 #04103f;
+  --display:"Lilita One","Arial Rounded MT Bold",Impact,sans-serif;
+  --body:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--deep);background-image:radial-gradient(1200px 700px at 50% -10%,#2457ff 0,var(--sky) 45%,var(--deep) 100%);background-attachment:fixed;color:#fff;font-family:var(--body);font-size:17px;line-height:1.5;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--paper)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.02;margin:0;text-wrap:balance;letter-spacing:.5px}
+a{color:inherit}
+button,input,textarea,select{font-family:inherit;font-size:16px;color:var(--ink)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+
+/* chunky button */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border:3px solid var(--line);border-radius:14px;background:var(--yellow);font-weight:600;font-size:17px;cursor:pointer;text-decoration:none;box-shadow:var(--shadow);transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--line)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--line)}
+.btn.red{background:var(--red);color:var(--ink)}
+.btn{color:var(--ink)}
+.btn.white{background:var(--paper)}
+.card{color:var(--ink);background:var(--paper);border:3px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+
+/* nav */
+nav{color:var(--ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--paper);border-bottom:3px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:14px;min-height:70px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-size:26px}
+.logo .blk{width:40px;height:40px;border:3px solid var(--line);border-radius:10px;background:var(--blue);position:relative;transform:rotate(-8deg);box-shadow:0 3px 0 var(--line)}
+.logo .blk::before,.logo .blk::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:var(--yellow);border:2px solid var(--line);top:7px}
+.logo .blk::before{left:6px}.logo .blk::after{right:6px}
+.logo .pfp{width:42px;height:42px;border-radius:12px;border:3px solid var(--line);box-shadow:0 3px 0 var(--line),0 0 16px #3fb8ff88;object-fit:cover;flex:none}
+footer .logo .pfp{border-color:#000}
+.logo span em{font-style:normal;color:var(--blue)}
+footer .logo span em{color:var(--red)}
+.navlinks{display:flex;gap:4px;margin-left:auto}
+.navlinks a{font-weight:600;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlinks a:hover{background:var(--sky)}
+@media(max-width:820px){.navlinks{display:none}nav .btn{margin-left:auto}}
+
+/* hero */
+.hero{position:relative;padding-block:48px 70px;overflow:hidden}
+.clouds{position:absolute;inset:0;pointer-events:none}
+.cloud{position:absolute;border-radius:3px;background:var(--glow);box-shadow:0 0 18px var(--glow),0 0 40px #3fb8ff66;opacity:.85;animation:floaty ease-in-out infinite alternate}
+@keyframes floaty{from{transform:translateY(0) rotate(12deg)}to{transform:translateY(-22px) rotate(28deg)}}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}}
+.tag{color:var(--ink);display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:3px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600;font-size:15px;box-shadow:0 3px 0 var(--line)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px #bdf3d3;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px #bdf3d300}}
+.hero h1{font-size:clamp(52px,9vw,104px);margin:18px 0 14px;color:var(--paper);-webkit-text-stroke:3px var(--line);paint-order:stroke fill;text-shadow:0 7px 0 var(--line)}
+.hero h1 .y{color:var(--red);text-shadow:0 7px 0 var(--line),0 0 40px #22c4ff99}
+.hero p.lede{font-size:21px;max-width:30ch;margin:0 0 26px;font-weight:500}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.chips{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.chip{color:var(--ink);background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:10px 16px;box-shadow:0 3px 0 var(--line)}
+.chip b{display:block;font-family:var(--display);font-weight:400;font-size:26px;font-variant-numeric:tabular-nums}
+.chip small{font-size:13px;color:var(--ink2);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.example{font-size:13px;color:var(--ink2);margin-top:10px;font-weight:500}
+
+/* block island scene */
+.scene{position:relative;height:460px;max-width:100%}
+.ring{position:absolute;left:50%;top:50%;width:92%;height:34%;transform:translate(-50%,-50%) rotate(-14deg);border-radius:50%;border:3px solid #8fe6ff;box-shadow:0 0 24px #3fb8ff,inset 0 0 24px #3fb8ff88;opacity:.7}
+.hero-pfp{position:absolute;left:50%;top:50%;width:min(250px,58%);aspect-ratio:1;max-width:100%;transform:translate(-50%,-50%);border-radius:36px;border:4px solid var(--line);box-shadow:0 8px 0 var(--line),0 0 60px #3fb8ffaa,0 0 120px #1f4bff88;animation:hover 5s ease-in-out infinite;z-index:5}
+@keyframes hover{50%{transform:translate(-50%,-54%) rotate(2deg)}}
+.ocard{position:absolute;left:50%;top:50%;display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;background:var(--paper);color:var(--ink);border:3px solid var(--line);border-radius:16px;box-shadow:0 4px 0 var(--line);font-weight:600;font-size:15px;white-space:nowrap;will-change:transform}
+.ocard i{width:34px;height:34px;border:2px solid var(--line);border-radius:10px;display:grid;place-items:center;flex:none}
+.ocard svg{width:22px;height:22px}
+@media(max-width:900px){.scene{height:360px;margin-top:-10px}}
+.island{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:330px;animation:bob 4s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,-56%)}}
+.top{height:70px;background:var(--green);border:4px solid var(--line);border-radius:22px 22px 8px 8px;position:relative;z-index:2;
+  background-image:radial-gradient(circle at 50% 45%,#5fe397 0 7px,#1fa85b 8px 10px,transparent 11px);background-size:36px 36px}
+.dirt{height:90px;margin:-6px 16px 0;background:#b7773f;border:4px solid var(--line);border-top:none;border-radius:0 0 60px 60px;clip-path:polygon(0 0,100% 0,82% 100%,18% 100%);position:relative}
+.dirt::after{content:"";position:absolute;inset:18px 30% auto 30%;height:14px;background:#94592b;border-radius:8px}
+.bldg{position:absolute;bottom:62px;border:4px solid var(--line);border-radius:8px;z-index:1}
+.b1{left:30px;width:70px;height:96px;background:var(--blue)}
+.b2{left:118px;width:92px;height:140px;background:var(--yellow)}
+.b3{right:28px;width:72px;height:74px;background:var(--purple)}
+.bldg::before{content:"";position:absolute;inset:12px 12px auto;height:16px;background:repeating-linear-gradient(90deg,#fff 0 14px,transparent 14px 22px);opacity:.85;border-radius:3px}
+.b2::after{content:"PLAY";position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-family:var(--display);font-size:20px;color:var(--ink)}
+.flag{position:absolute;left:156px;bottom:198px;width:4px;height:44px;background:var(--line);z-index:1}
+.flag::after{content:"";position:absolute;left:4px;top:0;width:34px;height:22px;background:var(--red);border:3px solid var(--line);border-left:none;animation:wave 1s ease-in-out infinite alternate;transform-origin:left}
+@keyframes wave{to{transform:skewY(-8deg) scaleX(.9)}}
+.coin{position:absolute;left:50%;top:10px;width:78px;height:78px;margin-left:-39px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3a8,var(--yellow) 45%,#e6a800);border:4px solid var(--line);display:grid;place-items:center;font-family:var(--display);font-size:22px;z-index:5;animation:drop 4.2s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes drop{0%{transform:translateY(-30px) rotateY(0);opacity:0}10%{opacity:1}45%{transform:translateY(40px) rotateY(540deg)}70%{transform:translateY(300px) rotateY(900deg) scale(.7);opacity:1}82%{transform:translateY(330px) scale(.3);opacity:0}100%{opacity:0;transform:translateY(330px)}}
+.fire{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:120px;height:70px;z-index:4}
+.fl{position:absolute;bottom:0;width:38px;height:56px;border:4px solid var(--line);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:flick .5s ease-in-out infinite alternate}
+.fl:nth-child(1){left:6px;background:var(--red)}
+.fl:nth-child(2){left:40px;height:70px;background:#ff8a1f;animation-delay:.15s}
+.fl:nth-child(3){left:74px;background:var(--red);animation-delay:.3s}
+@keyframes flick{to{transform:scaleY(.82) translateY(4px)}}
+.bubble{position:absolute;background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:8px 12px;font-weight:600;font-size:15px;box-shadow:0 3px 0 var(--line);z-index:6}
+.bubble.a{right:0;top:40px;transform:rotate(4deg)}
+.bubble.b{left:0;bottom:80px;transform:rotate(-5deg)}
+.bubble b{color:var(--red)}
+
+/* marquee */
+.marquee{background:#020838;color:#fff;border-block:3px solid var(--line);overflow:hidden;white-space:nowrap}
+.marquee .track{display:inline-flex;gap:42px;padding:14px 0;animation:scroll 40s linear infinite;font-weight:600}
+.marquee b{color:var(--yellow);font-weight:600}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* sections */
+section.blk{padding-block:72px}
+.sec-h{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.sec-h h2{font-size:clamp(38px,6vw,60px)}
+.sec-h p{margin:6px 0 0;color:#c9d6ff;max-width:46ch;font-weight:500}
+.white-band{background:var(--paper);color:var(--ink);border-block:3px solid var(--line)}
+.yellow-band{background:var(--yellow);color:var(--ink);border-block:3px solid var(--line)}
+.white-band .sec-h p,.yellow-band .sec-h p{color:var(--ink2)}
+.sec-h h2{text-shadow:0 4px 0 var(--line)}
+.white-band .sec-h h2,.yellow-band .sec-h h2{text-shadow:none}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:820px){.steps{grid-template-columns:1fr}}
+.step{padding:26px;position:relative}
+.step .n{width:54px;height:54px;border:3px solid var(--line);border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-size:28px;margin-bottom:16px;box-shadow:0 3px 0 var(--line)}
+.step:nth-child(1) .n{background:var(--blue);color:#fff}
+.step:nth-child(2) .n{background:var(--green)}
+.step:nth-child(3) .n{background:var(--red)}
+.step h3{font-size:30px;margin-bottom:8px}
+.step p{margin:0;color:var(--ink2)}
+
+/* launch */
+.launch{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:start}
+@media(max-width:900px){.launch{grid-template-columns:1fr}}
+form.card{padding:26px;display:grid;gap:18px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.row2{grid-template-columns:1fr}}
+label.f{display:grid;gap:6px;font-weight:600;font-size:15px}
+input[type=text],textarea{width:100%;min-height:48px;padding:10px 14px;border:3px solid var(--line);border-radius:12px;background:#f3f9ff}
+textarea{min-height:84px;resize:vertical}
+input[type=text]:focus,textarea:focus{outline:none;background:#fff;box-shadow:0 0 0 4px var(--sky2)}
+.hint{font-weight:500;color:var(--ink2);font-size:13px}
+fieldset{border:none;padding:0;margin:0}
+legend{font-weight:600;font-size:15px;margin-bottom:8px}
+.genres{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:520px){.genres{grid-template-columns:repeat(2,1fr)}}
+.genre input{position:absolute;opacity:0;pointer-events:none}
+.genre span{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:3px solid var(--line);border-radius:14px;background:#f3f9ff;font-weight:600;font-size:15px;cursor:pointer;min-height:84px;justify-content:center;transition:transform .1s}
+.genre span:hover{transform:translateY(-2px)}
+.genre svg{width:30px;height:30px}
+.genre input:checked+span{background:var(--yellow);box-shadow:0 4px 0 var(--line);transform:translateY(-3px)}
+.genre input:focus-visible+span{outline:3px solid var(--blue);outline-offset:2px}
+.upload{display:flex;align-items:center;gap:12px}
+.upload .pic{width:56px;height:56px;border:3px dashed var(--line);border-radius:14px;display:grid;place-items:center;background:#f3f9ff;overflow:hidden;flex:none}
+.upload .pic img{width:100%;height:100%;object-fit:cover}
+.split{display:flex;gap:10px;flex-wrap:wrap}
+.split b{font-family:var(--display);font-weight:400}
+
+/* preview */
+.preview{position:sticky;top:90px;display:grid;gap:14px}
+.pv-label{font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2)}
+.gcard{overflow:hidden}
+.thumb{aspect-ratio:16/10;max-width:100%;position:relative;border-bottom:3px solid var(--line);overflow:hidden}
+.thumb .gnd{position:absolute;left:0;right:0;bottom:0;height:34%;background:var(--green);border-top:3px solid var(--line);background-image:radial-gradient(circle,#5fe397 0 5px,transparent 6px);background-size:26px 26px}
+.thumb .cube{position:absolute;bottom:30%;border:3px solid var(--line);border-radius:6px}
+.thumb .ttl{position:absolute;left:12px;top:10px;right:12px;font-family:var(--display);font-size:26px;color:#fff;-webkit-text-stroke:2px var(--line);paint-order:stroke fill;line-height:1;word-break:break-word}
+.thumb .gpill{position:absolute;right:10px;bottom:10px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:2px 10px;font-weight:600;font-size:13px}
+.gbody{padding:14px 16px;display:grid;gap:8px}
+.gtop{display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:10px;border:3px solid var(--line);display:grid;place-items:center;font-family:var(--display);font-size:16px;flex:none;overflow:hidden;background:var(--yellow)}
+.av img{width:100%;height:100%;object-fit:cover}
+.gname{font-weight:600;line-height:1.2;min-width:0}
+.gname small{display:block;color:var(--ink2);font-weight:500;font-size:13px}
+.stats{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--ink2);font-weight:500;font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:600}
+.bar{height:14px;border:2px solid var(--line);border-radius:999px;background:#eef4fb;overflow:hidden}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--red) 0 10px,#8fe6ff 10px 20px);border-right:2px solid var(--line)}
+.status{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px}
+.status .dot{width:8px;height:8px}
+
+/* studio shots */
+.shots{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+@media(max-width:760px){.shots{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}}
+.shot{margin:0;padding:12px;transform:rotate(-1.5deg)}
+.shot:nth-child(3){transform:rotate(1.5deg)}
+.shot img{display:block;width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;border:3px solid var(--line);border-radius:12px;background:#dfe6ef}
+.shot figcaption{font-weight:600;padding:12px 4px 2px;display:flex;align-items:center;gap:10px}
+.shot figcaption .n{width:30px;height:30px;border:3px solid var(--line);border-radius:9px;display:grid;place-items:center;font-family:var(--display);font-size:16px;flex:none}
+.arrow{font-family:var(--display);font-size:54px;line-height:1;color:var(--blue);-webkit-text-stroke:2px var(--line);paint-order:stroke fill}
+
+/* faq */
+.faq{display:grid;gap:12px;max-width:820px}
+summary{list-style:none;cursor:pointer;padding:18px 22px;font-weight:600;font-size:19px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--display);font-size:30px;line-height:1;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0;padding:0 22px 20px;color:var(--ink2)}
+.empty{padding:28px;text-align:center}
+.empty h3{font-size:30px;margin-bottom:8px}
+.empty p{margin:0 0 18px;color:var(--ink2)}
+
+/* footer */
+footer{background:#020838;color:#fff;padding-block:44px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+.ca{display:flex;align-items:center;gap:10px;background:#24314f;border:3px solid #000;border-radius:14px;padding:8px 8px 8px 16px;min-width:0;max-width:100%}
+.ca code{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ca .btn{min-height:40px;padding:0 14px;font-size:15px;box-shadow:0 3px 0 #000;border-color:#000}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:14px}
+footer .small{color:#aab6d3;font-size:14px;width:100%}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140%);background:var(--ink);color:#fff;border:3px solid #000;border-radius:16px;padding:14px 20px;font-weight:600;z-index:80;transition:transform .25s;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0)}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="RobloxPad home"><img class="pfp" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/8647b512-f675-4869-9b6e-f550d191ddc7.jpg" alt=""><span>Roblox<em>Pad</em></span></a>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#games">Games</a>
+      <a href="#burns">Burns</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn red" href="#launch">Launch a coin</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="clouds" aria-hidden="true">
+    <div class="cloud" style="top:8%;left:6%;width:22px;height:22px;animation-duration:7s"></div>
+    <div class="cloud" style="top:18%;left:44%;width:14px;height:14px;animation-duration:9s"></div>
+    <div class="cloud" style="top:30%;left:88%;width:26px;height:26px;animation-duration:6s"></div>
+    <div class="cloud" style="top:70%;left:4%;width:12px;height:12px;animation-duration:8s"></div>
+    <div class="cloud" style="top:62%;left:92%;width:18px;height:18px;animation-duration:10s"></div>
+    <div class="cloud" style="top:86%;left:30%;width:10px;height:10px;animation-duration:7s"></div>
+    <div class="cloud" style="top:12%;left:70%;width:16px;height:16px;animation-duration:11s"></div>
+    <div class="cloud" style="top:46%;left:52%;width:9px;height:9px;animation-duration:8s"></div>
+  </div>
+  <div class="wrap">
+    <div>
+      <span class="tag"><span class="dot" style="background:var(--yellow);box-shadow:none;animation:none"></span>$RBXPAD · Coming soon</span>
+      <h1>Every coin gets a <span class="y">game.</span></h1>
+      <p class="lede">Launch a coin and it gets its own Roblox game. Game revenue buys back your coin and burns it.</p>
+      <div class="cta">
+        <a class="btn red" href="#launch">Launch a coin</a>
+        <a class="btn white" href="https://x.com/robloxpad_lol" target="_blank" rel="noopener">Follow @robloxpad_lol</a>
+      </div>
+      <div class="chips">
+        <div class="chip"><b>1 coin</b><small>1 Roblox game</small></div>
+        <div class="chip"><b>Revenue</b><small>Buys back the coin</small></div>
+        <div class="chip"><b>Burned</b><small>On-chain</small></div>
+      </div>
+    </div>
+    <div class="scene" aria-hidden="true">
+      <div class="ring"></div>
+      <img class="hero-pfp" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/abe4431e-5523-48c5-b81a-22ead8e6c096.jpg" alt="">
+      <div id="orbit"></div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true"><div class="track" id="marquee"></div></div>
+
+<section class="blk white-band" id="how">
+  <div class="wrap">
+    <div class="sec-h"><div><h2>How it works</h2><p>Three steps. Your coin gets a real game, and the game keeps eating supply.</p></div></div>
+    <div class="steps">
+      <div class="card step"><div class="n">1</div><h3>Launch your coin</h3><p>Pick a name, ticker and game type. Your coin goes live on pump.fun.</p></div>
+      <div class="card step"><div class="n">2</div><h3>Get your game</h3><p>Your coin gets its own Roblox game themed around it, linked right on its page.</p></div>
+      <div class="card step"><div class="n">3</div><h3>Revenue burns it</h3><p>Money the game makes buys back your coin and burns it on-chain.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk yellow-band" id="studio">
+  <div class="wrap">
+    <div class="sec-h"><div><h2>Built in Roblox Studio</h2><p>Each game starts as an empty baseplate and gets built into something people can play.</p></div></div>
+    <div class="shots">
+      <figure class="card shot"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/06e85c58-7044-4a46-bbf4-b3b88fa3c0a6.jpg" alt="Empty baseplate in Roblox Studio"><figcaption><span class="n" style="background:var(--blue);color:#fff">1</span>Start with a blank baseplate</figcaption></figure>
+      <div class="arrow" aria-hidden="true">→</div>
+      <figure class="card shot"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/239d150f-65ba-47d2-a1f1-f8685e5174a5.jpg" alt="Obby course of floating platforms in Roblox Studio"><figcaption><span class="n" style="background:var(--green)">2</span>Build it into a playable game</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="launch">
+  <div class="wrap">
+    <div class="sec-h"><div><h2>Launch a coin</h2><p>Fill it in and watch your game card build itself.</p></div></div>
+    <div class="launch">
+      <form class="card" id="launchForm" novalidate>
+        <div class="row2">
+          <label class="f" for="fName">Coin name
+            <input type="text" id="fName" maxlength="32" placeholder="e.g. Lava Obby" autocomplete="off">
+          </label>
+          <label class="f" for="fTicker">Ticker
+            <input type="text" id="fTicker" maxlength="10" placeholder="e.g. LAVA" autocomplete="off">
+          </label>
+        </div>
+        <div class="upload">
+          <div class="pic" id="picBox"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#15213b" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+          <label class="f" for="fImg" style="flex:1">Coin image
+            <input type="file" id="fImg" accept="image/*">
+            <span class="hint">PNG or JPG, square works best</span>
+          </label>
+        </div>
+        <fieldset>
+          <legend>Game type</legend>
+          <div class="genres" id="genres"></div>
+        </fieldset>
+        <label class="f" for="fDesc">What's the game about? <span class="hint">Optional. Helps us build it.</span>
+          <textarea id="fDesc" placeholder="Describe the game you want for your coin"></textarea>
+        </label>
+        <div class="split"><span class="tag">Game revenue → <b>buyback &amp; burn</b></span></div>
+        <button class="btn red" type="submit" style="width:100%">Launch coin</button>
+      </form>
+      <div class="preview">
+        <div class="pv-label">Your game card</div>
+        <div id="pvCard"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk white-band" id="games">
+  <div class="wrap">
+    <div class="sec-h"><div><h2>Games</h2><p>Every coin launched on RobloxPad and the game it got.</p></div></div>
+    <div class="card empty"><h3>No games yet</h3><p>Games show up here once coins launch.</p><a class="btn red" href="#launch">Launch a coin</a></div>
+  </div>
+</section>
+
+<section class="blk" id="burns">
+  <div class="wrap">
+    <div class="sec-h"><div><h2>Burn log</h2><p>Every buyback from game revenue, public and on-chain.</p></div></div>
+    <div class="card empty"><h3>No burns yet</h3><p style="margin:0">Burns show up here with their transactions once games start earning.</p></div>
+  </div>
+</section>
+
+<section class="blk yellow-band" id="faq">
+  <div class="wrap">
+    <div class="sec-h"><div><h2>FAQ</h2></div></div>
+    <div class="faq">
+      <details class="card" open><summary>Does every coin really get a game?</summary><p>Yes. Every coin launched on RobloxPad gets its own Roblox game built around its name, ticker and theme, linked on the coin's page.</p></details>
+      <details class="card"><summary>Where does the game money go?</summary><p>Revenue from the game is used to buy back that game's coin and burn it. Every burn shows up in the burn log with its transaction.</p></details>
+      <details class="card"><summary>Is RobloxPad made by Roblox?</summary><p>No. RobloxPad is an independent project and is not affiliated with or endorsed by Roblox Corporation.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" style="color:#fff"><img class="pfp" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/8647b512-f675-4869-9b6e-f550d191ddc7.jpg" alt=""><span>Roblox<em>Pad</em></span></a>
+    <div class="ca"><span style="font-weight:600;color:#aab6d3">CA</span><code class="mono" id="caText">Coming soon</code><button class="btn" type="button" id="copyCa">Copy</button></div>
+    <a class="btn white" href="https://x.com/robloxpad_lol" target="_blank" rel="noopener">Follow @robloxpad_lol</a>
+    <div class="small">RobloxPad is not affiliated with Roblox Corporation. Memecoins are risky. Only spend what you can lose.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const ICONS={
+  Obby:'<svg viewBox="0 0 32 32" fill="none" stroke="#15213b" stroke-width="3" stroke-linejoin="round"><path d="M3 27h8v-6h7v-6h6V9h5" fill="#ff4d2e"/></svg>',
+  Tycoon:'<svg viewBox="0 0 32 32" stroke="#15213b" stroke-width="3"><ellipse cx="16" cy="23" rx="10" ry="4" fill="#ffd23f"/><ellipse cx="16" cy="16" rx="10" ry="4" fill="#ffd23f"/><ellipse cx="16" cy="9" rx="10" ry="4" fill="#ffd23f"/></svg>',
+  Simulator:'<svg viewBox="0 0 32 32" stroke="#15213b" stroke-width="3" fill="#2fcf74"><path d="M14 3h4l1 4 4 2 4-2 2 3-3 4v4l3 4-2 3-4-2-4 2-1 4h-4l-1-4-4-2-4 2-2-3 3-4v-4L3 10l2-3 4 2 4-2z"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>',
+  "Tower Defense":'<svg viewBox="0 0 32 32" stroke="#15213b" stroke-width="3" stroke-linejoin="round" fill="#2f7bff"><path d="M8 29V12h16v17zM8 12V5h4v3h3V5h2v3h3V5h4v7"/><path d="M14 29v-6h4v6" fill="#fff"/></svg>',
+  Horror:'<svg viewBox="0 0 32 32" stroke="#15213b" stroke-width="3" stroke-linejoin="round" fill="#fff"><path d="M6 29V14a10 10 0 0 1 20 0v15l-4-3-3 3-3-3-3 3-3-3z"/><circle cx="12" cy="14" r="1.5" fill="#15213b"/><circle cx="20" cy="14" r="1.5" fill="#15213b"/></svg>',
+  Racing:'<svg viewBox="0 0 32 32" stroke="#15213b" stroke-width="3" stroke-linejoin="round"><path d="M7 29V4"/><path d="M7 5h19v13H7z" fill="#fff"/><path d="M7 5h6v4H7zM19 5h7v4h-7zM13 9h6v5h-6zM7 14h6v4H7zM19 14h7v4h-7z" fill="#15213b" stroke="none"/></svg>'
+};
+const GENRES=Object.keys(ICONS);
+const COLORS=["#2f7bff","#ff4d2e","#8b5cf6","#ffd23f","#2fcf74","#ff8a1f"];
+const SKY={Obby:"#ffb3a3",Tycoon:"#fff1a8",Simulator:"#bfe4ff","Tower Defense":"#c9d8ff",Horror:"#4a3f6b",Racing:"#ffe0b8"};
+
+function cardHTML(x,img){
+  const c=COLORS[x.name.length%COLORS.length],c2=COLORS[(x.name.length+2)%COLORS.length];
+  return `<article class="card gcard"><div class="thumb" style="background:${SKY[x.g]}">
+    <div class="cube" style="left:12%;width:22%;height:34%;background:${c}"></div>
+    <div class="cube" style="left:40%;width:18%;height:50%;background:${c2}"></div>
+    <div class="cube" style="right:10%;width:16%;height:24%;background:#fff"></div>
+    <div class="gnd"></div><div class="ttl"></div><span class="gpill">${x.g}</span></div>
+  <div class="gbody"><div class="gtop"><div class="av">${img?`<img src="${img}" alt="">`:""}</div>
+    <div class="gname"><span class="nm"></span><small>$<span class="tk"></span></small></div>
+    <span class="status" style="margin-left:auto"><span class="dot" style="background:#ffd23f;box-shadow:none;animation:none"></span>Not launched</span></div>
+  </div></article>`;
+}
+(function(){
+  const o=document.getElementById("orbit"),sc=o.parentElement,tint=["#ffd5cc","#fff1a8","#c9f5dc","#d3ddff","#e6e0ff","#ffe3c4"];
+  const cards=GENRES.map((g,i)=>{const d=document.createElement("div");d.className="ocard";d.innerHTML=`<i style="background:${tint[i]}">${ICONS[g]}</i>${g}`;o.appendChild(d);return d});
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches,tilt=-14*Math.PI/180;
+  function place(t){
+    const W=sc.clientWidth,H=sc.clientHeight,rx=Math.min(W*0.44,W/2-78),ry=H*0.17;
+    cards.forEach((d,i)=>{
+      const a=t*0.00025+i*2*Math.PI/cards.length,cx=Math.cos(a)*rx,cy=Math.sin(a)*ry;
+      const x=cx*Math.cos(tilt)-cy*Math.sin(tilt),y=cx*Math.sin(tilt)+cy*Math.cos(tilt);
+      const depth=(Math.sin(a)+1)/2,s=0.72+depth*0.38;
+      d.style.transform=`translate(calc(-50% + ${x}px),calc(-50% + ${y}px)) scale(${s})`;
+      d.style.zIndex=depth>0.5?10:1;d.style.opacity=0.55+depth*0.45;
+    });
+    if(!still)requestAnimationFrame(place);
+  }
+  requestAnimationFrame(place);
+})();
+const gWrap=document.getElementById("genres");
+GENRES.forEach((g,i)=>gWrap.insertAdjacentHTML("beforeend",`<label class="genre" for="g${i}"><input type="radio" name="genre" id="g${i}" value="${g}" ${i===0?"checked":""}><span>${ICONS[g]}${g}</span></label>`));
+
+let imgURL=null;
+const fName=document.getElementById("fName"),fTicker=document.getElementById("fTicker");
+function renderPreview(){
+  const g=document.querySelector('input[name=genre]:checked').value;
+  const x={name:fName.value.trim()||"Your Coin",t:fTicker.value.trim()||"TICKER",g};
+  const box=document.getElementById("pvCard");box.innerHTML=cardHTML(x,imgURL);
+  box.querySelector(".ttl").textContent=x.name;box.querySelector(".nm").textContent=x.name;box.querySelector(".tk").textContent=x.t;
+  const av=box.querySelector(".av");if(!imgURL)av.textContent=x.t.slice(0,2);
+}
+fTicker.addEventListener("input",()=>{fTicker.value=fTicker.value.toUpperCase().replace(/[^A-Z0-9]/g,"");renderPreview()});
+fName.addEventListener("input",renderPreview);
+gWrap.addEventListener("change",renderPreview);
+document.getElementById("fImg").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{imgURL=r.result;document.getElementById("picBox").innerHTML=`<img src="${imgURL}" alt="">`;renderPreview()};r.readAsDataURL(f);
+});
+renderPreview();
+
+const toast=document.getElementById("toast");let tt;
+function say(m){toast.textContent=m;toast.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove("show"),2800)}
+document.getElementById("launchForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(!fName.value.trim()){say("Add a coin name to launch.");fName.focus();return}
+  if(!fTicker.value.trim()){say("Add a ticker to launch.");fTicker.focus();return}
+  say(`$${fTicker.value} is ready. Launching opens when RobloxPad goes live.`);
+});
+
+/* marquee */
+const items=["Every coin gets a game","Game revenue buys back the coin","Bought back coins get burned","Launch on RobloxPad"].map(t=>`<span>🔥 <b>${t}</b></span>`).join("");
+document.getElementById("marquee").innerHTML=items+items+items+items;
+
+/* copy CA */
+document.getElementById("copyCa").onclick=()=>{
+  const t=document.getElementById("caText").textContent;
+  if(t==="Coming soon"){say("The CA posts here at launch.");return}
+  navigator.clipboard.writeText(t).then(()=>say("CA copied")).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("caText"));const s=getSelection();s.removeAllRanges();s.addRange(r);say("Press copy on your keyboard")});
+};
+</script>
+
+</body>
+</html>

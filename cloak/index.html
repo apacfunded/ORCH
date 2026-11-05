@@ -145,6 +145,12 @@ footer{padding-block:32px;color:var(--muted);font-size:13px;border-top:1px solid
       <div class="chains" aria-label="Supported chains">
         <span class="chip">SOL</span><span class="chip">ETH</span><span class="chip">BTC</span><span class="chip">LTC</span><span class="chip">USDC</span><span class="chip">+ any SPL / ERC-20</span>
       </div>
+      <div class="ca" id="ca-bar">
+        <span class="ca-k">$CLOAK CA</span>
+        <code id="ca-text">DgVFzUkjChnzeXkgmQruBTnthrn3esY8KR7PEmBWpump</code>
+        <button class="mini" id="ca-copy" type="button">Copy</button>
+        <a class="mini ghost" id="ca-pump" href="https://pump.fun/coin/DgVFzUkjChnzeXkgmQruBTnthrn3esY8KR7PEmBWpump" target="_blank" rel="noopener">pump.fun ↗</a>
+      </div>
     </div>
 
     <form class="card" id="pay" novalidate>
@@ -283,5 +289,14 @@ $("tok").addEventListener("change",quote);
 $("amt").addEventListener("input",quote);
 $("pay").addEventListener("submit",e=>{e.preventDefault();$("q-addr").textContent=addr(chain)});
 fillTokens();quote();$("q-addr").textContent=addr(chain);
+
+(function(){
+  const cp=document.getElementById("ca-copy"),ca=document.getElementById("ca-text").textContent.trim();
+  cp.addEventListener("click",()=>{
+    const done=()=>{cp.textContent="Copied";setTimeout(()=>cp.textContent="Copy",1500)};
+    if(navigator.clipboard)navigator.clipboard.writeText(ca).then(done,sel);else sel();
+    function sel(){const r=document.createRange();r.selectNodeContents(document.getElementById("ca-text"));const g=getSelection();g.removeAllRanges();g.addRange(r)}
+  });
+})();
 </script>
 </body></html>

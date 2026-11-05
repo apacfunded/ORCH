@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#070b16">
+<meta name="theme-color" content="#f7f6f2">
 <title>Xray: launch with nothing to hide</title>
 <meta name="description" content="Xray, the anti-bundle Solana launchpad. Every coin gets an X-ray for bundles. Random open slot, sniper tax, 4 buys per slot, early-sell tax, and a live bundle check on every coin.">
 <meta property="og:title" content="Xray">
@@ -12,16 +12,16 @@
 <meta property="og:url" content="https://orch.lol/xray/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://orch.lol/xray/og.png">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' ><rect x='1' y='1' width='30' height='30' rx='9' fill='%230c1222'/><path d='M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4' fill='none' stroke='%23e8f1ee' stroke-width='2' stroke-linecap='round'/><path d='M11 11l10 10M21 11L11 21' stroke='%23e8f1ee' stroke-width='2.2' stroke-linecap='round'/><path d='M6 16h20' stroke='%235b8cff' stroke-width='1.6'/></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' ><rect x='1' y='1' width='30' height='30' rx='9' fill='%231b1c22'/><path d='M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4' fill='none' stroke='%23e8f1ee' stroke-width='2' stroke-linecap='round'/><path d='M11 11l10 10M21 11L11 21' stroke='%23e8f1ee' stroke-width='2.2' stroke-linecap='round'/><path d='M6 16h20' stroke='%233b6cff' stroke-width='1.6'/></svg>">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
 <style>
 /* Layout: Exposure's app shell (left icon sidebar, top search, card sections, hash-routed views) on a x-ray film: near-black teal, cyan scan signal, phosphor green = clean, rose = bundled */
 :root{
-  --paper:#070b16;--glow:#0c1222;--card:#101831;--card2:#16203c;--ink:#eef2ff;--muted:#8d9bc4;--line:rgba(140,170,255,.14);--signal:#5b8cff;--on-signal:#ffffff;--signal-soft:rgba(91,140,255,.14);--burn:#ff5c7a;--ok:#7dffb2;--warn:#ffb347;--floor:rgba(91,140,255,.12);--shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -16px rgba(0,0,0,.7);--r1:#0c1222;--r2:#16203c;--r3:#223060;--rc1:#2a3f80;--rc2:#5b8cff;--rc3:#eef2ff;--rc4:#7aa2ff;--rc5:#070b16;--rc6:#c9d6ff;--rt:#eef2ff;--ra:#c9d6ff;--rm:#8d9bc4;--b1:#c9d6ff;--b2:#5b8cff;--bb:#4a78e6;--bink:#ffffff;--bh:#7aa2ff;--g1:#5b8cff;--g2:#7dffb2;--dot:#7dffb2;--avd:#070b16;
-  --display:"Archivo",system-ui,sans-serif; --body:"Archivo",system-ui,sans-serif; --mono:"Archivo",system-ui,sans-serif;
+  --paper:#f7f6f2;--glow:#ffffff;--card:#ffffff;--card2:#f1f0ea;--ink:#1b1c22;--muted:#6b6f80;--line:rgba(27,28,34,.09);--signal:#3b6cff;--on-signal:#ffffff;--signal-soft:rgba(59,108,255,.1);--burn:#ff5d6c;--ok:#1fb57a;--warn:#f5a524;--floor:rgba(27,28,34,.06);--shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -16px rgba(0,0,0,.7);--r1:#f1f0ea;--r2:#e6e4dc;--r3:#d6d3c8;--rc1:#c9d4ff;--rc2:#3b6cff;--rc3:#1b1c22;--rc4:#2f5ce6;--rc5:#ffffff;--rc6:#5d7fff;--rt:#1b1c22;--ra:#3b6cff;--rm:#6b6f80;--b1:#3b6cff;--b2:#3b6cff;--bb:#2f5ce6;--bink:#ffffff;--bh:#2f5ce6;--g1:#3b6cff;--g2:#1fb57a;--dot:#1fb57a;--avd:#ffffff;
+  --display:"Manrope",system-ui,sans-serif; --body:"Manrope",system-ui,sans-serif; --mono:"Manrope",system-ui,sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -861,116 +861,129 @@ h1,h2,h3{letter-spacing:-.01em}
 .testPick select{width:100%}
 .meWarn{font-size:13px;color:var(--muted)}
 
-/* ===== Xray: the map room =====
-   Deep navy space. Every holder is a bubble; linked wallets share a color and are tied together.
-   Blue = ordinary holder, green = creator, warm colors = linked groups. One family: Archivo. */
-:root{--bg:#070b16;--bg2:#0c1222;--panel:#101831;--panel2:#16203c;--line:rgba(140,170,255,.14);--ink:#eef2ff;--muted:#8d9bc4;--blue:#5b8cff;--green:#7dffb2;--rose:#ff5c7a;--amber:#ffb347;--violet:#c77dff}
+/* ===== Xray: the clean room =====
+   Warm paper, soft color weather drifting behind it, one blue for actions.
+   Holders are bubbles; linked wallets share a color and sit inside a soft halo. One family: Manrope. */
+:root{--bg:#f7f6f2;--bg2:#ffffff;--panel:#ffffff;--panel2:#f1f0ea;--line:rgba(27,28,34,.09);--ink:#1b1c22;--muted:#6b6f80;--blue:#3b6cff;--green:#1fb57a;--rose:#ff5d6c;--amber:#f5a524;--violet:#8b5cf6}
 html{background:var(--bg)}
-body{background:radial-gradient(900px 600px at 70% -10%,rgba(91,140,255,.18),transparent 60%),radial-gradient(700px 500px at 0% 100%,rgba(199,125,255,.12),transparent 60%),var(--bg);color:var(--ink);min-height:100vh}
+body{background:var(--bg);color:var(--ink);min-height:100vh;position:relative}
 #bg{display:none!important}
+/* soft color weather behind everything */
+body::before{content:"";position:fixed;inset:-20%;z-index:0;pointer-events:none;
+  background:radial-gradient(40% 35% at 20% 20%,rgba(59,108,255,.16),transparent 70%),radial-gradient(35% 30% at 80% 15%,rgba(255,93,108,.13),transparent 70%),radial-gradient(40% 35% at 70% 85%,rgba(139,92,246,.12),transparent 70%),radial-gradient(30% 30% at 15% 80%,rgba(245,165,36,.12),transparent 70%);
+  filter:blur(40px);animation:weather 40s ease-in-out infinite alternate}
+@keyframes weather{from{transform:translate(0,0) rotate(0)}to{transform:translate(4%,3%) rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){body::before{animation:none}}
+.shell{position:relative;z-index:1}
 ::selection{background:var(--blue);color:#fff}
 
 /* type */
-h1,h2,h3,.pageH,.hero h1,.heroSplit h1,.logo{font-family:"Archivo",system-ui,sans-serif;font-stretch:78%;font-weight:800;text-transform:none;letter-spacing:-.01em;color:var(--ink)}
-.hero h1,.heroSplit h1{font-size:clamp(46px,5.8vw,88px);line-height:.94;max-width:11ch}
+h1,h2,h3,.pageH,.hero h1,.heroSplit h1,.logo,.btn,.statbar b,.beats b{font-family:"Manrope",system-ui,sans-serif}
+h1,h2,h3,.pageH,.hero h1,.heroSplit h1,.logo{font-weight:800;text-transform:none;letter-spacing:-.025em;color:var(--ink)}
+.hero h1,.heroSplit h1{font-size:clamp(42px,5.2vw,78px);line-height:1;max-width:12ch}
 .hero h1 em{font-style:normal;color:var(--blue)}
-.pageH{font-size:clamp(34px,4.4vw,56px);line-height:.95}
-h2{font-size:28px;line-height:1}
-.heroSplit p,.sec-head p{color:var(--muted);font-size:17px;line-height:1.5;max-width:52ch}
-.heroPoint{font-size:19px!important;line-height:1.45!important;color:var(--ink)!important;max-width:36ch!important}
-.eyebrow,.kicker,small,.gateMini small,.kv small{font-family:"Archivo",sans-serif;font-stretch:85%;text-transform:none!important;letter-spacing:0!important;font-size:13px;color:var(--muted);font-weight:600}
+.pageH{font-size:clamp(32px,4vw,52px);line-height:1}
+h2{font-size:26px;line-height:1.1}
+.heroSplit p,.sec-head p{color:var(--muted);font-size:17px;line-height:1.55;max-width:52ch}
+.heroPoint{font-size:18px!important;line-height:1.5!important;color:#3d4150!important;max-width:38ch!important}
+.eyebrow,.kicker,small,.gateMini small,.kv small{font-family:"Manrope",sans-serif;text-transform:none!important;letter-spacing:0!important;font-size:13px;color:var(--muted);font-weight:600}
 .sec-head .eyebrow,.kicker{display:none}
 .mono,.xpAddr,.ckForm input,code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace!important}
 .arr{display:none}
 
 /* chrome */
-.side{background:var(--bg2)!important;border-right:1px solid var(--line);-webkit-backdrop-filter:none;backdrop-filter:none}
-.topbar{background:rgba(7,11,22,.85)!important;border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.side .tabs a{color:var(--muted);border-radius:8px}
-.side .tabs a:hover{color:var(--ink);background:rgba(140,170,255,.08)}
-.side .tabs a.on{color:var(--ink);background:rgba(91,140,255,.16);box-shadow:inset 3px 0 0 var(--blue)}
+.side{background:rgba(255,255,255,.55)!important;border-right:1px solid var(--line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.topbar{background:rgba(247,246,242,.75)!important;border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.side .tabs a{color:var(--muted);border-radius:10px}
+.side .tabs a:hover{color:var(--ink);background:rgba(27,28,34,.05)}
+.side .tabs a.on{color:var(--ink);background:#fff;box-shadow:0 1px 2px rgba(27,28,34,.06),0 0 0 1px var(--line)}
 .side .tabs a.on svg{stroke:var(--blue)}
-.logo{font-size:24px;letter-spacing:.01em;gap:10px}
+.logo{font-size:22px;gap:10px}
 .logo .logoMark{width:30px;height:30px;display:block}
-.search input{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:10px!important;box-shadow:none!important}
+.search input{background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:12px!important;box-shadow:none!important}
 .search{box-shadow:none!important}
 .search kbd{background:var(--panel2);color:var(--muted)}
 .sideFoot,.handle{color:var(--muted)}
-@media (max-width:900px){.mbar{background:var(--bg2)!important;border-top:1px solid var(--line);-webkit-backdrop-filter:none;backdrop-filter:none}.mbar a,.mbar button{color:var(--muted)}.mbar a.on{color:var(--ink)}.mbar .mlaunch i{background:var(--blue)!important;color:#fff!important;box-shadow:0 8px 24px -8px var(--blue)!important}.msheet{background:var(--bg2)!important;border:1px solid var(--line)}}
+@media (max-width:900px){.mbar{background:rgba(255,255,255,.85)!important;border-top:1px solid var(--line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}.mbar a,.mbar button{color:var(--muted)}.mbar a.on{color:var(--ink)}.mbar .mlaunch i{background:var(--blue)!important;color:#fff!important;box-shadow:0 8px 20px -8px var(--blue)!important}.msheet{background:#fff!important;border:1px solid var(--line)}}
 
 /* buttons */
-.btn{border-radius:10px;box-shadow:none!important;font-family:"Archivo",sans-serif;font-weight:700;transform:none!important}
-.btn.sig{background:var(--blue)!important;color:#fff!important;border:1px solid var(--blue)}
-.btn.sig:hover{background:#7aa2ff!important}
-.btn.ghost,.btn:not(.sig):not(.buy):not(.sell){background:transparent!important;color:var(--ink)!important;border:1px solid rgba(140,170,255,.3)}
-.btn.ghost:hover{background:rgba(140,170,255,.08)!important}
-.btn.buy{background:var(--green)!important;color:#05261a!important;border-color:var(--green)}
+.btn{border-radius:12px;box-shadow:none!important;font-weight:700;transform:none!important}
+.btn.sig{background:var(--blue)!important;color:#fff!important;border:1px solid var(--blue);box-shadow:0 8px 20px -10px var(--blue)!important}
+.btn.sig:hover{background:#2f5ce6!important}
+.btn.ghost,.btn:not(.sig):not(.buy):not(.sell){background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--panel2)!important}
+.btn.buy{background:var(--green)!important;color:#fff!important;border-color:var(--green)}
 .btn.sell{background:var(--rose)!important;color:#fff!important;border-color:var(--rose)}
-.chip{background:transparent!important;border:1px solid var(--line);color:var(--muted);border-radius:8px}
-.chip[aria-pressed="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)}
-:focus-visible{outline:2px solid var(--amber)!important;outline-offset:2px}
+.chip{background:#fff!important;border:1px solid var(--line);color:var(--muted);border-radius:999px}
+.chip[aria-pressed="true"]{background:var(--ink)!important;color:#fff!important;border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--blue)!important;outline-offset:2px}
 
 /* surfaces */
-.card,.list,.tablewrap,.gate,.empty{background:var(--panel)!important;color:var(--ink);border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important;transform:none!important;clip-path:none!important}
+.card,.list,.tablewrap,.gate,.empty{background:var(--panel)!important;color:var(--ink);border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:0 1px 2px rgba(27,28,34,.04),0 12px 32px -24px rgba(27,28,34,.25)!important;transform:none!important;clip-path:none!important}
 .card h2,.card h3,.card b,.list b,.tablewrap b,.gate b{color:var(--ink)}
 .card p,.card span,.list span,.card small,.list small,.tablewrap td,.tablewrap th,.gate span,.gate small,.card dt,.card .eyebrow{color:var(--muted)}
 .card a:not(.btn),.list a:not(.btn){color:var(--ink)}
-.card input,.card textarea,.card select,.ckForm input{background:var(--bg2)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:10px}
-.grid .card:hover{border-color:rgba(140,170,255,.4)!important}
+.card input,.card textarea,.card select,.ckForm input{background:var(--bg)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:12px}
+.grid .card:hover{border-color:rgba(27,28,34,.18)!important;box-shadow:0 1px 2px rgba(27,28,34,.04),0 18px 40px -22px rgba(27,28,34,.3)!important}
 .rowLink:hover,.pay.rowLink:hover{background:var(--panel2)}
 .list>*+*,.tablewrap tr+tr td{border-color:var(--line)!important}
 .av{background:var(--panel2)!important;color:var(--ink)!important;box-shadow:none!important;border:1px solid var(--line);background-image:none!important}
-.wallets span{background:var(--bg2)!important;color:var(--muted)!important;border:1px solid var(--line)}
-.pv-img{background:var(--bg2)!important;border:1px dashed rgba(140,170,255,.3);border-radius:10px!important;color:var(--muted)!important}
-.drop{background:var(--bg2)!important;border:1px dashed rgba(140,170,255,.3)!important;border-radius:10px!important}
+.wallets span{background:var(--panel2)!important;color:var(--muted)!important;border:1px solid var(--line)}
+.pv-img{background:var(--panel2)!important;border:1px dashed rgba(27,28,34,.2);border-radius:14px!important;color:var(--muted)!important}
+.drop{background:var(--panel2)!important;border:1px dashed rgba(27,28,34,.2)!important;border-radius:12px!important}
 .drop input{background:transparent!important;border:0!important;color:var(--ink)!important}
 footer{color:var(--muted);border-top:1px solid var(--line)}
-footer a,footer .mono,footer .mono a{color:var(--ink);font-family:"Archivo",sans-serif!important}
-details{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important}
+footer a,footer .mono,footer .mono a{color:var(--ink);font-family:"Manrope",sans-serif!important}
+details{background:#fff!important;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important;margin-bottom:8px}
 details summary{color:var(--ink)!important;font-weight:700}
 details p,details div{color:var(--muted)!important}
-.step h3,.card h3{text-transform:none!important;font-stretch:85%}
+.step h3,.card h3{text-transform:none!important}
 
 /* readouts */
-.statbar{background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0;box-shadow:none!important}
+.statbar{background:#fff!important;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:none!important;overflow:hidden}
 .statbar>div{border-color:var(--line)!important;background:transparent!important}
-.statbar b{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:40px;color:var(--ink)}
+.statbar b{font-weight:800;font-size:36px;color:var(--ink);letter-spacing:-.02em}
 .statbar b.up{color:var(--green)}
-.gateMini div{background:var(--bg2);border:0;border-radius:8px}
+.gateMini div{background:var(--panel2);border:0;border-radius:10px}
 .gateBig b.gold,.st.gold{color:var(--ink)!important}
-.st{border-radius:999px;font-family:"Archivo",sans-serif;font-weight:700;border:1px solid var(--line)}
-.st.ok{color:var(--green);border-color:rgba(125,255,178,.45);background:rgba(125,255,178,.08)}
+.st{border-radius:999px;font-family:"Manrope",sans-serif;font-weight:700;border:1px solid var(--line);background:#fff}
+.st.ok{color:var(--green);border-color:rgba(31,181,122,.35);background:rgba(31,181,122,.08)}
 .st.bad,.st.solid{color:#fff;background:var(--rose);border-color:var(--rose)}
-.st.warn{color:var(--amber);border-color:rgba(255,179,71,.5);background:rgba(255,179,71,.08)}
-.prog{background:rgba(140,170,255,.14);border-radius:3px}
+.st.warn{color:#b47600;border-color:rgba(245,165,36,.45);background:rgba(245,165,36,.1)}
+.prog{background:var(--panel2);border-radius:3px}
 .prog i,.meter i{background:var(--blue);border-radius:3px}
 .demoBar{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0;color:var(--muted);padding-left:0}
 .demoBar b{color:var(--ink)}
 .demoBar i{background:var(--green)}
 .demoBar a,.inlineLaunch,.heroAlt a{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--blue);text-decoration-thickness:2px;text-underline-offset:3px;margin-left:6px}
-.pumpNote{background:rgba(255,179,71,.08)!important;color:var(--ink)!important;border:1px solid rgba(255,179,71,.35)!important}
+.pumpNote{background:rgba(245,165,36,.08)!important;color:var(--ink)!important;border:1px solid rgba(245,165,36,.35)!important}
 .pumpNote b{color:var(--ink)!important}
-.xpFace{background:var(--panel2)!important;color:var(--ink)!important;border:2px solid var(--blue)}
-.xpFace span{color:var(--ink)!important;text-shadow:none!important;font-stretch:78%}
+.xpFace{background:#fff!important;color:var(--ink)!important;border:2px solid var(--blue)}
+.xpFace span{color:var(--ink)!important;text-shadow:none!important}
 .xpIntro h1{background:none!important;-webkit-text-fill-color:var(--ink);color:var(--ink)}
 .xpCoinWrap{filter:none}
 
 /* ===== the bubble map ===== */
-.bmap{position:relative;background:radial-gradient(600px 400px at 50% 40%,rgba(91,140,255,.10),transparent 70%),var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-height:320px}
+.bmap{position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;min-height:320px;box-shadow:0 1px 2px rgba(27,28,34,.04),0 24px 60px -36px rgba(27,28,34,.35)}
 .bmSvg{display:block;width:100%;height:auto}
-.bmLinks line{stroke-width:1.5;stroke-opacity:.55;transition:stroke-opacity .2s}
+.bmLinks line{stroke-width:1.5;stroke-opacity:.35;transition:stroke-opacity .2s}
+.bmHalo{fill-opacity:.09;stroke-opacity:.35;stroke-width:1.5;stroke-dasharray:4 5}
 .bmN{cursor:pointer;transition:opacity .2s}
-.bmB{animation:bmIn .7s var(--d,0ms) cubic-bezier(.2,.8,.2,1) both;transform-box:fill-box;transform-origin:center}
-.bmB circle:first-child{filter:drop-shadow(0 0 10px var(--c))}
-.bmN text{fill:#fff;font-family:"Archivo",sans-serif;font-weight:700;pointer-events:none}
-.bmN.dim,.bmLinks line.dim{opacity:.15}
+.bmB{animation:bmIn .7s var(--d,0ms) cubic-bezier(.2,.8,.2,1) both,bmFloat 6s var(--d,0ms) ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes bmFloat{from{translate:0 0}to{translate:0 -4px}}
+.bmB circle:first-child{filter:drop-shadow(0 6px 10px rgba(27,28,34,.18))}
+.bmN text{fill:#fff;font-family:"Manrope",sans-serif;font-weight:800;pointer-events:none;paint-order:stroke;stroke:rgba(0,0,0,.18);stroke-width:2px}
+.bmN.dim,.bmLinks line.dim,.bmHalo.dim{opacity:.12}
 .bmN:hover .bmB circle:first-child{fill-opacity:1}
 @keyframes bmIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.bmB{animation:none}}
-.bmLegend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line);background:rgba(7,11,22,.6)}
-.bmKey{display:inline-flex;align-items:center;gap:7px;font:600 12px/1 "Archivo",sans-serif;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:999px;padding:6px 10px;cursor:default}
+.bmTip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font:600 12px/1.4 "Manrope",sans-serif;padding:8px 10px;border-radius:10px;transform:translate(-50%,calc(-100% - 12px));white-space:nowrap;opacity:0;transition:opacity .15s;box-shadow:0 8px 24px -8px rgba(0,0,0,.4)}
+.bmTip.on{opacity:1}
+.bmTip b{display:block;font-size:13px}
+.bmLegend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
+.bmKey{display:inline-flex;align-items:center;gap:7px;font:600 12px/1 "Manrope",sans-serif;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:999px;padding:6px 10px;cursor:default}
 .bmKey[data-g]{cursor:pointer}
-.bmKey[data-g]:hover,.bmKey.on{color:var(--ink);border-color:var(--line);background:var(--panel)}
+.bmKey[data-g]:hover,.bmKey.on{color:var(--ink);border-color:var(--line);background:var(--panel2)}
 .bmKey i{width:10px;height:10px;border-radius:50%;display:inline-block}
 .bmEmpty{display:grid;place-items:center;min-height:320px;color:var(--muted);padding:20px;text-align:center}
 .bmCap{margin-top:10px;font-size:14px;line-height:1.45;color:var(--muted);max-width:56ch}
@@ -983,7 +996,7 @@ details p,details div{color:var(--muted)!important}
 .heroCheck{margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
 .heroCheck label{display:block;font-weight:600!important;color:var(--muted)!important;font-size:15px;margin-bottom:8px}
 .heroCheck .ckForm input{padding:13px 14px!important;font-size:15px}
-.heroCheck .btn.sig{background:transparent!important;color:var(--ink)!important;border:1px solid rgba(140,170,255,.3)}
+.heroCheck .btn.sig{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line);box-shadow:none!important}
 .heroCheck .msg{margin-top:8px}
 .heroAlt{margin-top:26px!important;font-size:15px!important;color:var(--muted)}
 .pump #gate{display:none!important}
@@ -997,7 +1010,7 @@ details p,details div{color:var(--muted)!important}
 .beats{list-style:none;padding:0;margin:44px 0 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
 .beats li{padding:18px 20px 6px 0;display:grid;gap:6px}
 .beats li+li{padding-left:20px;border-left:1px solid var(--line)}
-.beats b{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:40px;line-height:.95}
+.beats b{font-weight:800;font-size:36px;line-height:1;letter-spacing:-.02em}
 .beats li:nth-child(1) b{color:var(--blue)}.beats li:nth-child(2) b{color:var(--amber)}.beats li:nth-child(3) b{color:var(--green)}
 .beats span{color:var(--muted);font-size:15px;line-height:1.45;max-width:30ch}
 @media (max-width:640px){.beats{grid-template-columns:1fr}.beats li+li{border-left:0;padding-left:0;border-top:1px solid var(--line)}}
@@ -1011,18 +1024,18 @@ details p,details div{color:var(--muted)!important}
 .cmpRow>span{padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px;line-height:1.45}
 .cmpRow>span:first-child{font-weight:700;color:var(--ink);padding-left:0}
 .cmpRow>span:nth-child(2){color:var(--muted)}
-.cmpRow>span:nth-child(3){background:rgba(91,140,255,.10);color:#c9d6ff}
+.cmpRow>span:nth-child(3){background:rgba(59,108,255,.07);color:#2b2f3d}
 .cmpRow>span:nth-child(3) b{color:var(--ink)}
 .cmpRow .no{color:var(--rose)!important}
 .cmpHead>span{font-weight:700;font-size:14px;padding-top:12px;padding-bottom:12px}
 .cmpHead>span:nth-child(2){color:var(--ink)}
-.cmpHead>span:nth-child(3){color:var(--ink)!important;font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:18px}
+.cmpHead>span:nth-child(3){color:var(--ink)!important;font-family:"Manrope",sans-serif;font-weight:800;font-size:18px}
 .cmpRow:nth-child(4)>span:nth-child(3) b{box-shadow:inset 0 -2px 0 var(--green)}
 .exSub{font-size:26px;margin:48px 0 18px}
 .exSteps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:st;border-top:1px solid var(--line)}
 .exSteps li{counter-increment:st;padding:18px 18px 4px 0;display:grid;gap:6px;align-content:start}
 .exSteps li+li{padding-left:18px;border-left:1px solid var(--line)}
-.exSteps li::before{content:counter(st);font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:800;font-size:44px;line-height:.9;color:var(--blue)}
+.exSteps li::before{content:counter(st);font-family:"Manrope",sans-serif;font-weight:800;font-size:40px;line-height:.9;color:var(--blue)}
 .exSteps b{font-size:16px}
 .exSteps span{font-size:14px;line-height:1.5;color:var(--muted)}
 .exEnd{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:36px 0 12px}
@@ -1039,20 +1052,20 @@ details p,details div{color:var(--muted)!important}
 /* scan report */
 .repH{margin-bottom:6px}
 .repSec{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
-.repSec h3{font-family:"Archivo",sans-serif;font-stretch:85%;font-size:14px;font-weight:700;color:var(--muted)!important;margin:0 0 8px}
+.repSec h3{font-family:"Manrope",sans-serif;font-size:14px;font-weight:700;color:var(--muted)!important;margin:0 0 8px}
 .verdict{font-size:17px;line-height:1.45;color:var(--ink)!important;margin:0}
-.verdict b{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:28px;display:inline-block;margin-right:4px}
+.verdict b{font-family:"Manrope",sans-serif;font-weight:800;font-size:26px;display:inline-block;margin-right:4px}
 .verdict.v-high b,.verdict.v-medium b{color:var(--rose)!important}
 .verdict.v-low b{color:var(--green)!important}
 .repDl{display:grid;gap:0;margin:0}
 .repDl div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line)}
 .repDl dt{color:var(--muted)}.repDl dd{margin:0;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
 .repFoot{font-size:12px!important;margin-top:14px;color:var(--muted)!important}
-.repCta{margin-top:18px;padding:16px;border:1px dashed rgba(140,170,255,.3);border-radius:10px;display:grid;gap:6px}
+.repCta{margin-top:18px;padding:16px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;display:grid;gap:6px}
 .repCta b{font-size:16px}.repCta span{font-size:14px}.repCta .btn{justify-self:start;margin-top:6px}
-.stepN{font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:800;font-size:64px;line-height:.9;color:rgba(140,170,255,.25);margin-bottom:6px}
+.stepN{font-family:"Manrope",sans-serif;font-weight:800;font-size:56px;line-height:.9;color:rgba(59,108,255,.25);margin-bottom:6px}
 .cpMap{padding:0!important;overflow:hidden}
-.cpMap .bmap{border:0;border-radius:0}
+.cpMap .bmap{border:0;border-radius:0;box-shadow:none}
 .cpMapHead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 16px 8px}
 .cpMapHead h2{margin:0}
 .cpMapHead span{font-size:13px;color:var(--muted)}
@@ -1065,7 +1078,7 @@ details p,details div{color:var(--muted)!important}
 .pump #exploreTwo,.pump #tuneWrap{grid-template-columns:1fr}
 .pump .gate{display:grid;gap:16px;align-content:center}
 .ckForm{display:flex;gap:10px}
-.ckForm input{flex:1;min-width:0;font:500 14px/1 ui-monospace,monospace;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--ink)}
+.ckForm input{flex:1;min-width:0;font:500 14px/1 ui-monospace,monospace;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink)}
 .ckForm input:focus{outline:2px solid var(--blue);outline-offset:2px}
 .rv{transform:translateY(18px);transition:transform .7s cubic-bezier(.2,.8,.2,1)}
 .rv.in{transform:none}
@@ -1094,7 +1107,7 @@ details p,details div{color:var(--muted)!important}
 </div>
 <div class="shell">
 <aside class="side">
-  <a class="logo" href="#explore"><svg class="logoMark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#0c1222"/><path d="M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4" fill="none" stroke="#e8f1ee" stroke-width="2" stroke-linecap="round"/><path d="M11 11l10 10M21 11L11 21" stroke="#e8f1ee" stroke-width="2.2" stroke-linecap="round"/><path d="M6 16h20" stroke="#5b8cff" stroke-width="1.6"/></svg>Xray</a>
+  <a class="logo" href="#explore"><svg class="logoMark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#1b1c22"/><path d="M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4" fill="none" stroke="#e8f1ee" stroke-width="2" stroke-linecap="round"/><path d="M11 11l10 10M21 11L11 21" stroke="#e8f1ee" stroke-width="2.2" stroke-linecap="round"/><path d="M6 16h20" stroke="#3b6cff" stroke-width="1.6"/></svg>Xray</a>
   <nav class="tabs" aria-label="Sections">
     <a href="#explore" data-v="explore"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span>Explore</span></a>
     <a href="#me" data-v="me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>My coins</span></a>
@@ -1397,7 +1410,7 @@ details p,details div{color:var(--muted)!important}
 <script>
 // ===== Bubble map: every holder is a bubble sized by its share; linked wallets share a color and are tied together =====
 // renderBubbleMap(el, { holders:[{owner, amount}], clusters:[{wallets, pct, includesCreator}], creator, supply, me })
-const BM_COLORS = ["#ff5c7a", "#ffb347", "#c77dff", "#ff8c42", "#f94fd0", "#ffd166", "#e36bff", "#ff6b6b"];
+const BM_COLORS = ["#ff5d6c", "#f5a524", "#8b5cf6", "#ec4899", "#f97316", "#14b8a6", "#a855f7", "#ef4444"];
 const BM_SUPPLY = 1e15; // pump.fun coins: 1B tokens at 6 decimals
 function bmShort(w) { return w.slice(0, 4) + "…" + w.slice(-4); }
 
@@ -1447,20 +1460,23 @@ function renderBubbleMap(el, d, opts = {}) {
   const m = bmBuild(d, W, H);
   if (!m) { el.innerHTML = `<div class="bmEmpty">${opts.empty || "No holders yet. The map draws itself as people buy."}</div>`; return; }
   const { nodes, links } = m;
-  const col = (n) => n.g === -1 ? (n.creator ? "#7dffb2" : "#5b8cff") : BM_COLORS[n.g % BM_COLORS.length];
+  const col = (n) => n.g === -1 ? (n.creator ? "#1fb57a" : "#3b6cff") : BM_COLORS[n.g % BM_COLORS.length];
+  const halos = (d.clusters || []).map((c, gi) => { const ns = nodes.filter((n) => n.g === gi); if (ns.length < 2) return ""; const cx = ns.reduce((s, n) => s + n.x, 0) / ns.length, cy = ns.reduce((s, n) => s + n.y, 0) / ns.length; const r = Math.max(...ns.map((n) => Math.hypot(n.x - cx, n.y - cy) + n.r)) + 10; return `<circle class="bmHalo" data-g="${gi}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${BM_COLORS[gi % BM_COLORS.length]}" stroke="${BM_COLORS[gi % BM_COLORS.length]}"/>`; }).join("");
   const clusterPct = (d.clusters || []).map((c) => c.pct);
   el.innerHTML = `<svg class="bmSvg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Bubble map of holders. Linked wallets share a color.">
-    <g class="bmLinks">${links.map((l) => `<line x1="${l.a.x.toFixed(1)}" y1="${l.a.y.toFixed(1)}" x2="${l.b.x.toFixed(1)}" y2="${l.b.y.toFixed(1)}" stroke="${col(l.a)}"/>`).join("")}</g>
+    <g class="bmHalos">${halos}</g><g class="bmLinks">${links.map((l) => `<line x1="${l.a.x.toFixed(1)}" y1="${l.a.y.toFixed(1)}" x2="${l.b.x.toFixed(1)}" y2="${l.b.y.toFixed(1)}" stroke="${col(l.a)}"/>`).join("")}</g>
     <g class="bmNodes">${nodes.map((n, i) => `<g class="bmN" data-i="${i}" data-g="${n.g}" transform="translate(${n.x.toFixed(1)} ${n.y.toFixed(1)})" style="--c:${col(n)};--d:${(i * 37) % 900}ms"><g class="bmB">
-      <circle r="${n.r.toFixed(1)}" fill="${col(n)}" fill-opacity="${n.g === -1 ? .55 : .8}" stroke="${col(n)}" stroke-opacity=".9" stroke-width="1.5"/>
+      <circle r="${n.r.toFixed(1)}" fill="${col(n)}" fill-opacity="${n.g === -1 ? .85 : .95}" stroke="#fff" stroke-width="2"/>
       ${n.creator ? `<circle r="${(n.r + 4).toFixed(1)}" fill="none" stroke="#7dffb2" stroke-width="1.5" stroke-dasharray="3 3"/>` : ""}
       ${n.r > 16 ? `<text y="4" text-anchor="middle" font-size="${Math.max(9, Math.min(13, n.r / 2)).toFixed(0)}">${n.pct >= 0.1 ? n.pct.toFixed(1) + "%" : ""}</text>` : ""}
       <title>${bmShort(n.id)}${n.creator ? " (creator)" : ""}${n.me ? " (you)" : ""}: ${n.pct.toFixed(2)}%${n.g >= 0 ? ` · group ${String.fromCharCode(65 + n.g)}` : ""}</title></g></g>`).join("")}</g>
   </svg>
   <div class="bmLegend">${(d.clusters || []).slice(0, 6).map((c, gi) => `<button type="button" class="bmKey" data-g="${gi}"><i style="background:${BM_COLORS[gi % BM_COLORS.length]}"></i>Group ${String.fromCharCode(65 + gi)} · ${c.wallets.length} wallets · ${Number(clusterPct[gi] || 0).toFixed(1)}%${c.includesCreator ? " · creator" : ""}</button>`).join("")}
-    <span class="bmKey"><i style="background:#5b8cff"></i>Unlinked holder</span><span class="bmKey"><i style="background:#7dffb2"></i>Creator</span></div>`;
-  const svg = el.querySelector("svg");
-  const hi = (g) => { el.querySelectorAll(".bmN").forEach((n) => n.classList.toggle("dim", g != null && n.dataset.g !== String(g))); el.querySelectorAll(".bmLinks line").forEach((l, i) => l.classList.toggle("dim", g != null && links[i].a.g !== g)); };
+    <span class="bmKey"><i style="background:#3b6cff"></i>Unlinked holder</span><span class="bmKey"><i style="background:#1fb57a"></i>Creator</span></div><div class="bmTip" id="bmTip"></div>`;
+  const svg = el.querySelector("svg"), tip = el.querySelector(".bmTip");
+  svg.addEventListener("mousemove", (e) => { const g = e.target.closest(".bmN"); if (!g) { tip.classList.remove("on"); return; } const n = nodes[+g.dataset.i], r = el.getBoundingClientRect(); tip.innerHTML = `<b>${n.pct.toFixed(2)}% of supply</b>${bmShort(n.id)}${n.creator ? " · creator" : ""}${n.g >= 0 ? " · group " + String.fromCharCode(65 + n.g) : ""}`; tip.style.left = (e.clientX - r.left) + "px"; tip.style.top = (e.clientY - r.top) + "px"; tip.classList.add("on"); });
+  svg.addEventListener("mouseleave", () => tip.classList.remove("on"));
+  const hi = (g) => { el.querySelectorAll(".bmN").forEach((n) => n.classList.toggle("dim", g != null && n.dataset.g !== String(g))); el.querySelectorAll(".bmLinks line").forEach((l, i) => l.classList.toggle("dim", g != null && links[i].a.g !== g)); el.querySelectorAll(".bmHalo").forEach((h) => h.classList.toggle("dim", g != null && h.dataset.g !== String(g))); };
   el.querySelectorAll(".bmKey[data-g]").forEach((b) => { b.addEventListener("mouseenter", () => hi(+b.dataset.g)); b.addEventListener("mouseleave", () => hi(null)); b.addEventListener("click", () => { const on = b.classList.toggle("on"); el.querySelectorAll(".bmKey.on").forEach((o) => { if (o !== b) o.classList.remove("on"); }); hi(on ? +b.dataset.g : null); }); });
   svg.addEventListener("click", (e) => { const n = e.target.closest(".bmN"); if (!n) return hi(null); const id = nodes[+n.dataset.i].id; if (opts.onWallet) opts.onWallet(id); else navigator.clipboard?.writeText(id); });
 }
@@ -2929,7 +2945,7 @@ function pumpStart() {
   document.body.classList.add("pump");
   const bar = $id("dbHead") && $id("dbHead").parentElement;
   if (bar) bar.innerHTML = `<i></i><b>Live.</b> Launch on pump.fun from Xray and your coin gets a public bundle scan. <a href=\"#launch\">Launch a coin</a>`;
-  const hm = $id("heroMap"); if (hm) { const draw = () => renderBubbleMap(hm, bmDemo(), { height: Math.max(300, Math.min(460, hm.clientWidth * 0.7)) }); draw(); let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 200); }); }
+  const hm = $id("heroMap"); if (hm) { let lastW = 0; const draw = () => { if (hm.clientWidth === lastW) return; lastW = hm.clientWidth; renderBubbleMap(hm, bmDemo(), { height: Math.max(300, Math.min(460, hm.clientWidth * 0.7)) }); }; draw(); let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 200); }); }
   const hero = document.querySelector("#v-explore .heroCopy");
   if (hero) {
     

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#dce8ec">
+<meta name="theme-color" content="#070b16">
 <title>Xray: launch with nothing to hide</title>
 <meta name="description" content="Xray, the anti-bundle Solana launchpad. Every coin gets an X-ray for bundles. Random open slot, sniper tax, 4 buys per slot, early-sell tax, and a live bundle check on every coin.">
 <meta property="og:title" content="Xray">
@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://orch.lol/xray/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://orch.lol/xray/og.png">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' ><rect x='1' y='1' width='30' height='30' rx='9' fill='%230e1a20'/><path d='M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4' fill='none' stroke='%23e8f1ee' stroke-width='2' stroke-linecap='round'/><path d='M11 11l10 10M21 11L11 21' stroke='%23e8f1ee' stroke-width='2.2' stroke-linecap='round'/><path d='M6 16h20' stroke='%23cf3f36' stroke-width='1.6'/></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' ><rect x='1' y='1' width='30' height='30' rx='9' fill='%230c1222'/><path d='M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4' fill='none' stroke='%23e8f1ee' stroke-width='2' stroke-linecap='round'/><path d='M11 11l10 10M21 11L11 21' stroke='%23e8f1ee' stroke-width='2.2' stroke-linecap='round'/><path d='M6 16h20' stroke='%235b8cff' stroke-width='1.6'/></svg>">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
 <style>
 /* Layout: Exposure's app shell (left icon sidebar, top search, card sections, hash-routed views) on a x-ray film: near-black teal, cyan scan signal, phosphor green = clean, rose = bundled */
 :root{
-  --paper:#dce8ec;--glow:#dce8ec;--card:#0e1a20;--card2:#16262e;--ink:#13222a;--muted:#4f646d;--line:rgba(19,34,42,.16);--signal:#13222a;--on-signal:#e8f1ee;--signal-soft:rgba(19,34,42,.08);--burn:#cf3f36;--ok:#2b8661;--warn:#b7791f;--floor:rgba(19,34,42,.08);--shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -16px rgba(0,0,0,.7);--r1:#061417;--r2:#0c2a30;--r3:#13414a;--rc1:#145560;--rc2:#6ff0ff;--rc3:#e3fdff;--rc4:#2fd3ea;--rc5:#02161a;--rc6:#c9fbff;--rt:#effeff;--ra:#c9fbff;--rm:#8db1b9;--b1:#b4f8ff;--b2:#6ff0ff;--bb:#47e3f5;--bink:#02161a;--bh:#bdfbff;--g1:#6ff0ff;--g2:#7dffb2;--dot:#7dffb2;--avd:#02161a;
+  --paper:#070b16;--glow:#0c1222;--card:#101831;--card2:#16203c;--ink:#eef2ff;--muted:#8d9bc4;--line:rgba(140,170,255,.14);--signal:#5b8cff;--on-signal:#ffffff;--signal-soft:rgba(91,140,255,.14);--burn:#ff5c7a;--ok:#7dffb2;--warn:#ffb347;--floor:rgba(91,140,255,.12);--shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -16px rgba(0,0,0,.7);--r1:#0c1222;--r2:#16203c;--r3:#223060;--rc1:#2a3f80;--rc2:#5b8cff;--rc3:#eef2ff;--rc4:#7aa2ff;--rc5:#070b16;--rc6:#c9d6ff;--rt:#eef2ff;--ra:#c9d6ff;--rm:#8d9bc4;--b1:#c9d6ff;--b2:#5b8cff;--bb:#4a78e6;--bink:#ffffff;--bh:#7aa2ff;--g1:#5b8cff;--g2:#7dffb2;--dot:#7dffb2;--avd:#070b16;
   --display:"Archivo",system-ui,sans-serif; --body:"Archivo",system-ui,sans-serif; --mono:"Archivo",system-ui,sans-serif;
   color-scheme:dark;
 }
@@ -861,284 +861,216 @@ h1,h2,h3{letter-spacing:-.01em}
 .testPick select{width:100%}
 .meWarn{font-size:13px;color:var(--muted)}
 
-/* ===== Xray: the reading room =====
-   The page is a lit light box. Scans sit on it as blue-black film.
-   Bundled wallets get circled in red grease pencil; clean ones in green.
-   One family (Archivo), width carries the voice: condensed for film labels, normal for reading. */
-:root{--box:#dce8ec;--box2:#cbdbe1;--film:#0e1a20;--film2:#16262e;--bone:#e8f1ee;--ink:#13222a;--muted:#4f646d;--pencil:#cf3f36;--clean:#2b8661;--steel:#8a9aa2;--rule:rgba(19,34,42,.16)}
-body{background:var(--box);color:var(--ink)}
+/* ===== Xray: the map room =====
+   Deep navy space. Every holder is a bubble; linked wallets share a color and are tied together.
+   Blue = ordinary holder, green = creator, warm colors = linked groups. One family: Archivo. */
+:root{--bg:#070b16;--bg2:#0c1222;--panel:#101831;--panel2:#16203c;--line:rgba(140,170,255,.14);--ink:#eef2ff;--muted:#8d9bc4;--blue:#5b8cff;--green:#7dffb2;--rose:#ff5c7a;--amber:#ffb347;--violet:#c77dff}
+html{background:var(--bg)}
+body{background:radial-gradient(900px 600px at 70% -10%,rgba(91,140,255,.18),transparent 60%),radial-gradient(700px 500px at 0% 100%,rgba(199,125,255,.12),transparent 60%),var(--bg);color:var(--ink);min-height:100vh}
 #bg{display:none!important}
-::selection{background:var(--pencil);color:#fff}
+::selection{background:var(--blue);color:#fff}
 
 /* type */
-h1,h2,h3,.pageH,.hero h1,.heroSplit h1,.logo{font-family:"Archivo",system-ui,sans-serif;font-stretch:72%;font-weight:800;text-transform:none;letter-spacing:-.005em;color:var(--ink)}
-.hero h1,.heroSplit h1{font-size:clamp(48px,6.4vw,92px);line-height:.92;max-width:11ch}
-.hero h1 em{font-style:normal;color:inherit;background:none;-webkit-text-fill-color:currentColor}
-.pageH{font-size:clamp(36px,4.6vw,60px);line-height:.95}
-h2{font-size:30px;line-height:1}
+h1,h2,h3,.pageH,.hero h1,.heroSplit h1,.logo{font-family:"Archivo",system-ui,sans-serif;font-stretch:78%;font-weight:800;text-transform:none;letter-spacing:-.01em;color:var(--ink)}
+.hero h1,.heroSplit h1{font-size:clamp(46px,5.8vw,88px);line-height:.94;max-width:11ch}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.pageH{font-size:clamp(34px,4.4vw,56px);line-height:.95}
+h2{font-size:28px;line-height:1}
 .heroSplit p,.sec-head p{color:var(--muted);font-size:17px;line-height:1.5;max-width:52ch}
+.heroPoint{font-size:19px!important;line-height:1.45!important;color:var(--ink)!important;max-width:36ch!important}
 .eyebrow,.kicker,small,.gateMini small,.kv small{font-family:"Archivo",sans-serif;font-stretch:85%;text-transform:none!important;letter-spacing:0!important;font-size:13px;color:var(--muted);font-weight:600}
 .sec-head .eyebrow,.kicker{display:none}
 .mono,.xpAddr,.ckForm input,code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace!important}
 .arr{display:none}
 
-/* chrome: the light-box frame */
-.side{background:var(--box2)!important;border-right:1px solid var(--rule);-webkit-backdrop-filter:none;backdrop-filter:none}
-.topbar{background:var(--box)!important;border-bottom:1px solid var(--rule);-webkit-backdrop-filter:none;backdrop-filter:none}
-.side .tabs a{color:var(--muted);border-radius:6px}
-.side .tabs a:hover{color:var(--ink);background:rgba(19,34,42,.06)}
-.side .tabs a.on{color:var(--ink);background:#fff8;box-shadow:inset 3px 0 0 var(--ink)}
-.side .tabs a.on svg{stroke:var(--ink)}
+/* chrome */
+.side{background:var(--bg2)!important;border-right:1px solid var(--line);-webkit-backdrop-filter:none;backdrop-filter:none}
+.topbar{background:rgba(7,11,22,.85)!important;border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.side .tabs a{color:var(--muted);border-radius:8px}
+.side .tabs a:hover{color:var(--ink);background:rgba(140,170,255,.08)}
+.side .tabs a.on{color:var(--ink);background:rgba(91,140,255,.16);box-shadow:inset 3px 0 0 var(--blue)}
+.side .tabs a.on svg{stroke:var(--blue)}
 .logo{font-size:24px;letter-spacing:.01em;gap:10px}
 .logo .logoMark{width:30px;height:30px;display:block}
-.search input{background:#fff;border:1px solid var(--rule);color:var(--ink)}
-.search kbd{background:var(--box);color:var(--muted)}
+.search input{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:10px!important;box-shadow:none!important}
+.search{box-shadow:none!important}
+.search kbd{background:var(--panel2);color:var(--muted)}
 .sideFoot,.handle{color:var(--muted)}
-@media (max-width:900px){.mbar{background:var(--box2)!important;border-top:1px solid var(--rule);-webkit-backdrop-filter:none;backdrop-filter:none}.mbar a,.mbar button{color:var(--muted)}.mbar a.on{color:var(--ink)}.mbar .mlaunch i{background:var(--ink)!important;color:var(--bone)!important;box-shadow:none!important}.msheet{background:var(--box)!important;border:1px solid var(--rule)}}
+@media (max-width:900px){.mbar{background:var(--bg2)!important;border-top:1px solid var(--line);-webkit-backdrop-filter:none;backdrop-filter:none}.mbar a,.mbar button{color:var(--muted)}.mbar a.on{color:var(--ink)}.mbar .mlaunch i{background:var(--blue)!important;color:#fff!important;box-shadow:0 8px 24px -8px var(--blue)!important}.msheet{background:var(--bg2)!important;border:1px solid var(--line)}}
 
 /* buttons */
-.btn{border-radius:6px;box-shadow:none!important;font-family:"Archivo",sans-serif;font-weight:700;transform:none!important}
-.btn.sig{background:var(--ink)!important;color:var(--bone)!important;border:1px solid var(--ink)}
-.btn.sig:hover{background:#000!important}
-.btn.ghost,.btn:not(.sig):not(.buy):not(.sell){background:transparent!important;color:var(--ink)!important;border:1px solid rgba(19,34,42,.35)}
-.btn.ghost:hover{background:rgba(19,34,42,.06)!important}
-.btn.buy{background:var(--clean)!important;color:#fff!important;border-color:var(--clean)}
-.btn.sell{background:var(--pencil)!important;color:#fff!important;border-color:var(--pencil)}
-.chip{background:transparent!important;border:1px solid var(--rule);color:var(--muted);border-radius:6px}
-.chip[aria-pressed="true"]{background:var(--ink)!important;color:var(--bone)!important;border-color:var(--ink)}
-:focus-visible{outline:2px solid var(--pencil)!important;outline-offset:2px}
+.btn{border-radius:10px;box-shadow:none!important;font-family:"Archivo",sans-serif;font-weight:700;transform:none!important}
+.btn.sig{background:var(--blue)!important;color:#fff!important;border:1px solid var(--blue)}
+.btn.sig:hover{background:#7aa2ff!important}
+.btn.ghost,.btn:not(.sig):not(.buy):not(.sell){background:transparent!important;color:var(--ink)!important;border:1px solid rgba(140,170,255,.3)}
+.btn.ghost:hover{background:rgba(140,170,255,.08)!important}
+.btn.buy{background:var(--green)!important;color:#05261a!important;border-color:var(--green)}
+.btn.sell{background:var(--rose)!important;color:#fff!important;border-color:var(--rose)}
+.chip{background:transparent!important;border:1px solid var(--line);color:var(--muted);border-radius:8px}
+.chip[aria-pressed="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--amber)!important;outline-offset:2px}
 
-/* surfaces: everything that holds a scan is film */
-.card,.list,.tablewrap,.gate{background:var(--film)!important;color:var(--bone);border:0!important;border-radius:4px;box-shadow:0 1px 0 rgba(0,0,0,.25),0 18px 30px -22px rgba(9,20,26,.6)!important;transform:none!important}
-.card h2,.card h3,.card b,.list b,.tablewrap b,.gate b,.card .pageH{color:var(--bone)}
-.card p,.card span,.list span,.card small,.list small,.tablewrap td,.tablewrap th,.gate span,.gate small,.card dt,.card .eyebrow{color:#9db3ba}
-.card a:not(.btn),.list a:not(.btn){color:var(--bone)}
-.card .btn.sig,.gate .btn.sig,.list .btn.sig{background:var(--bone)!important;color:var(--film)!important;border-color:var(--bone)}
-.card .btn:not(.sig):not(.buy):not(.sell),.gate .btn:not(.sig){color:var(--bone)!important;border-color:rgba(232,241,238,.35)}
-.card input,.card textarea,.card select,.ckForm input{background:var(--film2)!important;color:var(--bone)!important;border:1px solid rgba(232,241,238,.18)!important;border-radius:4px}
-.grid .card:hover{outline:1px solid rgba(232,241,238,.35)}
-.rowLink:hover,.pay.rowLink:hover{background:var(--film2)}
-.list>*+*,.tablewrap tr+tr td{border-color:rgba(232,241,238,.10)!important}
-
-/* readouts: plain figures on the box, no tiles */
-.statbar{background:transparent!important;border:0!important;border-top:2px solid var(--ink)!important;border-radius:0;box-shadow:none!important}
-.statbar>div{border-color:var(--rule)!important;background:transparent!important}
-.statbar b{font-family:"Archivo",sans-serif;font-stretch:72%;font-weight:800;font-size:40px;color:var(--ink)}
-.statbar b.up{color:var(--clean)}
-.gateMini div{background:var(--film2);border:0;border-radius:3px}
-.gateMini b{font-family:"Archivo",sans-serif}
-.gateBig b.gold,.st.gold{color:var(--bone)!important}
-
-/* status marks are pencil */
-.st{border-radius:3px;font-family:"Archivo",sans-serif;font-weight:700}
-.st.ok{color:#7fd4ad;border-color:rgba(127,212,173,.5)}
-.st.bad{color:#ff8a80;border-color:rgba(255,138,128,.55)}
-.st.solid{background:var(--pencil);color:#fff;border-color:var(--pencil)}
-.st.warn{color:#ffcf7a;border-color:rgba(255,207,122,.5)}
-.prog{background:rgba(232,241,238,.12);border-radius:2px}
-.prog i,.meter i{background:var(--bone);border-radius:2px}
-
-/* the one live line at the top */
-.demoBar{background:transparent!important;border:0!important;border-bottom:1px solid var(--rule)!important;border-radius:0;color:var(--muted);padding-left:0}
-.demoBar b{color:var(--ink)}
-.demoBar i{background:var(--clean)}
-.pumpNote{background:#fff6!important;color:var(--ink)!important;border:1px solid var(--rule)!important;box-shadow:none!important}
-.pumpNote b{color:var(--ink)!important}
-
-/* hero: copy and the address box on the left, a pinned scan on the right */
-.heroSplit{align-items:start;gap:56px;padding-top:40px}
-.heroCheck{margin-top:28px;width:100%;max-width:520px}
-.heroCheck label{display:block;font-weight:700;font-size:15px;margin-bottom:8px;color:var(--ink)}
-.heroCheck .ckForm input{background:#fff!important;color:var(--ink)!important;border:1px solid rgba(19,34,42,.35)!important;font-size:15px;padding:16px}
-.heroCheck .msg{margin-top:8px}
-.heroSplit .cta{margin-top:18px}
-.film{margin:0;position:relative;padding-top:18px}
-.film .clip{position:absolute;top:0;left:50%;width:84px;height:30px;margin-left:-42px;background:linear-gradient(#b7c4ca,#8a9aa2);border-radius:4px 4px 2px 2px;box-shadow:0 2px 0 #6f7f87;z-index:2}
-.film .sheet{display:block;width:100%;height:auto;background:var(--film);border-radius:4px;box-shadow:0 30px 50px -30px rgba(9,20,26,.7)}
-.film figcaption{margin-top:12px;font-size:14px;line-height:1.45;color:var(--muted);max-width:46ch}
-.film .ring{stroke-dasharray:420;stroke-dashoffset:420;animation:pencil 1.1s .5s ease-out forwards}
-@keyframes pencil{to{stroke-dashoffset:0}}
-@media (prefers-reduced-motion:reduce){.film .ring{animation:none;stroke-dashoffset:0}}
-.pump #gate{display:none!important}
-.pump .heroSplit .cta .btn.ghost{display:none}
-
-footer{color:var(--muted);border-top:1px solid var(--rule)}
-footer a{color:var(--ink)}
-.xpFace{background:var(--film)!important;color:var(--bone)!important;border:2px solid var(--bone)}
-
-/* scroll reveal (content stays visible; only slides) */
-.rv{transform:translateY(18px);transition:transform .7s cubic-bezier(.2,.8,.2,1)}
-.rv.in{transform:none}
-@media (prefers-reduced-motion:reduce){.rv{transform:none;transition:none}.grid .card:hover{transform:none}}
-
-.kv small{letter-spacing:.04em;white-space:nowrap}
-
-
-
-/* pre-launch: hide simulator-only UI */
-.pre .simCtl,.pre .testPick,.pre #liveTicker,.pre #exploreTwo,.pre #tuneCard{display:none!important}
-.pre #tuneWrap{grid-template-columns:1fr}
-.pre .gate{display:grid;gap:16px;align-content:center}
-
-/* pump.fun mode */
-.pump .simCtl,.pump .testPick,.pump #liveTicker,.pump #tuneCard,.pump [data-v="taxes"],.pump a[href="#taxes"],.pump [data-cf="opening"],.pump #exploreTwo>div:nth-child(2){display:none!important}
-.pump #exploreTwo,.pump #tuneWrap{grid-template-columns:1fr}
-.pump .gate{display:grid;gap:16px;align-content:center}
-.ckForm{display:flex;gap:10px}
-.ckForm input{flex:1;min-width:0;font:500 14px/1 "Martian Mono","DejaVu Sans Mono",monospace;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(3,9,11,.7);color:var(--ink)}
-.ckForm input:focus{outline:2px solid var(--signal);outline-offset:2px}
-.pumpNote{border-color:rgba(255,192,110,.4)!important;background:rgba(255,192,110,.06)!important;line-height:1.55}
-.pumpNote b{color:var(--ink)}
-
-
-/* fixes after review */
-.card,.list,.tablewrap,.gate,.card .empty,.list .empty{border-radius:4px!important}
-.search input{border-radius:6px!important;box-shadow:none!important}
-.search{box-shadow:none!important}
-.heroSplit .cta{margin-top:24px}
-.xpIntro h1{background:none!important;-webkit-text-fill-color:var(--ink);color:var(--ink)}
-.xpCoinWrap{filter:none}
-.xpFace{box-shadow:none!important}
-.xpFace span{color:var(--bone)!important;text-shadow:none!important;font-stretch:72%}
-.pv-img{background:var(--film2)!important;border:1px dashed rgba(232,241,238,.3);border-radius:4px!important;color:#9db3ba!important}
-.drop{background:var(--film2)!important;border:1px dashed rgba(232,241,238,.3)!important;border-radius:4px!important}
-.drop input{background:transparent!important;border:0!important;color:var(--bone)!important}
-footer .mono,footer .mono a{font-family:"Archivo",sans-serif!important}
-
-/* ===== v2 additions ===== */
-/* the light box glows brighter in the middle, like a real viewer */
-body{background:radial-gradient(120% 90% at 55% 35%,#e7f0f3 0%,#dce8ec 45%,#cfdee4 100%) fixed}
-/* every film has the identification notch cut in its top-right corner */
-.card,.list,.tablewrap{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
-.grid .card:hover{outline:0;box-shadow:inset 0 0 0 1px rgba(232,241,238,.35),0 18px 30px -22px rgba(9,20,26,.6)!important}
-/* coin cards: ticker printed on the film edge */
-.card.coin{position:relative;padding-bottom:34px}
-.card.coin .edge{position:absolute;left:16px;right:16px;bottom:10px;font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,241,238,.38);white-space:pre;border-top:1px solid rgba(232,241,238,.08);padding-top:6px}
-/* pencil marks instead of pills */
-.st.bad,.st.solid{background:transparent!important;color:#ff8a80!important;border:2px solid var(--pencil)!important;border-radius:50% / 60%!important;padding:4px 12px;transform:rotate(-2deg)}
-.st.ok{background:transparent;color:#7fd4ad;border:0;border-bottom:2px solid var(--clean);border-radius:0;padding:2px 2px}
-.st.warn{background:transparent;color:#ffcf7a;border:0;border-bottom:2px dashed #b7791f;border-radius:0;padding:2px 2px}
-/* hero secondary */
-.heroAlt{margin-top:26px!important;font-size:15px!important;color:var(--muted)}
-.heroAlt a{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--pencil);text-decoration-thickness:2px;text-underline-offset:4px}
-/* scan report */
-.repH{margin-bottom:6px}
-.repSec{border-top:1px solid rgba(232,241,238,.12);padding-top:14px;margin-top:14px}
-.repSec h3{font-family:"Archivo",sans-serif;font-stretch:85%;font-size:14px;font-weight:700;color:#9db3ba!important;margin:0 0 8px}
-.verdict{font-size:17px;line-height:1.45;color:var(--bone)!important;margin:0}
-.verdict b{font-family:"Archivo",sans-serif;font-stretch:72%;font-weight:800;font-size:28px;display:inline-block;margin-right:4px}
-.verdict.v-high b,.verdict.v-medium b{color:#ff8a80!important;box-shadow:inset 0 -3px 0 var(--pencil)}
-.verdict.v-low b{color:#7fd4ad!important;box-shadow:inset 0 -3px 0 var(--clean)}
-.repDl{display:grid;gap:0;margin:0}
-.repDl div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed rgba(232,241,238,.1)}
-.repDl dt{color:#9db3ba}.repDl dd{margin:0;color:var(--bone);font-weight:700;font-variant-numeric:tabular-nums}
-.repFoot{font-size:12px!important;margin-top:14px;color:#7f969d!important}
-/* steps are a real sequence, so they get numbers */
-.stepN{font-family:"Archivo",sans-serif;font-stretch:65%;font-weight:800;font-size:64px;line-height:.9;color:rgba(232,241,238,.22);margin-bottom:6px}
-html{background:#d6e3e8}
-body{background:radial-gradient(120% 70% at 55% 0%,#e7f0f3 0%,#dce8ec 45%,#d3e1e6 100%) #d6e3e8;background-attachment:scroll;min-height:100vh}
-.av{background:var(--film2)!important;color:var(--bone)!important;box-shadow:none!important;border:1px solid rgba(232,241,238,.22);background-image:none!important}
-.cpWho .av{border-color:transparent}
-.wallets span{background:var(--film2)!important;color:#9db3ba!important;border:1px solid rgba(232,241,238,.1)}
-.empty{border-radius:4px!important;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
-.step h3,.card h3{text-transform:none!important;font-stretch:80%}
-details,.faq details{background:transparent!important;border:0!important;border-bottom:1px solid var(--rule)!important;border-radius:0!important;box-shadow:none!important}
+/* surfaces */
+.card,.list,.tablewrap,.gate,.empty{background:var(--panel)!important;color:var(--ink);border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important;transform:none!important;clip-path:none!important}
+.card h2,.card h3,.card b,.list b,.tablewrap b,.gate b{color:var(--ink)}
+.card p,.card span,.list span,.card small,.list small,.tablewrap td,.tablewrap th,.gate span,.gate small,.card dt,.card .eyebrow{color:var(--muted)}
+.card a:not(.btn),.list a:not(.btn){color:var(--ink)}
+.card input,.card textarea,.card select,.ckForm input{background:var(--bg2)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:10px}
+.grid .card:hover{border-color:rgba(140,170,255,.4)!important}
+.rowLink:hover,.pay.rowLink:hover{background:var(--panel2)}
+.list>*+*,.tablewrap tr+tr td{border-color:var(--line)!important}
+.av{background:var(--panel2)!important;color:var(--ink)!important;box-shadow:none!important;border:1px solid var(--line);background-image:none!important}
+.wallets span{background:var(--bg2)!important;color:var(--muted)!important;border:1px solid var(--line)}
+.pv-img{background:var(--bg2)!important;border:1px dashed rgba(140,170,255,.3);border-radius:10px!important;color:var(--muted)!important}
+.drop{background:var(--bg2)!important;border:1px dashed rgba(140,170,255,.3)!important;border-radius:10px!important}
+.drop input{background:transparent!important;border:0!important;color:var(--ink)!important}
+footer{color:var(--muted);border-top:1px solid var(--line)}
+footer a,footer .mono,footer .mono a{color:var(--ink);font-family:"Archivo",sans-serif!important}
+details{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important}
 details summary{color:var(--ink)!important;font-weight:700}
 details p,details div{color:var(--muted)!important}
+.step h3,.card h3{text-transform:none!important;font-stretch:85%}
 
-/* launch is the main action */
-.heroLaunch{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px}
-.heroLaunch .btn.lg{font-size:18px;padding:18px 30px;border-radius:6px}
+/* readouts */
+.statbar{background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0;box-shadow:none!important}
+.statbar>div{border-color:var(--line)!important;background:transparent!important}
+.statbar b{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:40px;color:var(--ink)}
+.statbar b.up{color:var(--green)}
+.gateMini div{background:var(--bg2);border:0;border-radius:8px}
+.gateBig b.gold,.st.gold{color:var(--ink)!important}
+.st{border-radius:999px;font-family:"Archivo",sans-serif;font-weight:700;border:1px solid var(--line)}
+.st.ok{color:var(--green);border-color:rgba(125,255,178,.45);background:rgba(125,255,178,.08)}
+.st.bad,.st.solid{color:#fff;background:var(--rose);border-color:var(--rose)}
+.st.warn{color:var(--amber);border-color:rgba(255,179,71,.5);background:rgba(255,179,71,.08)}
+.prog{background:rgba(140,170,255,.14);border-radius:3px}
+.prog i,.meter i{background:var(--blue);border-radius:3px}
+.demoBar{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0;color:var(--muted);padding-left:0}
+.demoBar b{color:var(--ink)}
+.demoBar i{background:var(--green)}
+.demoBar a,.inlineLaunch,.heroAlt a{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--blue);text-decoration-thickness:2px;text-underline-offset:3px;margin-left:6px}
+.pumpNote{background:rgba(255,179,71,.08)!important;color:var(--ink)!important;border:1px solid rgba(255,179,71,.35)!important}
+.pumpNote b{color:var(--ink)!important}
+.xpFace{background:var(--panel2)!important;color:var(--ink)!important;border:2px solid var(--blue)}
+.xpFace span{color:var(--ink)!important;text-shadow:none!important;font-stretch:78%}
+.xpIntro h1{background:none!important;-webkit-text-fill-color:var(--ink);color:var(--ink)}
+.xpCoinWrap{filter:none}
+
+/* ===== the bubble map ===== */
+.bmap{position:relative;background:radial-gradient(600px 400px at 50% 40%,rgba(91,140,255,.10),transparent 70%),var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-height:320px}
+.bmSvg{display:block;width:100%;height:auto}
+.bmLinks line{stroke-width:1.5;stroke-opacity:.55;transition:stroke-opacity .2s}
+.bmN{cursor:pointer;transition:opacity .2s}
+.bmB{animation:bmIn .7s var(--d,0ms) cubic-bezier(.2,.8,.2,1) both;transform-box:fill-box;transform-origin:center}
+.bmB circle:first-child{filter:drop-shadow(0 0 10px var(--c))}
+.bmN text{fill:#fff;font-family:"Archivo",sans-serif;font-weight:700;pointer-events:none}
+.bmN.dim,.bmLinks line.dim{opacity:.15}
+.bmN:hover .bmB circle:first-child{fill-opacity:1}
+@keyframes bmIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.bmB{animation:none}}
+.bmLegend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line);background:rgba(7,11,22,.6)}
+.bmKey{display:inline-flex;align-items:center;gap:7px;font:600 12px/1 "Archivo",sans-serif;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:999px;padding:6px 10px;cursor:default}
+.bmKey[data-g]{cursor:pointer}
+.bmKey[data-g]:hover,.bmKey.on{color:var(--ink);border-color:var(--line);background:var(--panel)}
+.bmKey i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.bmEmpty{display:grid;place-items:center;min-height:320px;color:var(--muted);padding:20px;text-align:center}
+.bmCap{margin-top:10px;font-size:14px;line-height:1.45;color:var(--muted);max-width:56ch}
+
+/* hero */
+.heroSplit{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:40px;align-items:center;padding-top:28px}
+.heroLaunch{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:26px}
+.heroLaunch .btn.lg{font-size:18px;padding:18px 30px}
 .heroLaunch span{font-size:14px;color:var(--muted);max-width:30ch;line-height:1.4}
-.heroCheck{margin-top:36px;padding-top:20px;border-top:1px solid var(--rule)}
-.heroCheck label{font-weight:600!important;color:var(--muted)!important}
-.heroCheck .btn.sig{background:transparent!important;color:var(--ink)!important;border:1px solid rgba(19,34,42,.35)}
-.heroCheck .ckForm input{padding:13px 14px!important}
-.demoBar a{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--pencil);text-decoration-thickness:2px;text-underline-offset:3px;margin-left:6px}
-.repCta{margin-top:18px;padding:16px;border:1px dashed rgba(232,241,238,.25);display:grid;gap:6px}
-.repCta b{font-size:16px}
-.repCta span{font-size:14px}
-.repCta .btn{justify-self:start;margin-top:6px}
-.inlineLaunch{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--pencil);text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
+.heroCheck{margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
+.heroCheck label{display:block;font-weight:600!important;color:var(--muted)!important;font-size:15px;margin-bottom:8px}
+.heroCheck .ckForm input{padding:13px 14px!important;font-size:15px}
+.heroCheck .btn.sig{background:transparent!important;color:var(--ink)!important;border:1px solid rgba(140,170,255,.3)}
+.heroCheck .msg{margin-top:8px}
+.heroAlt{margin-top:26px!important;font-size:15px!important;color:var(--muted)}
+.pump #gate{display:none!important}
+.pump .heroSplit .cta .btn.ghost{display:none}
+@media (max-width:900px){.heroSplit{grid-template-columns:1fr;gap:24px}}
 
-/* ===== explainer: what launching from Xray does ===== */
+/* three beats */
 .pumpOnly{display:none}
 .pump .pumpOnly{display:block}
+.pump .beats.pumpOnly{display:grid}
+.beats{list-style:none;padding:0;margin:44px 0 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.beats li{padding:18px 20px 6px 0;display:grid;gap:6px}
+.beats li+li{padding-left:20px;border-left:1px solid var(--line)}
+.beats b{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:40px;line-height:.95}
+.beats li:nth-child(1) b{color:var(--blue)}.beats li:nth-child(2) b{color:var(--amber)}.beats li:nth-child(3) b{color:var(--green)}
+.beats span{color:var(--muted);font-size:15px;line-height:1.45;max-width:30ch}
+@media (max-width:640px){.beats{grid-template-columns:1fr}.beats li+li{border-left:0;padding-left:0;border-top:1px solid var(--line)}}
+
+/* explainer */
 .explain{margin:24px 0 8px;max-width:1080px}
 .explain h2{font-size:clamp(34px,4vw,52px);line-height:.95;max-width:16ch}
 .exLede{font-size:18px;line-height:1.5;color:var(--muted);max-width:58ch;margin:14px 0 28px}
-/* comparison: the Xray column is the film */
-.cmp{display:grid;border-top:2px solid var(--ink)}
-.cmpRow{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,1fr) minmax(0,1.3fr);align-items:stretch}
-.cmpRow>span{padding:14px 16px;border-bottom:1px solid var(--rule);font-size:15px;line-height:1.45}
+.cmp{display:grid;border-top:1px solid var(--line)}
+.cmpRow{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,1fr) minmax(0,1.3fr)}
+.cmpRow>span{padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px;line-height:1.45}
 .cmpRow>span:first-child{font-weight:700;color:var(--ink);padding-left:0}
 .cmpRow>span:nth-child(2){color:var(--muted)}
-.cmpRow>span:nth-child(3){background:var(--film);color:#b9cbd0;border-bottom-color:rgba(232,241,238,.1)}
-.cmpRow>span:nth-child(3) b{color:var(--bone)}
-.cmpRow .no{color:#8a5a55!important}
+.cmpRow>span:nth-child(3){background:rgba(91,140,255,.10);color:#c9d6ff}
+.cmpRow>span:nth-child(3) b{color:var(--ink)}
+.cmpRow .no{color:var(--rose)!important}
 .cmpHead>span{font-weight:700;font-size:14px;padding-top:12px;padding-bottom:12px}
 .cmpHead>span:nth-child(2){color:var(--ink)}
-.cmpHead>span:nth-child(3){color:var(--bone)!important;font-family:"Archivo",sans-serif;font-stretch:75%;font-weight:800;font-size:18px}
-.cmp .cmpRow:last-child>span:nth-child(3){clip-path:none}
-.cmpRow:nth-child(4)>span:nth-child(3) b{box-shadow:inset 0 -2px 0 var(--clean)}
-/* steps: a real sequence */
+.cmpHead>span:nth-child(3){color:var(--ink)!important;font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:18px}
+.cmpRow:nth-child(4)>span:nth-child(3) b{box-shadow:inset 0 -2px 0 var(--green)}
 .exSub{font-size:26px;margin:48px 0 18px}
-.exSteps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;counter-reset:st;border-top:1px solid var(--rule)}
+.exSteps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:st;border-top:1px solid var(--line)}
 .exSteps li{counter-increment:st;padding:18px 18px 4px 0;display:grid;gap:6px;align-content:start}
-.exSteps li+li{padding-left:18px;border-left:1px solid var(--rule)}
-.exSteps li::before{content:counter(st);font-family:"Archivo",sans-serif;font-stretch:65%;font-weight:800;font-size:44px;line-height:.9;color:var(--pencil)}
+.exSteps li+li{padding-left:18px;border-left:1px solid var(--line)}
+.exSteps li::before{content:counter(st);font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:800;font-size:44px;line-height:.9;color:var(--blue)}
 .exSteps b{font-size:16px}
 .exSteps span{font-size:14px;line-height:1.5;color:var(--muted)}
 .exEnd{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:36px 0 12px}
 .exEnd span{color:var(--muted);font-size:14px}
-@media (max-width:980px){.exSteps{grid-template-columns:1fr 1fr}.exSteps li+li{border-left:0;padding-left:0}.exSteps li:nth-child(even){padding-left:18px;border-left:1px solid var(--rule)}}
-@media (max-width:640px){
-  .cmpHead{display:none}
-  .cmpRow{grid-template-columns:1fr;border-bottom:1px solid var(--rule);padding:10px 0}
-  .cmpRow>span{border:0;padding:4px 0}
-  .cmpRow>span:nth-child(2)::before{content:"pump.fun directly: ";font-weight:600;color:var(--ink)}
-  .cmpRow>span:nth-child(3){padding:10px 12px;margin-top:4px}
-  .cmpRow>span:nth-child(3)::before{content:"From Xray: ";font-weight:700;color:var(--bone)}
-  .exSteps{grid-template-columns:1fr}.exSteps li:nth-child(even){padding-left:0;border-left:0}.exSteps li{border-bottom:1px solid var(--rule);padding:14px 0}
-}
+@media (max-width:980px){.exSteps{grid-template-columns:1fr 1fr}.exSteps li+li{border-left:0;padding-left:0}.exSteps li:nth-child(even){padding-left:18px;border-left:1px solid var(--line)}}
+@media (max-width:640px){.cmpHead{display:none}.cmpRow{grid-template-columns:1fr;border-bottom:1px solid var(--line);padding:10px 0}.cmpRow>span{border:0;padding:4px 0}.cmpRow>span:nth-child(2)::before{content:"pump.fun directly: ";font-weight:600;color:var(--ink)}.cmpRow>span:nth-child(3){padding:10px 12px;margin-top:4px;border-radius:8px}.cmpRow>span:nth-child(3)::before{content:"From Xray: ";font-weight:700;color:var(--ink)}.exSteps{grid-template-columns:1fr}.exSteps li:nth-child(even){padding-left:0;border-left:0}.exSteps li{border-bottom:1px solid var(--line);padding:14px 0}}
 
-/* ===== 10x pass: the scanner hero ===== */
-.heroSplit{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px;align-items:center}
-.heroSplit h1{font-size:clamp(52px,6.6vw,104px);max-width:9ch}
-.heroPoint{font-size:19px!important;line-height:1.45!important;color:var(--ink)!important;max-width:34ch!important}
-.scanner{margin:0;position:relative}
-.scanStage{position:relative;aspect-ratio:1/1;border-radius:6px;overflow:hidden;cursor:ew-resize;touch-action:pan-y;box-shadow:0 40px 70px -40px rgba(9,20,26,.65),0 0 0 1px rgba(19,34,42,.12);user-select:none}
-.scanStage svg{display:block;width:100%;height:100%}
-.scanPlain{position:absolute;inset:0}
-.scanXray{position:absolute;inset:0;clip-path:inset(0 0 0 45%)}
-.scanBar{position:absolute;top:0;bottom:0;left:45%;width:0;pointer-events:none}
-.scanBar::before{content:"";position:absolute;top:0;bottom:0;left:-1px;width:3px;background:#e8f1ee;box-shadow:0 0 0 1px rgba(19,34,42,.25),0 0 24px 4px rgba(232,241,238,.55)}
-.scanBar span{position:absolute;top:50%;left:-22px;width:44px;height:44px;margin-top:-22px;border-radius:50%;background:var(--ink);border:3px solid #e8f1ee;box-shadow:0 6px 16px rgba(0,0,0,.35)}
-.scanBar span::before,.scanBar span::after{content:"";position:absolute;top:50%;margin-top:-6px;border:6px solid transparent}
-.scanBar span::before{left:5px;border-right-color:#e8f1ee}
-.scanBar span::after{right:5px;border-left-color:#e8f1ee}
-.scanRange{position:absolute;left:0;right:0;bottom:0;width:100%;opacity:0;height:44px;margin:0;cursor:ew-resize}
-.scanRange:focus-visible{opacity:1;accent-color:var(--pencil)}
-.scanner figcaption{margin-top:12px;font-size:14px;line-height:1.45;color:var(--muted);max-width:52ch}
-.scanner .ring{stroke-dasharray:460;stroke-dashoffset:460;animation:pencil 1.2s 2.4s ease-out forwards}
-@media (prefers-reduced-motion:reduce){.scanner .ring{animation:none;stroke-dashoffset:0}}
-@media (max-width:900px){.heroSplit{grid-template-columns:1fr;gap:28px}.scanner{order:-1}}
+/* coin cards: a strip of bubbles for the groups */
+.card.coin{position:relative}
+.card.coin .edge{display:none}
+.coinBubbles{display:flex;gap:4px;align-items:center;height:14px;margin:2px 0 8px}
+.coinBubbles i{display:inline-block;border-radius:50%;background:var(--blue);opacity:.7}
 
-/* three beats: the whole idea in one row */
-.beats{list-style:none;padding:0;margin:44px 0 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink)}
-.beats li{padding:18px 20px 6px 0;display:grid;gap:6px}
-.beats li+li{padding-left:20px;border-left:1px solid var(--rule)}
-.beats b{font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:800;font-size:40px;line-height:.95}
-.beats li:nth-child(3) b{box-shadow:inset 0 -4px 0 var(--clean);justify-self:start}
-.beats span{color:var(--muted);font-size:15px;line-height:1.45;max-width:30ch}
-@media (max-width:640px){.beats{grid-template-columns:1fr}.beats li+li{border-left:0;padding-left:0;border-top:1px solid var(--rule)}}
+/* scan report */
+.repH{margin-bottom:6px}
+.repSec{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.repSec h3{font-family:"Archivo",sans-serif;font-stretch:85%;font-size:14px;font-weight:700;color:var(--muted)!important;margin:0 0 8px}
+.verdict{font-size:17px;line-height:1.45;color:var(--ink)!important;margin:0}
+.verdict b{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:800;font-size:28px;display:inline-block;margin-right:4px}
+.verdict.v-high b,.verdict.v-medium b{color:var(--rose)!important}
+.verdict.v-low b{color:var(--green)!important}
+.repDl{display:grid;gap:0;margin:0}
+.repDl div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.repDl dt{color:var(--muted)}.repDl dd{margin:0;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.repFoot{font-size:12px!important;margin-top:14px;color:var(--muted)!important}
+.repCta{margin-top:18px;padding:16px;border:1px dashed rgba(140,170,255,.3);border-radius:10px;display:grid;gap:6px}
+.repCta b{font-size:16px}.repCta span{font-size:14px}.repCta .btn{justify-self:start;margin-top:6px}
+.stepN{font-family:"Archivo",sans-serif;font-stretch:70%;font-weight:800;font-size:64px;line-height:.9;color:rgba(140,170,255,.25);margin-bottom:6px}
+.cpMap{padding:0!important;overflow:hidden}
+.cpMap .bmap{border:0;border-radius:0}
+.cpMapHead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 16px 8px}
+.cpMapHead h2{margin:0}
+.cpMapHead span{font-size:13px;color:var(--muted)}
 
-/* every coin image is x-rayed when you point at it */
-.card.coin .av img,.list .av img,.cpWho .av img{transition:filter .25s}
-.card.coin:hover .av img,.rowLink:hover .av img,.cpWho .av:hover img{filter:invert(1) grayscale(1) contrast(1.25) brightness(1.05) sepia(.25) hue-rotate(150deg)}
-@media (prefers-reduced-motion:reduce){.card.coin .av img{transition:none}}
-.pump .beats.pumpOnly{display:grid}
-@media (max-width:900px){.scanner{order:0}}
+/* pre-launch / pump mode hide rules */
+.pre .simCtl,.pre .testPick,.pre #liveTicker,.pre #exploreTwo,.pre #tuneCard{display:none!important}
+.pre #tuneWrap{grid-template-columns:1fr}
+.pre .gate{display:grid;gap:16px;align-content:center}
+.pump .simCtl,.pump .testPick,.pump #liveTicker,.pump #tuneCard,.pump [data-v="taxes"],.pump a[href="#taxes"],.pump [data-cf="opening"],.pump #exploreTwo>div:nth-child(2){display:none!important}
+.pump #exploreTwo,.pump #tuneWrap{grid-template-columns:1fr}
+.pump .gate{display:grid;gap:16px;align-content:center}
+.ckForm{display:flex;gap:10px}
+.ckForm input{flex:1;min-width:0;font:500 14px/1 ui-monospace,monospace;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--ink)}
+.ckForm input:focus{outline:2px solid var(--blue);outline-offset:2px}
+.rv{transform:translateY(18px);transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.rv.in{transform:none}
+@media (prefers-reduced-motion:reduce){.rv{transform:none;transition:none}}
+.kv small{letter-spacing:.04em;white-space:nowrap}
 
 </style>
 </head>
@@ -1162,7 +1094,7 @@ details p,details div{color:var(--muted)!important}
 </div>
 <div class="shell">
 <aside class="side">
-  <a class="logo" href="#explore"><svg class="logoMark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#0e1a20"/><path d="M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4" fill="none" stroke="#e8f1ee" stroke-width="2" stroke-linecap="round"/><path d="M11 11l10 10M21 11L11 21" stroke="#e8f1ee" stroke-width="2.2" stroke-linecap="round"/><path d="M6 16h20" stroke="#cf3f36" stroke-width="1.6"/></svg>Xray</a>
+  <a class="logo" href="#explore"><svg class="logoMark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#0c1222"/><path d="M8 12V8h4M20 8h4v4M24 20v4h-4M12 24H8v-4" fill="none" stroke="#e8f1ee" stroke-width="2" stroke-linecap="round"/><path d="M11 11l10 10M21 11L11 21" stroke="#e8f1ee" stroke-width="2.2" stroke-linecap="round"/><path d="M6 16h20" stroke="#5b8cff" stroke-width="1.6"/></svg>Xray</a>
   <nav class="tabs" aria-label="Sections">
     <a href="#explore" data-v="explore"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span>Explore</span></a>
     <a href="#me" data-v="me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>My coins</span></a>
@@ -1198,54 +1130,22 @@ details p,details div{color:var(--muted)!important}
   <section class="view" id="v-explore">
     <div class="hero heroSplit">
       <div class="heroCopy">
-        <h1>Every coin gets an X-ray.</h1>
-        <p class="heroPoint">Launch on pump.fun from Xray and anyone can see inside your launch: who bought first, and who funded them. Clean coins can finally prove it.</p>
+        <h1>See who really holds a coin.</h1>
+        <p class="heroPoint">Every coin launched from Xray gets a live bubble map of its holders: who bought, how much they hold, and which wallets are secretly the same person.</p>
         <div class="heroLaunch"><a class="btn sig lg" href="#launch">Launch a coin</a><span>About a minute from your own wallet. Costs about 0.03 SOL plus any dev buy.</span></div>
         <div class="heroCheck" id="heroCheck"></div>
       </div>
-      <figure class="scanner" id="scanner" aria-label="A coin shown normally on the left and as an X-ray on the right, where three wallets funded by one source are circled in red">
-        <div class="scanStage" id="scanStage">
-          <svg class="scanPlain" viewBox="0 0 520 520" aria-hidden="true">
-            <defs>
-              <radialGradient id="cgold" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ffe7a3"/><stop offset=".45" stop-color="#e8b64a"/><stop offset="1" stop-color="#9a6a17"/></radialGradient>
-              <radialGradient id="cface" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f6cf6b"/><stop offset="1" stop-color="#c38d26"/></radialGradient>
-            </defs>
-            <rect width="520" height="520" fill="#cbdbe1"/>
-            <ellipse cx="268" cy="478" rx="170" ry="18" fill="#13222a" opacity=".18"/>
-            <circle cx="260" cy="260" r="205" fill="url(#cgold)"/>
-            <circle cx="260" cy="260" r="178" fill="url(#cface)" stroke="#a87416" stroke-width="3"/>
-            <g fill="#8a5c10" opacity=".9"><circle cx="210" cy="232" r="16"/><circle cx="310" cy="232" r="16"/><path d="M190 300 Q260 360 330 300" stroke="#8a5c10" stroke-width="14" fill="none" stroke-linecap="round"/></g>
-            <text x="260" y="148" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="800" font-size="34" fill="#8a5c10" letter-spacing="2">$MEME</text>
-            <path d="M120 170 A170 170 0 0 1 220 92" stroke="#fff6d6" stroke-width="10" fill="none" stroke-linecap="round" opacity=".55"/>
-          </svg>
-          <div class="scanXray" id="scanXray" aria-hidden="true">
-            <svg viewBox="0 0 520 520">
-              <defs><radialGradient id="xglow" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#1d3640"/><stop offset="1" stop-color="#0b161b"/></radialGradient></defs>
-              <rect width="520" height="520" fill="url(#xglow)"/>
-              <circle cx="260" cy="260" r="205" fill="none" stroke="#e8f1ee" stroke-opacity=".28" stroke-width="10"/>
-              <circle cx="260" cy="260" r="178" fill="none" stroke="#e8f1ee" stroke-opacity=".14" stroke-width="2"/>
-              <g fill="none" stroke="#e8f1ee" stroke-opacity=".1" stroke-width="10"><circle cx="210" cy="232" r="16"/><circle cx="310" cy="232" r="16"/><path d="M190 300 Q260 360 330 300" stroke-linecap="round"/></g>
-              <g stroke="#e8f1ee" stroke-opacity=".35" stroke-width="1.6"><line x1="170" y1="180" x2="215" y2="140"/><line x1="215" y1="140" x2="300" y2="150"/><line x1="300" y1="150" x2="340" y2="210"/><line x1="170" y1="180" x2="190" y2="270"/><line x1="190" y1="270" x2="260" y2="250"/><line x1="260" y1="250" x2="300" y2="150"/><line x1="260" y1="250" x2="320" y2="300"/><line x1="320" y1="300" x2="370" y2="280"/><line x1="190" y1="270" x2="160" y2="330"/><line x1="160" y1="330" x2="230" y2="340"/><line x1="230" y1="340" x2="260" y2="250"/><line x1="230" y1="340" x2="290" y2="370"/><line x1="320" y1="300" x2="290" y2="370"/><line x1="170" y1="180" x2="140" y2="220"/><line x1="140" y1="220" x2="190" y2="270"/></g>
-              <g fill="#e8f1ee" fill-opacity=".8"><circle cx="170" cy="180" r="5"/><circle cx="215" cy="140" r="4"/><circle cx="300" cy="150" r="5"/><circle cx="340" cy="210" r="4"/><circle cx="190" cy="270" r="6"/><circle cx="260" cy="250" r="7"/><circle cx="320" cy="300" r="5"/><circle cx="230" cy="340" r="5"/><circle cx="160" cy="330" r="4"/><circle cx="290" cy="370" r="4"/><circle cx="370" cy="280" r="4"/><circle cx="140" cy="220" r="4"/></g>
-              <g stroke="#ff8a80" stroke-opacity=".8" stroke-width="2"><line x1="352" y1="150" x2="392" y2="128"/><line x1="352" y1="150" x2="404" y2="182"/><line x1="352" y1="150" x2="360" y2="206"/></g>
-              <g fill="#ffd7d2"><circle cx="352" cy="150" r="7"/><circle cx="392" cy="128" r="6"/><circle cx="404" cy="182" r="6"/><circle cx="360" cy="206" r="6"/></g>
-              <path class="ring" d="M334 104 C380 84 438 110 432 168 C428 222 372 238 340 214 C308 190 300 126 336 106" fill="none" stroke="#cf3f36" stroke-width="4" stroke-linecap="round"/>
-              <text x="300" y="262" fill="#ff8a80" font-family="Archivo, sans-serif" font-style="italic" font-weight="700" font-size="19" transform="rotate(-5 300 262)">3 wallets, 1 funder</text>
-              <text x="24" y="500" fill="#e8f1ee" fill-opacity=".4" font-family="Archivo, sans-serif" font-weight="700" font-size="12" letter-spacing="3">XRAY  ·  $MEME  ·  LAUNCH BLOCK</text>
-            </svg>
-          </div>
-          <div class="scanBar" id="scanBar" aria-hidden="true"><span></span></div>
-          <input class="scanRange" id="scanRange" type="range" min="0" max="100" value="45" aria-label="Move the scanner across the coin">
-        </div>
-        <figcaption>Drag across the coin. On the outside it's a normal launch. Inside, one wallet funded three others that all bought in the first block.</figcaption>
-      </figure>
+      <div class="heroMapWrap">
+        <div class="bmap" id="heroMap" aria-label="Example bubble map of a coin's holders"></div>
+        <p class="bmCap">Every holder is a bubble sized by their share. Wallets that were funded by the same source are tied together and share a color. Tap or hover a group to isolate it.</p>
+      </div>
       <div class="card gate" id="gate" aria-live="off"></div>
     </div>
 
     <ol class="beats pumpOnly" aria-label="How Xray works in three steps">
       <li><b>Launch</b><span>Your coin goes live on pump.fun from your own wallet.</span></li>
-      <li><b>Scan</b><span>Xray reads every early buyer and traces who funded them.</span></li>
-      <li><b>Prove it</b><span>Buyers open one link and see the coin is clean, or that it isn't.</span></li>
+      <li><b>Scan</b><span>Xray maps every holder and ties together wallets funded by the same source.</span></li>
+      <li><b>Prove it</b><span>Buyers open the map and see the coin is clean, or that one person holds it all.</span></li>
     </ol>
     <section class="explain pumpOnly" aria-labelledby="exH">
       <h2 id="exH">What launching from Xray does</h2>
@@ -1285,7 +1185,7 @@ details p,details div{color:var(--muted)!important}
 
     <div>
       <div class="sec-head">
-        <div><h2>Coins on the light box</h2><p>Every coin launched from Xray, with its scan. Yours shows up here the moment it launches. <a class="inlineLaunch" href="#launch">Launch yours</a></p></div>
+        <div><h2>Coins on the map</h2><p>Every coin launched from Xray, with its scan. Yours shows up here the moment it launches. <a class="inlineLaunch" href="#launch">Launch yours</a></p></div>
         <div class="toolbar" role="group" aria-label="Filter coins" id="coinFilter">
           <button class="chip" type="button" data-cf="all" aria-pressed="true">All</button>
           <button class="chip" type="button" data-cf="opening" aria-pressed="false">Opening</button>
@@ -1495,6 +1395,85 @@ details p,details div{color:var(--muted)!important}
 <script>window.FG_API="https://fairgate.lol";window.FG_SITE="https://orch.lol/xray/";</script>
 <script src="live.js"></script>
 <script>
+// ===== Bubble map: every holder is a bubble sized by its share; linked wallets share a color and are tied together =====
+// renderBubbleMap(el, { holders:[{owner, amount}], clusters:[{wallets, pct, includesCreator}], creator, supply, me })
+const BM_COLORS = ["#ff5c7a", "#ffb347", "#c77dff", "#ff8c42", "#f94fd0", "#ffd166", "#e36bff", "#ff6b6b"];
+const BM_SUPPLY = 1e15; // pump.fun coins: 1B tokens at 6 decimals
+function bmShort(w) { return w.slice(0, 4) + "…" + w.slice(-4); }
+
+function bmLayout(nodes, links, W, H, iters) {
+  // group centres on a loose ring, then relax: cluster pull, collision, soft centre gravity
+  const groups = [...new Set(nodes.map((n) => n.g))];
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.3;
+  const gc = {};
+  groups.forEach((g, i) => { const a = (i / groups.length) * Math.PI * 2 - Math.PI / 2; gc[g] = g === -1 ? [cx, cy] : [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; });
+  for (const n of nodes) { if (n.x == null) { const [gx, gy] = gc[n.g]; const a = Math.random() * Math.PI * 2, d = (n.g === -1 ? R * 0.9 : 30) * Math.sqrt(Math.random()); n.x = gx + Math.cos(a) * d; n.y = gy + Math.sin(a) * d; } }
+  for (let k = 0; k < iters; k++) {
+    const t = 1 - k / iters;
+    for (const n of nodes) {
+      const [gx, gy] = gc[n.g];
+      const pull = n.g === -1 ? 0.004 : 0.03;
+      n.x += (gx - n.x) * pull * (0.4 + t); n.y += (gy - n.y) * pull * (0.4 + t);
+      n.x += (cx - n.x) * 0.002; n.y += (cy - n.y) * 0.002;
+    }
+    for (const l of links) { const a = l.a, b = l.b, dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, want = a.r + b.r + 10, f = (d - want) / d * 0.08; a.x += dx * f; a.y += dy * f; b.x -= dx * f; b.y -= dy * f; }
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j]; let dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy); const min = a.r + b.r + (a.g === b.g && a.g !== -1 ? 4 : 10);
+      if (d < min) { if (!d) { dx = 1; dy = 0; d = 1; } const push = (min - d) / d * 0.5; a.x -= dx * push; a.y -= dy * push; b.x += dx * push; b.y += dy * push; }
+    }
+    for (const n of nodes) { n.x = Math.max(n.r + 6, Math.min(W - n.r - 6, n.x)); n.y = Math.max(n.r + 6, Math.min(H - n.r - 6, n.y)); }
+  }
+}
+
+function bmBuild(d, W, H) {
+  const supply = Number(d.supply || BM_SUPPLY);
+  const groupOf = new Map();
+  (d.clusters || []).forEach((c, gi) => c.wallets.forEach((w) => groupOf.set(w, gi)));
+  const seen = new Set(), nodes = [];
+  const add = (owner, amount) => { if (seen.has(owner)) return; seen.add(owner); const pct = amount != null ? Number(amount) / supply * 100 : 0.15; nodes.push({ id: owner, pct, g: groupOf.has(owner) ? groupOf.get(owner) : -1, creator: owner === d.creator, me: owner === d.me, r: 0 }); };
+  (d.holders || []).slice(0, 60).forEach((h) => add(h.owner, h.amount));
+  (d.clusters || []).forEach((c) => c.wallets.slice(0, 12).forEach((w) => add(w, null)));
+  if (!nodes.length) return null;
+  const maxPct = Math.max(...nodes.map((n) => n.pct), 0.01), base = Math.min(W, H);
+  for (const n of nodes) n.r = Math.max(7, Math.min(base * 0.11, 7 + Math.sqrt(n.pct / maxPct) * base * 0.1));
+  const links = [];
+  (d.clusters || []).forEach((c) => { const ns = c.wallets.map((w) => nodes.find((n) => n.id === w)).filter(Boolean); for (let i = 1; i < ns.length; i++) links.push({ a: ns[0], b: ns[i] }); for (let i = 1; i + 1 < ns.length; i += 2) links.push({ a: ns[i], b: ns[i + 1] }); });
+  bmLayout(nodes, links, W, H, 160);
+  return { nodes, links, supply };
+}
+
+function renderBubbleMap(el, d, opts = {}) {
+  const W = el.clientWidth || 600, H = opts.height || Math.max(320, Math.min(560, W * 0.62));
+  const m = bmBuild(d, W, H);
+  if (!m) { el.innerHTML = `<div class="bmEmpty">${opts.empty || "No holders yet. The map draws itself as people buy."}</div>`; return; }
+  const { nodes, links } = m;
+  const col = (n) => n.g === -1 ? (n.creator ? "#7dffb2" : "#5b8cff") : BM_COLORS[n.g % BM_COLORS.length];
+  const clusterPct = (d.clusters || []).map((c) => c.pct);
+  el.innerHTML = `<svg class="bmSvg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Bubble map of holders. Linked wallets share a color.">
+    <g class="bmLinks">${links.map((l) => `<line x1="${l.a.x.toFixed(1)}" y1="${l.a.y.toFixed(1)}" x2="${l.b.x.toFixed(1)}" y2="${l.b.y.toFixed(1)}" stroke="${col(l.a)}"/>`).join("")}</g>
+    <g class="bmNodes">${nodes.map((n, i) => `<g class="bmN" data-i="${i}" data-g="${n.g}" transform="translate(${n.x.toFixed(1)} ${n.y.toFixed(1)})" style="--c:${col(n)};--d:${(i * 37) % 900}ms"><g class="bmB">
+      <circle r="${n.r.toFixed(1)}" fill="${col(n)}" fill-opacity="${n.g === -1 ? .55 : .8}" stroke="${col(n)}" stroke-opacity=".9" stroke-width="1.5"/>
+      ${n.creator ? `<circle r="${(n.r + 4).toFixed(1)}" fill="none" stroke="#7dffb2" stroke-width="1.5" stroke-dasharray="3 3"/>` : ""}
+      ${n.r > 16 ? `<text y="4" text-anchor="middle" font-size="${Math.max(9, Math.min(13, n.r / 2)).toFixed(0)}">${n.pct >= 0.1 ? n.pct.toFixed(1) + "%" : ""}</text>` : ""}
+      <title>${bmShort(n.id)}${n.creator ? " (creator)" : ""}${n.me ? " (you)" : ""}: ${n.pct.toFixed(2)}%${n.g >= 0 ? ` · group ${String.fromCharCode(65 + n.g)}` : ""}</title></g></g>`).join("")}</g>
+  </svg>
+  <div class="bmLegend">${(d.clusters || []).slice(0, 6).map((c, gi) => `<button type="button" class="bmKey" data-g="${gi}"><i style="background:${BM_COLORS[gi % BM_COLORS.length]}"></i>Group ${String.fromCharCode(65 + gi)} · ${c.wallets.length} wallets · ${Number(clusterPct[gi] || 0).toFixed(1)}%${c.includesCreator ? " · creator" : ""}</button>`).join("")}
+    <span class="bmKey"><i style="background:#5b8cff"></i>Unlinked holder</span><span class="bmKey"><i style="background:#7dffb2"></i>Creator</span></div>`;
+  const svg = el.querySelector("svg");
+  const hi = (g) => { el.querySelectorAll(".bmN").forEach((n) => n.classList.toggle("dim", g != null && n.dataset.g !== String(g))); el.querySelectorAll(".bmLinks line").forEach((l, i) => l.classList.toggle("dim", g != null && links[i].a.g !== g)); };
+  el.querySelectorAll(".bmKey[data-g]").forEach((b) => { b.addEventListener("mouseenter", () => hi(+b.dataset.g)); b.addEventListener("mouseleave", () => hi(null)); b.addEventListener("click", () => { const on = b.classList.toggle("on"); el.querySelectorAll(".bmKey.on").forEach((o) => { if (o !== b) o.classList.remove("on"); }); hi(on ? +b.dataset.g : null); }); });
+  svg.addEventListener("click", (e) => { const n = e.target.closest(".bmN"); if (!n) return hi(null); const id = nodes[+n.dataset.i].id; if (opts.onWallet) opts.onWallet(id); else navigator.clipboard?.writeText(id); });
+}
+
+// Demo data for the home page: one clean-looking coin with a bundle hiding in it.
+function bmDemo() {
+  const W = (p) => Array.from({ length: 44 }, (_, i) => "w" + p + i.toString(36).padStart(3, "x") + "demo" + (i * 7919).toString(36));
+  const ws = W("a");
+  const amounts = ws.map((_, i) => (i === 0 ? 4.2 : i < 4 ? 2.3 + i * 0.3 : i < 12 ? 1.1 - i * 0.05 : Math.max(0.08, 0.9 - i * 0.02)) / 100 * BM_SUPPLY);
+  return { creator: ws[0], supply: BM_SUPPLY, holders: ws.map((owner, i) => ({ owner, amount: amounts[i] })),
+    clusters: [{ wallets: [ws[1], ws[2], ws[3], ws[7]], pct: 9.4, includesCreator: false }, { wallets: [ws[5], ws[9], ws[14]], pct: 3.1, includesCreator: false }] };
+}
+
 "use strict";
 // ===== Config =====
 // When the program is deployed, set programId/rpc/indexer and the site switches from the simulator to live data.
@@ -2524,28 +2503,6 @@ syncWalletBtn(); lfWalletUI(); renderRules(); devHint();
 go(location.hash.slice(1) || "explore", false);
 requestAnimationFrame(loop);
 
-// ===== hero scanner: drag (or let it sweep) to x-ray the coin =====
-(function () {
-  const stage = document.getElementById("scanStage"), xr = document.getElementById("scanXray"), bar = document.getElementById("scanBar"), rng = document.getElementById("scanRange");
-  if (!stage) return;
-  let pos = 45, touched = false, t0 = performance.now();
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const set = (p) => { pos = Math.max(0, Math.min(100, p)); xr.style.clipPath = `inset(0 0 0 ${pos}%)`; bar.style.left = pos + "%"; rng.value = Math.round(pos); };
-  const fromEvent = (e) => { const r = stage.getBoundingClientRect(); set(((e.clientX - r.left) / r.width) * 100); };
-  stage.addEventListener("pointerdown", (e) => { touched = true; stage.setPointerCapture(e.pointerId); fromEvent(e); });
-  stage.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "mouse") { touched = true; fromEvent(e); } });
-  rng.addEventListener("input", () => { touched = true; set(+rng.value); });
-  set(reduce ? 40 : 92);
-  if (reduce) return;
-  // one slow sweep on load to show what it does, then it waits for the visitor
-  (function sweep(now) {
-    if (touched) return;
-    const k = Math.min(1, (now - t0) / 2600), e = 1 - Math.pow(1 - k, 3);
-    set(92 - 42 * e);
-    if (k < 1) requestAnimationFrame(sweep);
-  })(t0);
-})();
-
 
 // ===== Live mode: real coins from the Xray program (uses window.FG from live.js) =====
 // `var` on purpose: app.js calls into this file during startup, before `let` bindings here would exist.
@@ -2824,6 +2781,7 @@ function pumpCard(c) {
   return `<article class="card coin">
     <a class="coin-top coinLink" href="#coin-${esc(c.mint)}">${pAv(c)}<div><b>${esc(c.name)}</b><span>$${esc(c.symbol)}</span></div><span class="age">${c.time ? agoT(c.time) : ""}</span></a>
     <div class="kv"><div><small>Market cap</small><b>${c.mcSol == null ? "—" : fmtSol(c.mcSol, 1) + " SOL"}</b></div><div><small>Curve</small><b>${c.complete ? "Graduated" : c.progress == null ? "—" : c.progress.toFixed(1) + "%"}</b></div><div><small>Linked</small><b>${r ? r.linked : "—"}</b></div></div>
+    <div class="coinBubbles" aria-hidden="true">${r ? (r.clusters.length ? r.clusters.slice(0, 6).map((x, i) => `<i style="width:${Math.max(6, Math.min(14, 4 + x.pct)).toFixed(0)}px;height:${Math.max(6, Math.min(14, 4 + x.pct)).toFixed(0)}px;background:${BM_COLORS[i % BM_COLORS.length]};opacity:.9"></i>`).join("") : `<i style="width:8px;height:8px"></i><i style="width:6px;height:6px"></i><i style="width:7px;height:7px"></i>`) : ""}</div>
     <div class="prog"><i style="width:${c.progress || 0}%"></i></div>
     <div class="coin-foot coinStatus"><span class="st ${c.complete ? "gold" : ""}">${c.complete ? "Graduated" : "On pump.fun"}</span>${pRisk(r)}</div>
     <div class="coin-actions"><a class="btn sm" href="${pumpUrl(c.mint)}" target="_blank" rel="noopener">Trade on pump.fun</a><a class="btn sm ghost" href="#coin-${esc(c.mint)}">Read scan</a></div>
@@ -2845,7 +2803,7 @@ function pumpExplore() {
   if (coinSort === "mc") list.sort((a, b) => (b.mcSol || 0) - (a.mcSol || 0));
   if (coinSort === "clean") list.sort((a, b) => (PDETAIL[a.mint]?.report?.score ?? 101) - (PDETAIL[b.mint]?.report?.score ?? 101));
   $id("coinGrid").innerHTML = list.length ? list.map(pumpCard).join("")
-    : `<div style="grid-column:1/-1">${PCOINS.length ? empty("No scans match this filter.") : empty(pumpListAt ? "Nothing on the light box yet. Launch a coin, or scan any pump.fun address above." : "Loading coins…", `<a class="btn sm sig" href="#launch">Launch a coin </a>`)}</div>`;
+    : `<div style="grid-column:1/-1">${PCOINS.length ? empty("No scans match this filter.") : empty(pumpListAt ? "Nothing on the map yet. Launch a coin, or scan any pump.fun address above." : "Loading coins…", `<a class="btn sm sig" href="#launch">Launch a coin </a>`)}</div>`;
   const flagged = PCOINS.filter((c) => PDETAIL[c.mint]?.report && PDETAIL[c.mint].report.risk !== "low").sort((a, b) => PDETAIL[b.mint].report.score - PDETAIL[a.mint].report.score).slice(0, 5);
   $id("flagList").innerHTML = flagged.length ? flagged.map((c) => `<a class="pay rowLink" href="#coin-${esc(c.mint)}">${pAv(c, "sq")}<div class="t"><b>${esc(c.name)} · $${esc(c.symbol)}</b><span>${esc(PDETAIL[c.mint].report.notes[0] || "")}</span></div><div class="amt">${riskPill(PDETAIL[c.mint].report)}</div></a>`).join("") : empty("No coins flagged right now.");
 }
@@ -2887,6 +2845,7 @@ function pumpCoinPage() {
     </div>
     <div class="cpGrid">
       <div class="cpLeft">
+        <div class="card cpMap"><div class="cpMapHead"><h2>Holder map</h2><span>${(d.holders || []).length} holders${d.report ? ` · ${d.report.clusters.length} linked group${d.report.clusters.length === 1 ? "" : "s"}` : ""}</span></div><div class="bmap" id="cpMapEl"></div></div>
         <div><div class="sec-head" style="margin-bottom:12px"><div><h2>Latest trades</h2><p>Linked wallets are tagged with their group.</p></div></div>
           <div class="list logList">${(d.trades || []).length ? d.trades.slice(0, 40).map((t) => { const g = cl.has(t.user) ? ` <span class="tagc">[${cl.get(t.user)}]</span>` : ""; const who = `${esc(t.user === ME ? "you" : shortW2(t.user))}${t.user === c.creator ? " (dev)" : ""}${g}`;
             return `<a class="pay rowLink" href="${solTx(t.sig)}" target="_blank" rel="noopener">${avatar(shortW2(t.user))}<div class="t"><b><span class="${t.isBuy ? "side-b" : "side-s"}">${t.isBuy ? "Buy" : "Sell"}</span> · ${who}</b><span>${fmtTok(BigInt(t.tokens))} tokens${t.ts ? " · " + agoT(t.ts) + " ago" : ""}</span></div><div class="amt">${solS(BigInt(t.sol))} SOL</div></a>`; }).join("") : empty("No trades yet.")}</div></div>
@@ -2896,6 +2855,8 @@ function pumpCoinPage() {
         <div class="card"><h2 style="margin-bottom:12px">Top holders</h2><div class="list" id="cpTop">${(d.holders || []).length ? d.holders.slice(0, 10).map((h) => `<div class="pay">${avatar(shortW2(h.owner))}<div class="t"><b>${esc(h.owner === ME ? "you" : shortW2(h.owner))}${h.owner === c.creator ? " · creator" : ""}${cl.has(h.owner) ? ` <span class="tagc">[${cl.get(h.owner)}]</span>` : ""}</b><span>${fmtTok(BigInt(h.amount))} tokens</span></div><div class="amt">${(Number(BigInt(h.amount) * 100000n / SUPPLY) / 1000).toFixed(2)}%</div></div>`).join("") : empty("No holders yet.")}</div></div>
       </div>
     </div>`;
+  const mapEl = $id("cpMapEl");
+  if (mapEl) renderBubbleMap(mapEl, { holders: d.holders || [], clusters: (d.report && d.report.clusters) || [], creator: c.creator, me: ME, supply: BM_SUPPLY }, { empty: d.report ? "No holders yet." : "Reading the holders…", onWallet: (w) => { navigator.clipboard?.writeText(w); toast("Wallet copied"); } });
 }
 
 function pumpWatch() {
@@ -2968,6 +2929,7 @@ function pumpStart() {
   document.body.classList.add("pump");
   const bar = $id("dbHead") && $id("dbHead").parentElement;
   if (bar) bar.innerHTML = `<i></i><b>Live.</b> Launch on pump.fun from Xray and your coin gets a public bundle scan. <a href=\"#launch\">Launch a coin</a>`;
+  const hm = $id("heroMap"); if (hm) { const draw = () => renderBubbleMap(hm, bmDemo(), { height: Math.max(300, Math.min(460, hm.clientWidth * 0.7)) }); draw(); let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 200); }); }
   const hero = document.querySelector("#v-explore .heroCopy");
   if (hero) {
     

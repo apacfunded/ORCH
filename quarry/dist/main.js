@@ -1,39 +1,37 @@
 // ============================================================
-// APP SHELL — background, header, ticker tape, hash router, footer, mobile nav.
+// APP SHELL — header, price strip, hash router, footer.
 // ============================================================
-import { background } from "./components/Background.js";
 import { installPaletteShortcut } from "./components/CommandPalette.js";
-import { footer, header, mobileNav } from "./components/Header.js";
+import { footer, header } from "./components/Header.js";
 import { tickerTape } from "./components/TickerTape.js";
 import { toast } from "./components/Toasts.js";
 import { brand } from "./config/brand.js";
 import { isDemo } from "./config/flags.js";
 import { market } from "./data/index.js";
 import { clear, h } from "./lib/dom.js";
-import { currentPath, matchRoute } from "./lib/router.js";
+import { currentPath, matchRoute, navigate } from "./lib/router.js";
 import { boardPage, boardsIndexPage } from "./pages/Board.js";
 import { coinPage } from "./pages/Coin.js";
+import { coinsPage } from "./pages/Coins.js";
 import { docsPage } from "./pages/Docs.js";
 import { homePage } from "./pages/Home.js";
 import { launchPage } from "./pages/Launch.js";
 import { notFoundPage } from "./pages/NotFound.js";
-import { pairsPage } from "./pages/Pairs.js";
 import { setupPage } from "./pages/Setup.js";
-const bg = background();
-document.body.prepend(bg.el);
-const ctx = { tint: (c) => bg.tint(c) };
+const ctx = { tint: () => { } };
 const app = document.getElementById("app");
 const main = h("main", { id: "main" });
-app.append(header(), tickerTape(), main, footer(), mobileNav());
+app.append(header(), tickerTape(), main, footer());
 installPaletteShortcut();
 market(); // start the data layer early so the first paint has numbers
 const routes = [
     { path: "/", render: () => homePage(ctx) },
+    { path: "/coins", render: () => coinsPage() },
     { path: "/boards", render: () => boardsIndexPage(ctx) },
     { path: "/board/:id", render: (p) => boardPage(ctx, p) },
     { path: "/coin/:mint", render: (p) => coinPage(ctx, p) },
     { path: "/launch", render: () => launchPage(ctx) },
-    { path: "/pairs", render: () => pairsPage(ctx) },
+    { path: "/pairs", render: () => { navigate("/boards"); return Promise.resolve(h("div")); } },
     { path: "/docs", render: () => Promise.resolve(docsPage()) },
     { path: "/setup", render: () => setupPage() },
 ];
@@ -41,9 +39,9 @@ let nav = 0;
 async function render() {
     const id = ++nav;
     const path = currentPath();
-    const m = matchRoute(routes, path);
-    document.title = `${brand.name} · ${titleFor(path)}`;
-    const skeleton = h("div", { class: "page", style: "display:grid;gap:14px" }, h("div", { class: "skel", style: "height:220px" }), h("div", { class: "skel", style: "height:160px" }));
+    const m = matchRoute(routes, path.split("#")[0]);
+    document.title = `${titleFor(path)} · ${brand.name}`;
+    const skeleton = h("div", { class: "page", style: "display:grid;gap:16px" }, h("div", { class: "skel", style: "height:56px;max-width:420px" }), h("div", { class: "skel", style: "height:280px" }), h("div", { class: "skel", style: "height:160px" }));
     clear(main);
     main.appendChild(skeleton);
     try {
@@ -52,31 +50,33 @@ async function render() {
             return; // a newer navigation won
         clear(main);
         main.appendChild(el);
-        if (!path.includes("#"))
-            window.scrollTo({ top: 0 });
         const anchor = location.hash.split("#")[2];
         if (anchor)
-            document.getElementById(anchor)?.scrollIntoView();
+            requestAnimationFrame(() => document.getElementById(anchor)?.scrollIntoView());
+        else
+            window.scrollTo({ top: 0 });
     }
     catch (err) {
         console.error(err);
         clear(main);
-        main.appendChild(notFoundPage("Something went wrong loading this page."));
+        main.appendChild(notFoundPage("Something went wrong loading this page. Try again in a moment."));
     }
 }
 function titleFor(path) {
     if (path === "/")
         return brand.tagline;
+    if (path.startsWith("/coins"))
+        return "Coins";
+    if (path.startsWith("/boards"))
+        return "The table";
     if (path.startsWith("/board"))
-        return "Boards";
+        return "Element";
     if (path.startsWith("/coin"))
-        return "Coin";
+        return "Certificate";
     if (path.startsWith("/launch"))
         return "Launch a coin";
-    if (path.startsWith("/pairs"))
-        return "Pairs";
     if (path.startsWith("/docs"))
-        return "How it works";
+        return "Method";
     if (path.startsWith("/setup"))
         return "Setup";
     return "Not found";
@@ -84,4 +84,4 @@ function titleFor(path) {
 window.addEventListener("hashchange", () => void render());
 void render();
 if (isDemo())
-    window.setTimeout(() => toast("Board prices are simulated until live data is connected. The front chart shows the real gold price.", { icon: "info", color: "#f2b84b", ms: 5000 }), 1500);
+    window.setTimeout(() => toast("Demo data: coins and prices are simulated.", { icon: "info", ms: 5000 }), 1500);

@@ -33,7 +33,7 @@ export function sparkline(values, opts = {}) {
         const px = (i) => (i / (shown.length - 1)) * w;
         const py = (v) => hgt - pad - ((v - min) / span) * (hgt - pad * 2);
         const up = shown[shown.length - 1] >= shown[0];
-        const c = color === "auto" ? (up ? "#58d68d" : "#ff8a5c") : color;
+        const c = color === "auto" ? (up ? "#1f8a4c" : "#c4362b") : color;
         ctx.beginPath();
         ctx.moveTo(px(0), py(shown[0]));
         for (let i = 1; i < shown.length; i++) {

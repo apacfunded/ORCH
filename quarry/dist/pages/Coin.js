@@ -1,163 +1,120 @@
-import { badge, statusBadge, tierBadge } from "../components/Badge.js";
+import { badge } from "../components/Badge.js";
+import { assayNo } from "../components/Certificate.js";
 import { chartPanel } from "../components/ChartPanel.js";
-import { UI, commodityIcon } from "../components/Icons.js";
+import { UI } from "../components/Icons.js";
 import { odometer } from "../components/Odometer.js";
 import { copyText, toast } from "../components/Toasts.js";
-import { tradePanel } from "../components/TradePanel.js";
-import { wallet } from "../components/WalletButton.js";
 import { houseDisclaimer, pairNote } from "../config/brand.js";
-import { isDemo } from "../config/flags.js";
-import { fees, fmtFee } from "../config/fees.js";
+import { fees } from "../config/fees.js";
 import { byId } from "../config/commodities.js";
+import { elNum, elementOf } from "../config/elements.js";
+import { isDemo } from "../config/flags.js";
 import { market } from "../data/index.js";
 import { h, onRemove, svg } from "../lib/dom.js";
 import { fmtNum, fmtPct, fmtQuote, fmtSmall, fmtTime, fmtUsd, pctArrow, shortAddr, timeAgo } from "../lib/format.js";
-import { storage } from "../lib/motion.js";
 import { href } from "../lib/router.js";
+import { mainTicker } from "./Home.js";
 import { notFoundPage } from "./NotFound.js";
-export async function coinPage(ctx, params) {
-    const coin = await market().getCoin(params.mint);
+export function sealSvg(top = "VERIFIED SPLIT", mid = `${fees.creatorSharePct}/${fees.buybackBurnPct}/${fees.mainHolderSolPct}`) {
+    const ring = `${top} · LOCKED ON-CHAIN · `;
+    return `<svg viewBox="0 0 160 160" aria-hidden="true"><defs><path id="sealp" d="M80 80m-60 0a60 60 0 1 1 120 0a60 60 0 1 1-120 0"/></defs><circle cx="80" cy="80" r="76" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="80" cy="80" r="46" fill="none" stroke="currentColor" stroke-width="1"/><text font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor"><textPath href="#sealp" textLength="372" lengthAdjust="spacing">${ring}</textPath></text><text x="80" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="600" fill="currentColor">${mid}</text><text x="80" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="1.5" fill="currentColor">ASSAYED</text></svg>`;
+}
+function meter(p) {
+    const ticks = Array.from({ length: 21 }, (_, i) => {
+        const a = Math.PI * (1 - i / 20);
+        const r1 = 88, r2 = i % 5 === 0 ? 74 : 80;
+        return `<line x1="${100 + r1 * Math.cos(a)}" y1="${100 - r1 * Math.sin(a)}" x2="${100 + r2 * Math.cos(a)}" y2="${100 - r2 * Math.sin(a)}" stroke="currentColor" stroke-width="${i % 5 === 0 ? 1.5 : 1}"/>`;
+    }).join("");
+    const labels = [0, 25, 50, 75, 100].map((v) => { const a = Math.PI * (1 - v / 100); return `<text x="${100 + 62 * Math.cos(a)}" y="${100 - 62 * Math.sin(a) + 3}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="currentColor" opacity=".6">${v}</text>`; }).join("");
+    const el = h("div", { class: "meter" });
+    const val = h("div", { class: "mv" }, "0%");
+    const set = (v) => {
+        const q = Math.max(0, Math.min(1, v));
+        const a = Math.PI * (1 - q);
+        el.querySelector(".needle")?.setAttribute("x2", String(100 + 84 * Math.cos(a)));
+        el.querySelector(".needle")?.setAttribute("y2", String(100 - 84 * Math.sin(a)));
+        const arc = el.querySelector(".arc");
+        if (arc)
+            arc.setAttribute("stroke-dasharray", `${(Math.PI * 92 * q).toFixed(1)} 999`);
+        val.textContent = `${Math.round(q * 100)}%`;
+    };
+    el.innerHTML = `<svg viewBox="0 0 200 112"><path d="M8 100a92 92 0 0 1 184 0" fill="none" stroke="var(--rule)" stroke-width="4"/><path class="arc" d="M8 100a92 92 0 0 1 184 0" fill="none" stroke="var(--signal)" stroke-width="4" stroke-dasharray="0 999" style="transition:stroke-dasharray .6s"/><g style="color:var(--ink)">${ticks}${labels}</g><line class="needle" x1="100" y1="100" x2="16" y2="100" stroke="var(--ink)" stroke-width="2"/><circle cx="100" cy="100" r="4" fill="var(--ink)"/></svg>`;
+    el.appendChild(val);
+    set(p);
+    return { el, set };
+}
+export async function coinPage(_ctx, params) {
+    const coin = await market().getCoin(params.mint).catch(() => null);
     if (!coin)
-        return notFoundPage(`No coin at ${shortAddr(params.mint)}`);
+        return notFoundPage(`No sample at ${shortAddr(params.mint)}. Coins appear here once they're launched through Quarry and verified.`);
     const com = byId(coin.commodityId);
-    const accent = com?.color ?? "#e6b84a";
-    const sym = com?.symbol ?? "QUOTE";
-    const isHouseToken = !!coin.houseToken;
-    ctx.tint(accent);
-    // ---- header ----
-    const copyBtn = h("button", { class: "iconbtn", "aria-label": "Copy contract address", onclick: () => void copyText(coin.mint, copyBtn) });
+    const e = elementOf(coin.commodityId);
+    const sym = com?.symbol ?? "—";
+    // ---- certificate header ----
+    const copyBtn = h("button", { class: "iconbtn", "aria-label": "Copy contract address", title: "Copy CA", onclick: () => void copyText(coin.mint, copyBtn) });
     copyBtn.innerHTML = UI.copy;
-    const statusEl = statusBadge(coin.status);
-    const head = h("div", { class: "card pad" }, h("div", { class: "coinhead" }, h("img", { src: coin.image, alt: "" }), h("div", { style: "flex:1;min-width:0" }, h("h1", null, coin.name, statusEl, coin.rewards ? badge("rewards") : null), h("div", { class: "row2" }, h("span", { class: "num" }, `$${coin.ticker}`), isHouseToken
-        ? h("span", { class: "pairchip", style: `--c:${accent}` }, h("b", null, coin.ticker), " / ", h("b", null, "SOL"), h("span", { class: "muted", style: "font-size:11px" }, "unlocks the board"))
-        : h("span", { class: "pairchip tip", style: `--c:${accent}`, tabindex: "0", "aria-label": `${coin.ticker} priced in ${sym}. ${pairNote}` }, h("b", null, coin.ticker), " / ", svg(commodityIcon(com?.icon ?? ""), "ico"), h("b", null, sym), com ? tierBadge(com, { tooltip: false }) : null, h("span", { class: "tipbox", role: "tooltip" }, pairNote, com?.tier === "house" ? ` ${houseDisclaimer}` : "")), h("span", { class: "ca" }, "CA ", shortAddr(coin.mint, 6), copyBtn), h("div", { class: "links" }, isDemo() ? null : h("a", { class: "btn sm", href: `https://pump.fun/coin/${coin.mint}`, target: "_blank", rel: "noopener", title: "Trade on pump.fun" }, "pump.fun", svg(UI.external)), h("a", { class: "iconbtn", href: `https://solscan.io/token/${coin.mint}`, target: "_blank", rel: "noopener", title: "Solscan", "aria-label": "View on Solscan" }, svg(UI.external)), coin.socials.x ? h("a", { class: "iconbtn", href: coin.socials.x, target: "_blank", rel: "noopener", title: "X", "aria-label": "X" }, "𝕏") : null, coin.socials.website ? h("a", { class: "iconbtn", href: coin.socials.website, target: "_blank", rel: "noopener", title: "Website", "aria-label": "Website" }, svg(UI.home)) : null)))), isHouseToken ? h("div", { class: "disc-box", style: "margin-top:12px" }, h("b", null, "House token · "), houseDisclaimer, ` It trades on pump.fun like any coin. When $${sym} graduates, the ${com?.name} board unlocks.`) : null, com?.tier === "house" && !isHouseToken ? h("div", { class: "disc-box", style: "margin-top:12px" }, h("b", null, "Priced in a House token · "), houseDisclaimer) : null);
-    // ---- stat row with odometers ----
+    const status = h("span", null, coin.status === "graduated" ? badge("graduated") : coin.status === "graduating" ? badge("graduating") : badge("curve"));
+    const links = h("div", { class: "links" }, isDemo() ? null : h("a", { class: "btn sm primary", href: `https://pump.fun/coin/${coin.mint}`, target: "_blank", rel: "noopener" }, "Trade on pump.fun", svg(UI.external)), h("a", { class: "btn sm", href: `https://solscan.io/token/${coin.mint}`, target: "_blank", rel: "noopener" }, "Solscan"), coin.socials?.x ? h("a", { class: "btn sm", href: coin.socials.x, target: "_blank", rel: "noopener" }, "X") : null, coin.socials?.website ? h("a", { class: "btn sm", href: coin.socials.website, target: "_blank", rel: "noopener" }, "Website") : null, coin.socials?.telegram ? h("a", { class: "btn sm", href: coin.socials.telegram, target: "_blank", rel: "noopener" }, "Telegram") : null);
+    const comPrice = h("b", null, "—");
+    const cert = h("div", { class: "certificate" }, h("div", { class: "band" }, h("span", null, "Certificate of assay"), h("span", null, `Nº ${assayNo(coin)}`)), h("div", { class: "body" }, h("img", { src: coin.image, alt: "" }), h("div", { style: "min-width:0" }, h("h1", null, coin.name), h("div", { class: "tk" }, h("b", null, `$${coin.ticker}`), h("span", { class: "muted" }, "/"), h("a", { class: "el-chip", href: href(`/board/${com?.id ?? ""}`), style: `--c:${com?.color ?? "var(--ink)"}` }, h("i"), `${e?.sym ?? "?"} · ${com?.name ?? "Unknown"}`), status), links), h("div", { class: "seal stamp-in", title: `Creator fees locked at launch: ${fees.creatorSharePct}% creator, ${fees.buybackBurnPct}% buyback & burn ${mainTicker()}, ${fees.mainHolderSolPct}% ${mainTicker()} holders in SOL`, html: sealSvg() })), h("div", { class: "meta" }, h("div", null, h("span", { class: "label" }, "Contract"), h("b", null, shortAddr(coin.mint, 6), copyBtn)), h("div", null, h("span", { class: "label" }, "Creator"), h("b", null, coin.creator ? h("a", { href: `https://solscan.io/account/${coin.creator}`, target: "_blank", rel: "noopener", class: "linkish" }, shortAddr(coin.creator, 5)) : "—")), h("div", null, h("span", { class: "label" }, "Launched"), h("b", null, new Date(coin.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }))), h("div", null, h("span", { class: "label" }, `${sym} / ${com?.unit ?? "unit"}`), comPrice)));
+    // ---- stat line ----
     const mcap = odometer(fmtUsd(coin.marketCapUsd));
     const price = odometer(`$${fmtSmall(coin.priceUsd)}`);
-    const priceQ = h("div", { class: "v small num", title: isHouseToken ? "Price in SOL" : `Converted: USD price ÷ ${sym} price` }, isHouseToken ? fmtQuote(coin.priceQuote, "SOL") : `≈ ${fmtQuote(coin.priceQuote, sym)}`);
+    const inCom = h("div", { class: "s", title: pairNote }, coin.priceQuote ? `${fmtQuote(coin.priceQuote, sym)}` : `— ${sym}`);
+    const chg = h("div", { class: `s ${coin.change24hPct >= 0 ? "up" : "down"}` }, `${pctArrow(coin.change24hPct)} ${fmtPct(coin.change24hPct)} 24H`);
     const vol = odometer(fmtUsd(coin.volume24hUsd));
-    const holders = odometer(fmtNum(coin.holders));
-    const prog = odometer(`${Math.round(coin.bondingProgress * 100)}%`);
-    const chg = h("div", { class: `v small num ${coin.change24hPct >= 0 ? "up" : "down"}` }, `${pctArrow(coin.change24hPct)} ${fmtPct(coin.change24hPct)} 24h`);
-    const stats = h("div", { class: "statrow" }, h("div", { class: "stat" }, h("div", { class: "k" }, "Market cap"), h("div", { class: "v" }, mcap.el), chg), h("div", { class: "stat" }, h("div", { class: "k" }, "Price"), h("div", { class: "v" }, price.el), priceQ), h("div", { class: "stat" }, h("div", { class: "k" }, "24h volume"), h("div", { class: "v" }, vol.el)), h("div", { class: "stat" }, h("div", { class: "k" }, "Holders"), h("div", { class: "v" }, holders.el)), h("div", { class: "stat" }, h("div", { class: "k" }, "Bonding"), h("div", { class: "v" }, prog.el)));
-    // ---- bonding card ----
-    const bondFill = h("i", { style: `--p:${(coin.bondingProgress * 100).toFixed(1)}%` });
-    const bondNums = h("div", { class: "nums" });
-    const renderBond = (c) => bondNums.replaceChildren(h("span", null, h("b", null, `${fmtNum(c.quoteInCurve, 2)} SOL`), " in curve"), h("span", null, h("b", null, `${fmtNum(Math.max(0, c.quoteToGraduate - c.quoteInCurve), 2)} SOL`), " to graduate"));
-    renderBond(coin);
-    const bond = h("div", { class: "card bondcard", style: `--c:${accent};--c2:${com?.color2 ?? accent}` }, h("div", { style: "display:flex;justify-content:space-between;align-items:center" }, h("div", { class: "eyebrow" }, coin.status === "graduated" ? "Graduated on pump.fun" : "pump.fun bonding curve"), h("span", { class: "num" }, `${Math.round(coin.bondingProgress * 100)}%`)), h("div", { class: "bar big" }, bondFill), bondNums, h("p", { class: "muted", style: "font-size:12.5px" }, coin.status === "graduated" ? `Graduated ${coin.graduatedAt ? timeAgo(coin.graduatedAt) : ""}. Liquidity moved to pump.fun's AMM (PumpSwap) and trading continues there.${isHouseToken ? ` The ${com?.name} board is unlocked.` : ""}` : `When the curve fills, pump.fun graduates the coin and moves its liquidity to PumpSwap automatically.${isHouseToken ? ` That also unlocks the ${com?.name} board here.` : ""}`));
-    // ---- tabs ----
-    const tabsBar = h("div", { class: "tabs", role: "tablist" });
-    const ink = h("div", { class: "ink" });
-    tabsBar.appendChild(ink);
-    const body = h("div", { class: "body" });
-    const tabs = [["Trades", () => tradesTab(coin)], ["Holders", () => holdersTab(coin)], ["Comments", () => commentsTab(coin)], ["Info", () => infoTab(coin, sym)]];
-    let cur = 0;
-    const btns = tabs.map(([l], i) => h("button", { role: "tab", class: i === 0 ? "active" : "", onclick: () => { cur = i; btns.forEach((b, j) => b.classList.toggle("active", j === i)); moveInk(); body.replaceChildren(tabs[i][1]()); } }, l));
-    btns.forEach((b) => tabsBar.appendChild(b));
-    const moveInk = () => { const a = btns[cur]; ink.style.left = `${a.offsetLeft}px`; ink.style.width = `${a.offsetWidth}px`; };
-    requestAnimationFrame(moveInk);
-    body.appendChild(tabs[0][1]());
-    const chart = chartPanel(coin);
-    const trade = tradePanel(coin);
-    const sticky = h("div", { class: "stickybar" }, h("button", { class: "btn up", style: "flex:1", onclick: () => { trade.scrollIntoView({ behavior: "smooth" }); trade.querySelector(".bs .buy")?.click(); } }, "Buy"), h("button", { class: "btn down", style: "flex:1", onclick: () => { trade.scrollIntoView({ behavior: "smooth" }); trade.querySelector(".bs .sell")?.click(); } }, "Sell"));
-    const page = h("div", { class: "page" }, h("a", { class: "btn ghost sm", href: href(com ? `/board/${com.id}` : "/"), style: "margin-bottom:10px" }, svg(UI.back), com ? `${com.name} board` : "Boards"), h("div", { class: "coinpage" }, h("div", null, head, stats, h("div", { style: "margin-top:16px" }, chart), h("div", { class: "card pad coin-tabs" }, tabsBar, body)), h("div", { class: "side", style: "display:grid;gap:12px" }, trade, bond)), sticky);
-    // ---- live numbers ----
-    let lastPrice = coin.priceUsd;
-    let lastStatus = coin.status;
+    const curvePct = odometer(`${Math.round(coin.bondingProgress * 100)}%`);
+    const statline = h("div", { class: "statline" }, h("div", null, h("span", { class: "label" }, "Market cap"), h("div", { class: "v" }, mcap.el), chg), h("div", null, h("span", { class: "label" }, "Price"), h("div", { class: "v" }, price.el), inCom), h("div", null, h("span", { class: "label" }, "24H volume"), h("div", { class: "v" }, vol.el), h("div", { class: "s" }, "pump.fun, in SOL")), h("div", null, h("span", { class: "label" }, "Curve"), h("div", { class: "v" }, curvePct.el), h("div", { class: "s" }, coin.status === "graduated" ? "Graduated" : "to graduation")));
+    // ---- side: gauge ----
+    const m = meter(coin.bondingProgress);
+    const inCurve = h("span", null, "—"), toGrad = h("span", null, "—");
+    const renderCurve = (c) => { inCurve.textContent = `${fmtNum(c.quoteInCurve ?? 0, 2)} SOL`; toGrad.textContent = c.status === "graduated" ? "Done" : `${fmtNum(Math.max(0, (c.quoteToGraduate ?? 0) - 0), 2)} SOL`; };
+    renderCurve(coin);
+    const gaugePanel = h("div", { class: "panel" }, h("div", { class: "ph" }, h("span", { class: "label" }, "Bonding curve"), h("span", { class: "label" }, "pump.fun")), h("div", { class: "pb" }, m.el, h("div", { class: "kv", style: "margin-top:10px" }, h("div", null, h("span", null, "SOL in curve"), inCurve), h("div", null, h("span", null, "SOL to graduate"), toGrad)), isDemo() ? null : h("a", { class: "btn primary block lg", style: "margin-top:12px", href: `https://pump.fun/coin/${coin.mint}`, target: "_blank", rel: "noopener" }, "Trade on pump.fun", svg(UI.external)), h("p", { class: "hint", style: "margin-top:10px" }, coin.status === "graduated" ? "Graduated. Liquidity moved to PumpSwap; trading continues there." : "When the curve fills, pump.fun graduates the coin to PumpSwap automatically.")));
+    // ---- side: trades ----
+    const tradesBody = h("div", { class: "tape-trades" }, h("div", { class: "wait" }, "Waiting for trades…"));
+    const offTrades = market().subscribeTrades(coin.pairAddress, (t) => {
+        tradesBody.querySelector(".wait")?.remove();
+        tradesBody.prepend(h("div", { class: `tr in ${t.side}` }, h("span", null, fmtTime(t.ts)), h("span", { class: "side" }, t.side === "buy" ? "BUY" : "SELL"), h("span", null, `${fmtSmall(t.quoteAmount)} SOL`), h("span", { class: "w" }, shortAddr(t.wallet, 3))));
+        while (tradesBody.children.length > 40)
+            tradesBody.lastElementChild?.remove();
+    });
+    const tradesPanel = h("div", { class: "panel" }, h("div", { class: "ph" }, h("span", { class: "label" }, "Live trades"), h("span", { class: "live-dot live" }, h("i"), "LIVE")), tradesBody);
+    // ---- notes ----
+    const notes = h("div", { class: "notes-sec" }, h("div", { class: "panel" }, h("div", { class: "ph" }, h("span", { class: "label" }, "Notes")), h("div", { class: "pb" }, h("p", { class: "desc" }, coin.description || "No notes filed with this sample."), com?.tier === "house" ? h("div", { class: "note house", style: "margin-top:14px" }, h("b", null, "House element. "), houseDisclaimer) : h("div", { class: "note", style: "margin-top:14px" }, pairNote))), h("div", { class: "panel" }, h("div", { class: "ph" }, h("span", { class: "label" }, "Assay record")), h("div", { class: "pb" }, h("div", { class: "kv" }, h("div", null, h("span", null, "Trades on"), h("span", null, "pump.fun, in SOL")), h("div", null, h("span", null, "Element"), h("span", null, `${e ? elNum(e.n) : "--"} ${com?.name ?? ""} (${com?.tier ?? ""})`)), h("div", null, h("span", null, "Supply"), h("span", null, fmtNum(coin.supply ?? 1e9))), h("div", null, h("span", null, "Creator fees · creator"), h("span", null, `${fees.creatorSharePct}%`)), h("div", null, h("span", null, `Creator fees · burn ${mainTicker()}`), h("span", null, `${fees.buybackBurnPct}%`)), h("div", null, h("span", null, `Creator fees · ${mainTicker()} holders`), h("span", null, `${fees.mainHolderSolPct}% in SOL`)), h("div", null, h("span", null, "Contract"), h("span", null, coin.mint))))));
+    const holdersHost = h("div", { class: "holders" }, h("div", { class: "skel", style: "height:90px" }));
+    void market().getHolders(coin.mint).then((hs) => {
+        holdersHost.replaceChildren(...hs.slice(0, 10).map((x, i) => h("div", { class: "row" }, h("span", { class: "muted" }, String(i + 1)), h("span", null, shortAddr(x.wallet, 4), x.label ? h("span", { class: "lab" }, x.label.toUpperCase()) : null), h("div", { class: "bar" }, h("i", { style: `--p:${Math.min(100, x.pct * 5).toFixed(1)}%` })), h("span", { style: "text-align:right" }, `${x.pct.toFixed(2)}%`))));
+        if (!hs.length)
+            holdersHost.replaceChildren(h("p", { class: "hint" }, "Holder list isn't available for this coin yet. See it on Solscan."));
+    }).catch(() => holdersHost.replaceChildren(h("p", { class: "hint" }, "Holder list unavailable.")));
+    const holdersPanel = h("div", { class: "panel" }, h("div", { class: "ph" }, h("span", { class: "label" }, "Top holders")), h("div", { class: "pb" }, holdersHost));
+    const sticky = isDemo() ? null : h("div", { class: "stickybar" }, h("a", { class: "btn primary block", href: `https://pump.fun/coin/${coin.mint}`, target: "_blank", rel: "noopener" }, `Trade $${coin.ticker} on pump.fun`, svg(UI.external)));
+    const page = h("div", { class: "page has-sticky" }, h("div", { class: "crumbs" }, h("a", { href: href("/boards") }, "The table"), h("span", null, "/"), com ? h("a", { href: href(`/board/${com.id}`) }, `${e ? elNum(e.n) : ""} ${com.name}`) : null, h("span", null, "/"), h("span", null, `$${coin.ticker}`)), cert, h("div", { class: "coingrid" }, h("div", { style: "min-width:0" }, statline, chartPanel(coin), notes), h("div", null, gaugePanel, tradesPanel, holdersPanel)), sticky);
+    // ---- live ----
+    const offQ = market().subscribeCommodityQuote(coin.commodityId, (q) => { comPrice.textContent = fmtUsd(q.priceUsd); });
+    void market().getCommodityQuote(coin.commodityId).then((q) => { comPrice.textContent = fmtUsd(q.priceUsd); }).catch(() => { });
+    let lastPrice = coin.priceUsd, lastStatus = coin.status;
     const off = market().subscribeCoin(coin.mint, (c) => {
         const dir = c.priceUsd > lastPrice ? "up" : c.priceUsd < lastPrice ? "down" : null;
         lastPrice = c.priceUsd;
         mcap.set(fmtUsd(c.marketCapUsd), dir);
         price.set(`$${fmtSmall(c.priceUsd)}`, dir);
-        priceQ.textContent = isHouseToken ? fmtQuote(c.priceQuote, "SOL") : `≈ ${fmtQuote(c.priceQuote, sym)}`;
+        inCom.textContent = c.priceQuote ? fmtQuote(c.priceQuote, sym) : `— ${sym}`;
         vol.set(fmtUsd(c.volume24hUsd));
-        holders.set(fmtNum(c.holders));
-        prog.set(`${Math.round(c.bondingProgress * 100)}%`);
-        chg.textContent = `${pctArrow(c.change24hPct)} ${fmtPct(c.change24hPct)} 24h`;
-        chg.className = `v small num ${c.change24hPct >= 0 ? "up" : "down"}`;
-        bondFill.style.setProperty("--p", `${(c.bondingProgress * 100).toFixed(1)}%`);
-        bond.querySelector(".num").textContent = `${Math.round(c.bondingProgress * 100)}%`;
-        renderBond(c);
+        curvePct.set(`${Math.round(c.bondingProgress * 100)}%`);
+        chg.textContent = `${pctArrow(c.change24hPct)} ${fmtPct(c.change24hPct)} 24H`;
+        chg.className = `s ${c.change24hPct >= 0 ? "up" : "down"}`;
+        m.set(c.bondingProgress);
+        renderCurve({ ...coin, ...c });
         if (c.status !== lastStatus) {
             lastStatus = c.status;
-            const nb = statusBadge(c.status);
-            statusEl.replaceWith(nb);
+            status.replaceChildren(badge(c.status === "graduated" ? "graduated" : c.status === "graduating" ? "graduating" : "curve"));
             if (c.status === "graduated")
-                toast(`$${coin.ticker} graduated on pump.fun`, { icon: "grad", color: accent });
+                toast(`$${coin.ticker} graduated on pump.fun`, { icon: "grad", color: "#ff5b1f" });
         }
     });
-    onRemove(page, () => { off(); ctx.tint(null); });
+    onRemove(page, () => { off(); offQ(); offTrades(); });
+    void timeAgo;
     return page;
-}
-// ---------- tabs ----------
-function tradesTab(coin) {
-    const com = byId(coin.commodityId);
-    void com;
-    const sym = "SOL";
-    const tbody = h("tbody");
-    const el = h("div", { style: "overflow-x:auto" }, h("table", { class: "trades" }, h("thead", null, h("tr", null, h("th", null, "Time"), h("th", null, "Side"), h("th", null, sym), h("th", null, coin.ticker), h("th", null, "Price"), h("th", null, "Wallet"))), tbody));
-    let maxQ = 0.5;
-    const off = market().subscribeTrades(coin.pairAddress, (t) => {
-        maxQ = Math.max(maxQ, t.quoteAmount);
-        const whale = t.quoteAmount > maxQ * 0.5 && t.quoteAmount > 5;
-        const tr = h("tr", { class: `in ${t.side} ${whale ? "whale" : ""}`, style: `--w:${Math.min(100, (t.quoteAmount / maxQ) * 100).toFixed(0)}%` }, h("td", null, fmtTime(t.ts)), h("td", { class: "side" }, t.side.toUpperCase()), h("td", null, fmtSmall(t.quoteAmount)), h("td", null, fmtNum(t.baseAmount, 0)), h("td", null, `$${fmtSmall(t.priceUsd)}`), h("td", { class: "muted" }, shortAddr(t.wallet)));
-        tbody.prepend(tr);
-        while (tbody.children.length > 40)
-            tbody.lastElementChild?.remove();
-    });
-    if (!tbody.children.length)
-        tbody.appendChild(h("tr", null, h("td", { colspan: "6", class: "muted" }, "Waiting for trades…")));
-    const mo = new MutationObserver(() => { const first = tbody.firstElementChild; if (tbody.children.length > 1 && first?.textContent?.includes("Waiting"))
-        first.remove(); const w = [...tbody.children].find((r) => r.textContent?.includes("Waiting")); if (tbody.children.length > 1 && w)
-        w.remove(); });
-    mo.observe(tbody, { childList: true });
-    onRemove(el, () => { off(); mo.disconnect(); });
-    return el;
-}
-function holdersTab(coin) {
-    const el = h("div", { class: "holders" }, h("div", { class: "skel", style: "height:120px" }));
-    void market().getHolders(coin.mint).then((hs) => {
-        el.replaceChildren(...hs.map((x, i) => h("div", { class: "row" }, h("span", { class: "muted" }, String(i + 1)), h("span", null, shortAddr(x.wallet, 5), x.label ? h("span", { class: "lab" }, x.label.toUpperCase()) : null), h("div", { class: "bar" }, h("i", { style: `--p:${Math.min(100, x.pct * 8).toFixed(1)}%` })), h("span", { style: "text-align:right" }, `${x.pct.toFixed(2)}%`))));
-        if (!hs.length)
-            el.replaceChildren(h("div", { class: "muted" }, "No holders yet."));
-    });
-    return el;
-}
-function commentsTab(coin) {
-    // v1: local-only thread (kept in this browser). v2: wallet-signed posts via the proxy.
-    const key = `pit:comments:${coin.mint}`;
-    const load = () => { try {
-        return JSON.parse(storage.get(key) ?? "[]");
-    }
-    catch {
-        return [];
-    } };
-    const list = h("div");
-    const render = () => {
-        const items = load();
-        list.replaceChildren(...items.map((c) => h("div", { class: "c" }, h("div", { class: "who" }, `${shortAddr(c.who, 4)} · ${timeAgo(c.ts)}`), h("div", null, c.text))));
-        if (!items.length)
-            list.appendChild(h("div", { class: "muted", style: "font-size:13px;padding:8px 0" }, "No callouts yet. Post the first thesis."));
-    };
-    const ta = h("textarea", { placeholder: "Post a callout or thesis…", maxlength: "280", "aria-label": "Comment" });
-    const form = h("form", { onsubmit: (e) => {
-            e.preventDefault();
-            const text = ta.value.trim();
-            if (!text)
-                return;
-            const who = wallet.get().address ?? "guest";
-            const items = load();
-            items.unshift({ who, text, ts: Date.now() });
-            storage.set(key, JSON.stringify(items.slice(0, 50)));
-            ta.value = "";
-            render();
-            toast("Posted (saved on this device only in demo)", { icon: "check", color: "#58d68d" });
-        } }, ta, h("button", { class: "btn primary", type: "submit" }, "Post"));
-    render();
-    return h("div", { class: "comments" }, form, list, h("p", { class: "muted", style: "font-size:11.5px;margin-top:8px" }, "Wallet-signed comments arrive with live data. Demo comments stay in this browser."));
-}
-function infoTab(coin, sym) {
-    const com = byId(coin.commodityId);
-    return h("div", null, h("p", { style: "color:var(--text-2);margin-bottom:12px;font-size:14px" }, coin.description || "No description."), h("div", { class: "kv" }, h("div", null, h("span", null, "Trades on"), h("span", null, "pump.fun, in SOL")), h("div", null, h("span", null, "Priced here in"), h("span", null, `${sym} (site-side conversion)`)), h("div", null, h("span", null, "Board tier"), h("span", null, com?.tier === "backed" ? "Backed (tokenized commodity price)" : "House (launchpad token, no reserves)")), h("div", null, h("span", null, `${sym} price source`), h("span", null, com?.mint ?? "CONFIG — not set")), h("div", null, h("span", null, "Creator"), h("span", null, shortAddr(coin.creator, 6))), h("div", null, h("span", null, "Launched"), h("span", null, new Date(coin.createdAt).toLocaleString())), h("div", null, h("span", null, "Supply"), h("span", null, fmtNum(coin.supply))), h("div", null, h("span", null, "Trading fee"), h("span", null, "pump.fun's standard fee")), h("div", null, h("span", null, "Creator fees: creator"), h("span", null, fmtFee(fees.creatorSharePct))), h("div", null, h("span", null, "Creator fees: buyback & burn"), h("span", null, fmtFee(fees.buybackBurnPct))), h("div", null, h("span", null, "Creator fees: holder payouts (SOL)"), h("span", null, fmtFee(fees.mainHolderSolPct))), h("div", null, h("span", null, "Contract"), h("span", null, coin.mint))));
 }

@@ -1,21 +1,21 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Quarry · Launch coins paired with the real world</title>
-  <meta name="description" content="Launch on pump.fun, get priced in gold, silver, oil, uranium, coffee or cocoa. Commodity boards for Solana memecoins." />
-  <meta name="theme-color" content="#120607" />
-  <meta property="og:title" content="Quarry · Launch coins paired with the real world" />
-  <meta property="og:image" content="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_102416_11904e2b-3880-4a29-9fbf-8388e50f046f.png" />
+  <title>Quarry · Every coin, weighed against the real world.</title>
+  <meta name="description" content="Launch on pump.fun. Get priced in gold, oil, uranium, coffee and 46 more. Creator fees split 70/20/10, locked on-chain." />
+  <meta name="theme-color" content="#f3efe6" />
+  <meta property="og:title" content="Quarry · Every coin, weighed against the real world." />
+  <meta property="og:description" content="Launch on pump.fun. Get priced in gold, oil, uranium, coffee and 46 more." />
+  <meta property="og:image" content="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/9688c85a-dcc0-4f07-ae24-ea7f8745209f.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_102416_11904e2b-3880-4a29-9fbf-8388e50f046f.png" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23e0344a'/%3E%3Cpath d='M30 70h40l7 14H23z' fill='%23fff4f5'/%3E%3Cpath d='M35 49h30l6 14H29z' fill='%23fff4f5' opacity='.8'/%3E%3Cpath d='M41 28h20l6 14H35z' fill='%23fff4f5' opacity='.6'/%3E%3C/svg%3E" />
-  <link rel="icon" type="image/png" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_104845_bf1b2cb0-35d3-4fed-aed0-9c03e92daa66.png" />
-  <link rel="apple-touch-icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261027_104845_bf1b2cb0-35d3-4fed-aed0-9c03e92daa66.png" />
+  <meta name="twitter:image" content="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/9688c85a-dcc0-4f07-ae24-ea7f8745209f.jpg" />
+  <link rel="icon" type="image/webp" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261104_093001_9f92ab4a-0ff3-4e3d-8edb-63c3f15d4172_min.webp" />
+  <link rel="apple-touch-icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261104_093001_9f92ab4a-0ff3-4e3d-8edb-63c3f15d4172.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" />
   <link rel="stylesheet" href="./styles/tokens.css" />
   <link rel="stylesheet" href="./styles/globals.css" />
   <script>
@@ -26,8 +26,8 @@
       proxyUrl: "",
       rpcUrl: "https://api.mainnet-beta.solana.com"
     };
-    // Apply the saved theme before first paint to avoid a flash.
-    try { var t = localStorage.getItem("pit:theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+    // Light by default; a saved choice wins. Applied before first paint to avoid a flash.
+    try { var t = localStorage.getItem("quarry:theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
   </script>
   <!-- @solana/web3.js (MIT) as window.solanaWeb3: used only to make the mint keypair and co-sign the launch transaction. -->
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.99.0/lib/index.iife.min.js" defer
@@ -37,9 +37,9 @@
           onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';document.head.appendChild(s);"></script>
 </head>
 <body>
-  <a class="sr-only" href="#main">Skip to content</a>
+  <a class="sr-only" href="#/" onclick="event.preventDefault();var m=document.getElementById('main');m.setAttribute('tabindex','-1');m.focus();">Skip to content</a>
   <div id="app"></div>
-  <noscript>This site needs JavaScript to show live boards and charts.</noscript>
+  <noscript>This site needs JavaScript to show live prices and charts.</noscript>
   <script type="module" src="./dist/main.js"></script>
 </body>
 </html>

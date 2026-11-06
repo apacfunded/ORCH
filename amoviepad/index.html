@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Movie Pad — every coin makes a movie</title>
+<meta name="description" content="Launch a coin. Its creator fees pay an AI director to write, prompt and shoot a whole movie.">
+<link rel="icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261105_223603_fd951436-c237-430f-8e2e-9178bada19bd.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000; --bg2:#111; --panel:#1a1a1a; --panel2:#232323; --line:#2e2e2e;
+  --text:#fff; --muted:#a6a6a6; --red:#e21836; --red-h:#c3112c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Montserrat,Arial,sans-serif;line-height:1.5;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-weight:900;text-transform:uppercase;letter-spacing:-.01em;line-height:1.05}
+
+/* announcement bar */
+.announce{background:var(--red);font-size:13px;font-weight:600;text-align:center;padding:9px 16px}
+.announce a{text-decoration:underline;margin-left:6px;font-weight:800}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:#000;border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:36px;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:24px;letter-spacing:-.02em}
+.logo{width:42px;height:42px;background:var(--red);border-radius:6px;display:grid;place-items:center}
+.menu{display:flex;gap:28px;font-size:14px;font-weight:700;flex:1}
+.menu a{padding:24px 0;border-bottom:3px solid transparent}
+.menu a:hover{border-color:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--red);color:#fff;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.04em;padding:14px 28px;border-radius:999px;border:0;cursor:pointer;transition:background .15s;font-family:inherit}
+.btn:hover{background:var(--red-h)}
+.btn.ghost{background:transparent;border:2px solid #fff}
+.btn.ghost:hover{background:#fff;color:#000}
+@media(max-width:860px){.menu{display:none}nav .wrap{justify-content:space-between}}
+
+/* hero */
+.hero{position:relative;min-height:560px;display:flex;align-items:flex-end;overflow:hidden;background:#000}
+.hero .bgart{position:absolute;inset:0;background:
+  radial-gradient(ellipse 60% 70% at 75% 40%,rgba(226,24,54,.45),transparent 70%),
+  radial-gradient(ellipse 40% 50% at 90% 80%,rgba(255,140,60,.18),transparent 70%),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 120px),#0a0a0a}
+.hero .bgart video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .bgart::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.92) 10%,rgba(0,0,0,.55) 55%,rgba(0,0,0,.15)),linear-gradient(0deg,#000 0,transparent 45%)}
+.hero .reel{position:absolute;right:6%;top:50%;transform:translateY(-50%);opacity:.9;animation:spin 18s linear infinite}
+@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+@media(max-width:860px){.hero .reel{opacity:.25;right:-80px}}
+.hero .wrap{position:relative;padding-top:64px;padding-bottom:70px;width:100%}
+.kicker{display:inline-block;background:#fff;color:#000;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px;border-radius:3px;margin-bottom:18px}
+.hero h1{font-size:clamp(44px,8vw,96px);max-width:760px}
+.hero h1 span{color:var(--red)}
+.hero p{max-width:540px;margin:18px 0 30px;color:#d6d6d6;font-size:18px;font-weight:500}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.dots{display:flex;gap:8px;margin-top:36px}
+.dots i{width:28px;height:4px;background:#444;border-radius:2px}
+.dots i.on{background:#fff}
+
+/* CA strip like quick-ticket bar */
+.quick{background:var(--panel);border-bottom:1px solid var(--line)}
+.quick .wrap{display:flex;align-items:center;gap:20px;padding-top:18px;padding-bottom:18px;flex-wrap:wrap}
+.quick b{font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.quick code{flex:1;min-width:200px;background:#000;border:1px solid var(--line);padding:11px 14px;border-radius:4px;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+section{padding:70px 0}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:28px;flex-wrap:wrap}
+.head h2{font-size:clamp(28px,4vw,40px)}
+.head p{color:var(--muted);font-weight:500;margin-top:6px}
+.viewall{font-weight:800;font-size:14px;text-transform:uppercase;color:var(--text);border-bottom:2px solid var(--red);padding-bottom:2px}
+
+/* tabs + poster row */
+.tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto}
+.tab{background:none;border:0;color:var(--muted);font:inherit;font-weight:800;font-size:15px;text-transform:uppercase;padding:0 0 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.on{color:#fff;border-color:var(--red)}
+.row{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+@media(max-width:1000px){.row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.row{grid-template-columns:repeat(2,1fr)}}
+.pslot{aspect-ratio:2/3;border-radius:6px;background:var(--panel);border:1px dashed #3a3a3a;display:grid;place-items:center;color:#555}
+.pslot svg{opacity:.5}
+.empty{margin-top:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--panel);border-left:4px solid var(--red);padding:18px 22px;border-radius:4px;flex-wrap:wrap}
+.empty span{font-weight:600}
+
+/* promo tiles (how it works) */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.tiles{grid-template-columns:1fr}}
+.tile{background:var(--panel);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.tile .art{height:170px;display:grid;place-items:center;position:relative}
+.tile .art .num{position:absolute;left:18px;top:12px;font-weight:900;font-size:56px;color:rgba(255,255,255,.12)}
+.t1 .art{background:linear-gradient(135deg,#3a0a12,#e21836)}
+.t2 .art{background:linear-gradient(135deg,#141414,#5a5a5a)}
+.t3 .art{background:linear-gradient(135deg,#7a0d1e,#1a1a1a)}
+.tile .body{padding:22px 24px 26px;flex:1;display:flex;flex-direction:column}
+.tile h3{font-size:20px;margin-bottom:10px}
+.tile p{color:var(--muted);font-size:15px;font-weight:500;flex:1}
+.tile .lnk{margin-top:18px;font-weight:800;font-size:13px;text-transform:uppercase;color:var(--red)}
+
+/* launch */
+.launchbg{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.launch{display:grid;grid-template-columns:1.15fr .85fr;gap:28px}
+@media(max-width:940px){.launch{grid-template-columns:1fr}}
+.card{background:var(--panel);border-radius:8px;padding:30px}
+.card h3{font-size:22px;margin-bottom:4px}
+.card .sub{color:var(--muted);font-size:14px;font-weight:500;margin-bottom:6px}
+label{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px}
+input,textarea,select{width:100%;background:#000;border:1px solid #3a3a3a;color:#fff;border-radius:4px;padding:13px 14px;font:inherit;font-size:15px;font-weight:500}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--red);outline-offset:-1px;border-color:var(--red)}
+textarea{min-height:96px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* runtime picker styled like showtime buttons */
+.times{display:flex;flex-wrap:wrap;gap:10px}
+.time{background:transparent;border:2px solid #4a4a4a;color:#fff;border-radius:4px;padding:10px 16px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;text-align:left;min-width:104px}
+.time small{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.time:hover{border-color:#fff}
+.time.on{background:var(--red);border-color:var(--red)}
+.time.on small{color:#ffd6dc}
+.drop{border:2px dashed #3a3a3a;border-radius:4px;padding:20px;text-align:center;color:var(--muted);cursor:pointer;font-size:14px;font-weight:600}
+.drop:hover{border-color:#fff;color:#fff}
+.drop img{max-width:80px;border-radius:4px;display:block;margin:0 auto 8px}
+.btn:disabled{opacity:.6;cursor:wait}
+.launch .btn.full{width:100%;margin-top:26px;padding:16px}
+.note{font-size:13px;color:var(--muted);margin-top:12px;text-align:center;font-weight:500}
+
+/* preview */
+.preview{position:sticky;top:96px;align-self:start}
+.poster{aspect-ratio:2/3;max-height:440px;width:100%;margin-bottom:18px;border-radius:6px;background:linear-gradient(170deg,#2a0910,#000 70%);display:flex;flex-direction:column;justify-content:flex-end;padding:22px;position:relative;overflow:hidden}
+.poster .pimg{position:absolute;inset:0;background-size:cover;background-position:center}
+.poster .pimg::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,#000)}
+.poster > *:not(.pimg){position:relative}
+.rating{align-self:flex-start;border:1px solid #fff;font-size:11px;font-weight:800;padding:2px 6px;margin-bottom:10px}
+.poster h3{font-size:34px;word-break:break-word}
+.poster .meta{color:#ccc;font-size:13px;font-weight:600;margin-top:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#000;border:1px solid var(--line);border-radius:4px;padding:14px 8px;text-align:center}
+.stat b{display:block;font-size:24px;font-weight:900}
+.stat span{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+
+/* vote */
+.vote{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.vote{grid-template-columns:1fr}}
+.shot{background:var(--panel);border-radius:8px;overflow:hidden}
+.shot .frame{aspect-ratio:16/9;background:#0c0c0c;display:grid;place-items:center;color:#555;font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.shot .body{padding:20px}
+.shot h3{font-size:17px;margin-bottom:6px}
+.shot p{font-size:14px;color:var(--muted);font-weight:500}
+.bar{height:6px;background:#000;border-radius:3px;margin-top:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--red)}
+
+/* faq */
+.faq{max-width:900px}
+details{border-bottom:1px solid var(--line);padding:22px 0}
+summary{cursor:pointer;font-weight:800;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--red);font-size:26px;line-height:.8}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:12px;font-size:15px;font-weight:500;max-width:760px}
+
+/* footer */
+footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30px;font-size:14px}
+.fcols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+@media(max-width:800px){.fcols{grid-template-columns:1fr 1fr}}
+.fcols h4{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+.fcols a{display:block;color:var(--muted);font-weight:500;margin-bottom:10px}
+.fcols a:hover{color:#fff}
+.fcols p{color:var(--muted);font-weight:500;margin-top:14px;max-width:300px}
+.legal{border-top:1px solid var(--line);margin-top:40px;padding-top:22px;color:#777;font-size:12px;font-weight:500}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(140px);background:#fff;color:#000;font-weight:800;padding:14px 22px;border-radius:999px;transition:.3s;z-index:50;font-size:14px;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="announce">🎬 Every coin launched on A Movie Pad gets a movie written and directed by AI. <a href="#launch">Launch yours</a></div>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="brand">
+      <span class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+      A MOVIE PAD
+    </a>
+    <div class="menu">
+      <a href="#movies">Movies</a>
+      <a href="#how">How It Works</a>
+      <a href="#director">AI Director</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#launch" class="btn">Launch a Movie</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="bgart"><video id="heroVid" src="hero.mp4" poster="hero.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video></div>
+    <div class="wrap">
+    <span class="kicker">Now Launching</span>
+    <h1>Every coin makes a <span>movie.</span></h1>
+    <p>Creator fees pay an AI director to write, prompt and shoot the whole film, shot by shot. When it hits the runtime the creator picked, it premieres.</p>
+    <div class="ctas">
+      <a href="#launch" class="btn">Launch Your Movie</a>
+      <a href="#how" class="btn ghost">How It Works</a>
+    </div>
+    <div class="dots"><i class="on"></i><i></i><i></i></div>
+  </div>
+</header>
+
+<div class="quick">
+  <div class="wrap">
+    <b>$AMP CA</b>
+    <code id="ca">Coming soon</code>
+    <a href="#" class="btn" id="buy">Buy on pump.fun</a>
+  </div>
+</div>
+
+<section id="movies">
+  <div class="wrap">
+    <div class="head">
+      <div><h2>Movies</h2><p>Every film here is written and directed by AI.</p></div>
+      <a href="#launch" class="viewall">Launch a Movie</a>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-t="filming">Now Filming</button>
+      <button class="tab" data-t="soon">Coming Soon</button>
+      <button class="tab" data-t="premiered">Premiered</button>
+    </div>
+    <div class="row">
+      <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
+      <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
+      <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
+      <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
+      <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
+      <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
+    </div>
+    <div class="empty"><span id="emptytxt">No movies filming yet. Be the first to launch one.</span><a href="#launch" class="btn">Launch a Movie</a></div>
+  </div>
+</section>
+
+<section id="how" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head"><div><h2>How It Works</h2><p>From launch to premiere in three steps.</p></div></div>
+    <div class="tiles">
+      <div class="tile t1">
+        <div class="art"><span class="num">01</span><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="body"><h3>Launch &amp; pick the runtime</h3><p>Name your coin, pick a genre and choose how long the movie runs — from a 1-minute short to a 90-minute feature.</p><a href="#launch" class="lnk">Launch now ›</a></div>
+      </div>
+      <div class="tile t2">
+        <div class="art"><span class="num">02</span><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg></div>
+        <div class="body"><h3>Fees roll the cameras</h3><p>Creator fees fill the coin's film budget. Every time the budget covers a shot, the AI renders the next scene.</p><a href="#faq" class="lnk">Learn more ›</a></div>
+      </div>
+      <div class="tile t3">
+        <div class="art"><span class="num">03</span><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></div>
+        <div class="body"><h3>AI directs the movie</h3><p>The AI writes the script, plans every shot, writes its own prompts and edits the cut together. No one has to touch it until the credits roll.</p><a href="#director" class="lnk">Meet the director ›</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="launch" class="launchbg">
+  <div class="wrap">
+    <div class="head"><div><h2>Launch a Movie</h2><p>Your coin launches on pump.fun. Your movie starts filming on A Movie Pad.</p></div></div>
+    <div class="launch">
+      <form class="card" id="form" onsubmit="return launch(event)">
+        <label for="title">Movie Title</label>
+        <input id="title" maxlength="32" placeholder="Name your movie" required>
+        <div class="two">
+          <div><label for="ticker">Ticker</label><input id="ticker" maxlength="10" placeholder="$TICKER" required></div>
+          <div><label for="genre">Genre</label>
+            <select id="genre"><option>Action</option><option>Comedy</option><option>Horror</option><option>Sci-Fi</option><option>Drama</option><option>Thriller</option><option>Animated</option><option>Documentary</option></select>
+          </div>
+        </div>
+        <label for="premise">Idea (optional)</label>
+        <textarea id="premise" maxlength="400" placeholder="Leave blank and the AI writes the story from your title, or drop a one-line idea."></textarea>
+        <label>Select Runtime</label>
+        <div class="times" id="times">
+          <button type="button" class="time" data-m="1">1 MIN<small>Short</small></button>
+          <button type="button" class="time on" data-m="3">3 MIN<small>Trailer</small></button>
+          <button type="button" class="time" data-m="5">5 MIN<small>Episode</small></button>
+          <button type="button" class="time" data-m="10">10 MIN<small>Featurette</small></button>
+          <button type="button" class="time" data-m="30">30 MIN<small>Pilot</small></button>
+          <button type="button" class="time" data-m="90">90 MIN<small>Feature</small></button>
+        </div>
+        <label>Poster / Coin Image</label>
+        <div class="drop" id="drop" onclick="document.getElementById('file').click()">Click to upload an image</div>
+        <input type="file" id="file" accept="image/*" hidden>
+        <div class="two">
+          <div><label for="x">X / Twitter</label><input id="x" placeholder="Optional"></div>
+          <div><label for="tg">Telegram</label><input id="tg" placeholder="Optional"></div>
+        </div>
+        <label for="devbuy">Dev buy (SOL, optional)</label>
+        <input id="devbuy" type="number" min="0" step="0.01" value="0">
+        <button class="btn full" id="go" type="submit">Launch Movie</button>
+        <p class="note" id="status">Launches on pump.fun with your Phantom wallet. Filming starts once the first fees come in.</p>
+      </form>
+
+      <div class="preview">
+        <div class="poster">
+          <div class="pimg" id="pimg"></div>
+          <span class="rating">DIRECTED BY AI</span>
+          <h3 id="ptitle">Your Movie</h3>
+          <span class="meta" id="pmeta">$TICKER · Action · 3 MIN</span>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="shots">23</b><span>Shots</span></div>
+          <div class="stat"><b id="prompts">23</b><span>AI Prompts</span></div>
+          <div class="stat"><b id="rt">3:00</b><span>Runtime</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="director">
+  <div class="wrap">
+    <div class="head"><div><h2>The AI Director</h2><p>One AI runs the whole production — no votes, no prompting, no editing on your end.</p></div></div>
+    <div class="vote">
+      <div class="shot"><div class="frame">Script</div><div class="body"><h3>Writes the story</h3><p>Turns your title, genre and runtime into a full script with a beginning, middle and end that fits the exact length.</p></div></div>
+      <div class="shot"><div class="frame">Shot list</div><div class="body"><h3>Prompts every shot</h3><p>Breaks the script into shots and writes each video prompt itself — camera, lighting, characters — keeping the look consistent.</p></div></div>
+      <div class="shot"><div class="frame">Final cut</div><div class="body"><h3>Edits &amp; premieres</h3><p>Stitches the shots together with sound and music as fees fund them, then premieres the finished movie.</p></div></div>
+    </div>
+    <div class="empty"><span>The director's log goes live here once the first movie starts filming.</span><a href="#launch" class="btn">Launch a Movie</a></div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head"><div><h2>FAQ</h2></div></div>
+    <div class="faq">
+      <details><summary>Who makes the movie?</summary><p>The AI does everything. It writes the script, plans the shots, writes every video prompt and edits the final cut. The creator only picks the title, genre and runtime.</p></details>
+      <details><summary>How is it paid for?</summary><p>Creator fees from your coin go into a film budget. Each time the budget covers one shot (about 8 seconds of AI video), the AI director films the next shot in its script.</p></details>
+      <details><summary>Can I give it an idea?</summary><p>Yes, optionally. Drop a one-line idea at launch and the AI builds the story around it. Leave it blank and it writes the story from your title and genre.</p></details>
+      <details><summary>How long will my movie be?</summary><p>Exactly the runtime you pick at launch, from 1 minute up to 90. The AI writes the script to fit, so a 3-minute movie is about 23 shots.</p></details>
+      <details><summary>What happens when it's finished?</summary><p>The full cut premieres on the coin's page and moves to the Premiered tab. The movie stays on A Movie Pad for good.</p></details>
+      <details><summary>Where do coins launch?</summary><p>On pump.fun. A Movie Pad runs the AI director and the film budget on top of it.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div>
+        <a href="#" class="brand" style="color:#fff"><span class="logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>A MOVIE PAD</a>
+        <p>The launchpad where every coin makes a movie, directed start to finish by AI.</p>
+      </div>
+      <div><h4>Movies</h4><a href="#movies">Now Filming</a><a href="#movies">Coming Soon</a><a href="#movies">Premiered</a></div>
+      <div><h4>Creators</h4><a href="#launch">Launch a Movie</a><a href="#how">How It Works</a><a href="#faq">FAQ</a></div>
+      <div><h4>Community</h4><a href="#" id="xlink">X / Twitter</a><a href="#" id="buylink">Buy on pump.fun</a><a href="#director">AI Director</a></div>
+    </div>
+    <div class="legal">© A Movie Pad. Movies are written, prompted and directed by AI.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const SHOT_SECONDS=8;
+const API='https://amoviepad-aislopv1-8230.vercel.app/api';
+let minutes=3;
+const emptyText={filming:'No movies filming yet. Be the first to launch one.',soon:'Nothing in the queue yet. Launch a movie to get it on the slate.',premiered:'No premieres yet. The first finished movie will show here.'};
+function fmt(m){const s=m*60;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function update(){
+  const t=$('title').value.trim()||'Your Movie';
+  const k=$('ticker').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  $('ptitle').textContent=t;
+  $('pmeta').textContent='$'+(k||'TICKER')+' · '+$('genre').value+' · '+minutes+' MIN';
+  const shots=Math.ceil(minutes*60/SHOT_SECONDS);
+  $('shots').textContent=shots;$('prompts').textContent=shots;$('rt').textContent=fmt(minutes);
+}
+['title','ticker','genre'].forEach(id=>$(id).addEventListener('input',update));
+$('times').addEventListener('click',e=>{
+  const el=e.target.closest('.time');if(!el)return;
+  document.querySelectorAll('.time').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');minutes=+el.dataset.m;update();
+});
+$('tabs').addEventListener('click',e=>{
+  const el=e.target.closest('.tab');if(!el)return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');$('emptytxt').textContent=emptyText[el.dataset.t];
+});
+$('file').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const url=URL.createObjectURL(f);
+  $('drop').innerHTML='<img src="'+url+'" alt="">'+f.name.replace(/</g,'&lt;');
+  $('pimg').style.backgroundImage='url('+url+')';
+});
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+async function launch(e){
+  e.preventDefault();
+  const go=$('go'),st=$('status');
+  const w=(window.phantom&&window.phantom.solana)||window.solana;
+  if(!w||!w.isPhantom){toast('Install the Phantom wallet to launch');window.open('https://phantom.app','_blank');return false;}
+  const f=$('file').files[0];if(!f){toast('Add a poster / coin image first');return false;}
+  const name=$('title').value.trim(),sym=$('ticker').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(!name||!sym){toast('Add a title and ticker');return false;}
+  go.disabled=true;go.textContent='Launching…';
+  try{
+    await w.connect();
+    st.textContent='Uploading your coin image and info…';
+    const fd=new FormData();
+    fd.append('file',f);fd.append('name',name);fd.append('symbol',sym);
+    fd.append('description',($('premise').value.trim()||name)+' — a '+$('genre').value+' movie, '+minutes+' min, written and directed by AI on A Movie Pad.');
+    fd.append('twitter',$('x').value.trim());fd.append('telegram',$('tg').value.trim());
+    fd.append('website','https://orch.lol/amoviepad');fd.append('showName','true');
+    const up=await fetch(API+'/ipfs',{method:'POST',body:fd});
+    if(!up.ok)throw new Error('Image upload failed ('+up.status+')');
+    const meta=await up.json();
+    const mint=solanaWeb3.Keypair.generate();
+    st.textContent='Building your launch transaction…';
+    const r=await fetch(API+'/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      publicKey:w.publicKey.toBase58(),action:'create',
+      tokenMetadata:{name:meta.metadata.name,symbol:meta.metadata.symbol,uri:meta.metadataUri},
+      mint:mint.publicKey.toBase58(),denominatedInSol:'true',amount:Number($('devbuy').value)||0,
+      slippage:10,priorityFee:0.0005,pool:'pump'})});
+    if(!r.ok)throw new Error('Could not build the launch ('+r.status+')');
+    const tx=solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(await r.arrayBuffer()));
+    tx.sign([mint]);
+    st.textContent='Approve the launch in Phantom…';
+    const res=await w.signAndSendTransaction(tx);
+    const url='https://pump.fun/coin/'+mint.publicKey.toBase58();
+    st.innerHTML='Launched! <a href="'+url+'" target="_blank" style="color:#fff;text-decoration:underline">View your coin on pump.fun</a>';
+    toast('🎬 Your movie coin is live');
+  }catch(err){
+    st.textContent='Launch didn\'t go through: '+(err&&err.message?err.message:'cancelled')+'. Nothing was charged unless Phantom showed it sent.';
+    toast('Launch didn\'t go through — try again');
+  }finally{go.disabled=false;go.textContent='Launch Movie';}
+  return false;
+}
+update();
+</script>
+</body>
+</html>

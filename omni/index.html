@@ -348,6 +348,11 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
 .rv{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
 .rv.in{opacity:1;transform:none}
 
+.ca-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.ca-pill{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:10px;background:var(--s1);border:1px solid var(--line2);font:500 13px var(--mono);color:var(--tx);transition:border-color .15s}
+.ca-pill:hover{border-color:var(--ac)}
+.ca-pill b{color:var(--ac);font-weight:500}
+.ca-pill svg{width:14px;height:14px;color:var(--mut)}
 @media (max-width:1080px){
   .hero-grid,.launch,.bb{grid-template-columns:1fr}
   .summary{position:static}
@@ -417,6 +422,10 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
         <a href="#launch" class="btn btn-p">Launch a coin<svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a href="#markets" class="btn btn-g">Browse markets</a>
         <span class="hint">or press <kbd>N</kbd></span>
+      </div>
+      <div class="ca-row" id="caRow" style="display:none">
+        <button class="ca-pill" id="caBtn" data-copy="" aria-label="Copy $OMNI contract address"><b>$OMNI</b><span id="caText"></span><svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 10V4a1 1 0 0 1 1-1h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+        <a class="btn btn-p" id="buyBtn" href="#" target="_blank" rel="noopener">Buy $OMNI on pump.fun</a>
       </div>
       <div class="pill-row rv">
         <span class="pill"><span class="dot"></span>Solana hub</span>
@@ -885,6 +894,10 @@ log.innerHTML='<div class="empty" style="padding:56px 20px">Burns show up here o
 if(false) setInterval(()=>{ if(document.hidden) return; log.prepend(logRow('just now',true)); [...log.children].slice(1).forEach((r,i)=>{ const w=r.querySelector('.when'); w.textContent=['6s','20s','48s','1m','2m','4m'][i]||'6m'; }); while(log.children.length>7) log.lastElementChild.remove(); },4200);
 
 
+
+/* ===== $OMNI CA ===== */
+const OMNI_CA = "CicJbRWa5FVovryin62nX8kC44q1aksqxLSk3zRipump";
+if(OMNI_CA){ $('#caText').textContent=OMNI_CA.slice(0,5)+'…'+OMNI_CA.slice(-4); $('#caBtn').dataset.copy=OMNI_CA; $('#buyBtn').href='https://pump.fun/coin/'+OMNI_CA; $('#caRow').style.display='flex'; }
 /* ===== KEYBOARD ===== */
 addEventListener('keydown',e=>{
   const typing=/INPUT|TEXTAREA/.test(document.activeElement.tagName);

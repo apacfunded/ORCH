@@ -308,6 +308,7 @@
           <span><b>$FLARE</b> <span class="mono" id="caText">CA coming soon</span></span>
           <button id="copyCa" type="button">Copy</button>
         </div>
+        <a class="btn btn-primary" id="buyBtn" href="#" target="_blank" rel="noopener" style="display:none;align-self:flex-start">Buy $FLARE on pump.fun</a>
       </div>
 
       <div class="hero-art" aria-hidden="true">
@@ -616,7 +617,7 @@
   var tt;
   function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show')},2800)}
 
-  if(FLARE_CA){$('caText').textContent=FLARE_CA.slice(0,5)+'…'+FLARE_CA.slice(-4)}
+  if(FLARE_CA){$('caText').textContent=FLARE_CA.slice(0,5)+'…'+FLARE_CA.slice(-4);var bb=$('buyBtn');bb.href='https://pump.fun/coin/'+FLARE_CA;bb.style.display='inline-flex'}
   $('copyCa').addEventListener('click',function(){
     if(!FLARE_CA){toast('The CA drops at launch. Follow us on X to catch it.');return}
     try{navigator.clipboard.writeText(FLARE_CA).then(function(){toast('CA copied')},function(){toast('Couldn’t copy. Long-press the CA instead.')})}catch(e){toast('Couldn’t copy. Long-press the CA instead.')}

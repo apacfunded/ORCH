@@ -28,7 +28,7 @@ h1,h2,h3{font-weight:900;text-transform:uppercase;letter-spacing:-.01em;line-hei
 nav{position:sticky;top:0;z-index:20;background:#000;border-bottom:1px solid var(--line)}
 nav .wrap{display:flex;align-items:center;gap:36px;height:72px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:24px;letter-spacing:-.02em}
-.logo{width:42px;height:42px;background:var(--red);border-radius:6px;display:grid;place-items:center}
+.logo{width:44px;height:44px;border-radius:8px;object-fit:cover;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
 .menu{display:flex;gap:28px;font-size:14px;font-weight:700;flex:1}
 .menu a{padding:24px 0;border-bottom:3px solid transparent}
 .menu a:hover{border-color:var(--red)}
@@ -178,9 +178,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
 <nav>
   <div class="wrap">
     <a href="#" class="brand">
-      <span class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-      </span>
+      <img class="logo" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261105_223603_fd951436-c237-430f-8e2e-9178bada19bd.png" alt="$AMP">
       A MOVIE PAD
     </a>
     <div class="menu">
@@ -342,7 +340,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
   <div class="wrap">
     <div class="fcols">
       <div>
-        <a href="#" class="brand" style="color:#fff"><span class="logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>A MOVIE PAD</a>
+        <a href="#" class="brand" style="color:#fff"><img class="logo" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261105_223603_fd951436-c237-430f-8e2e-9178bada19bd.png" alt="$AMP">A MOVIE PAD</a>
         <p>The launchpad where every coin makes a movie, directed start to finish by AI.</p>
       </div>
       <div><h4>Movies</h4><a href="#movies">Now Filming</a><a href="#movies">Coming Soon</a><a href="#movies">Premiered</a></div>

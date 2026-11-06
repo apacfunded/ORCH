@@ -428,8 +428,8 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
     <div class="paircard rv" aria-label="Live pair preview, example data">
       <div class="pc-head">
         <div class="pc-pair">
-          <div class="av2"><span>T</span><span id="pcK">AAPL</span></div>
-          <div><div class="pc-t">$TIDE <small>/ <span id="pcA">AAPL</span></small></div><div class="pc-sub" id="pcN">Paired with Apple · live on 10 chains</div></div>
+          <div class="av2"><span>?</span><span id="pcK">AAPL</span></div>
+          <div><div class="pc-t">$YOURCOIN <small>/ <span id="pcA">AAPL</span></small></div><div class="pc-sub" id="pcN">Preview · paired with Apple · 10 chains</div></div>
         </div>
         <div class="pc-price"><b id="pcP">0.00412</b><span id="pcC" class="up">+12.4%</span></div>
       </div>
@@ -445,8 +445,8 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
 
 <div class="stats">
   <div class="wrap stats-in">
-    <div class="stat"><span>Coins launched</span><b class="cnt" data-to="4812">0</b></div>
-    <div class="stat"><span>Volume (24h)</span><b>$<span class="cnt" data-to="18.6" data-dec="1">0</span>M</b></div>
+    <div class="stat"><span>Coins launched</span><b class="cnt" data-to="0">0</b></div>
+    <div class="stat"><span>Volume (24h)</span><b>$<span class="cnt" data-to="0">0</span></b></div>
     <div class="stat"><span>$OMNI bought back &amp; burned</span><b class="burn" id="statBurn">0</b></div>
     <div class="stat"><span>Chains live</span><b class="cnt" data-to="10">0</b></div>
   </div>
@@ -456,7 +456,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
   <div class="wrap">
     <div class="shead rv">
       <div><span class="eyebrow">Markets</span><h2>Every pair, every chain</h2></div>
-      <span class="ex">Example data until launch</span>
+      <span class="ex">Live at launch</span>
     </div>
     <div class="mk rv">
       <div class="mk-bar">
@@ -538,7 +538,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
 
 <section id="buyback" style="padding-top:24px">
   <div class="wrap">
-    <div class="shead rv"><div><span class="eyebrow">Buyback</span><h2>Every trade burns $OMNI</h2></div><span class="ex">Example data until launch</span></div>
+    <div class="shead rv"><div><span class="eyebrow">Buyback</span><h2>Every trade burns $OMNI</h2></div><span class="ex">Live at launch</span></div>
     <div class="bb">
       <div class="card bb-big rv">
         <div><span class="eyebrow">Total bought back &amp; burned</span><div class="bb-n" id="bbBig">0 <small>$OMNI</small></div></div>
@@ -595,7 +595,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 48px;margin-top:24px}
       <div class="foot-l"><a href="#">X</a><a href="#">Telegram</a><a href="#faq">Docs</a></div>
       <span class="mono" style="font-size:13px;color:var(--mut)">Built on Solana</span>
     </div>
-    <p class="disc">Omni is a token launch tool. Coins launched here are made by their creators, not by Omni. Tokenized assets and memecoins are volatile, so only spend what you can afford to lose. All figures on this page are example data until launch.</p>
+    <p class="disc">Omni is a token launch tool. Coins launched here are made by their creators, not by Omni. Tokenized assets and memecoins are volatile, so only spend what you can afford to lose. Stats go live at launch.</p>
   </footer>
 </div>
 
@@ -672,20 +672,20 @@ $$('.cnt').forEach(el=>cio.observe(el));
 const NAMES=[['Tide','TIDE'],['Orbit Dog','ORB'],['Gm Frog','GMF'],['Kelp','KELP'],['Pixel Pup','PXP'],['Neon Duck','NDUCK'],['Moon Goat','MGOAT'],['Wagmi Cat','WCAT'],['Drift','DRIFT'],['Halo','HALO'],['Ferro','FERRO'],['Pebble','PBL'],['Lumen','LUMEN'],['Static','STATIC'],['Koi','KOI'],['Bullish Bear','BBEAR'],['Gold Fish','GFISH'],['Chip Dip','CHIP']];
 const HUES=['#4c8dff','#7fb6ff','#c9a7ff','#ffcf6b','#ff9a8a','#8ef0a8','#9fd8ff'];
 const PAIRS=['AAPL','TSLA','NVDA','SPY','GLD','SOL','QQQ','BTC','SLV','MSFT','ETH','COIN','SOL','NVDA','GLD','TSLA','SPY','AAPL'];
-let coins=NAMES.map(([n,t],i)=>{ const p=Math.random()*.008+.0002, hist=walk(60,p,.06);
+let coins=[]; const _demo=NAMES.map(([n,t],i)=>{ const p=Math.random()*.008+.0002, hist=walk(60,p,.06);
   return {id:i,n,t,pair:PAIRS[i],h:HUES[i%HUES.length],price:hist[59],hist,chg:(Math.random()*160-25),vol:Math.random()*900e3+20e3,liq:Math.random()*300e3+15e3,mc:Math.random()*2.4e6+60e3,
     chains:[...CH].sort(()=>Math.random()-.5).slice(0,6+(Math.random()*5|0)),age:Math.random()*2800+1,trend:Math.random()}; });
 let nextId=coins.length;
 
 /* ===== TAPE ===== */
-function tapeHTML(){ return coins.slice(0,14).map(c=>`<span class="ti"><b>$${c.t}</b>/ ${c.pair}<span class="${c.chg>=0?'up':'dn'}">${c.chg>=0?'+':''}${c.chg.toFixed(1)}%</span></span>`).join(''); }
+function tapeHTML(){ return '<span class="ti"><b>PAIR WITH</b></span>'+AS.map(a=>`<span class="ti"><b>${a.k}</b>${a.n}</span>`).join('')+'<span class="ti"><b>LAUNCH ON</b></span>'+CH.map(c=>`<span class="ti"><b>${c.n}</b></span>`).join(''); }
 $('#tape').innerHTML=tapeHTML()+tapeHTML();
 
 /* ===== HERO PAIR CARD ===== */
 const pcSel=$('#pcSel'), pcAssets=['AAPL','TSLA','NVDA','SPY','GLD','SOL'];
 let pcPair='AAPL', pcData=walk(90,.004,.03);
 pcAssets.forEach(k=>{ const b=document.createElement('button'); b.className='seg'+(k===pcPair?' on':''); b.textContent=k; b.setAttribute('aria-pressed',k===pcPair);
-  b.onclick=()=>{ pcPair=k; $$('#pcSel .seg').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b)}); $('#pcA').textContent=k; setK($('#pcK'),k); $('#pcN').textContent='Paired with '+A(k).n+' · live on 10 chains'; pcTarget=walk(90,.002+Math.random()*.006,.035); pcMorph=0; };
+  b.onclick=()=>{ pcPair=k; $$('#pcSel .seg').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b)}); $('#pcA').textContent=k; setK($('#pcK'),k); $('#pcN').textContent='Preview · paired with '+A(k).n+' · live on 10 chains'; pcTarget=walk(90,.002+Math.random()*.006,.035); pcMorph=0; };
   pcSel.appendChild(b); });
 let pcTarget=null,pcMorph=1;
 const pcc=$('#pcChart'), pcx=pcc.getContext('2d'); let PW,PH;
@@ -727,9 +727,9 @@ if(!RM) setInterval(()=>{ if(document.hidden) return; const ds=[...orb.children]
   ds.forEach((d,i)=>setTimeout(()=>{ d.classList.add('on'); $('#orbT').textContent=(i+1)+'/10 chains'; },200+i*120)); },6000);
 
 /* buyback counters */
-let burned=48213907, today=612400;
+let burned=0, today=0;
 const fmtI=v=>Math.round(v).toLocaleString();
-function paintBurn(){ $('#statBurn').textContent=fmtI(burned); $('#bbBig').innerHTML=fmtI(burned)+' <small>$OMNI</small>'; $('#bbToday').textContent=fmtI(today); }
+function paintBurn(){ $('#statBurn').textContent=fmtI(burned); $('#bbBig').innerHTML=fmtI(burned)+' <small>$OMNI</small>'; $('#bbToday').textContent=today?fmtI(today):'Starts at launch'; }
 paintBurn();
 
 /* ===== MARKETS TABLE ===== */
@@ -758,6 +758,7 @@ function visible(){
 const tb=$('#tb');
 function render(newId){
   const l=visible();
+  if(!coins.length){ tb.innerHTML=`<tr><td colspan="10" style="height:auto;cursor:default"><div class="empty">No coins launched yet. Be the first.<br><a href="#launch" class="btn btn-p" style="margin-top:14px">Launch a coin</a></div></td></tr>`; return; }
   if(!l.length){ tb.innerHTML=`<tr><td colspan="10" style="height:auto;cursor:default"><div class="empty">No coins match that yet.<br><button class="btn btn-g" id="clr">Clear filters</button></div></td></tr>`;
     $('#clr').onclick=()=>{ q='';$('#q').value='';setF('all'); }; return; }
   tb.innerHTML=''; l.forEach((c,i)=>{ const tr=document.createElement('tr'); tr.dataset.id=c.id; tr.tabIndex=0; tr.setAttribute('aria-label',`Open ${c.n}`); if(c.id===newId) tr.className='newrow'; tr.innerHTML=rowHTML(c,i); tb.appendChild(tr); });
@@ -773,7 +774,7 @@ render();
 
 /* live price ticks */
 function tick(){
-  if(document.hidden) return;
+  if(document.hidden||!coins.length) return;
   for(let k=0;k<3;k++){ const c=coins[Math.random()*coins.length|0], d=(Math.random()-.45)*.05;
     c.price=Math.max(.00005,c.price*(1+d)); c.chg+=d*100; c.vol+=Math.random()*4000; c.hist.push(c.price); c.hist.shift();
     const tr=tb.querySelector(`tr[data-id="${c.id}"]`);
@@ -782,11 +783,11 @@ function tick(){
       tr.querySelector('[data-c="spark"]').innerHTML=spark(c.hist);
       [pc,cc].forEach(x=>{ x.classList.remove('flu','fld'); void x.offsetWidth; x.classList.add(d>=0?'flu':'fld'); }); }
     if(drawerId===c.id) paintDrawer(); }
-  const add=Math.random()*1800+300; burned+=add; today+=add; paintBurn();
+  
 }
 if(!RM) setInterval(tick,1600);
 /* new coin every ~9s */
-if(!RM) setInterval(()=>{ if(document.hidden) return; const [n,t]=NAMES[Math.random()*NAMES.length|0], p=Math.random()*.002+.0002, hist=walk(60,p,.05);
+if(false) setInterval(()=>{ if(document.hidden) return; const [n,t]=NAMES[Math.random()*NAMES.length|0], p=Math.random()*.002+.0002, hist=walk(60,p,.05);
   coins.forEach(c=>c.age+=.15);
   const c={id:nextId++,n,t,pair:AS[Math.random()*AS.length|0].k,h:HUES[Math.random()*HUES.length|0],price:hist[59],hist,chg:Math.random()*40,vol:Math.random()*60e3+5e3,liq:Math.random()*40e3+8e3,mc:Math.random()*200e3+30e3,chains:[...CH].sort(()=>Math.random()-.5).slice(0,7+(Math.random()*4|0)),age:0,trend:.9};
   coins.unshift(c); if(coins.length>40) coins.pop(); if(tab==='new'&&!sortK) render(c.id); },9000);
@@ -880,8 +881,8 @@ function burst(){ if(RM) return; const c=$('#burst'),r=c.parentElement.getBoundi
 const log=$('#log'), FL='<svg viewBox="0 0 16 16" fill="none"><path d="M8 14c2.8 0 4.5-1.9 4.5-4.3 0-2.7-2.3-4-3-6.7-1.6 1-2.2 2.6-2.1 4-1-.5-1.6-1.3-1.8-2.2C4.5 6 3.5 7.6 3.5 9.7 3.5 12.1 5.2 14 8 14Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>';
 function logRow(ago,isNew){ const c=coins[Math.random()*coins.length|0], amt=Math.random()*24000+800, d=document.createElement('div'); d.className='lr'+(isNew?' newrow':'');
   d.innerHTML=`<span class="fl">${FL}</span><div>${fmtI(amt)} $OMNI <span>from $${c.t}</span></div><span class="when">${ago}</span><a href="#buyback" aria-label="View transaction">${rnd(B58,4)}…↗</a>`; return d; }
-['just now','14s','41s','1m','2m','4m','6m'].forEach(a=>log.appendChild(logRow(a)));
-if(!RM) setInterval(()=>{ if(document.hidden) return; log.prepend(logRow('just now',true)); [...log.children].slice(1).forEach((r,i)=>{ const w=r.querySelector('.when'); w.textContent=['6s','20s','48s','1m','2m','4m'][i]||'6m'; }); while(log.children.length>7) log.lastElementChild.remove(); },4200);
+log.innerHTML='<div class="empty" style="padding:56px 20px">Burns show up here once $OMNI is live.</div>';
+if(false) setInterval(()=>{ if(document.hidden) return; log.prepend(logRow('just now',true)); [...log.children].slice(1).forEach((r,i)=>{ const w=r.querySelector('.when'); w.textContent=['6s','20s','48s','1m','2m','4m'][i]||'6m'; }); while(log.children.length>7) log.lastElementChild.remove(); },4200);
 
 
 /* ===== KEYBOARD ===== */

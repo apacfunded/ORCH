@@ -14,6 +14,7 @@
   --text:#fff; --muted:#a6a6a6; --red:#e21836; --red-h:#c3112c;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:Montserrat,Arial,sans-serif;line-height:1.5;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
@@ -167,6 +168,26 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
 .fcols p{color:var(--muted);font-weight:500;margin-top:14px;max-width:300px}
 .legal{border-top:1px solid var(--line);margin-top:40px;padding-top:22px;color:#777;font-size:12px;font-weight:500}
 
+ .mrow{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1000px){.mrow{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.mrow{grid-template-columns:1fr}}
+.mcard{background:var(--panel);border-radius:8px;overflow:hidden;display:block;transition:transform .15s}
+.mcard:hover{transform:translateY(-3px)}
+.mposter{aspect-ratio:2/3;max-height:320px;width:100%;background:#111 center/cover;position:relative}
+.mtag{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.7);font-size:11px;font-weight:800;padding:3px 7px;border-radius:3px}
+.mbody{padding:14px 16px 18px}
+.mbody b{display:block;font-size:16px;font-weight:900;text-transform:uppercase}
+.mt{color:var(--muted);font-size:13px;font-weight:700}
+.mclip{margin-top:10px;font-weight:800;font-size:14px}
+.mbar{height:6px;background:#000;border-radius:3px;margin-top:8px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--red)}
+.mnext{margin-top:8px;color:var(--muted);font-size:12px;font-weight:600}
+.loghead{font-size:20px;margin:36px 0 14px}
+.dlog{list-style:none;background:var(--panel);border-radius:8px;padding:6px 20px}
+.dlog li{padding:12px 0;border-bottom:1px solid var(--line);font-weight:600;font-size:14px}
+.dlog li:last-child{border-bottom:0}
+.dlog a{color:#fff;text-decoration:underline}
+.lt{color:var(--muted);font-weight:500;margin-right:8px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(140px);background:#fff;color:#000;font-weight:800;padding:14px 22px;border-radius:999px;transition:.3s;z-index:50;font-size:14px;max-width:calc(100% - 32px);text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
 </style>
@@ -196,7 +217,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
     <div class="wrap">
     <span class="kicker">Now Launching</span>
     <h1>Every coin makes a <span>movie.</span></h1>
-    <p>Creator fees pay an AI director to write, prompt and shoot the whole film, shot by shot. When it hits the runtime the creator picked, it premieres.</p>
+    <p>Every 0.1 SOL in creator fees generates the next clip of the film, shot by shot. When it hits the runtime the creator picked, it premieres.</p>
     <div class="ctas">
       <a href="#launch" class="btn">Launch Your Movie</a>
       <a href="#how" class="btn ghost">How It Works</a>
@@ -224,7 +245,8 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
       <button class="tab" data-t="soon">Coming Soon</button>
       <button class="tab" data-t="premiered">Premiered</button>
     </div>
-    <div class="row">
+    <div class="row mrow" id="mrow" hidden></div>
+    <div class="row" id="slots">
       <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
       <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
       <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
@@ -232,7 +254,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
       <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
       <div class="pslot"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9v6l5-3z" fill="#fff"/></svg></div>
     </div>
-    <div class="empty"><span id="emptytxt">No movies filming yet. Be the first to launch one.</span><a href="#launch" class="btn">Launch a Movie</a></div>
+    <div class="empty"><span id="emptytxt">No movies filming yet. A movie starts filming once its coin earns 0.1 SOL in creator fees.</span><a href="#launch" class="btn">Launch a Movie</a></div>
   </div>
 </section>
 
@@ -246,7 +268,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
       </div>
       <div class="tile t2">
         <div class="art"><span class="num">02</span><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg></div>
-        <div class="body"><h3>Fees roll the cameras</h3><p>Creator fees fill the coin's film budget. Every time the budget covers a shot, the AI renders the next scene.</p><a href="#faq" class="lnk">Learn more ›</a></div>
+        <div class="body"><h3>Fees roll the cameras</h3><p>Every 0.1 SOL a coin earns in creator fees generates its next 8-second clip, until the movie hits its runtime.</p><a href="#faq" class="lnk">Learn more ›</a></div>
       </div>
       <div class="tile t3">
         <div class="art"><span class="num">03</span><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></div>
@@ -290,7 +312,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
         <label for="devbuy">Dev buy (SOL, optional)</label>
         <input id="devbuy" type="number" min="0" step="0.01" value="0">
         <button class="btn full" id="go" type="submit">Launch Movie</button>
-        <p class="note" id="status">Launches on pump.fun with your Phantom wallet. Filming starts once the first fees come in.</p>
+        <p class="note" id="status">Launches on pump.fun with your wallet. You keep your creator fees — every 0.1 SOL they reach generates your next clip.</p>
       </form>
 
       <div class="preview">
@@ -318,7 +340,9 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
       <div class="shot"><div class="frame">Shot list</div><div class="body"><h3>Prompts every shot</h3><p>Breaks the script into shots and writes each video prompt itself — camera, lighting, characters — keeping the look consistent.</p></div></div>
       <div class="shot"><div class="frame">Final cut</div><div class="body"><h3>Edits &amp; premieres</h3><p>Stitches the shots together with sound and music as fees fund them, then premieres the finished movie.</p></div></div>
     </div>
-    <div class="empty"><span>The director's log goes live here once the first movie starts filming.</span><a href="#launch" class="btn">Launch a Movie</a></div>
+    <h3 class="loghead">Director's Log</h3>
+    <ul class="dlog" id="dlog" hidden></ul>
+    <div class="empty" id="dlogEmpty"><span>Every time a coin earns another 0.1 SOL in creator fees, its next clip is generated and logged here.</span><a href="#launch" class="btn">Launch a Movie</a></div>
   </div>
 </section>
 
@@ -327,7 +351,7 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
     <div class="head"><div><h2>FAQ</h2></div></div>
     <div class="faq">
       <details><summary>Who makes the movie?</summary><p>The AI does everything. It writes the script, plans the shots, writes every video prompt and edits the final cut. The creator only picks the title, genre and runtime.</p></details>
-      <details><summary>How is it paid for?</summary><p>Creator fees from your coin go into a film budget. Each time the budget covers one shot (about 8 seconds of AI video), the AI director films the next shot in its script.</p></details>
+      <details><summary>When does the next clip get made?</summary><p>Every 0.1 SOL your coin earns in pump.fun creator fees generates the next clip (about 8 seconds of video). The site checks every few minutes and logs each new clip in the Director's Log.</p></details>
       <details><summary>Can I give it an idea?</summary><p>Yes, optionally. Drop a one-line idea at launch and the AI builds the story around it. Leave it blank and it writes the story from your title and genre.</p></details>
       <details><summary>How long will my movie be?</summary><p>Exactly the runtime you pick at launch, from 1 minute up to 90. The AI writes the script to fit, so a 3-minute movie is about 23 shots.</p></details>
       <details><summary>What happens when it's finished?</summary><p>The full cut premieres on the coin's page and moves to the Premiered tab. The movie stays on A Movie Pad for good.</p></details>
@@ -358,8 +382,11 @@ footer{background:var(--bg2);border-top:1px solid var(--line);padding:56px 0 30p
 const $=id=>document.getElementById(id);
 const SHOT_SECONDS=8;
 const API='https://amoviepad-aislopv1-8230.vercel.app/api';
+const CLIP_SOL=0.1;
+// $AMP contract address: paste it between the quotes when the coin is live.
+const CA='';
 let minutes=3;
-const emptyText={filming:'No movies filming yet. Be the first to launch one.',soon:'Nothing in the queue yet. Launch a movie to get it on the slate.',premiered:'No premieres yet. The first finished movie will show here.'};
+const emptyText={filming:'No movies filming yet. A movie starts filming once its coin earns 0.1 SOL in creator fees.',soon:'Nothing in the queue yet. Launch a movie to get it on the slate.',premiered:'No premieres yet. The first finished movie will show here.'};
 function fmt(m){const s=m*60;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function update(){
   const t=$('title').value.trim()||'Your Movie';
@@ -378,7 +405,7 @@ $('times').addEventListener('click',e=>{
 $('tabs').addEventListener('click',e=>{
   const el=e.target.closest('.tab');if(!el)return;
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-  el.classList.add('on');$('emptytxt').textContent=emptyText[el.dataset.t];
+  el.classList.add('on');TAB=el.dataset.t;$('emptytxt').textContent=emptyText[el.dataset.t];renderMovies();
 });
 $('file').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;
@@ -387,48 +414,88 @@ $('file').addEventListener('change',e=>{
   $('pimg').style.backgroundImage='url('+url+')';
 });
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function api(path,data){
+  const r=await fetch(API+path,data?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||('Request failed ('+r.status+')'));
+  return j;
+}
+const b64ToBytes=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+const bytesToB64=u=>{let s='';u.forEach(x=>s+=String.fromCharCode(x));return btoa(s);};
+const readDataUrl=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f);});
 async function launch(e){
   e.preventDefault();
   const go=$('go'),st=$('status');
-  const w=(window.phantom&&window.phantom.solana)||window.solana;
-  if(!w||!w.isPhantom){toast('Install the Phantom wallet to launch');window.open('https://phantom.app','_blank');return false;}
+  const w=(window.phantom&&window.phantom.solana)||window.solflare||window.backpack||window.solana;
+  if(!w){toast('Install Phantom, Solflare or Backpack to launch');window.open('https://phantom.app','_blank');return false;}
   const f=$('file').files[0];if(!f){toast('Add a poster / coin image first');return false;}
-  const name=$('title').value.trim(),sym=$('ticker').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(!name||!sym){toast('Add a title and ticker');return false;}
+  if(f.size>3*1024*1024){toast('Use an image under 3 MB');return false;}
+  const name=$('title').value.trim(),ticker=$('ticker').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(!name||ticker.length<2){toast('Add a title and a 2–10 letter ticker');return false;}
+  const idea=$('premise').value.trim(),genre=$('genre').value;
   go.disabled=true;go.textContent='Launching…';
   try{
-    await w.connect();
-    st.textContent='Uploading your coin image and info…';
-    const fd=new FormData();
-    fd.append('file',f);fd.append('name',name);fd.append('symbol',sym);
-    fd.append('description',($('premise').value.trim()||name)+' — a '+$('genre').value+' movie, '+minutes+' min, written and directed by AI on A Movie Pad.');
-    fd.append('twitter',$('x').value.trim());fd.append('telegram',$('tg').value.trim());
-    fd.append('website','https://orch.lol/amoviepad');fd.append('showName','true');
-    const up=await fetch(API+'/ipfs',{method:'POST',body:fd});
-    if(!up.ok)throw new Error('Image upload failed ('+up.status+')');
-    const meta=await up.json();
-    const mint=solanaWeb3.Keypair.generate();
-    st.textContent='Building your launch transaction…';
-    const r=await fetch(API+'/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      publicKey:w.publicKey.toBase58(),action:'create',
-      tokenMetadata:{name:meta.metadata.name,symbol:meta.metadata.symbol,uri:meta.metadataUri},
-      mint:mint.publicKey.toBase58(),denominatedInSol:'true',amount:Number($('devbuy').value)||0,
-      slippage:10,priorityFee:0.0005,pool:'pump'})});
-    if(!r.ok)throw new Error('Could not build the launch ('+r.status+')');
-    const tx=solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(await r.arrayBuffer()));
-    tx.sign([mint]);
-    st.textContent='Approve the launch in Phantom…';
-    const res=await w.signAndSendTransaction(tx);
-    const url='https://pump.fun/coin/'+mint.publicKey.toBase58();
-    st.innerHTML='Launched! <a href="'+url+'" target="_blank" style="color:#fff;text-decoration:underline">View your coin on pump.fun</a>';
-    toast('🎬 Your movie coin is live');
+    const res=await w.connect();const creator=(res&&res.publicKey?res.publicKey:w.publicKey).toString();
+    st.textContent='Uploading your poster and coin info…';
+    const meta=await api('/metadata',{name,ticker,description:(idea||name)+' — a '+genre+' movie, '+minutes+' min, written and directed by AI on A Movie Pad.',image:await readDataUrl(f),twitter:$('x').value.trim(),telegram:$('tg').value.trim(),website:'https://orch.lol/amoviepad'});
+    const mintKp=solanaWeb3.Keypair.generate();const mint=mintKp.publicKey.toBase58();
+    st.textContent='Building your launch…';
+    const {tx}=await api('/create-tx',{creator,mint,name,ticker,uri:meta.uri,devBuySol:Number($('devbuy').value)||0});
+    if(!w.signTransaction)throw new Error('Your wallet cannot sign this launch. Use Phantom, Solflare or Backpack.');
+    st.textContent='Approve the launch in your wallet…';
+    const signed=await w.signTransaction(solanaWeb3.VersionedTransaction.deserialize(b64ToBytes(tx)));
+    const final=solanaWeb3.VersionedTransaction.deserialize(signed.serialize());final.sign([mintKp]);
+    st.textContent='Sending to Solana…';
+    const {signature}=await api('/send',{tx:bytesToB64(final.serialize())});
+    st.textContent='Confirming and adding your movie…';
+    let reg=null;
+    for(let i=0;i<5&&!reg;i++){try{reg=await api('/register',{signature,mint,creator,name,ticker,idea,genre,minutes,image:meta.image,uri:meta.uri});}catch(err){if(i===4||!/not found yet/.test(err.message))throw err;await sleep(4000);}}
+    const url='https://pump.fun/coin/'+mint;
+    st.innerHTML='Launched! Your movie is on the slate. <a href="'+url+'" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">View it on pump.fun</a>';
+    toast('🎬 Your movie coin is live');loadMovies();
   }catch(err){
-    st.textContent='Launch didn\'t go through: '+(err&&err.message?err.message:'cancelled')+'. Nothing was charged unless Phantom showed it sent.';
+    st.textContent='Launch didn\'t go through: '+(err&&err.message?err.message:'cancelled')+'. Nothing was charged unless your wallet showed it sent.';
     toast('Launch didn\'t go through — try again');
   }finally{go.disabled=false;go.textContent='Launch Movie';}
   return false;
 }
-update();
+
+/* ---- live movies + clip progress ---- */
+let MOVIES=[],TAB='filming';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function stage(m){return m.done?'premiered':(m.clips>0?'filming':'soon');}
+function card(m){
+  const pct=m.done?100:Math.round((1-m.toNextSol/CLIP_SOL)*100);
+  return '<a class="mcard" href="https://pump.fun/coin/'+esc(m.mint)+'" target="_blank" rel="noopener">'
+   +'<div class="mposter" style="background-image:url(\''+esc(m.image)+'\')"><span class="mtag">'+esc(m.genre)+' · '+m.minutes+' MIN</span></div>'
+   +'<div class="mbody"><b>'+esc(m.name)+'</b><span class="mt">$'+esc(m.ticker)+'</span>'
+   +'<div class="mclip">Clip '+m.clips+' of '+m.totalClips+'</div>'
+   +'<div class="mbar"><i style="width:'+pct+'%"></i></div>'
+   +'<div class="mnext">'+(m.done?'Final clip generated — editing the cut':(m.toNextSol.toFixed(3)+' SOL to the next clip'))+'</div></div></a>';
+}
+function renderMovies(){
+  const list=MOVIES.filter(m=>stage(m)===TAB);
+  $('mrow').innerHTML=list.map(card).join('');
+  $('mrow').hidden=!list.length;$('slots').hidden=!!list.length;
+  $('emptytxt').parentElement.hidden=!!list.length;
+}
+function renderLog(log){
+  const box=$('dlog');
+  if(!log.length){box.hidden=true;$('dlogEmpty').hidden=false;return;}
+  $('dlogEmpty').hidden=true;box.hidden=false;
+  box.innerHTML=log.map(l=>'<li><span class="lt">'+new Date(l.at).toLocaleString()+'</span> 🎬 Clip '+l.clip+' of '+l.totalClips+' generated for <a href="https://pump.fun/coin/'+esc(l.mint)+'" target="_blank" rel="noopener">$'+esc(l.ticker)+'</a></li>').join('');
+}
+async function loadMovies(){
+  try{const d=await api('/coins');MOVIES=d.coins||[];renderMovies();renderLog(d.log||[]);}catch(e){}
+}
+if(CA){
+  const buy='https://pump.fun/coin/'+CA;
+  $('ca').textContent=CA;$('ca').title='Click to copy';$('ca').style.cursor='pointer';$('ca').style.color='#fff';
+  $('ca').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(CA);toast('CA copied');};
+  ['buy','buylink'].forEach(id=>{$(id).href=buy;$(id).target='_blank';$(id).rel='noopener';});
+}
+update();loadMovies();setInterval(loadMovies,30000);
 </script>
 </body>
 </html>

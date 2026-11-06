@@ -1,0 +1,13 @@
+name: amoviepad-tick
+# Counts each A Movie Pad coin's creator fees and logs "Clip N generated" every 0.1 SOL.
+# The endpoint is public, read-mostly and capped per run.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: curl -fsS --max-time 90 https://amoviepad-aislopv1-8230.vercel.app/api/tick || true

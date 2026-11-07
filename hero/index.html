@@ -333,7 +333,7 @@ section{padding:96px 0;position:relative}
 .flame{color:var(--ember);animation:flick 1.2s infinite alternate;display:inline-block}
 @keyframes flick{0%{transform:scale(1);opacity:.85}50%{transform:scale(1.15) rotate(-4deg);opacity:1}100%{transform:scale(.95) rotate(3deg)}}
 .ca{display:flex;gap:10px;align-items:center;margin-top:16px;background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 20px}
-.ca code{flex:1;font:400 14px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tokg>*{min-width:0}.ca code{min-width:0;flex:1;font:400 14px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* faq */
 details{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:0 22px;margin-bottom:10px;transition:border-color .2s}
@@ -455,6 +455,7 @@ footer{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     <h1 class="rv">Be your favorite <span class="goldtx">KOL's hero.</span></h1>
     <p class="lead rv">Paste your pump.fun coin's CA and pick any X handle. Hero points your coin's creator fees straight at that KOL, so every trade pays them in SOL.</p>
     <div class="ctas rv"><a class="btn gold" href="#launch">Pick your KOL</a><a class="btn" href="#kols">See who's wearing the crown</a></div>
+    <button class="pill rv" id="heroCA" type="button" title="Copy CA" style="margin-top:16px;cursor:pointer;font-family:var(--mono);max-width:100%;overflow:hidden;text-overflow:ellipsis;min-height:36px">$HERO CA · BF8HVy…n9pppump <span style="color:var(--gold)">Copy</span></button>
     <div class="hstats rv">
       <div class="hs"><b data-count="455.2" data-dec="1" data-suf=" SOL">0</b><span>Fees sent to KOLs</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 20 L12 18 L24 19 L36 14 L48 15 L60 10 L72 11 L84 6 L100 3" fill="none" stroke="#e6b84a" stroke-width="2"/></svg></div>
       <div class="hs"><b data-count="208" data-dec="0" data-suf=" SOL">0</b><span>Waiting to be claimed</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 18 L14 16 L28 17 L42 12 L56 13 L70 9 L84 10 L100 6" fill="none" stroke="#e6b84a" stroke-width="2"/></svg></div>
@@ -636,7 +637,8 @@ footer{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
         <div class="ts"><b data-count="12.4" data-dec="1" data-suf="M">0</b><span>$HERO burned</span></div>
       </div>
       <div class="burn" id="burn"></div>
-      <div class="ca"><code id="caT">CA posted at launch</code><button class="btn sm" type="button" id="copy">Copy CA</button></div>
+      <div class="ca"><code id="caT">BF8HVyjoajTWns4DJDRny2RDQ1wmwujrZqAgn9pppump</code><button class="btn sm" type="button" id="copy">Copy CA</button></div>
+      <a class="btn gold" href="https://pump.fun/coin/BF8HVyjoajTWns4DJDRny2RDQ1wmwujrZqAgn9pppump" target="_blank" rel="noopener" style="margin-top:12px">Buy $HERO on pump.fun</a>
       <span class="ex" style="display:inline-block;margin-top:12px">Example data until launch</span>
     </div>
   </div>
@@ -908,6 +910,7 @@ cs.addEventListener("pointerup",()=>drag=false);cs.addEventListener("pointercanc
 /* burn log */
 const burn=$("#burn");function addBurn(first){const d=document.createElement("div");d.innerHTML=`<span><span class="flame">▲</span>&nbsp; Burned <b class="mono" style="font-weight:500">${big(rnd(5e4,6e5))} $HERO</b></span><span class="muted mono" style="font-size:12px">${first?Math.floor(rnd(2,50))+"m ago":"just now"}</span>`;burn.prepend(d);while(burn.children.length>5)burn.lastChild.remove()}
 for(let i=0;i<5;i++)addBurn(true);if(!RM)setInterval(()=>addBurn(false),6500);
+$("#heroCA").onclick=function(){navigator.clipboard?.writeText("BF8HVyjoajTWns4DJDRny2RDQ1wmwujrZqAgn9pppump").catch(()=>{});toast("$HERO CA copied");clink(1.3,.06)};
 $("#copy").onclick=function(){navigator.clipboard?.writeText($("#caT").textContent).catch(()=>{});this.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Copied`;clink(1.3,.06);setTimeout(()=>this.textContent="Copy CA",1600)};
 
 /* pause when tab hidden */

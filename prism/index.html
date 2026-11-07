@@ -31,6 +31,12 @@ button{font:inherit;cursor:pointer;color:inherit}
 .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0b3a33}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--dark);box-shadow:var(--sh-sm),0 0 26px rgba(47,240,200,.35)}
 .xbtn{width:46px;padding:0}
+.btn.buy{background:#3ee06a;border-color:#3ee06a;color:#03201b;box-shadow:var(--sh-sm),0 0 24px rgba(62,224,106,.35)}
+.castrip{display:flex;align-items:center;gap:10px;margin-top:18px;padding:6px 6px 6px 14px;background:var(--card);border:2px solid var(--ink);border-radius:16px;max-width:560px}
+.castrip span{font-weight:700;font-size:13px;color:var(--accent)}
+.castrip code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--text)}
+.castrip .btn{min-height:40px;padding:0 14px}
+[hidden]{display:none!important}
 .btn.sun{background:var(--text);border-color:var(--text);color:var(--dark)}
 
 nav{position:sticky;top:0;z-index:20;padding:12px 0;background:linear-gradient(var(--bg) 70%,rgba(3,6,7,0))}
@@ -238,7 +244,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <div class="actions">
         <a class="btn primary" href="#launch">Launch a coin</a>
         <a class="btn" href="#live">See live launches</a>
+        <a class="btn buy" id="buyBtn" href="#" target="_blank" rel="noopener" hidden>Buy $PRISM on pump.fun</a>
       </div>
+      <div class="castrip" id="caStrip" hidden><span>CA</span><code id="caFull"></code><button type="button" class="btn" id="copyCa2">Copy</button></div>
       <div class="trust">
         <span><i style="color:#2ff0c8"></i>Pay only in SOL</span>
         <span><i style="background:#ffe14d;color:#ffe14d"></i>10 chains, one ticker</span>
@@ -526,11 +534,18 @@ document.getElementById("burnLog").innerHTML='<div><span>No burns yet. The first
 
 /* ---------- CA ---------- */
 const CA=""; // paste $PRISM CA here at launch
-document.getElementById("copyCa").onclick=async()=>{
+async function copyCA(btn,label){
   if(!CA)return;
-  try{await navigator.clipboard.writeText(CA);document.getElementById("caText").textContent="Copied"}catch(e){}
-};
-if(CA)document.getElementById("caText").textContent=CA.slice(0,4)+"…"+CA.slice(-4);
+  try{await navigator.clipboard.writeText(CA);const o=label.textContent;label.textContent="Copied";setTimeout(()=>label.textContent=o,1500)}catch(e){}
+}
+document.getElementById("copyCa").onclick=()=>copyCA(null,document.getElementById("caText"));
+document.getElementById("copyCa2").onclick=e=>copyCA(null,e.currentTarget);
+if(CA){
+  document.getElementById("caText").textContent=CA.slice(0,4)+"…"+CA.slice(-4);
+  document.getElementById("caFull").textContent=CA;
+  document.getElementById("caStrip").hidden=false;
+  const b=document.getElementById("buyBtn");b.href="https://pump.fun/coin/"+CA;b.hidden=false;
+}
 
 renderPick();renderCost();renderDeploy(false);
 </script>

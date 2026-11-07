@@ -533,7 +533,7 @@ document.getElementById("chainGrid").innerHTML=CHAINS.map(c=>`<div class="chain"
 document.getElementById("burnLog").innerHTML='<div><span>No burns yet. The first launch fee starts the pit.</span></div>';
 
 /* ---------- CA ---------- */
-const CA=""; // paste $PRISM CA here at launch
+const CA="APm8izzosQryeXziArMZrMUisCmF6sxMpqrZE2ggpump"; // paste $PRISM CA here at launch
 async function copyCA(btn,label){
   if(!CA)return;
   try{await navigator.clipboard.writeText(CA);const o=label.textContent;label.textContent="Copied";setTimeout(()=>label.textContent=o,1500)}catch(e){}

@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Point your pump.fun coin's creator fees at your favorite KOL. Every trade pays them in SOL.">
+<meta property="og:title" content="Hero — Be your favorite KOL's hero">
+<meta property="og:description" content="Point your pump.fun coin's creator fees at your favorite KOL. Every trade pays them in SOL.">
+<meta property="og:image" content="https://orch.lol/hero/banner.png">
+<meta property="og:url" content="https://orch.lol/hero/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://orch.lol/hero/banner.png">
+<title>Hero — Be your favorite KOL's hero</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Cg%20transform%3D%22rotate%28-10%20256%20256%29%22%3E%3Cpath%20d%3D%22M136%20330%20L112%20172%20L198%20246%20L256%20128%20L314%20246%20L400%20172%20L376%20330%20Z%22%20fill%3D%22%232a1d12%22%20transform%3D%22translate%2810%2C14%29%22/%3E%3Crect%20x%3D%22142%22%20y%3D%22336%22%20width%3D%22248%22%20height%3D%2248%22%20rx%3D%2212%22%20fill%3D%22%232a1d12%22/%3E%3Cpath%20d%3D%22M136%20330%20L112%20172%20L198%20246%20L256%20128%20L314%20246%20L400%20172%20L376%20330%20Z%22%20fill%3D%22%23ffd23f%22%20stroke%3D%22%232a1d12%22%20stroke-width%3D%2214%22%20stroke-linejoin%3D%22round%22/%3E%3Crect%20x%3D%22132%22%20y%3D%22322%22%20width%3D%22248%22%20height%3D%2248%22%20rx%3D%2212%22%20fill%3D%22%23ffd23f%22%20stroke%3D%22%232a1d12%22%20stroke-width%3D%2214%22/%3E%3Ccircle%20cx%3D%22112%22%20cy%3D%22172%22%20r%3D%2217%22%20fill%3D%22%23ff8fa3%22%20stroke%3D%22%232a1d12%22%20stroke-width%3D%2214%22/%3E%3Ccircle%20cx%3D%22256%22%20cy%3D%22128%22%20r%3D%2217%22%20fill%3D%22%23ff8fa3%22%20stroke%3D%22%232a1d12%22%20stroke-width%3D%2214%22/%3E%3Ccircle%20cx%3D%22400%22%20cy%3D%22172%22%20r%3D%2217%22%20fill%3D%22%23ff8fa3%22%20stroke%3D%22%232a1d12%22%20stroke-width%3D%2214%22/%3E%3Cpath%20d%3D%22M160%20230%20Q170%20200%20190%20215%22%20stroke%3D%22%23fff%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M160%20342%20L240%20342%22%20stroke%3D%22%23fff6c9%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Figtree:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf5ea;--s1:#fffcf6;--s2:#f5ebda;--line:#eadfc9;--line2:#dccba8;
+  --text:#2a1d12;--muted:#6f5e49;--gold:#8a5f14;--gold2:#8a5f14;--gold3:#b9832a;--champ:#c9922e;--ink:#2a1d12;
+  --live:#2f9e6f;--red:#d9534f;--ember:#e8894a;
+  --metal:linear-gradient(135deg,#f7e2a0 0%,#e2b34e 50%,#b9832a 100%);
+  --ease:cubic-bezier(.2,.8,.2,1);--r:28px;--shadow:0 18px 40px -18px rgba(120,80,20,.28);
+  --mono:"Geist Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 16px/1.55 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(185,131,42,.16) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 20%,transparent 80%)}
+main,header,footer{position:relative;z-index:2}
+h1,h2,h3,.disp{font-family:Fraunces,sans-serif;font-weight:600;letter-spacing:-.02em;line-height:1.04}
+.mono{font-family:var(--mono)}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.muted{color:var(--muted)}
+.goldtx{background:var(--metal);-webkit-background-clip:text;background-clip:text;color:transparent}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:8px}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;border:1px solid var(--line2);background:var(--s1);font-weight:600;transition:transform .15s var(--ease),border-color .2s,background .2s;white-space:nowrap}
+.btn:hover{border-color:var(--gold)}
+.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn.gold:hover{background:#f0c75e}
+.btn:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .6s var(--ease)}
+.btn:hover:after{left:130%}
+.btn.sm{min-height:44px;padding:0 16px;font-size:14px}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--line);background:rgba(255,252,246,.7);border-radius:999px;padding:5px 12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+.ex{font-size:12px;color:var(--muted);border:1px dashed var(--line2);border-radius:999px;padding:4px 10px;white-space:nowrap}
+
+/* progress + nav */
+#prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--metal);z-index:60}
+header{position:sticky;top:0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+header.solid{background:rgba(251,245,234,.92);border-color:var(--line)}
+.nav{display:flex;align-items:center;gap:20px;height:68px}
+.logo{display:flex;align-items:center;gap:8px;font:600 22px Fraunces}
+.logo .cr{width:40px;height:40px;display:grid;place-items:center;transition:transform .3s var(--ease)}.logo:hover .cr{transform:rotate(8deg) scale(1.08)}
+.nav nav{display:flex;gap:2px;margin-left:10px}
+.nav nav a{padding:10px 12px;border-radius:10px;color:var(--muted);font-weight:500;font-size:15px;transition:color .2s,background .2s}
+.nav nav a:hover{color:var(--text);background:var(--s1)}
+.nav .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.iconbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);background:var(--s1);display:grid;place-items:center;transition:border-color .2s}
+.iconbtn:hover{border-color:var(--gold)}
+.iconbtn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}
+#menuBtn{display:none}
+@media(max-width:980px){.nav nav,.nav .kolbtn{display:none}#menuBtn{display:grid}}@media(max-width:420px){.nav .right .btn.gold{padding:0 14px;font-size:13px}.nav{gap:10px}.nav .right{gap:6px}.logo{font-size:18px}}
+.sheet{position:fixed;inset:0;z-index:70;background:rgba(251,245,234,.97);display:none;flex-direction:column;padding:90px 24px 24px;gap:6px}
+.sheet.open{display:flex}
+.sheet a{font:600 30px Fraunces;padding:10px 0;border-bottom:1px solid var(--line)}
+.sheet .close{position:absolute;top:14px;right:20px}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.shown{opacity:1;transform:none}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:56px 0 64px;min-height:calc(100vh - 68px)}
+.hero h1{font-size:clamp(44px,6.4vw,84px);margin:20px 0}
+.hero .lead{font-size:18px;color:var(--muted);max-width:520px}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.hstats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:40px;max-width:560px}
+.hs{background:rgba(255,252,246,.8);border:1px solid var(--line);border-radius:16px;padding:14px}
+.hs b{display:block;font:500 22px var(--mono);letter-spacing:-.02em}
+.hs span{font-size:12px;color:var(--muted)}
+.hs svg{display:block;margin-top:8px;width:100%;height:24px}
+@media(max-width:940px){.hero{grid-template-columns:1fr;min-height:0;padding-top:32px}}
+@media(max-width:480px){.hstats{grid-template-columns:1fr 1fr}.hstats .hs:last-child{grid-column:span 2}}
+
+.throne{position:relative;height:560px;border-radius:28px;border:1px solid var(--line);background:radial-gradient(90% 70% at 50% 100%,rgba(230,184,74,.18),transparent 60%),radial-gradient(120% 90% at 50% 0%,#221b0d,var(--s1) 70%);overflow:hidden;box-shadow:var(--shadow);perspective:1100px}
+.throne canvas{position:absolute;inset:0;width:100%;height:100%}
+.throne .tl{position:absolute;top:16px;left:16px;z-index:3}
+.throne .tright{position:absolute;top:16px;right:16px;z-index:3}
+.pedestal{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:76%;height:40px;border-radius:50%;background:radial-gradient(closest-side,rgba(230,184,74,.45),transparent);filter:blur(6px)}
+.tiltwrap{position:absolute;left:50%;bottom:44px;width:min(350px,84%);transform:translateX(-50%);transform-style:preserve-3d;z-index:2}
+.tilt{transform-style:preserve-3d;transition:transform .2s ease-out}
+.flip{transition:transform .3s var(--ease);transform-style:preserve-3d}
+.kc{position:relative;background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line2);border-radius:22px;padding:20px;box-shadow:0 30px 60px -20px rgba(120,80,20,.28);overflow:hidden}
+.kc .sheen{position:absolute;inset:0;pointer-events:none;background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(255,231,163,.14),transparent 45%)}
+.kc .top{display:flex;gap:14px;align-items:center}
+.av{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font:600 21px Fraunces;color:var(--ink);background:var(--metal);box-shadow:0 0 0 3px var(--s1),0 0 0 5px var(--gold)}
+.kc .h{font-weight:600;font-size:17px}
+.kc .s{font-size:13px;color:var(--muted)}
+.bag{margin-top:16px;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;align-items:end;gap:10px}
+.bag .l{font-size:12px;color:var(--muted)}
+.bag .v{font:500 30px var(--mono);letter-spacing:-.03em;color:var(--gold2)}
+.bump{animation:bump .3s var(--ease)}
+@keyframes bump{40%{transform:scale(1.08);color:#c9922e}}
+.ok{color:var(--live);font-size:12px;font-weight:500}
+.wait{color:var(--gold);font-size:12px;font-weight:500}
+.ripple{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px;border-radius:50%;border:2px solid var(--gold);pointer-events:none;animation:rip .7s var(--ease) forwards}
+@keyframes rip{to{transform:scale(16);opacity:0}}
+
+/* ticker */
+.ticker{border-block:1px solid var(--line);background:var(--s1);overflow:hidden;white-space:nowrap;position:relative;z-index:2}
+.ticker .track{display:inline-flex;gap:44px;padding:15px 0;animation:mq 60s linear infinite}
+.ticker:hover .track{animation-play-state:paused}
+.ticker span{font-size:14px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+.ticker b{color:var(--text);font-family:var(--mono);font-weight:500}
+.ticker i{font-style:normal;color:var(--gold);font-family:var(--mono)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+section{padding:96px 0;position:relative}
+.sh{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:36px;flex-wrap:wrap}
+.sh h2{font-size:clamp(32px,4.6vw,54px)}
+.sh p{color:var(--muted);max-width:540px;margin-top:10px}
+.eyebrow{font:500 12px var(--mono);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;display:block}
+
+/* hold to trade */
+.hold{display:grid;grid-template-columns:.85fr 1.15fr;gap:28px;align-items:stretch}
+@media(max-width:940px){.hold{grid-template-columns:1fr}}
+.panel{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.holdbtn{position:relative;width:180px;height:180px;border-radius:50%;border:0;background:var(--metal);color:var(--ink);font:600 20px Fraunces;box-shadow:0 18px 0 -2px #6d5112,0 30px 60px -10px rgba(230,184,74,.45);transition:transform .08s,box-shadow .08s;touch-action:none;user-select:none;-webkit-user-select:none;margin:26px auto 10px;display:grid;place-items:center}
+.holdbtn:active,.holdbtn.down{transform:translateY(10px);box-shadow:0 8px 0 -2px #6d5112,0 16px 40px -10px rgba(230,184,74,.6)}
+.holdbtn small{display:block;font:500 12px var(--mono);opacity:.7;margin-top:4px}
+.holdbtn svg{position:absolute;inset:-12px;width:204px;height:204px;transform:rotate(-90deg);pointer-events:none}
+.meter{height:12px;border-radius:999px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;width:0;background:var(--metal);border-radius:999px;transition:width .1s linear}
+.mrow{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:18px}
+.mrow b{color:var(--text);font-family:var(--mono);font-weight:500}
+.combo{position:absolute;top:18px;right:18px;font:600 42px Fraunces;color:var(--gold2);opacity:0;transform:scale(.6);transition:opacity .2s,transform .2s var(--ease);pointer-events:none;z-index:4}
+.combo.on{opacity:1;transform:scale(1)}
+.combo.pop{animation:cpop .25s var(--ease)}
+@keyframes cpop{50%{transform:scale(1.35) rotate(-6deg)}}
+.stage{position:relative;min-height:440px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(80% 80% at 80% 60%,rgba(230,184,74,.12),transparent),var(--s1);overflow:hidden}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.stagebag{position:absolute;right:6%;top:50%;transform:translateY(-50%);width:150px;text-align:center;z-index:2}
+.stagebag .av{width:78px;height:78px;margin:0 auto;font-size:28px}
+.stagebag .v{font:500 22px var(--mono);color:var(--gold2);margin-top:12px}
+.stagebag .l{font-size:12px;color:var(--muted)}
+.feed{position:absolute;left:16px;bottom:16px;right:200px;display:flex;flex-direction:column-reverse;gap:6px;z-index:2;max-height:120px;overflow:hidden}
+.feed div{font-size:13px;background:rgba(251,245,234,.85);border:1px solid var(--line);border-radius:10px;padding:6px 10px;animation:fin .4s var(--ease);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed b{font-family:var(--mono);font-weight:500;color:var(--gold)}
+@keyframes fin{from{opacity:0;transform:translateX(30px);background:rgba(16,185,129,.25)}}
+@media(max-width:600px){.stagebag{width:110px;right:3%}.stagebag .av{width:60px;height:60px}.feed{right:130px}}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translate(-6px,2px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-4px,1px)}80%{transform:translate(3px,2px)}}
+
+/* flow */
+.flow{display:grid;grid-template-columns:1fr 70px 1fr 70px 1fr 70px 1fr;align-items:center}
+.node{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:22px;text-align:left;animation:lit 4.8s infinite;animation-delay:calc(var(--i)*1.2s)}
+@keyframes lit{0%,30%{border-color:var(--line);box-shadow:none}10%{border-color:var(--gold);box-shadow:0 0 40px -10px rgba(230,184,74,.55)}}
+.node .ic{width:52px;height:52px;border-radius:14px;border:1px solid var(--line2);display:grid;place-items:center;color:var(--gold);margin-bottom:16px;background:var(--bg)}
+.node .n{font:500 12px var(--mono);color:var(--muted)}
+.node h3{font-size:20px;margin:4px 0 6px}
+.node p{font-size:14px;color:var(--muted)}
+.pipe{position:relative;height:2px;background:linear-gradient(90deg,var(--line2),var(--gold3),var(--line2));overflow:visible}
+.pipe i{position:absolute;top:-4px;left:0;width:10px;height:10px;border-radius:50%;background:var(--gold2);box-shadow:0 0 12px 3px rgba(230,184,74,.7);animation:trav 1.2s linear infinite}
+.pipe i:nth-child(2){animation-delay:.4s}.pipe i:nth-child(3){animation-delay:.8s}
+@keyframes trav{from{left:0;opacity:0}20%{opacity:1}80%{opacity:1}to{left:calc(100% - 10px);opacity:0}}
+@media(max-width:940px){.flow{grid-template-columns:1fr}.pipe{width:2px;height:44px;margin:0 auto;background:linear-gradient(180deg,var(--line2),var(--gold3),var(--line2))}.pipe i{left:-4px;top:0;animation-name:travv}}
+@keyframes travv{from{top:0;opacity:0}20%{opacity:1}80%{opacity:1}to{top:calc(100% - 10px);opacity:0}}
+
+/* podium */
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:16px;align-items:end;margin-bottom:28px}
+.pod{text-align:center;cursor:pointer}
+.pod .av{width:84px;height:84px;margin:0 auto 12px;font-size:30px}
+.pod.p1 .av{width:110px;height:110px;font-size:40px;box-shadow:0 0 0 4px var(--s1),0 0 0 8px var(--gold),0 0 50px rgba(230,184,74,.5)}
+.pod .crown{display:block;margin:0 auto 6px;color:var(--gold);animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.pod .hn{font-weight:600}
+.pod .bv{font:500 15px var(--mono);color:var(--gold2)}
+.block{margin-top:14px;border-radius:18px 18px 0 0;border:1px solid var(--line2);border-bottom:0;background:linear-gradient(180deg,var(--s2),var(--s1));display:grid;place-items:start center;padding-top:16px;font:600 44px Fraunces;color:var(--line2);position:relative;overflow:hidden}
+.block:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,231,163,.12) 50%,transparent 70%);background-size:250% 100%;animation:shim 4s linear infinite}
+@keyframes shim{from{background-position:150% 0}to{background-position:-100% 0}}
+.p1 .block{height:170px;color:var(--gold3)}.p2 .block{height:120px}.p3 .block{height:90px}
+@media(max-width:600px){.pod .av{width:58px;height:58px;font-size:22px}.pod.p1 .av{width:76px;height:76px;font-size:28px}.pod .hn{font-size:13px}.pod .bv{font-size:12px}.p1 .block{height:120px}.p2 .block{height:84px}.p3 .block{height:62px}.block{font-size:30px}}
+
+.ctrl{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.tabs{position:relative;display:flex;background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{position:relative;z-index:1;min-height:42px;padding:0 16px;border-radius:999px;border:0;background:transparent;color:var(--muted);font-weight:500;transition:color .25s}
+.tabs button[aria-selected=true]{color:var(--ink)}
+.tabs .ind{position:absolute;top:4px;bottom:4px;border-radius:999px;background:var(--gold);transition:left .35s var(--ease),width .35s var(--ease)}
+.search{flex:1;min-width:200px;max-width:340px;position:relative}
+.search input{width:100%;min-height:50px;border-radius:999px;border:1px solid var(--line);background:var(--s1);padding:0 18px 0 44px}
+.search input:focus{border-color:var(--gold);outline:none}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:16px}
+.pc{position:relative;background:var(--s1);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transform-style:preserve-3d;transition:border-color .2s,transform .25s ease-out;cursor:pointer}
+.pc:hover{border-color:var(--line2)}
+.pc .sheen{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(300px circle at var(--mx) var(--my),rgba(255,231,163,.13),transparent 50%)}
+.pc:hover .sheen{opacity:1}
+.pc .bn{height:74px}
+.pc .bd{padding:0 18px 18px}
+.pc .av{margin-top:-30px;width:62px;height:62px}
+.pc .r1{display:flex;justify-content:space-between;align-items:center}
+.rank{font:500 12px var(--mono);color:var(--gold);border:1px solid var(--line2);border-radius:999px;padding:3px 10px;margin-top:8px;background:var(--bg)}
+.pc .h{font-weight:600;margin-top:12px}
+.pc .bio{font-size:13px;color:var(--muted);min-height:40px}
+.st3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;padding:12px 0;border-block:1px solid var(--line)}
+.st3 b{display:block;font:500 15px var(--mono)}
+.st3 span{font-size:12px;color:var(--muted)}
+.pc .btn{width:100%;margin-top:12px}
+.empty{grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);border:1px dashed var(--line2);border-radius:var(--r)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:80;opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--s1);border-left:1px solid var(--line2);z-index:81;transform:translateX(100%);transition:transform .4s var(--ease);overflow-y:auto;padding:24px}
+.drawer.open{transform:none}
+.drawer .dh{display:flex;gap:16px;align-items:center;margin:10px 0 20px}
+.drawer .dh .av{width:72px;height:72px;font-size:26px}
+.drawer canvas{width:100%;height:160px;display:block;background:var(--bg);border:1px solid var(--line);border-radius:16px;margin:14px 0 22px}
+.hl{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hl .mono{font-size:13px}
+.up{color:var(--live)}.dn{color:var(--red)}
+
+/* table */
+.table{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tr{display:grid;grid-template-columns:1.6fr 1.3fr 1fr 1fr 1fr 110px .6fr;gap:12px;align-items:center;padding:14px 20px;border-top:1px solid var(--line);font-size:14px;transition:background .2s}
+.tr:not(.head):hover{background:var(--s2)}
+.tr.head{border-top:0;color:var(--muted);font-size:12px;font-weight:500}
+.tr .mono{font-size:13px}
+.ci{display:flex;gap:12px;align-items:center}
+.sq{width:38px;height:38px;border-radius:11px;background:var(--bg);border:1px solid var(--line2);display:grid;place-items:center;font:600 14px Fraunces;color:var(--gold)}
+.to{display:flex;align-items:center;gap:8px;color:var(--gold)}
+.to .av{width:24px;height:24px;font-size:11px;box-shadow:0 0 0 1px var(--gold)}
+.flashU{animation:fu .8s}.flashD{animation:fd .8s}
+@keyframes fu{0%{color:var(--live);text-shadow:0 0 12px var(--live)}}
+@keyframes fd{0%{color:var(--red)}}
+@media(max-width:860px){.tr{grid-template-columns:1.4fr 1fr 1fr}.tr .hm{display:none}}
+
+/* launch studio */
+.studio{display:grid;grid-template-columns:1.05fr .95fr;gap:24px}
+@media(max-width:940px){.studio{grid-template-columns:1fr}}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:14px;font-weight:500;margin-bottom:8px}
+.field .hint{font-size:12px;color:var(--muted);margin-top:6px}
+.in{width:100%;min-height:50px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:0 16px;transition:border-color .2s}
+.in:focus{border-color:var(--gold);outline:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.drop{display:flex;align-items:center;gap:14px;border:1px dashed var(--line2);border-radius:14px;padding:14px;background:var(--bg);cursor:pointer;transition:border-color .2s,background .2s;min-height:76px}
+.drop.over{border-color:var(--gold);background:rgba(230,184,74,.06)}
+.drop .th{width:48px;height:48px;border-radius:12px;background:var(--s2);display:grid;place-items:center;overflow:hidden;flex:none;color:var(--muted)}
+.drop .th img{width:100%;height:100%;object-fit:cover}
+.picker{position:relative}
+.sugg{position:absolute;left:0;right:0;top:100%;margin-top:6px;background:var(--s2);border:1px solid var(--line2);border-radius:14px;z-index:6;display:none;overflow:hidden;box-shadow:var(--shadow)}
+.sugg button{display:flex;gap:12px;align-items:center;width:100%;min-height:52px;padding:8px 14px;border:0;background:transparent;text-align:left}
+.sugg button:hover,.sugg button:focus{background:var(--s1);outline:none}
+.sugg .av{width:34px;height:34px;font-size:13px;box-shadow:0 0 0 2px var(--gold)}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--gold) var(--p,100%),var(--bg) var(--p,100%));border:1px solid var(--line);outline:none}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--metal);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--gold);cursor:grab}
+.range::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--gold);border:3px solid var(--bg);cursor:grab}
+.split{display:flex;justify-content:space-between;font-size:14px;margin-top:10px}
+.split b{color:var(--gold);font-family:var(--mono);font-weight:500}
+.msg{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid var(--gold);font-size:14px}
+.pv-coin{display:flex;gap:14px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+.pv-coin .img{width:56px;height:56px;border-radius:14px;background:var(--s2);border:1px solid var(--line2);display:grid;place-items:center;font:600 20px Fraunces;color:var(--gold);overflow:hidden;flex:none}
+.pv-coin .img img{width:100%;height:100%;object-fit:cover}
+.route{margin-top:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.route span{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.route span.g{border-color:var(--gold);color:var(--gold)}
+.route em{font-style:normal;color:var(--gold3)}
+.lockchip{display:none;align-items:center;gap:8px;margin-top:16px;padding:10px 14px;border:1px solid var(--live);border-radius:999px;font-size:14px;width:max-content}
+.lockchip.on{display:inline-flex;animation:lockin .5s var(--ease)}
+@keyframes lockin{from{transform:scale(.6);opacity:0}}
+
+/* seal */
+.seal{position:fixed;inset:0;z-index:90;display:none;place-items:center;background:rgba(251,245,234,.7)}
+.seal.on{display:grid}
+.wax{width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe7a3,#e6b84a 40%,#9c7219 75%,#5e440c);display:grid;place-items:center;text-align:center;color:var(--ink);box-shadow:0 0 0 10px rgba(230,184,74,.25),0 40px 80px rgba(0,0,0,.6);animation:stamp .55s cubic-bezier(.3,1.6,.5,1)}
+.wax .in2{width:200px;height:200px;border-radius:50%;border:3px dashed rgba(26,20,5,.45);display:grid;place-items:center;padding:20px}
+.wax b{display:block;font:600 24px Fraunces;letter-spacing:.04em}
+.wax small{display:block;font:500 13px var(--mono);margin-top:6px}
+@keyframes stamp{0%{transform:scale(2.6) rotate(-20deg);opacity:0}60%{transform:scale(.92) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+
+/* vault */
+.claimg{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+@media(max-width:900px){.claimg{grid-template-columns:1fr}}
+.vault{position:relative;height:340px;border-radius:var(--r);border:1px solid var(--line);background:var(--s1);overflow:hidden;display:grid;place-items:center;perspective:900px}
+.door{position:absolute;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,#2a2210 0 30%,#1d180e 31% 60%,#2e2615 61% 64%,#1d180e 65%);border:6px solid var(--line2);display:grid;place-items:center;transition:transform 1.2s var(--ease),opacity 1.2s;z-index:3;box-shadow:var(--shadow);transform-origin:left center}
+.door .wheel{width:120px;height:120px;border-radius:50%;border:4px solid var(--gold3);position:relative;transition:transform 1s var(--ease)}
+.door .wheel i{position:absolute;left:50%;top:50%;width:140px;height:6px;margin:-3px -70px;background:var(--gold3);border-radius:3px}
+.door .wheel i:nth-child(2){transform:rotate(60deg)}.door .wheel i:nth-child(3){transform:rotate(120deg)}
+.door .wheel:after{content:"";position:absolute;inset:38px;border-radius:50%;background:var(--metal)}
+.vault.open .door .wheel{transform:rotate(540deg)}
+.vault.open .door{transform:rotateY(-105deg) translateX(-40px);opacity:.15}
+.vin{position:relative;z-index:2;text-align:center;opacity:0;transition:opacity .6s .7s;width:100%;padding:20px}
+.vault.open .vin{opacity:1}
+.vin .v{font:500 44px var(--mono);color:var(--gold2);letter-spacing:-.03em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;min-height:40px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;background:var(--bg);border:1px solid var(--line2);font:500 13px var(--mono);animation:cas .45s cubic-bezier(.3,1.5,.5,1) backwards}
+.chip i{width:24px;height:24px;border-radius:50%;background:var(--metal);display:grid;place-items:center;font:600 11px Fraunces;color:var(--ink);font-style:normal}
+@keyframes cas{from{transform:translateY(-40px) scale(.5);opacity:0}}
+.crow{display:flex;gap:10px}
+.crow .in{flex:1}
+
+/* token */
+.tokg{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:center}
+@media(max-width:900px){.tokg{grid-template-columns:1fr}}
+.coinstage{height:380px;display:grid;place-items:center;perspective:1000px;cursor:grab;touch-action:pan-y;user-select:none}
+.coinstage:active{cursor:grabbing}
+.coin3d{position:relative;width:240px;height:240px;transform-style:preserve-3d}
+.coin3d .f{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff2c4,#e6b84a 40%,#a77b1f 75%,#6d5112);display:grid;place-items:center;backface-visibility:hidden;box-shadow:inset 0 0 0 10px rgba(109,81,18,.5),inset 0 0 0 14px rgba(255,231,163,.4)}
+.coin3d .f.b{transform:rotateY(180deg)}
+.coin3d .f span{font:600 34px Fraunces;color:var(--ink);text-align:center;line-height:1}
+.coin3d .f span small{display:block;font:500 12px var(--mono);margin-top:8px;opacity:.75}
+.coin3d .e{position:absolute;inset:0;border-radius:50%;background:#8a6517}
+.coinshadow{width:200px;height:24px;border-radius:50%;background:radial-gradient(closest-side,rgba(230,184,74,.35),transparent);margin-top:-30px}
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ts{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:18px}
+.ts b{display:block;font:500 28px var(--mono);color:var(--gold2)}
+.ts span{font-size:12px;color:var(--muted)}
+@media(max-width:520px){.tstats{grid-template-columns:1fr}}
+.burn{margin-top:16px;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:6px 18px;max-height:220px;overflow:hidden}
+.burn div{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;animation:fin .5s var(--ease)}
+.burn div:last-child{border:0}
+.flame{color:var(--ember);animation:flick 1.2s infinite alternate;display:inline-block}
+@keyframes flick{0%{transform:scale(1);opacity:.85}50%{transform:scale(1.15) rotate(-4deg);opacity:1}100%{transform:scale(.95) rotate(3deg)}}
+.ca{display:flex;gap:10px;align-items:center;margin-top:16px;background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 20px}
+.ca code{flex:1;font:400 14px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* faq */
+details{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:0 22px;margin-bottom:10px;transition:border-color .2s}
+details[open]{border-color:var(--line2)}
+summary{min-height:62px;display:flex;align-items:center;font-weight:600;cursor:pointer;list-style:none;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary .pm{margin-left:auto;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;color:var(--gold);transition:transform .3s var(--ease);flex:none}
+details[open] summary .pm{transform:rotate(45deg)}
+details p{color:var(--muted);padding-bottom:20px}
+
+footer{border-top:1px solid var(--line);padding:40px 0}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+footer .disc{max-width:520px}
+
+#fx{position:fixed;inset:0;pointer-events:none;z-index:95;width:100%;height:100%}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140%);z-index:96;background:var(--s2);border:1px solid var(--gold);border-radius:999px;padding:12px 20px;font-size:14px;box-shadow:var(--shadow);transition:transform .4s var(--ease);max-width:calc(100% - 32px);text-align:center}
+.toast.on{transform:translate(-50%,0)}
+
+
+/* ===== Champagne Silk overrides ===== */
+body{background:radial-gradient(50% 40% at 8% 0%,rgba(255,217,192,.55),transparent 70%),radial-gradient(45% 40% at 95% 5%,rgba(228,215,245,.55),transparent 70%),var(--bg);background-attachment:fixed}
+body:before{opacity:.08;mix-blend-mode:multiply}
+h1,h2,h3,.disp{font-weight:500;letter-spacing:-.025em}
+.hero h1{font-size:clamp(50px,7.4vw,98px);line-height:.98}
+.goldtx{font-style:italic;background:linear-gradient(120deg,#c9922e,#8a5f14 60%,#b9832a);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:goldsh 3.5s var(--ease) .6s 1 both}
+@keyframes goldsh{from{background-position:100% 0}to{background-position:0 0}}
+.eyebrow{color:var(--gold3)}
+.btn{background:var(--s1);border-color:var(--line2);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 8px 20px -14px rgba(120,80,20,.4)}
+.btn:hover{border-color:var(--champ)}
+.btn.gold{background:var(--text);color:#fbf5ea;border-color:var(--text)}
+.btn.gold:hover{background:#3d2b1c}
+.btn.gold:after{background:linear-gradient(100deg,transparent,rgba(247,226,160,.55),transparent)}
+:focus-visible{outline-color:var(--champ)}
+.tabs .ind{background:var(--text)}
+.tabs button[aria-selected=true]{color:#fbf5ea}
+.panel,.pc,.table,.ts,.burn,details,.hs,.node,.kc,.vault,.stage{box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 40px -22px rgba(120,80,20,.3)}
+.kc{background:linear-gradient(180deg,#fffdf8,#fbf3e4)}
+.kc .sheen,.pc .sheen{background:radial-gradient(320px circle at var(--mx,50%) var(--my,0%),rgba(247,226,160,.45),transparent 50%)}
+.av{box-shadow:0 0 0 3px var(--s1),0 0 0 5px var(--champ),0 6px 14px -6px rgba(120,80,20,.5)}
+.pod.p1 .av{box-shadow:0 0 0 4px var(--bg),0 0 0 8px var(--champ),0 0 50px rgba(226,179,78,.55)}
+.bag .v,.vin .v,.ts b,.stagebag .v{color:var(--gold)}
+/* aurora */
+@keyframes drift{0%{background-position:0% 0%}50%{background-position:100% 60%}100%{background-position:30% 100%}}
+.throne{background:radial-gradient(45% 40% at 20% 20%,#ffd9c0,transparent 70%),radial-gradient(45% 45% at 85% 20%,#e4d7f5,transparent 70%),radial-gradient(60% 50% at 50% 100%,#f6e3b0,transparent 70%),radial-gradient(40% 35% at 70% 65%,#f9c9c4,transparent 70%),#fff6ea;background-size:160% 160%;animation:drift 60s ease-in-out infinite alternate;border-color:var(--line2)}
+.stage{background:radial-gradient(50% 50% at 80% 50%,#f6e3b0,transparent 70%),radial-gradient(40% 40% at 15% 20%,#ffe6cf,transparent 70%),radial-gradient(40% 40% at 50% 90%,#e4d7f5,transparent 70%),#fffaf2}
+.pedestal{background:radial-gradient(closest-side,rgba(226,179,78,.5),transparent)}
+.rosette{position:absolute;width:520px;height:520px;left:50%;top:50%;margin:-260px;opacity:.16;pointer-events:none;animation:spin 120s linear infinite;z-index:0}
+.coinstage{position:relative;overflow:hidden}.coinstage .rosette{width:420px;height:420px;margin:-210px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* jar */
+.jar{position:absolute;right:7%;top:8%;width:clamp(100px,24%,130px);height:clamp(150px,34%,190px);z-index:2;border-radius:24px 24px 44px 44px;background:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.3) 45%,rgba(255,255,255,.65));border:2px solid rgba(185,131,42,.5);box-shadow:inset 0 -10px 24px rgba(201,146,46,.2),inset 6px 0 12px rgba(255,255,255,.9),0 26px 40px -18px rgba(120,80,20,.4);overflow:hidden;transition:transform .2s ease-out}
+.jar .lid{position:absolute;left:8%;right:8%;top:0;height:16px;background:var(--metal);border-radius:0 0 8px 8px;z-index:3;box-shadow:0 2px 0 rgba(120,80,20,.25)}
+.jar .mouth{position:absolute;left:50%;top:10px;width:2px;height:2px}
+.jar .lvl{position:absolute;left:0;right:0;bottom:0;height:34%;background:radial-gradient(circle at 30% 30%,#fff3c8 0 3px,transparent 4px) 0 0/18px 14px,radial-gradient(circle at 70% 75%,#f7e2a0 0 3px,transparent 4px) 0 0/18px 14px,var(--metal);transition:height .35s var(--ease);box-shadow:inset 0 3px 0 rgba(255,255,255,.7)}
+.jar .glint{position:absolute;left:13%;top:15%;width:11%;height:60%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0));z-index:2}
+.jar .jl{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:500 12px var(--mono);color:var(--ink);z-index:3}
+.jar .ripple{border-color:#fff3c8}
+.jbump{animation:jb .25s var(--ease)}@keyframes jb{40%{scale:1.03 .98}}
+/* patterns */
+.block{background:repeating-linear-gradient(135deg,rgba(185,131,42,.14) 0 1px,transparent 1px 9px),linear-gradient(180deg,#fffaf0,#f5ebda);color:var(--line2)}
+.block:after{background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%);background-size:250% 100%}
+.p1 .block{color:var(--champ)}
+.pc{-webkit-mask:radial-gradient(circle 11px at 0 74px,#0000 96%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 74px,#0000 96%,#000) right/51% 100% no-repeat;mask:radial-gradient(circle 11px at 0 74px,#0000 96%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 74px,#0000 96%,#000) right/51% 100% no-repeat}
+.pc .bn{border-bottom:1px dashed var(--line2)}
+footer{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='%23b9832a' opacity='.13'%3E%3Cpath d='M4 16h14l-1.2-8-3.6 2.9L11 6l-2.2 4.9L5.2 8z'/%3E%3Cpath transform='translate(24 24)' d='M4 16h14l-1.2-8-3.6 2.9L11 6l-2.2 4.9L5.2 8z'/%3E%3C/g%3E%3C/svg%3E"),var(--s2)}
+#launch,#token{background:repeating-linear-gradient(45deg,rgba(185,131,42,.05) 0 1px,transparent 1px 14px),var(--s2)!important}
+.door{background:radial-gradient(circle,#f6e7c6 0 30%,#ecd8ae 31% 60%,#d8c094 61% 64%,#f1dfba 65%);border-color:#d8c094}
+.door .wheel{border-color:var(--gold3)}.door .wheel i{background:var(--gold3)}
+.vault{background:radial-gradient(60% 60% at 50% 50%,#fff3d6,transparent 70%),var(--s1)}
+.scrim{background:rgba(42,29,18,.3)}
+.seal{background:rgba(251,245,234,.8)}
+.wax{box-shadow:0 0 0 10px rgba(226,179,78,.3),0 40px 80px -20px rgba(120,80,20,.5)}
+.ticker{background:var(--s1)}
+.chip{background:#fffaf0}
+.meter{background:#f3e8d4}
+.range{background:linear-gradient(90deg,var(--champ) var(--p,100%),#f0e4cd var(--p,100%))}
+.range::-webkit-slider-thumb{background:radial-gradient(circle at 35% 30%,#fff,#f3ead8);border:2px solid var(--champ);box-shadow:0 4px 10px rgba(120,80,20,.3)}
+.in:focus{border-color:var(--champ);box-shadow:0 0 0 4px rgba(201,146,46,.15)}
+.flashU{animation:fu2 .9s}.flashD{animation:fd2 .9s}
+@keyframes fu2{0%{background:rgba(47,158,111,.18);color:var(--live)}}
+@keyframes fd2{0%{background:rgba(217,83,79,.14);color:var(--red)}}
+.pipe i{background:var(--champ);box-shadow:0 0 10px 2px rgba(226,179,78,.6)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<canvas id="fx"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="Hero home"><span class="cr"><svg width="40" height="40" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g transform="rotate(-10 256 256)"><path d="M136 330 L112 172 L198 246 L256 128 L314 246 L400 172 L376 330 Z" fill="#2a1d12" transform="translate(10,14)"/><rect x="142" y="336" width="248" height="48" rx="12" fill="#2a1d12"/><path d="M136 330 L112 172 L198 246 L256 128 L314 246 L400 172 L376 330 Z" fill="#ffd23f" stroke="#2a1d12" stroke-width="14" stroke-linejoin="round"/><rect x="132" y="322" width="248" height="48" rx="12" fill="#ffd23f" stroke="#2a1d12" stroke-width="14"/><circle cx="112" cy="172" r="17" fill="#ff8fa3" stroke="#2a1d12" stroke-width="14"/><circle cx="256" cy="128" r="17" fill="#ff8fa3" stroke="#2a1d12" stroke-width="14"/><circle cx="400" cy="172" r="17" fill="#ff8fa3" stroke="#2a1d12" stroke-width="14"/><path d="M160 230 Q170 200 190 215" stroke="#fff" stroke-width="12" stroke-linecap="round" fill="none"/><path d="M160 342 L240 342" stroke="#fff6c9" stroke-width="10" stroke-linecap="round"/></g></svg></span>Hero</a>
+    <nav aria-label="Main"><a href="#kols">KOLs</a><a href="#coins">Coins</a><a href="#launch">Launch</a><a href="#claim">Claim</a><a href="#token">$HERO</a><a href="#faq">FAQ</a></nav>
+    <div class="right">
+      <button class="iconbtn" id="sound" aria-pressed="false" aria-label="Turn sound on" title="Sound">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path id="sw" d="M22 9l-6 6M16 9l6 6"/></svg>
+      </button>
+      <a class="btn sm kolbtn" href="#claim">I'm a KOL</a>
+      <a class="btn gold sm" href="#launch">Pick your KOL</a>
+      <button class="iconbtn" id="menuBtn" aria-label="Open menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+<div class="sheet" id="sheet" role="dialog" aria-label="Menu">
+  <button class="iconbtn close" id="menuClose" aria-label="Close menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <a href="#kols">KOLs</a><a href="#coins">Coins</a><a href="#launch">Launch</a><a href="#claim">Claim</a><a href="#token">$HERO</a><a href="#faq">FAQ</a>
+</div>
+
+<main id="top">
+<!-- HERO -->
+<div class="wrap hero">
+  <div>
+    <span class="pill rv"><span class="dot"></span>Works with any pump.fun coin</span>
+    <h1 class="rv">Be your favorite <span class="goldtx">KOL's hero.</span></h1>
+    <p class="lead rv">Paste your pump.fun coin's CA and pick any X handle. Hero points your coin's creator fees straight at that KOL, so every trade pays them in SOL.</p>
+    <div class="ctas rv"><a class="btn gold" href="#launch">Pick your KOL</a><a class="btn" href="#kols">See who's wearing the crown</a></div>
+    <div class="hstats rv">
+      <div class="hs"><b data-count="455.2" data-dec="1" data-suf=" SOL">0</b><span>Fees sent to KOLs</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 20 L12 18 L24 19 L36 14 L48 15 L60 10 L72 11 L84 6 L100 3" fill="none" stroke="#e6b84a" stroke-width="2"/></svg></div>
+      <div class="hs"><b data-count="208" data-dec="0" data-suf=" SOL">0</b><span>Waiting to be claimed</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 18 L14 16 L28 17 L42 12 L56 13 L70 9 L84 10 L100 6" fill="none" stroke="#e6b84a" stroke-width="2"/></svg></div>
+      <div class="hs"><b data-count="181" data-dec="0" data-suf="">0</b><span>Coins pointing fees</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 21 L16 19 L30 15 L44 16 L58 11 L72 8 L86 7 L100 2" fill="none" stroke="#10b981" stroke-width="2"/></svg></div>
+    </div>
+  </div>
+
+  <div class="throne rv" id="throne" aria-label="Animation: trades on a coin send creator fees into a KOL's jar">
+    <canvas id="heroCv"></canvas>
+    <span class="pill tl"><span class="dot"></span>Fees pouring in</span>
+    <span class="ex tright">Example data</span>
+    <div class="pedestal"></div>
+    <div class="jar" id="jar"><div class="lid"></div><div class="mouth" id="jarMouth"></div><div class="lvl" id="lvl"></div><div class="glint"></div><span class="jl">Hero jar</span></div>
+    <div class="tiltwrap"><div class="tilt" id="heroTilt"><div class="flip" id="heroFlip">
+      <div class="kc" id="heroCard">
+        <div class="sheen"></div>
+        <div class="top"><div class="av" id="hAv">S</div><div><div class="h" id="hH">@solsensei</div><div class="s" id="hS">41 coins paying them</div></div></div>
+        <div class="bag" id="hBag"><div><div class="l">Fees sent to them</div><div class="v" id="hV">0.00 SOL</div></div><span class="ok" id="hC">● Claimed</span></div>
+      </div>
+    </div></div></div>
+  </div>
+</div>
+
+<div class="ticker" aria-label="Recent fee payouts"><div class="track" id="ticker"></div></div>
+
+<!-- HOLD TO TRADE -->
+<section id="sim">
+  <div class="wrap">
+    <div class="sh rv"><div><span class="eyebrow">Try it</span><h2>Feel the flow</h2><p>Hold the button to fake some volume. Every trade drops a creator fee, and it flows straight to the KOL's wallet.</p></div></div>
+    <div class="hold">
+      <div class="panel rv" style="text-align:center;position:relative">
+        <button class="holdbtn" id="holdBtn" aria-label="Hold to simulate trading">
+          <svg viewBox="0 0 204 204"><circle cx="102" cy="102" r="96" fill="none" stroke="rgba(230,184,74,.15)" stroke-width="5"/><circle id="ring" cx="102" cy="102" r="96" fill="none" stroke="#ffe7a3" stroke-width="5" stroke-linecap="round" stroke-dasharray="603" stroke-dashoffset="603"/></svg>
+          <span>Hold to trade<small id="holdSub">press &amp; hold</small></span>
+        </button>
+        <div class="mrow"><span>Creator fee meter</span><b id="feeP">0%</b></div>
+        <div class="meter"><i id="feeBar"></i></div>
+        <div class="mrow"><span>Volume simulated</span><b id="volV">0.00 SOL</b></div>
+        <div class="mrow"><span>Sent to @solsensei</span><b id="bbV">0.000 SOL</b></div>
+        <div class="mrow"><span>Payouts</span><b id="bbN">0</b></div>
+      </div>
+      <div class="stage rv" id="stage">
+        <canvas id="simCv"></canvas>
+        <div class="combo" id="combo">×1</div>
+        <div class="stagebag" id="simBag"><div class="av">S</div><div class="v" id="simTok">0.000 SOL</div><div class="l">fees sent to @solsensei</div></div>
+        <div class="feed" id="feed"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sh rv"><div><span class="eyebrow">How it works</span><h2>From trade to treasure</h2></div></div>
+    <div class="flow rv">
+      <div class="node" style="--i:0"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg></div><span class="n">01</span><h3>Someone trades</h3><p>Your coin trades on pump.fun like any other coin.</p></div>
+      <div class="pipe"><i></i><i></i><i></i></div>
+      <div class="node" style="--i:1"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.6-1 1.4-2.5 1.4-2.5.5-2.5 1.5 1 1.5 2.5 1.5 2.5-.5 2.5-1.5"/></svg></div><span class="n">02</span><h3>A little fee falls</h3><p>Every trade on pump.fun pays the coin's creator fee.</p></div>
+      <div class="pipe"><i></i><i></i><i></i></div>
+      <div class="node" style="--i:2"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div><span class="n">03</span><h3>Hero points it at the KOL</h3><p>Your coin's creator fee recipient is set to the KOL. Signed once by your dev wallet.</p></div>
+      <div class="pipe"><i></i><i></i><i></i></div>
+      <div class="node" style="--i:3"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="#e6b84a"><path d="M3 18.5h18L19.6 7.8l-4.9 3.9L12 4.5l-2.7 7.2-4.9-3.9z"/></svg></div><span class="n">04</span><h3>Your KOL gets paid</h3><p>Fees land as SOL. If they haven't joined yet, it's held for their handle until they sign in with X.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section id="kols" style="padding-top:0">
+  <div class="wrap">
+    <div class="sh rv"><div><span class="eyebrow">Leaderboard</span><h2>The Crowned</h2><p>The KOLs with the most fees flowing their way.</p></div><span class="ex">Example data until launch</span></div>
+    <div class="podium rv" id="podium"></div>
+    <div class="ctrl">
+      <div class="tabs" role="tablist" id="tabs"><span class="ind" id="ind"></span>
+        <button role="tab" aria-selected="true" data-sort="bag">Most earned</button>
+        <button role="tab" aria-selected="false" data-sort="coins">Most coins</button>
+        <button role="tab" aria-selected="false" data-sort="waiting">Unclaimed</button>
+      </div>
+      <label class="search"><span style="position:absolute;width:1px;height:1px;overflow:hidden">Search KOLs</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Search a handle"></label>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" tabindex="-1">
+  <button class="iconbtn" id="dClose" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div id="dBody"></div>
+</aside>
+
+<!-- COINS -->
+<section id="coins" style="padding-top:0">
+  <div class="wrap">
+    <div class="sh rv"><div><span class="eyebrow">Live</span><h2>Fresh heroes</h2><p>Coins that just pointed their fees, and who they picked.</p></div><span class="ex">Example data until launch</span></div>
+    <div class="table rv" id="table">
+      <div class="tr head"><div>Coin</div><div>Fees go to</div><div>Market cap</div><div class="hm">Fees sent</div><div class="hm">Trades</div><div class="hm">24h</div><div class="hm">Age</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LAUNCH -->
+<section id="launch" style="background:var(--s1);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sh rv"><div><span class="eyebrow">Launch studio</span><h2>Crown someone</h2><p>Paste your coin's CA, pick a handle, and sign once. Its pump.fun creator fees go straight to them.</p></div></div>
+    <div class="studio">
+      <form class="panel rv" id="lf" style="background:var(--bg)" novalidate>
+        <div class="field"><label for="fCA">Your coin's CA (pump.fun)</label><input class="in mono" id="fCA" placeholder="Paste a CA ending in pump" maxlength="48" autocomplete="off" spellcheck="false">
+          <div class="hint">Use the wallet that created the coin. It has to sign the change.</div></div>
+        <div class="field picker">
+          <label for="fKol">KOL who gets the fees (X handle)</label>
+          <input class="in" id="fKol" placeholder="@anyhandle" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sugg">
+          <div class="sugg" id="sugg" role="listbox"></div>
+          <div class="hint">Any X account works. Held for them until they claim.</div>
+        </div>
+        <div class="field">
+          <label for="fSplit">Share of creator fees to the KOL</label>
+          <input type="range" class="range" id="fSplit" min="50" max="100" step="5" value="100">
+          <div class="split"><span>To the KOL <b id="kPct">100%</b></span><span>You keep <b id="cPct">0%</b></span></div>
+        </div>
+        <button class="btn gold" type="submit" id="lBtn" style="width:100%">Be their hero</button>
+        <div class="msg" id="msg"></div>
+      </form>
+
+      <div class="panel rv" style="background:var(--bg)">
+        <div class="muted" style="font-size:13px;margin-bottom:12px">Live preview</div>
+        <div class="pv-coin"><div class="img" id="pImg">?</div><div><b id="pName">Your coin</b><div class="mono muted" style="font-size:13px" id="pTick">CA not set</div></div><span class="ex" style="margin-left:auto">on pump.fun</span></div>
+        <div class="kc"><div class="sheen"></div>
+          <div class="top"><div class="av" id="pAv">?</div><div><div class="h" id="pH">Pick a KOL</div><div class="s">Will earn the fees from <span id="pT2">your coin</span></div></div></div>
+          <div class="bag"><div><div class="l">Fees they've earned so far</div><div class="v" id="pV" style="font-size:24px">—</div></div><span class="wait" id="pState">Not picked</span></div>
+        </div>
+        <div class="route"><span>Trade</span><em>→</em><span>Creator fee <b id="r1" class="mono" style="font-weight:500">100%</b></span><em>→</em><span class="g" id="rK">@kol</span></div>
+        <p class="muted" style="font-size:13px;margin-top:14px">Shown publicly on Hero, so holders can see where the fees go.</p>
+        <div class="lockchip" id="lock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Fees pointed</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="seal" id="seal"><div class="wax"><div class="in2"><div><b id="sealT">SEALED</b><small id="sealS">$TICKER → @kol</small></div></div></div></div>
+
+<!-- CLAIM -->
+<section id="claim">
+  <div class="wrap claimg">
+    <div class="rv">
+      <span class="eyebrow">For KOLs</span>
+      <h2 style="font-size:clamp(32px,4.6vw,54px)">Fees are waiting for you</h2>
+      <p class="muted" style="margin:14px 0 24px;max-width:480px">Someone may have made you their hero already. Coins pointing their creator fees at your handle stack up SOL for you. Check your handle and open your vault.</p>
+      <label for="cH" style="display:block;font-size:14px;font-weight:500;margin-bottom:8px">Your X handle</label>
+      <div class="crow"><input class="in" id="cH" placeholder="@yourhandle" style="border-radius:999px"><button class="btn gold" id="cBtn" type="button">Open my vault</button></div>
+      <p class="muted" style="font-size:12px;margin-top:10px">Try @degenmonk or @chartwizard</p>
+    </div>
+    <div class="vault rv" id="vault">
+      <div class="door"><div class="wheel"><i></i><i></i><i></i></div></div>
+      <div class="vin">
+        <div class="muted" id="vL" style="font-size:13px">Fees waiting</div>
+        <div class="v" id="vV">0.00 SOL</div>
+        <div class="chips" id="chips"></div>
+        <button class="btn gold" type="button" id="xBtn" style="margin-top:18px">Claim my fees with X</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOKEN -->
+<section id="token" style="background:var(--s1);border-block:1px solid var(--line)">
+  <div class="wrap tokg">
+    <div class="rv">
+      <div class="coinstage" id="coinStage" aria-label="Drag to spin the $HERO coin">
+        <div><div class="coin3d" id="coin3d"></div><div class="coinshadow" style="margin:20px auto 0"></div></div>
+      </div>
+      <p class="muted" style="text-align:center;font-size:13px">Drag to spin</p>
+    </div>
+    <div class="rv">
+      <span class="eyebrow">The house coin</span>
+      <h2 style="font-size:clamp(32px,4.6vw,54px)">$HERO</h2>
+      <p class="muted" style="margin:12px 0 24px;max-width:520px">Its fees feed the fire: buy back, burn, repeat. Every coin on Hero adds a little more heat.</p>
+      <div class="tstats">
+        <div class="ts"><b data-count="181" data-dec="0" data-suf="">0</b><span>Coins launched</span></div>
+        <div class="ts"><b data-count="8" data-dec="0" data-suf="">0</b><span>KOLs getting paid</span></div>
+        <div class="ts"><b data-count="12.4" data-dec="1" data-suf="M">0</b><span>$HERO burned</span></div>
+      </div>
+      <div class="burn" id="burn"></div>
+      <div class="ca"><code id="caT">CA posted at launch</code><button class="btn sm" type="button" id="copy">Copy CA</button></div>
+      <span class="ex" style="display:inline-block;margin-top:12px">Example data until launch</span>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap" style="max-width:840px">
+    <div class="sh rv"><div><span class="eyebrow">FAQ</span><h2>Questions</h2></div></div>
+    <div class="rv">
+    <details><summary>What does the KOL actually get?<span class="pm">+</span></summary><p>SOL. Your coin’s pump.fun creator fees go to them on every trade. The more your coin trades, the more they earn.</p></details>
+    <details><summary>Does the KOL need to sign up first?<span class="pm">+</span></summary><p>No. You can pick any X handle. Their fees are held for that handle until they sign in with X and claim.</p></details>
+    <details><summary>What if they never claim?<span class="pm">+</span></summary><p>Their fees stay held for them. Unclaimed totals show on the leaderboard so the community can tag them.</p></details>
+    <details><summary>Do holders know where the fees go?<span class="pm">+</span></summary><p>Yes. Every coin on Hero shows which KOL it pays and what share, right on the page.</p></details>
+    <details><summary>Is this endorsed by the KOL?<span class="pm">+</span></summary><p>Not unless they say so. Picking a handle sends them fees. It doesn't mean they back or promote the coin.</p></details>
+    <details><summary>Do I need a new coin?<span class="pm">+</span></summary><p>No. Hero works with coins already on pump.fun. Paste the CA and sign with the wallet that created it.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <a class="logo" href="#top"><span class="cr"><svg width="40" height="40" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g transform="rotate(-10 256 256)"><path d="M136 330 L112 172 L198 246 L256 128 L314 246 L400 172 L376 330 Z" fill="#2a1d12" transform="translate(10,14)"/><rect x="142" y="336" width="248" height="48" rx="12" fill="#2a1d12"/><path d="M136 330 L112 172 L198 246 L256 128 L314 246 L400 172 L376 330 Z" fill="#ffd23f" stroke="#2a1d12" stroke-width="14" stroke-linejoin="round"/><rect x="132" y="322" width="248" height="48" rx="12" fill="#ffd23f" stroke="#2a1d12" stroke-width="14"/><circle cx="112" cy="172" r="17" fill="#ff8fa3" stroke="#2a1d12" stroke-width="14"/><circle cx="256" cy="128" r="17" fill="#ff8fa3" stroke="#2a1d12" stroke-width="14"/><circle cx="400" cy="172" r="17" fill="#ff8fa3" stroke="#2a1d12" stroke-width="14"/><path d="M160 230 Q170 200 190 215" stroke="#fff" stroke-width="12" stroke-linecap="round" fill="none"/><path d="M160 342 L240 342" stroke="#fff6c9" stroke-width="10" stroke-linecap="round"/></g></svg></span>Hero</a>
+  <p class="disc">Picking a handle does not mean that KOL endorses the coin. Not financial advice. Memecoins are risky. All numbers are example data until launch.</p>
+</div></footer>
+
+<script>
+(()=>{
+["#scrim","#drawer","#seal"].forEach(id=>document.body.appendChild(document.querySelector(id)));
+function rosette(n=40){let p="";for(let i=0;i<n;i++)p+=`<ellipse rx="48" ry="17" transform="rotate(${i*180/n})"/>`;for(let i=0;i<24;i++)p+=`<circle r="11" cx="${Math.cos(i*Math.PI/12)*30}" cy="${Math.sin(i*Math.PI/12)*30}"/>`;return `<svg class="rosette" viewBox="-50 -50 100 100" fill="none" stroke="#b9832a" stroke-width=".25" aria-hidden="true">${p}<circle r="49"/><circle r="47.5"/></svg>`}
+document.querySelector("#throne").insertAdjacentHTML("afterbegin",rosette());document.querySelector("#coinStage").insertAdjacentHTML("afterbegin",rosette(48));
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const ini=h=>h[0].toUpperCase();
+const fmt=(n,d=2)=>n.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const big=n=>n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":Math.round(n)+"";
+const rnd=(a,b)=>a+Math.random()*(b-a);
+
+/* ---------- example data (invented handles) ---------- */
+const KOLS=[
+ {h:"solsensei",bio:"Calls early, sells never. Mostly.",coins:41,bag:182.4,waiting:0,claimed:true},
+ {h:"bondingqueen",bio:"Watching every curve on pump.fun.",coins:33,bag:141.9,waiting:12.6,claimed:true},
+ {h:"degenmonk",bio:"Meditation, then market buys.",coins:27,bag:96.3,waiting:96.3,claimed:false},
+ {h:"lowcapgoblin",bio:"Sub-50k only. Don't ask.",coins:24,bag:77.8,waiting:3.1,claimed:true},
+ {h:"chartwizard",bio:"Draws lines, sometimes they work.",coins:19,bag:61.2,waiting:61.2,claimed:false},
+ {h:"pumpprophet",bio:"Posting the next runner at 3am.",coins:16,bag:48.5,waiting:0,claimed:true},
+ {h:"rugradar",bio:"Tells you what not to buy.",coins:12,bag:33.0,waiting:33.0,claimed:false},
+ {h:"memeintern",bio:"Unpaid intern. Until now.",coins:9,bag:21.7,waiting:1.4,claimed:true}
+];
+const TICKS=["SENSEI","CURVE","MONK","GOBCAP","LINES","PROPH","RADAR","PAYDAY","ZEN","QUEEN","WIZ","GOBLN"];
+const COINS=[
+ ["Sensei Inu","SENSEI","solsensei",84200,3.82,"6m"],["Queen Curve","CURVE","bondingqueen",51000,2.14,"14m"],
+ ["Monk Mode","MONK","degenmonk",212000,9.6,"41m"],["Goblin Cap","GOBCAP","lowcapgoblin",18900,.71,"1h"],
+ ["Wizard Lines","LINES","chartwizard",33400,1.25,"2h"],["Prophet","PROPH","pumpprophet",44800,1.9,"3h"],
+ ["Radar","RADAR","rugradar",12600,.44,"4h"],["Intern Pay","PAYDAY","memeintern",9700,.32,"5h"]
+].map(c=>({name:c[0],t:c[1],k:c[2],mc:c[3],bb:c[4],age:c[5],ch:rnd(-12,60),hist:Array.from({length:20},(_,i)=>i*rnd(.5,1.5)+rnd(0,6))}));
+const kolCoins=h=>{const own=COINS.filter(c=>c.k===h);const extra=TICKS.filter(t=>!COINS.some(c=>c.t===t)).slice(0,3).map((t,i)=>({t,mc:rnd(8e3,9e4),bb:rnd(.2,3),ch:rnd(-15,40),tok:rnd(1e5,2e6)}));return [...own.map(c=>({...c,tok:c.bb*rnd(3e5,6e5)})),...extra]};
+const PAST=["#ffd9c0","#f9c9c4","#e4d7f5","#f6e3b0","#ffe6cf"];const bannerFor=i=>`repeating-linear-gradient(${30+i*37}deg,rgba(185,131,42,.22) 0 1px,transparent 1px ${8+i*2}px),linear-gradient(120deg,${PAST[i%5]},${PAST[(i+2)%5]})`;
+
+/* ---------- sound ---------- */
+let AC=null,soundOn=false,lastClink=0;
+function clink(pitch=1,vol=.12){
+  if(!soundOn)return;const now=performance.now();if(now-lastClink<45)return;lastClink=now;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+  [3300,4950,6600].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f*pitch*rnd(.97,1.03);g.gain.setValueAtTime(vol/(i+1),t);g.gain.exponentialRampToValueAtTime(.0001,t+.25+i*.05);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.35)});}catch(e){}
+}
+$("#sound").onclick=function(){soundOn=!soundOn;this.setAttribute("aria-pressed",soundOn);this.setAttribute("aria-label",soundOn?"Turn sound off":"Turn sound on");$("#sw").setAttribute("d",soundOn?"M16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14":"M22 9l-6 6M16 9l6 6");if(soundOn)clink(1.2,.15);};
+
+/* ---------- toast ---------- */
+let tT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),3200);}
+
+/* ---------- FX canvas: coin particles ---------- */
+const fx=$("#fx"),fc=fx.getContext("2d");let FP=[],fxRun=false,DPR=Math.min(devicePixelRatio||1,2);
+function fxSize(){fx.width=innerWidth*DPR;fx.height=innerHeight*DPR;fc.setTransform(DPR,0,0,DPR,0,0)}fxSize();addEventListener("resize",fxSize);
+function drawCoin(c,x,y,r,rot,label){
+  const sx=Math.max(.15,Math.abs(Math.cos(rot)));c.save();c.translate(x,y);c.scale(sx,1);
+  const g=c.createRadialGradient(-r*.35,-r*.4,r*.1,0,0,r);g.addColorStop(0,"#fff2c4");g.addColorStop(.45,"#e6b84a");g.addColorStop(1,"#8a6517");
+  c.fillStyle=g;c.beginPath();c.arc(0,0,r,0,7);c.fill();c.strokeStyle="rgba(255,231,163,.8)";c.lineWidth=Math.max(1,r*.12);c.beginPath();c.arc(0,0,r*.78,0,7);c.stroke();
+  if(label&&r>7&&sx>.45){c.fillStyle="#1a1405";c.font=`600 ${r*.85}px Fraunces,sans-serif`;c.textAlign="center";c.textBaseline="middle";c.fillText(label[0],0,r*.05)}
+  c.restore();
+}
+function burst(x,y,n=24,spread=1){if(RM)return;for(let i=0;i<n;i++){const a=rnd(-Math.PI*.95,-Math.PI*.05),s=rnd(4,11)*spread;FP.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:rnd(6,12),rot:rnd(0,6),vr:rnd(-.3,.3),life:1,l:TICKS[i%TICKS.length]})}if(!fxRun){fxRun=true;requestAnimationFrame(fxLoop)}}
+function rain(n=60){if(RM)return;for(let i=0;i<n;i++)FP.push({x:rnd(0,innerWidth),y:rnd(-600,-20),vx:rnd(-1,1),vy:rnd(2,5),r:rnd(8,14),rot:rnd(0,6),vr:rnd(-.2,.2),life:1.6,l:TICKS[i%TICKS.length]});if(!fxRun){fxRun=true;requestAnimationFrame(fxLoop)}}
+function fxLoop(){fc.clearRect(0,0,innerWidth,innerHeight);FP=FP.filter(p=>p.life>0&&p.y<innerHeight+40);
+  for(const p of FP){p.vy+=.32;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.008;fc.globalAlpha=Math.min(1,p.life);drawCoin(fc,p.x,p.y,p.r,p.rot,p.l)}
+  fc.globalAlpha=1;if(FP.length)requestAnimationFrame(fxLoop);else{fxRun=false;fc.clearRect(0,0,innerWidth,innerHeight)}}
+
+/* click empty space -> tiny coin pop */
+document.addEventListener("click",e=>{if(e.target.closest("a,button,input,label,summary,.pc,.pod,.drawer,.sugg,.coinstage,form"))return;burst(e.clientX,e.clientY,5,.6);clink(1.4,.06)});
+/* easter egg */
+let keys="";addEventListener("keydown",e=>{if(e.target.matches("input"))return;keys=(keys+e.key.toLowerCase()).slice(-4);if(keys.endsWith("hero")){rain(90);toast("Every KOL needs a hero.");clink(1,.15)}});
+
+/* ---------- Scene: live chart that fires coins into a target ---------- */
+class Scene{
+  constructor(cv,target,o){this.cv=cv;this.c=cv.getContext("2d");this.target=target;this.o=o;this.pts=Array.from({length:70},(_,i)=>50+Math.sin(i/6)*6+i*.25+rnd(-2,2));this.coins=[];this.rate=o.rate;this.boost=0;this.acc=0;this.stepAcc=0;this.vis=true;this.last=performance.now();
+    new ResizeObserver(()=>this.size()).observe(cv);new IntersectionObserver(es=>{this.vis=es[0].isIntersecting;if(this.vis){this.last=performance.now();this.loop()}}).observe(cv);this.size();}
+  size(){const r=this.cv.getBoundingClientRect();this.w=r.width;this.h=r.height;this.cv.width=r.width*DPR;this.cv.height=r.height*DPR;this.c.setTransform(DPR,0,0,DPR,0,0)}
+  box(){const o=this.o;return{x0:this.w*o.cx0,x1:this.w*o.cx1,y0:this.h*o.cy0,y1:this.h*o.cy1}}
+  tip(){const b=this.box(),mn=Math.min(...this.pts),mx=Math.max(...this.pts);const v=this.pts[this.pts.length-1];return{x:b.x1,y:b.y1-(v-mn)/((mx-mn)||1)*(b.y1-b.y0)}}
+  tgt(){const a=this.cv.getBoundingClientRect(),b=this.target.getBoundingClientRect();return{x:b.left-a.left+b.width/2,y:b.top-a.top+b.height/2}}
+  fire(n=1){for(let i=0;i<n;i++){const s=this.tip();this.coins.push({sx:s.x,sy:s.y,t:-i*.08,d:rnd(.9,1.3),arc:rnd(80,170),rot:rnd(0,6),l:this.o.ticker()})}}
+  loop(){if(this.running||!this.vis||RM)return;this.running=true;const f=now=>{if(!this.vis){this.running=false;return}const dt=Math.min(.05,(now-this.last)/1000);this.last=now;this.update(dt);this.draw();requestAnimationFrame(f)};requestAnimationFrame(f)}
+  update(dt){const sp=1+this.boost*3;this.stepAcc+=dt*sp*8;while(this.stepAcc>1){this.stepAcc--;const l=this.pts[this.pts.length-1];this.pts.push(l+rnd(-1.6,1.9)+this.boost*rnd(.5,2.2));this.pts.shift()}
+    this.acc+=dt*this.rate*(1+this.boost*5);while(this.acc>1){this.acc--;this.fire(1+(this.boost>.6&&Math.random()<.4?1:0))}
+    const T=this.tgt();for(const c of this.coins){c.t+=dt/c.d;c.rot+=dt*9;if(c.t>=1&&!c.done){c.done=true;this.o.onLand(c)}}this.coins=this.coins.filter(c=>!c.done);this.T=T}
+  draw(){const c=this.c,b=this.box();c.clearRect(0,0,this.w,this.h);
+    c.strokeStyle="rgba(230,184,74,.06)";c.lineWidth=1;for(let i=0;i<=4;i++){const y=b.y0+(b.y1-b.y0)*i/4;c.beginPath();c.moveTo(b.x0,y);c.lineTo(b.x1,y);c.stroke()}
+    const mn=Math.min(...this.pts),mx=Math.max(...this.pts),n=this.pts.length;const P=this.pts.map((v,i)=>[b.x0+(b.x1-b.x0)*i/(n-1),b.y1-(v-mn)/((mx-mn)||1)*(b.y1-b.y0)]);
+    const g=c.createLinearGradient(0,b.y0,0,b.y1);g.addColorStop(0,"rgba(230,184,74,.28)");g.addColorStop(1,"rgba(230,184,74,0)");
+    c.beginPath();c.moveTo(P[0][0],b.y1);P.forEach(p=>c.lineTo(p[0],p[1]));c.lineTo(P[n-1][0],b.y1);c.fillStyle=g;c.fill();
+    c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.strokeStyle="#c9922e";c.lineWidth=2.2;c.shadowColor="rgba(201,146,46,.35)";c.shadowBlur=10;c.stroke();c.shadowBlur=0;
+    const tp=P[n-1];c.fillStyle="#b9832a";c.beginPath();c.arc(tp[0],tp[1],4.5,0,7);c.fill();c.strokeStyle="rgba(201,146,46,.3)";c.lineWidth=6;c.beginPath();c.arc(tp[0],tp[1],9+Math.sin(performance.now()/200)*2,0,7);c.stroke();
+    const T=this.T||this.tgt();for(const k of this.coins){if(k.t<0)continue;const t=k.t,e=t;const x=k.sx+(T.x-k.sx)*e,y=k.sy+(T.y-k.sy)*e-Math.sin(Math.PI*t)*k.arc;
+      c.globalAlpha=t>.9?(1-t)*10:1;drawCoin(c,x,y,11-t*3,k.rot,k.l);c.globalAlpha=1;
+      c.fillStyle="rgba(255,231,163,.25)";c.beginPath();c.arc(x-(T.x-k.sx)*.02,y+4,2,0,7);c.fill()}}
+}
+
+/* ---------- count up ---------- */
+function countUp(el,to,dec=0,suf="",dur=1400){if(RM){el.textContent=fmt(to,dec)+suf;return}const s=performance.now();const st=n=>{const p=Math.min(1,(n-s)/dur),e=1-Math.pow(1-p,3);el.textContent=fmt(to*e,dec)+suf;if(p<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
+
+/* ---------- reveal + counters ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;el.classList.add("shown");el.querySelectorAll?.("[data-count]").forEach(c=>{if(c.dataset.done)return;c.dataset.done=1;countUp(c,+c.dataset.count,+c.dataset.dec,c.dataset.suf)});io.unobserve(el)}),{threshold:.12});
+$$(".rv").forEach((el,i)=>{el.style.transitionDelay=(i%5)*60+"ms";io.observe(el)});
+
+/* ---------- nav, progress, menu ---------- */
+addEventListener("scroll",()=>{const h=document.documentElement;$("#prog").style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+"%";$("#hdr").classList.toggle("solid",h.scrollTop>10)},{passive:true});
+$("#menuBtn").onclick=()=>{$("#sheet").classList.add("open");$("#menuClose").focus()};
+$("#menuClose").onclick=()=>$("#sheet").classList.remove("open");
+$$("#sheet a").forEach(a=>a.onclick=()=>$("#sheet").classList.remove("open"));
+
+/* ---------- HERO ---------- */
+let lvl=34;function lvlUp(){lvl+=1.1;if(lvl>86)lvl=38;$("#lvl").style.height=lvl+"%";const j=$("#jar");j.classList.remove("jbump");void j.offsetWidth;j.classList.add("jbump")}
+let hI=0,hVal=KOLS[0].bag;
+const heroScene=new Scene($("#heroCv"),$("#jarMouth"),{rate:2.2,cx0:.06,cx1:.56,cy0:.2,cy1:.46,ticker:()=>COINS[hI%COINS.length].t,
+  onLand:()=>{hVal+=rnd(.02,.09);const v=$("#hV");v.textContent=fmt(hVal)+" SOL";v.classList.remove("bump");void v.offsetWidth;v.classList.add("bump");
+    const r=document.createElement("span");r.className="ripple";$("#jar").appendChild(r);lvlUp();setTimeout(()=>r.remove(),700);clink(rnd(.9,1.15),.07)}});
+function setHero(k){$("#hAv").textContent=ini(k.h);$("#hH").textContent="@"+k.h;$("#hS").textContent=k.coins+" coins paying them";$("#hC").textContent=k.claimed?"● Claimed":"● Unclaimed";$("#hC").className=k.claimed?"ok":"wait";hVal=k.bag;$("#hV").textContent=fmt(hVal)+" SOL"}
+setHero(KOLS[0]);
+if(!RM)setInterval(()=>{const f=$("#heroFlip");f.style.transform="rotateY(90deg)";setTimeout(()=>{hI=(hI+1)%KOLS.length;setHero(KOLS[hI]);f.style.transition="none";f.style.transform="rotateY(-90deg)";void f.offsetWidth;f.style.transition="";f.style.transform="rotateY(0)"},300)},7000);
+const th=$("#throne");
+th.addEventListener("pointermove",e=>{if(RM)return;const r=th.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;$("#heroTilt").style.transform=`rotateY(${x*18}deg) rotateX(${-y*14}deg)`;$("#jar").style.transform=`perspective(600px) rotateY(${x*22}deg) rotateX(${-y*10}deg)`;const cr=$("#heroCard").getBoundingClientRect();$("#heroCard").style.setProperty("--mx",(e.clientX-cr.left)+"px");$("#heroCard").style.setProperty("--my",(e.clientY-cr.top)+"px")});
+th.addEventListener("pointerleave",()=>{$("#heroTilt").style.transform="";$("#jar").style.transform=""});
+
+/* ---------- ticker ---------- */
+const tk=COINS.map(c=>`<span><span class="dot"></span><b>$${c.t}</b> sent <i>${rnd(.01,.4).toFixed(3)} SOL</i> → @${c.k} · ${Math.floor(rnd(3,59))}s</span>`).join("");
+$("#ticker").innerHTML=tk+tk;
+
+/* ---------- HOLD TO TRADE ---------- */
+let holding=false,fee=0,vol=0,bbTok=0,bbN=0,combo=0,comboT=0,holdStart=0;
+const sim=new Scene($("#simCv"),$("#simBag").querySelector(".av"),{rate:.6,cx0:.05,cx1:.6,cy0:.18,cy1:.62,ticker:()=>"SOL",
+  onLand:()=>{const add=rnd(.002,.009)*(1+sim.boost);bbTok+=add;$("#simTok").textContent=fmt(bbTok,3)+" SOL";$("#bbV").textContent=fmt(bbTok,3)+" SOL";const a=$("#simBag .av");a.classList.remove("bump");void a.offsetWidth;a.classList.add("bump");clink(rnd(1,1.3),.06)}});
+function feedLine(t){const f=$("#feed"),d=document.createElement("div");d.innerHTML=t;f.prepend(d);while(f.children.length>4)f.lastChild.remove()}
+const ring=$("#ring");
+function simTick(){if(!holding)return;const held=(performance.now()-holdStart)/1000;sim.boost=Math.min(1,held/3);
+  vol+=rnd(.02,.06)*(1+sim.boost*3);fee+=1.4*(1+sim.boost*2);$("#volV").textContent=fmt(vol)+" SOL";
+  if(fee>=100){fee=0;bbN++;$("#bbN").textContent=bbN;sim.fire(10);feedLine(`Payout #${bbN}: <b>${rnd(.02,.09).toFixed(3)} SOL</b> → @solsensei`);const r=$("#simBag").getBoundingClientRect();burst(r.left+r.width/2,r.top+40,14);clink(.8,.14)}
+  $("#feeBar").style.width=fee+"%";$("#feeP").textContent=Math.floor(fee)+"%";ring.style.strokeDashoffset=603-603*fee/100;
+  comboT++;if(comboT%4===0){combo++;const c=$("#combo");c.textContent="×"+combo;c.classList.add("on");c.classList.remove("pop");void c.offsetWidth;c.classList.add("pop");
+    if([5,10,20,40].includes(combo)&&!RM){const s=$("#stage");s.classList.remove("shake");void s.offsetWidth;s.classList.add("shake");if(navigator.vibrate)navigator.vibrate(30)}}
+  setTimeout(simTick,90)}
+const hb=$("#holdBtn");
+function down(e){e.preventDefault();if(holding)return;holding=true;holdStart=performance.now();combo=0;comboT=0;hb.classList.add("down");$("#holdSub").textContent="keep holding…";simTick()}
+function up(){if(!holding)return;holding=false;hb.classList.remove("down");sim.boost=0;$("#holdSub").textContent="press & hold";$("#combo").classList.remove("on");
+  if(vol>0)toast(`You simulated ${fmt(vol)} SOL of volume. That sent ${fmt(bbTok,3)} SOL in creator fees to @solsensei.`)}
+hb.addEventListener("pointerdown",down);addEventListener("pointerup",up);addEventListener("pointercancel",up);
+hb.addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&!e.repeat)down(e)});hb.addEventListener("keyup",e=>{if(e.key===" "||e.key==="Enter")up()});
+hb.addEventListener("contextmenu",e=>e.preventDefault());
+setInterval(()=>{if(!holding&&!RM&&sim.vis)feedLine(`<b>$SENSEI</b> trade · fee ${rnd(.001,.02).toFixed(3)} SOL → @solsensei`)},2600);
+
+/* ---------- PODIUM + GRID ---------- */
+const crownSvg=`<svg class="crown" width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18.5h18L19.6 7.8l-4.9 3.9L12 4.5l-2.7 7.2-4.9-3.9z"/></svg>`;
+function podium(){const t=[...KOLS].sort((a,b)=>b.bag-a.bag).slice(0,3);const order=[[t[1],2],[t[0],1],[t[2],3]];
+  $("#podium").innerHTML=order.map(([k,p])=>`<div class="pod p${p}" data-h="${k.h}" tabindex="0" role="button" aria-label="Open @${k.h}">${p===1?crownSvg:""}<div class="av">${ini(k.h)}</div><div class="hn">@${k.h}</div><div class="bv">${fmt(k.bag,1)} SOL</div><div class="block">${p}</div></div>`).join("")}
+podium();
+const cards={};
+KOLS.forEach((k,i)=>{const el=document.createElement("article");el.className="pc";el.dataset.h=k.h;el.tabIndex=0;
+  el.innerHTML=`<div class="sheen"></div><div class="bn" style="background:${bannerFor(i)}"></div><div class="bd"><div class="r1"><div class="av" style="box-shadow:0 0 0 3px var(--s1),0 0 0 ${Math.max(2,6-i/2)}px var(--gold)">${ini(k.h)}</div><span class="rank" data-rank></span></div>
+  <div class="h">@${k.h}</div><div class="bio">${k.bio}</div><div class="st3"><div><b>${k.coins}</b><span>coins</span></div><div><b>${fmt(k.bag,1)}</b><span>SOL earned</span></div><div><b>${fmt(k.waiting,1)}</b><span>unclaimed</span></div></div>
+  <span class="${k.claimed?"ok":"wait"}">${k.claimed?"● Claimed on Hero":"● Hasn't claimed yet"}</span><button class="btn gold sm" data-launch="${k.h}">Send fees to @${k.h}</button></div>`;
+  el.addEventListener("pointermove",e=>{if(RM)return;const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(800px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`;el.style.setProperty("--mx",(e.clientX-r.left)+"px");el.style.setProperty("--my",(e.clientY-r.top)+"px")});
+  el.addEventListener("pointerleave",()=>el.style.transform="");cards[k.h]=el});
+let sortBy="bag";
+function renderGrid(){const g=$("#grid"),q=$("#q").value.trim().replace(/^@/,"").toLowerCase();
+  const first={};Object.values(cards).forEach(c=>{if(c.isConnected)first[c.dataset.h]=c.getBoundingClientRect()});
+  const list=[...KOLS].sort((a,b)=>b[sortBy]-a[sortBy]).filter(k=>!q||k.h.includes(q));
+  g.innerHTML="";list.forEach((k,i)=>{const c=cards[k.h];c.querySelector("[data-rank]").textContent="#"+(i+1);g.appendChild(c)});
+  if(!list.length)g.innerHTML=`<div class="empty">No one by that name yet. <a href="#launch" style="color:var(--gold);font-weight:600" id="startNew">Be the first to crown @${q}</a></div>`;
+  if(!RM)list.forEach(k=>{const c=cards[k.h],f=first[k.h];if(!f)return;const l=c.getBoundingClientRect();const dx=f.left-l.left,dy=f.top-l.top;if(!dx&&!dy)return;c.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:"none"}],{duration:450,easing:"cubic-bezier(.2,.8,.2,1)"})});
+  const sn=$("#startNew");if(sn)sn.onclick=()=>pickKol(q)}
+function moveInd(){const b=$("#tabs [aria-selected=true]"),ind=$("#ind");ind.style.left=b.offsetLeft+"px";ind.style.width=b.offsetWidth+"px"}
+$$("#tabs button").forEach(b=>b.onclick=()=>{$$("#tabs button").forEach(x=>x.setAttribute("aria-selected","false"));b.setAttribute("aria-selected","true");sortBy=b.dataset.sort;moveInd();renderGrid()});
+$("#q").addEventListener("input",renderGrid);
+renderGrid();requestAnimationFrame(moveInd);addEventListener("resize",moveInd);document.fonts?.ready.then(moveInd);
+
+/* ---------- DRAWER ---------- */
+let lastFocus=null;
+function openDrawer(h){const k=KOLS.find(x=>x.h===h);if(!k)return;lastFocus=document.activeElement;const list=kolCoins(h);
+  $("#dBody").innerHTML=`<div class="dh"><div class="av">${ini(h)}</div><div><h3 id="dTitle" style="font-size:26px">@${h}</h3><div class="muted" style="font-size:14px">${k.bio}</div><span class="${k.claimed?"ok":"wait"}">${k.claimed?"● Claimed on Hero":"● Hasn't claimed yet"}</span></div></div>
+  <div class="tstats" style="grid-template-columns:1fr 1fr"><div class="ts"><b id="dBag">0</b><span>Total fees earned (SOL)</span></div><div class="ts"><b>${k.coins}</b><span>Coins paying them</span></div></div>
+  <canvas id="dCv"></canvas><div class="muted" style="font-size:13px;margin-bottom:4px">Coins paying them</div>
+  ${list.map(c=>`<div class="hl"><span style="display:flex;gap:10px;align-items:center"><span class="sq" style="width:32px;height:32px;font-size:12px">${c.t[0]}</span><span><b>$${c.t}</b><br><span class="mono muted">${Math.round(c.bb*900).toLocaleString()} trades</span></span></span><span style="text-align:right"><span class="mono">${fmt(c.bb)} SOL</span><br><span class="mono ${c.ch>=0?"up":"dn"}">${c.ch>=0?"+":""}${c.ch.toFixed(1)}%</span></span></div>`).join("")}
+  <button class="btn gold" style="width:100%;margin-top:20px" data-launch="${h}">Point my coin's fees at @${h}</button>
+  <p class="ex" style="display:inline-block;margin-top:12px">Example data until launch</p>`;
+  $("#drawer").classList.add("open");$("#scrim").classList.add("open");$("#drawer").focus();countUp($("#dBag"),k.bag,1,"",900);
+  requestAnimationFrame(()=>drawChart($("#dCv"),k.bag))}
+function closeDrawer(){$("#drawer").classList.remove("open");$("#scrim").classList.remove("open");lastFocus?.focus()}
+function drawChart(cv,end){const r=cv.getBoundingClientRect(),c=cv.getContext("2d");cv.width=r.width*DPR;cv.height=r.height*DPR;c.setTransform(DPR,0,0,DPR,0,0);
+  const n=40,pts=[];let v=0;for(let i=0;i<n;i++){v+=rnd(0,2)*(i/n+.3);pts.push(v)}const mx=pts[n-1];const P=pts.map((p,i)=>[14+(r.width-28)*i/(n-1),r.height-16-(p/mx)*(r.height-36)]);
+  const s=performance.now();const go=now=>{const p=RM?1:Math.min(1,(now-s)/900),m=Math.max(2,Math.floor(n*p));c.clearRect(0,0,r.width,r.height);
+    const g=c.createLinearGradient(0,0,0,r.height);g.addColorStop(0,"rgba(230,184,74,.3)");g.addColorStop(1,"rgba(230,184,74,0)");
+    c.beginPath();c.moveTo(P[0][0],r.height-16);for(let i=0;i<m;i++)c.lineTo(P[i][0],P[i][1]);c.lineTo(P[m-1][0],r.height-16);c.fillStyle=g;c.fill();
+    c.beginPath();for(let i=0;i<m;i++)i?c.lineTo(P[i][0],P[i][1]):c.moveTo(P[i][0],P[i][1]);c.strokeStyle="#c9922e";c.lineWidth=2;c.stroke();
+    c.fillStyle="#b9832a";c.beginPath();c.arc(P[m-1][0],P[m-1][1],4,0,7);c.fill();if(p<1)requestAnimationFrame(go)};requestAnimationFrame(go)}
+document.addEventListener("click",e=>{const l=e.target.closest("[data-launch]");if(l){e.stopPropagation();closeDrawer();pickKol(l.dataset.launch);$("#launch").scrollIntoView();return}
+  const c=e.target.closest(".pc,.pod");if(c)openDrawer(c.dataset.h)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();$("#sheet").classList.remove("open")}if(e.key==="Enter"&&e.target.matches(".pc,.pod"))openDrawer(e.target.dataset.h)});
+$("#scrim").onclick=closeDrawer;$("#dClose").onclick=closeDrawer;
+
+/* ---------- COINS TABLE ---------- */
+const spark=(h,up)=>{const mn=Math.min(...h),mx=Math.max(...h);return`<svg width="100" height="28" viewBox="0 0 100 28"><path d="${h.map((v,i)=>(i?"L":"M")+(i*100/(h.length-1)).toFixed(1)+" "+(26-(v-mn)/((mx-mn)||1)*24).toFixed(1)).join(" ")}" fill="none" stroke="${up?"#10b981":"#f0565b"}" stroke-width="1.8"/></svg>`};
+COINS.forEach((c,i)=>{const r=document.createElement("div");r.className="tr";r.innerHTML=`<div class="ci"><span class="sq">${c.t[0]}</span><div><b>${c.name}</b><div class="mono muted">$${c.t}</div></div></div><div class="to"><span class="av">${ini(c.k)}</span>@${c.k}</div><div class="mono" data-mc>$${big(c.mc)}</div><div class="mono hm">${fmt(c.bb)} SOL</div><div class="mono hm">${Math.round(c.bb*rnd(600,1400)).toLocaleString()}</div><div class="hm" data-sp>${spark(c.hist,c.ch>=0)}</div><div class="hm muted">${c.age}</div>`;c.el=r;$("#table").appendChild(r)});
+setInterval(()=>{if(RM)return;const c=COINS[Math.floor(rnd(0,COINS.length))];const d=rnd(-.04,.07);c.mc*=1+d;c.hist.push(c.hist[c.hist.length-1]*(1+d));c.hist.shift();const m=c.el.querySelector("[data-mc]");m.textContent="$"+big(c.mc);m.classList.remove("flashU","flashD");void m.offsetWidth;m.classList.add(d>=0?"flashU":"flashD");c.el.querySelector("[data-sp]").innerHTML=spark(c.hist,c.hist[c.hist.length-1]>=c.hist[0])},900);
+
+/* ---------- LAUNCH STUDIO ---------- */
+const fKol=$("#fKol"),sugg=$("#sugg");const clean=v=>v.trim().replace(/^@+/,"").replace(/[^A-Za-z0-9_]/g,"").slice(0,15);
+function pickKol(h){h=clean(h);if(!h)return;fKol.value="@"+h;sugg.style.display="none";fKol.setAttribute("aria-expanded","false");const k=KOLS.find(x=>x.h.toLowerCase()===h.toLowerCase());
+  $("#pAv").textContent=ini(h);$("#pH").textContent="@"+h;$("#rK").textContent="@"+h;$("#pV").textContent=k?fmt(k.bag)+" SOL":"0.00 SOL";$("#pState").textContent=k?(k.claimed?"● On Hero":"● Hasn't claimed"):"● New";$("#pState").className=k&&k.claimed?"ok":"wait"}
+function showSugg(){const q=clean(fKol.value).toLowerCase();const m=(q?KOLS.filter(k=>k.h.includes(q)):KOLS).slice(0,4);
+  let html=m.map(k=>`<button type="button" role="option" data-h="${k.h}"><span class="av">${ini(k.h)}</span><span><b>@${k.h}</b><br><span class="muted" style="font-size:12px">${k.coins} coins · ${fmt(k.bag,1)} SOL earned</span></span></button>`).join("");
+  if(q&&!m.some(k=>k.h===q))html+=`<button type="button" role="option" data-h="${q}"><span class="av">${ini(q)}</span><span><b>Send fees to @${q}</b><br><span class="muted" style="font-size:12px">Held until they claim</span></span></button>`;
+  sugg.innerHTML=html;sugg.style.display=html?"block":"none";fKol.setAttribute("aria-expanded",!!html)}
+fKol.addEventListener("input",showSugg);fKol.addEventListener("focus",showSugg);
+fKol.addEventListener("blur",()=>setTimeout(()=>{sugg.style.display="none";if(fKol.value)pickKol(fKol.value)},160));
+fKol.addEventListener("keydown",e=>{if(e.key==="ArrowDown"){e.preventDefault();sugg.querySelector("button")?.focus()}});
+sugg.addEventListener("keydown",e=>{const b=[...sugg.querySelectorAll("button")],i=b.indexOf(document.activeElement);if(e.key==="ArrowDown"){e.preventDefault();b[Math.min(i+1,b.length-1)].focus()}if(e.key==="ArrowUp"){e.preventDefault();i<=0?fKol.focus():b[i-1].focus()}});
+sugg.addEventListener("mousedown",e=>e.preventDefault());
+sugg.addEventListener("click",e=>{const b=e.target.closest("[data-h]");if(b){pickKol(b.dataset.h);clink(1.2,.06)}});
+const sl=$("#fSplit");sl.addEventListener("input",()=>{const v=+sl.value;sl.style.setProperty("--p",((v-50)/50*100)+"%");$("#kPct").textContent=$("#r1").textContent=v+"%";$("#cPct").textContent=(100-v)+"%";if(v%10===0)clink(1+(v-50)/100,.04)});
+const isCA=v=>/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(v);
+const shortCA=v=>v.slice(0,4)+"…"+v.slice(-4);
+$("#fCA").addEventListener("input",e=>{const v=e.target.value.trim();e.target.value=v;const ok=isCA(v);$("#pTick").textContent=ok?shortCA(v):(v?"Checking…":"CA not set");$("#pName").textContent=ok?"Your pump.fun coin":"Your coin";$("#pT2").textContent=ok?shortCA(v):"your coin";$("#pImg").textContent=ok?v[0].toUpperCase():"?";if(ok)clink(1.3,.05)});
+$("#lf").addEventListener("submit",e=>{e.preventDefault();const ca=$("#fCA").value.trim(),h=clean(fKol.value),m=$("#msg");
+  if(!isCA(ca)||!h){m.style.display="block";m.style.borderColor="var(--gold)";m.textContent=!isCA(ca)&&!h?"Paste your coin's CA and pick a KOL handle.":!isCA(ca)?"That CA doesn't look right. Paste the full address from pump.fun.":"Pick a KOL handle to send the fees to.";return}
+  m.style.display="none";$("#sealT").textContent="HERO";$("#sealS").textContent=`${shortCA(ca)} → @${h}`;const s=$("#seal");s.classList.add("on");
+  setTimeout(()=>{burst(innerWidth/2,innerHeight/2,46,1.2);clink(.7,.18);if(navigator.vibrate)navigator.vibrate([20,40,20])},380);
+  setTimeout(()=>{s.classList.remove("on");$("#lock").classList.add("on");m.style.display="block";m.style.borderColor="var(--live)";m.textContent=`Ready. Sign with the wallet that created ${shortCA(ca)} to send ${sl.value}% of its pump.fun creator fees to @${h}. (Goes live at launch.)`},1700)});
+$("#seal").onclick=()=>$("#seal").classList.remove("on");
+
+/* ---------- CLAIM VAULT ---------- */
+function check(){const h=clean($("#cH").value);if(!h){$("#cH").focus();return}const k=KOLS.find(x=>x.h.toLowerCase()===h.toLowerCase());const v=$("#vault");
+  v.classList.remove("open");void v.offsetWidth;$("#chips").innerHTML="";$("#vV").textContent="0.00 SOL";$("#vL").textContent=`Fees waiting for @${h}`;
+  setTimeout(()=>{v.classList.add("open");clink(.6,.12)},60);
+  const list=k?kolCoins(k.h):[];const total=k?k.waiting||k.bag*.2:0;
+  setTimeout(()=>{countUp($("#vV"),total,2," SOL",1100);if(!list.length){$("#chips").innerHTML=`<span class="muted" style="font-size:14px">Nothing yet. Share Hero and someone might pick you.</span>`;return}
+    list.forEach((c,i)=>setTimeout(()=>{const d=document.createElement("span");d.className="chip";d.innerHTML=`<i>${c.t[0]}</i>${fmt(c.bb)} SOL · $${c.t}`;$("#chips").appendChild(d);clink(1+i*.08,.07)},i*160))},900)}
+$("#cBtn").onclick=check;$("#cH").addEventListener("keydown",e=>{if(e.key==="Enter")check()});
+$("#xBtn").onclick=function(){this.textContent="X sign-in goes live at launch"};
+
+/* ---------- $HERO coin (drag to spin) ---------- */
+const c3=$("#coin3d");let edge="";for(let i=-9;i<=9;i++)edge+=`<div class="e" style="transform:translateZ(${i}px);filter:brightness(${.75+Math.abs(i)/30})"></div>`;
+c3.innerHTML=edge+`<div class="f" style="transform:translateZ(10px)"><span>$HERO<small>FEES → KOLS</small></span></div><div class="f b" style="transform:rotateY(180deg) translateZ(10px)"><span><svg width="70" height="70" viewBox="0 0 24 24" fill="#1a1405"><path d="M3 18.5h18L19.6 7.8l-4.9 3.9L12 4.5l-2.7 7.2-4.9-3.9z"/></svg><small>BURNED BY FEES</small></span></div>`;
+let ry=-20,rx=8,vy=.4,drag=false,px=0,py=0,lastT=0;
+const cs=$("#coinStage");
+cs.addEventListener("pointerdown",e=>{drag=true;px=e.clientX;py=e.clientY;vy=0;cs.setPointerCapture(e.pointerId)});
+cs.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;ry+=dx*.6;rx=Math.max(-30,Math.min(30,rx-dy*.3));vy=dx*.6;const t=Math.floor(ry/180);if(t!==lastT){lastT=t;clink(.9,.05)}});
+cs.addEventListener("pointerup",()=>drag=false);cs.addEventListener("pointercancel",()=>drag=false);
+(function spin(){if(!drag){vy*=.965;if(Math.abs(vy)<.4)vy+=(.4*Math.sign(vy||1)-vy)*.02;ry+=RM?0:vy;rx*=.98;const t=Math.floor(ry/180);if(t!==lastT&&Math.abs(vy)>3){lastT=t;clink(.9,.04)}}c3.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;requestAnimationFrame(spin)})();
+
+/* burn log */
+const burn=$("#burn");function addBurn(first){const d=document.createElement("div");d.innerHTML=`<span><span class="flame">▲</span>&nbsp; Burned <b class="mono" style="font-weight:500">${big(rnd(5e4,6e5))} $HERO</b></span><span class="muted mono" style="font-size:12px">${first?Math.floor(rnd(2,50))+"m ago":"just now"}</span>`;burn.prepend(d);while(burn.children.length>5)burn.lastChild.remove()}
+for(let i=0;i<5;i++)addBurn(true);if(!RM)setInterval(()=>addBurn(false),6500);
+$("#copy").onclick=function(){navigator.clipboard?.writeText($("#caT").textContent).catch(()=>{});this.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Copied`;clink(1.3,.06);setTimeout(()=>this.textContent="Copy CA",1600)};
+
+/* pause when tab hidden */
+document.addEventListener("visibilitychange",()=>{heroScene.vis=sim.vis=!document.hidden;if(!document.hidden){heroScene.last=sim.last=performance.now();heroScene.loop();sim.loop()}});
+})();
+</script>
+</body>
+</html>

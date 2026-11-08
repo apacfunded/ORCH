@@ -2,193 +2,390 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff3f8">
 <title>Muse — every coin gets its own AI TikTok creator</title>
 <meta name="description" content="Launch a pump.fun coin on Muse and it gets its own AI TikTok influencer that posts about it.">
+<meta property="og:title" content="Muse — every coin gets its own creator">
+<meta property="og:description" content="Launch a pump.fun coin and it gets an AI TikTok influencer with its own face, voice and vibe.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Syne:wght@500;600&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23ff3d8b'/><path d='M16 44V22l16 14 16-14v22' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <style>
 :root{
-  --bg:#fff3f8;--surface:#fff;--ink:#2a0e1c;--muted:#7a5566;--line:#f3d3e2;--soft:#ffe4ef;
-  --accent:#ff3d8b;--accent-ink:#fff;--accent-deep:#d81f6b;--live:#10b981;
-  --r:18px;--shadow:0 1px 2px rgba(42,14,28,.06),0 8px 24px rgba(42,14,28,.06);
+  --bg:#fff3f8;--surface:#fff;--ink:#2a0e1c;--ink-2:#4a2236;--muted:#7a5566;--line:#f3d3e2;--soft:#ffe4ef;--soft-2:#fff8fb;
+  --accent:#ff3d8b;--accent-deep:#d81f6b;--accent-ink:#fff;--live:#10b981;
+  --r:20px;--shadow:0 1px 2px rgba(42,14,28,.05),0 10px 30px -8px rgba(42,14,28,.10);
+  --shadow-lg:0 2px 4px rgba(42,14,28,.04),0 30px 60px -20px rgba(216,31,107,.30);
   --display:'Syne',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 img{max-width:100%;display:block}
 button,input,textarea,select{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
-.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
-h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.02em;margin:0}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:12px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.025em;margin:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* top bar */
-.top{position:sticky;top:0;z-index:20;background:rgba(255,243,248,.94);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:16px;height:64px}
+/* ---------- $MUSE bar ---------- */
+.coinbar{background:var(--ink);color:#fbe9f1;font-size:14px}
+.coinbar .wrap{display:flex;align-items:center;justify-content:center;gap:10px 18px;flex-wrap:wrap;min-height:46px;padding-top:6px;padding-bottom:6px}
+.coinbar .tk{font:600 14px var(--display);letter-spacing:0;color:#fff}
+.coinbar .tk i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px;box-shadow:0 0 0 0 rgba(255,61,139,.6);animation:ping 2s var(--ease) infinite}
+@keyframes ping{70%{box-shadow:0 0 0 8px rgba(255,61,139,0)}100%{box-shadow:0 0 0 0 rgba(255,61,139,0)}}
+.ca-btn{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font:500 13px ui-monospace,SFMono-Regular,Menlo,monospace;transition:background .2s var(--ease),border-color .2s var(--ease)}
+.ca-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35)}
+.ca-btn[disabled]{cursor:default;opacity:.8}
+.ca-btn svg{flex:none}
+.bar-link{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;text-decoration:none;font-weight:500;font-size:13px;color:#fff;background:var(--accent);transition:background .2s var(--ease)}
+.bar-link:hover{background:var(--accent-deep)}
+.bar-link.ghost{background:transparent;border:1px solid rgba(255,255,255,.18)}
+.bar-link.ghost:hover{background:rgba(255,255,255,.08)}
+.bar-link[hidden]{display:none}
+
+/* ---------- nav ---------- */
+.top{position:sticky;top:0;z-index:30;background:rgba(255,243,248,.92);border-bottom:1px solid transparent;transition:border-color .2s var(--ease),background .2s var(--ease)}
+.top.scrolled{border-bottom-color:var(--line);background:rgba(255,243,248,.97)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:66px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 22px var(--display)}
-.mark{width:34px;height:34px;border-radius:11px;background:var(--accent);display:grid;place-items:center}
-.tabs{display:flex;gap:4px;margin-left:12px}
-.tabs a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px}
+.mark{width:36px;height:36px;border-radius:12px;background:var(--accent);display:grid;place-items:center;transition:transform .4s var(--spring)}
+.brand:hover .mark{transform:rotate(-8deg) scale(1.06)}
+.tabs{display:flex;gap:2px;margin-left:14px}
+.tabs a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px;transition:background .2s var(--ease),color .2s var(--ease)}
 .tabs a:hover{background:var(--soft);color:var(--ink)}
 .spacer{flex:1}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;border:0;cursor:pointer;font-weight:600;font-size:15px;text-decoration:none;transition:background .15s ease,transform .15s ease}
-.btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--accent);color:var(--accent-ink)}
-.btn-primary:hover{background:var(--accent-deep)}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:999px;border:0;font-weight:600;font-size:15px;text-decoration:none;white-space:nowrap;transition:background .2s var(--ease),transform .25s var(--spring),box-shadow .25s var(--ease),border-color .2s var(--ease)}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 8px 20px -8px rgba(255,61,139,.7)}
+.btn-primary:hover{background:var(--accent-deep);box-shadow:0 12px 26px -10px rgba(216,31,107,.8)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-dark:hover{background:var(--ink-2)}
 .btn-ghost{background:var(--surface);border:1px solid var(--line)}
 .btn-ghost:hover{border-color:var(--accent)}
-.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn .arrow{transition:transform .25s var(--spring)}
+.btn:hover .arrow{transform:translateX(3px)}
 
-/* profile hero */
-.cover{height:160px;margin-top:20px;border-radius:24px;background:
-  radial-gradient(60% 120% at 15% 20%,#ffb3d1 0,transparent 60%),
-  radial-gradient(50% 120% at 85% 30%,#ffd6e6 0,transparent 60%),
-  linear-gradient(120deg,#ff7fb1,#ff3d8b);position:relative;overflow:hidden}
-.cover::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 1px,transparent 1px 28px)}
-.hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start}
-.profile{margin-top:-52px;position:relative}
-.avatar{width:112px;height:112px;border-radius:50%;background:var(--surface);padding:5px;box-shadow:var(--shadow)}
-.avatar>div{width:100%;height:100%;border-radius:50%;background:conic-gradient(from 210deg,#ff3d8b,#ff9cc2,#ff3d8b);display:grid;place-items:center}
-.handle-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
-.handle{font:500 15px var(--body);color:var(--muted)}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--soft);font-size:13px;font-weight:500;color:var(--accent-deep)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
-.profile h1{font-size:clamp(36px,5.2vw,60px);line-height:1.02;margin-top:14px;max-width:14ch}
-.bio{color:var(--muted);font-size:18px;max-width:52ch;margin:16px 0 0}
-.stats{display:flex;gap:28px;margin:22px 0 0;padding:0;list-style:none}
-.stats b{display:block;font:600 22px var(--display)}
-.stats span{font-size:13px;color:var(--muted)}
-.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+/* ---------- hero ---------- */
+.hero{position:relative;padding:56px 0 40px;overflow:hidden}
+.mesh{position:absolute;inset:-20% -10% auto;height:120%;z-index:-1;pointer-events:none}
+.mesh span{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:float 16s ease-in-out infinite alternate}
+.mesh .m1{width:520px;height:520px;background:#ffc2da;left:-6%;top:4%}
+.mesh .m2{width:440px;height:440px;background:#ffd9c7;right:2%;top:-6%;animation-delay:-5s}
+.mesh .m3{width:360px;height:360px;background:#ffb0cf;right:28%;top:38%;animation-delay:-9s;opacity:.4}
+@keyframes float{to{transform:translate(40px,30px) scale(1.12)}}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:40px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);box-shadow:var(--shadow)}
+.eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+.hero h1{font-size:clamp(42px,6.4vw,78px);line-height:.98;margin-top:20px}
+.rot{display:inline-grid;vertical-align:bottom;height:1.06em;overflow:hidden}
+.rot span{grid-area:1/1;color:var(--accent);transform:translateY(105%);opacity:0;transition:transform .6s var(--ease),opacity .6s var(--ease);white-space:nowrap}
+.rot span.on{transform:none;opacity:1}
+.rot span.out{transform:translateY(-105%);opacity:0}
+.lede{color:var(--muted);font-size:19px;max-width:48ch;margin:20px 0 0}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.trust{display:flex;flex-wrap:wrap;gap:18px;margin:28px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px}
+.trust li{display:flex;align-items:center;gap:8px}
+.trust svg{color:var(--accent)}
 
-/* phone */
-.phone-col{margin-top:-90px;position:relative}
-.phone{width:300px;margin-left:auto;aspect-ratio:9/18.5;border-radius:42px;background:#1a0812;padding:10px;box-shadow:0 30px 60px -20px rgba(216,31,107,.45),0 0 0 1px rgba(0,0,0,.05)}
-.screen{position:relative;height:100%;border-radius:33px;overflow:hidden;background:#2a0e1c;color:#fff}
-.vid{position:absolute;inset:0;background:linear-gradient(160deg,#ff3d8b,#7b1e4f 55%,#2a0e1c)}
-.blob{position:absolute;border-radius:50%;filter:blur(30px);opacity:.75;animation:drift 9s ease-in-out infinite alternate}
-.b1{width:180px;height:180px;background:#ffb3d1;top:12%;left:-10%}
-.b2{width:150px;height:150px;background:#ff7a3d;bottom:22%;right:-12%;animation-delay:-3s}
-.b3{width:110px;height:110px;background:#fff;top:40%;left:30%;opacity:.25;animation-delay:-6s}
-@keyframes drift{to{transform:translate(30px,-26px) scale(1.15)}}
-.persona{position:absolute;top:30%;left:50%;transform:translateX(-50%);width:128px;height:128px;border-radius:50%;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.5);display:grid;place-items:center;font:600 34px var(--display);letter-spacing:-.03em}
-.persona::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(255,255,255,.25);animation:pulse 2.4s ease-out infinite}
-@keyframes pulse{from{transform:scale(.92);opacity:1}to{transform:scale(1.18);opacity:0}}
-.ph-top{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:center;gap:16px;font-size:13px;font-weight:500;opacity:.9}
-.ph-top b{border-bottom:2px solid #fff;padding-bottom:2px}
-.ph-tag{position:absolute;top:44px;left:12px;background:rgba(0,0,0,.35);border-radius:999px;padding:3px 10px;font-size:12px}
-.rail{position:absolute;right:10px;bottom:120px;display:grid;gap:16px;justify-items:center}
-.rail i{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
-.cap{position:absolute;left:14px;right:62px;bottom:18px;font-size:13px;line-height:1.4}
+/* staged entrance */
+.enter{opacity:0;transform:translateY(18px);animation:enter .8s var(--ease) forwards}
+.enter.d1{animation-delay:.08s}.enter.d2{animation-delay:.16s}.enter.d3{animation-delay:.24s}.enter.d4{animation-delay:.32s}.enter.d5{animation-delay:.4s}
+@keyframes enter{to{opacity:1;transform:none}}
+
+/* phones */
+.stage{position:relative;height:600px;perspective:1400px}
+.phone{position:absolute;top:50%;left:50%;width:270px;aspect-ratio:9/18.5;border-radius:42px;background:#1a0812;padding:9px;box-shadow:var(--shadow-lg),0 0 0 1px rgba(0,0,0,.06);transition:transform .9s var(--ease)}
+.phone.center{z-index:3;transform:translate(-50%,-50%);animation:bob 6s ease-in-out infinite}
+.phone.left{z-index:1;transform:translate(-112%,-46%) rotateY(18deg) rotateZ(-6deg) scale(.84);filter:saturate(.85)}
+.phone.right{z-index:1;transform:translate(12%,-46%) rotateY(-18deg) rotateZ(6deg) scale(.84);filter:saturate(.85)}
+@keyframes bob{50%{transform:translate(-50%,calc(-50% - 10px))}}
+.phone .notch{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:76px;height:20px;border-radius:999px;background:#1a0812;z-index:5}
+.screen{position:relative;height:100%;border-radius:34px;overflow:hidden;background:#2a0e1c;color:#fff;isolation:isolate}
+.vid{position:absolute;inset:0;background:linear-gradient(165deg,var(--g1,#ff3d8b),var(--g2,#7b1e4f) 58%,#2a0e1c);transition:background .6s var(--ease)}
+.blob{position:absolute;border-radius:50%;filter:blur(28px);opacity:.7;animation:drift 9s ease-in-out infinite alternate}
+.b1{width:170px;height:170px;background:var(--g3,#ffb3d1);top:10%;left:-14%}
+.b2{width:140px;height:140px;background:#ff7a3d;bottom:24%;right:-16%;animation-delay:-3s}
+.b3{width:100px;height:100px;background:#fff;top:42%;left:32%;opacity:.22;animation-delay:-6s}
+@keyframes drift{to{transform:translate(28px,-24px) scale(1.15)}}
+.persona{position:absolute;top:27%;left:50%;transform:translateX(-50%);width:124px;height:124px;border-radius:50%;background:rgba(255,255,255,.14) center/cover no-repeat;border:2px solid rgba(255,255,255,.55);display:grid;place-items:center;font:600 30px var(--display);letter-spacing:-.03em;transition:font-size .2s,background-color .4s}
+.persona::before,.persona::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(255,255,255,.28);animation:pulse 2.6s ease-out infinite}
+.persona::after{animation-delay:1.3s}
+@keyframes pulse{from{transform:scale(.92);opacity:1}to{transform:scale(1.25);opacity:0}}
+.persona.has-img{color:transparent}
+.persona.pixel{image-rendering:pixelated}
+.ph-top{position:absolute;top:44px;left:0;right:0;display:flex;justify-content:center;gap:16px;font-size:13px;font-weight:500;opacity:.92}
+.ph-top b{border-bottom:2px solid #fff;padding-bottom:2px;font-weight:600}
+.ph-tag{position:absolute;top:74px;left:12px;background:rgba(0,0,0,.32);border-radius:999px;padding:3px 10px;font-size:12px}
+.rail{position:absolute;right:9px;bottom:118px;display:grid;gap:14px;justify-items:center}
+.rail i{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;transition:transform .3s var(--spring)}
+.rail i.pop{transform:scale(1.25);background:var(--accent)}
+.cap{position:absolute;left:14px;right:58px;bottom:16px;font-size:13px;line-height:1.4}
 .cap .who{font-weight:600;font-size:14px;margin-bottom:4px}
 .cap .txt{min-height:56px}
-.cap .txt::after{content:"";display:inline-block;width:2px;height:13px;background:#fff;margin-left:2px;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+.center .cap .txt::after{content:"";display:inline-block;width:2px;height:13px;background:#fff;margin-left:2px;vertical-align:-2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .cap .snd{margin-top:8px;opacity:.85;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.preview-note{text-align:right;color:var(--muted);font-size:13px;margin-top:10px}
+.cap .snd b{display:inline-block;animation:spin 4s linear infinite;font-weight:400}
+@keyframes spin{to{transform:rotate(360deg)}}
+.heart{position:absolute;right:20px;bottom:150px;pointer-events:none;animation:rise 2.4s var(--ease) forwards;z-index:4}
+@keyframes rise{0%{opacity:0;transform:translate(0,0) scale(.5)}15%{opacity:1;transform:translate(0,-20px) scale(1.1)}100%{opacity:0;transform:translate(var(--dx,-20px),-220px) scale(.9) rotate(var(--rot,-15deg))}}
+.vibe-label{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%);font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap}
+.vibe-label b{color:var(--ink)}
+.preview-note{position:absolute;left:0;right:0;bottom:0;text-align:center;color:var(--muted);font-size:13px}
 
-/* sections */
-section{padding:72px 0 0}
-.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:22px}
-.sec-head h2{font-size:clamp(28px,3.4vw,38px)}
-.sec-head p{margin:6px 0 0;color:var(--muted)}
+/* ---------- marquee ---------- */
+.marquee{border-block:1px solid var(--line);background:var(--surface);overflow:hidden;padding:16px 0}
+.marquee .track{display:flex;gap:44px;width:max-content;animation:marq 38s linear infinite}
+.marquee:hover .track{animation-play-state:paused}
+.marquee span{font:600 22px var(--display);color:var(--ink);display:flex;align-items:center;gap:44px;white-space:nowrap}
+.marquee span::after{content:"";width:10px;height:10px;border-radius:3px;background:var(--accent);transform:rotate(45deg)}
+.marquee span:nth-child(3n+2){color:var(--accent)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section{padding:96px 0 0}
+.kicker{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-deep)}
+.sec-head{margin-bottom:32px;max-width:640px}
+.sec-head h2{font-size:clamp(32px,4vw,48px);line-height:1.04;margin-top:10px}
+.sec-head p{margin:12px 0 0;color:var(--muted);font-size:17px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 
-/* post grid how-it-works */
-.posts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.post{padding:20px;display:flex;flex-direction:column;gap:10px;min-height:220px}
-.post .n{width:36px;height:36px;border-radius:12px;background:var(--soft);color:var(--accent-deep);display:grid;place-items:center;font:600 16px var(--display)}
-.post h3{font-size:19px}
-.post p{margin:0;color:var(--muted);font-size:15px}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
 
-/* launch */
-.launch{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
-form.card{padding:24px}
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{padding:24px;display:flex;flex-direction:column;gap:12px;min-height:240px;position:relative;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease)}
+.step:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:#f7bcd6}
+.step .ic{width:48px;height:48px;border-radius:14px;background:var(--soft);color:var(--accent-deep);display:grid;place-items:center;transition:transform .4s var(--spring),background .3s}
+.step:hover .ic{transform:rotate(-8deg) scale(1.08);background:var(--accent);color:#fff}
+.step h3{font-size:20px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+.step .num{position:absolute;right:18px;top:12px;font:600 56px var(--display);color:var(--soft);line-height:1}
+
+/* ---------- launch wizard ---------- */
+.launch{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
+.wiz{padding:0;overflow:hidden}
+.stepper{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);background:var(--soft-2)}
+.stepper button{position:relative;display:flex;align-items:center;gap:10px;min-height:68px;padding:0 18px;border:0;background:none;text-align:left;font-weight:500;font-size:14px;color:var(--muted);transition:color .25s var(--ease)}
+.stepper button:disabled{cursor:default}
+.stepper .n{width:28px;height:28px;flex:none;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:600 13px var(--display);background:var(--surface);transition:all .35s var(--spring)}
+.stepper button.on{color:var(--ink)}
+.stepper button.on .n{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.08)}
+.stepper button.done .n{background:var(--ink);border-color:var(--ink);color:#fff}
+.stepper .bar{position:absolute;left:0;bottom:-1px;height:3px;background:var(--accent);width:0;transition:width .5s var(--ease)}
+.stepper button.on .bar,.stepper button.done .bar{width:100%}
+.stepper button.done .bar{background:var(--ink)}
+.panes{position:relative;padding:28px}
+.pane{display:none}
+.pane.on{display:block;animation:pane .5s var(--ease)}
+.pane.on.back{animation-name:paneback}
+@keyframes pane{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes paneback{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+.pane h3{font-size:24px}
+.pane .sub{color:var(--muted);margin:6px 0 22px;font-size:15px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.field{display:grid;gap:6px;margin-bottom:16px}
-.field label,.legend{font-weight:600;font-size:14px}
+.field{display:grid;gap:8px;margin-bottom:22px}
+.lab{font-weight:600;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.lab small{font-weight:400;color:var(--muted);font-size:13px}
 .hint{font-size:13px;color:var(--muted)}
-.in{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;background:#fffafc;padding:11px 14px;transition:border-color .15s ease}
-.in:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,61,139,.15)}
-textarea.in{min-height:88px;resize:vertical}
-.err{color:#c4123f;font-size:13px;min-height:0}
-.vibes{display:flex;flex-wrap:wrap;gap:8px}
-.vibe{position:relative}
-.vibe input{position:absolute;opacity:0;inset:0}
-.vibe span{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fffafc;cursor:pointer;font-weight:500;font-size:14px}
-.vibe input:checked+span{background:var(--ink);color:#fff;border-color:var(--ink)}
-.vibe input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
-.drop{display:flex;align-items:center;gap:14px;border:1px dashed #e9b6cd;border-radius:14px;padding:12px;background:#fffafc;cursor:pointer;min-height:76px}
-.drop img,.drop .ph{width:52px;height:52px;border-radius:12px;object-fit:cover;background:var(--soft);flex:none}
-.drop input{position:absolute;width:1px;height:1px;opacity:0}
-.row-end{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px;margin-top:4px}
-.wallet{font-size:14px;color:var(--muted)}
-.side{padding:20px;display:grid;gap:14px;position:sticky;top:84px}
-.side h3{font-size:18px}
-.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.in{width:100%;min-height:50px;border:1px solid var(--line);border-radius:14px;background:var(--soft-2);padding:12px 15px;transition:border-color .2s var(--ease),box-shadow .2s var(--ease),background .2s var(--ease)}
+.in:hover{border-color:#f0bcd3}
+.in:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(255,61,139,.14)}
+textarea.in{min-height:96px;resize:vertical}
+.in.badf{border-color:#e0345a}
+.prefix{position:relative}
+.prefix span{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;pointer-events:none}
+.prefix .in{padding-left:30px;text-transform:uppercase;font-weight:600;letter-spacing:.02em}
+.err{color:#c4123f;font-size:13px}
+.err:empty{display:none}
+.drop{position:relative;display:flex;align-items:center;gap:16px;border:1.5px dashed #ebb3cc;border-radius:16px;padding:14px;background:var(--soft-2);cursor:pointer;min-height:96px;transition:border-color .2s var(--ease),background .2s var(--ease),transform .25s var(--spring)}
+.drop:hover,.drop.over{border-color:var(--accent);background:#fff}
+.drop.over{transform:scale(1.01)}
+.drop .thumb{width:68px;height:68px;border-radius:14px;flex:none;background:var(--soft) center/cover no-repeat;display:grid;place-items:center;color:var(--accent)}
+.drop.has .thumb svg{display:none}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop b{display:block}
+
+/* option cards */
+.opts{display:grid;gap:10px}
+.opts.c3{grid-template-columns:repeat(3,1fr)}
+.opts.c4{grid-template-columns:repeat(4,1fr)}
+.opts.c2{grid-template-columns:repeat(2,1fr)}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer;z-index:1}
+.opt .face{display:flex;flex-direction:column;gap:6px;height:100%;min-height:52px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--soft-2);transition:border-color .2s var(--ease),background .2s var(--ease),transform .3s var(--spring),box-shadow .2s var(--ease)}
+.opt:hover .face{border-color:#f0bcd3;transform:translateY(-2px)}
+.opt input:checked+.face{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(255,61,139,.12);animation:popin .35s var(--spring)}
+.opt input:focus-visible+.face{outline:3px solid var(--accent);outline-offset:2px}
+@keyframes popin{50%{transform:scale(1.04)}}
+.opt .t{font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.opt .d{font-size:13px;color:var(--muted);line-height:1.4}
+.opt .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;flex:none;transition:all .25s var(--spring)}
+.opt input:checked+.face .tick{background:var(--accent);border-color:var(--accent)}
+.opt .tick svg{opacity:0;transition:opacity .2s}
+.opt input:checked+.face .tick svg{opacity:1}
+.look .sw{height:64px;border-radius:10px;margin-bottom:4px;position:relative;overflow:hidden}
+.sw.anime{background:radial-gradient(circle at 50% 62%,#ffe6f1 0 22%,transparent 23%),linear-gradient(160deg,#ff8ec1,#8a5cf6)}
+.sw.real{background:radial-gradient(circle at 50% 60%,#e9b99a 0 22%,transparent 23%),linear-gradient(160deg,#c98b6b,#3b2418)}
+.sw.toon{background:radial-gradient(circle at 50% 60%,#ffe14d 0 24%,transparent 25%),linear-gradient(160deg,#4fc3ff,#2563eb)}
+.sw.three{background:radial-gradient(circle at 42% 52%,#fff 0 6%,transparent 7%),radial-gradient(circle at 50% 60%,#9ef0df 0 24%,transparent 25%),linear-gradient(160deg,#1fb5a0,#0e3b3a)}
+.sw.pixel{background:conic-gradient(#ffb3d1 25%,#ff3d8b 0 50%,#ffb3d1 0 75%,#ff3d8b 0) 0 0/16px 16px}
+.sw.mascot{background:var(--soft) center/cover no-repeat;display:grid;place-items:center;color:var(--accent);font:600 13px var(--body)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.chip span{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--soft-2);font-weight:500;font-size:14px;transition:all .25s var(--spring)}
+.chip:hover span{border-color:#f0bcd3}
+.chip input:checked+span{background:var(--ink);color:#fff;border-color:var(--ink);transform:scale(1.03)}
+.chip input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.chip input[type=checkbox]:checked+span::before{content:"✓";font-weight:600}
+.wiz-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:18px 28px;background:var(--soft-2)}
+.wiz-nav .count{font-size:14px;color:var(--muted)}
+.wiz-nav .r{display:flex;gap:10px}
+.review{display:grid;gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:22px}
+.review div{display:flex;justify-content:space-between;gap:16px;padding:12px 16px;font-size:14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.review div:last-child{border-bottom:0}
+.review span{color:var(--muted);flex:none}
+.review b{text-align:right;font-weight:600}
+.status{display:none;padding:14px 16px;border-radius:14px;font-size:14px;margin-top:4px;align-items:center;gap:10px}
+.status.show{display:flex}
+.status.work{background:var(--soft);color:var(--ink)}
+.status.bad{background:#fde8ee;color:#9b0f33}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,61,139,.25);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:none}
+.done-pane{text-align:center;padding:12px 0 6px}
+.done-pane .badge{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;background:var(--accent);display:grid;place-items:center;animation:popbig .7s var(--spring)}
+@keyframes popbig{from{transform:scale(0)}}
+.done-pane h3{font-size:30px}
+.done-pane p{color:var(--muted);margin:8px auto 20px;max-width:44ch}
+.ca-box{display:flex;align-items:center;gap:10px;justify-content:space-between;max-width:520px;margin:0 auto 18px;padding:10px 10px 10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--soft-2);font:500 13px ui-monospace,Menlo,monospace;word-break:break-all;text-align:left}
+.done-pane .r{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+/* side preview */
+.side{position:sticky;top:96px;display:grid;gap:14px}
+.side .mini{position:relative;height:500px}
+.side .phone{width:244px;transform:translate(-50%,-50%);animation:none}
+.sum{padding:18px 20px}
+.sum h3{font-size:17px;margin-bottom:6px}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:9px 0;border-bottom:1px solid var(--line)}
 .kv:last-child{border-bottom:0}
 .kv span{color:var(--muted)}
-.status{display:none;padding:14px 16px;border-radius:14px;font-size:14px;margin-top:16px}
-.status.show{display:block}
-.status.work{background:var(--soft);color:var(--ink)}
-.status.ok{background:#e6f8f1;color:#05603f}
-.status.bad{background:#fde8ee;color:#9b0f33}
-.status a{font-weight:600}
+.kv b{font-weight:600;text-align:right;transition:color .3s}
+.kv b.flash{color:var(--accent)}
 
 /* creators */
-.creators{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.creator{padding:16px;display:flex;gap:12px;align-items:center}
-.creator .av{width:52px;height:52px;border-radius:50%;background:conic-gradient(var(--accent),#ffb3d1,var(--accent));display:grid;place-items:center;color:#fff;font:600 16px var(--display);flex:none;overflow:hidden}
+.creators{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.creator{padding:18px;display:flex;gap:14px;align-items:center;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.creator:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.creator .av{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--accent),#ffb3d1,var(--accent));display:grid;place-items:center;color:#fff;font:600 15px var(--display);flex:none;overflow:hidden;box-shadow:0 0 0 3px #fff,0 0 0 5px var(--accent)}
 .creator .av img{width:100%;height:100%;object-fit:cover}
 .creator b{display:block}
 .creator small{color:var(--muted);font-size:13px}
 .creator a.btn{margin-left:auto;min-height:40px;padding:0 14px;font-size:14px}
-.empty{padding:36px 24px;text-align:center;display:grid;gap:12px;justify-items:center}
-.empty .ring{width:64px;height:64px;border-radius:50%;border:2px dashed #e9b6cd;display:grid;place-items:center}
+.empty{padding:48px 24px;text-align:center;display:grid;gap:12px;justify-items:center}
+.empty .ring{width:72px;height:72px;border-radius:50%;border:2px dashed #e9b6cd;display:grid;place-items:center;animation:spin 18s linear infinite}
 .empty p{margin:0;color:var(--muted);max-width:44ch}
 
+/* $MUSE section */
+.coin{position:relative;overflow:hidden;border-radius:28px;background:var(--ink);color:#fbe9f1;padding:48px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center}
+.coin::before{content:"";position:absolute;width:520px;height:520px;right:-140px;top:-180px;border-radius:50%;background:radial-gradient(circle,rgba(255,61,139,.55),transparent 65%);animation:float 14s ease-in-out infinite alternate}
+.coin h2{color:#fff;font-size:clamp(34px,4.4vw,54px);line-height:1}
+.coin p{color:#d9b8c8;margin:14px 0 0;max-width:46ch}
+.coin .cells{position:relative;display:grid;gap:12px}
+.cell{border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px 18px;background:rgba(255,255,255,.04)}
+.cell small{display:block;color:#c9a3b5;font-size:13px;margin-bottom:6px}
+.cell .val{display:flex;align-items:center;justify-content:space-between;gap:12px;font:500 14px ui-monospace,Menlo,monospace;color:#fff;word-break:break-all}
+.cell .val.big{font:600 22px var(--display);word-break:normal}
+.coin .r{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.copy{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font:500 13px var(--body);transition:background .2s}
+.copy:hover{background:rgba(255,255,255,.1)}
+.copy.light{border-color:var(--line);color:var(--ink);background:#fff}
+.copy.light:hover{border-color:var(--accent)}
+
 /* faq */
-.faq{display:grid;gap:10px;max-width:820px}
-details{padding:0 20px}
-summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:60px;font-weight:600}
+.faq{display:grid;gap:12px;max-width:860px}
+details{padding:0 22px;transition:box-shadow .3s var(--ease),border-color .3s}
+details[open]{border-color:#f7bcd6;box-shadow:var(--shadow-lg)}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;font-weight:600;font-size:16px}
 summary::-webkit-details-marker{display:none}
-summary::after{content:"+";font:500 22px var(--display);color:var(--accent)}
-details[open] summary::after{content:"–"}
-details p{margin:0 0 18px;color:var(--muted)}
+summary .pm{width:30px;height:30px;border-radius:50%;background:var(--soft);display:grid;place-items:center;flex:none;transition:transform .35s var(--spring),background .3s}
+details[open] summary .pm{transform:rotate(45deg);background:var(--accent);color:#fff}
+details p{margin:0 0 20px;color:var(--muted)}
 
-footer{margin-top:80px;border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer{margin-top:110px;border-top:1px solid var(--line);padding:30px 0 44px;color:var(--muted);font-size:14px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
-.ca{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+footer .links{display:flex;gap:10px;flex-wrap:wrap}
 
-@media (max-width:960px){
-  .hero,.launch{grid-template-columns:1fr}
-  .phone-col{margin-top:8px}
-  .phone{margin:0 auto}
-  .preview-note{text-align:center}
-  .posts{grid-template-columns:1fr 1fr}
-  .creators{grid-template-columns:1fr 1fr}
-  .side{position:static}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,160px);visibility:hidden;background:var(--ink);color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;font-weight:500;z-index:60;transition:transform .45s var(--spring);box-shadow:0 12px 30px -10px rgba(42,14,28,.5)}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+
+@media (max-width:1020px){
+  .hero-grid{grid-template-columns:1fr}
+  .stage{height:560px}
+  .launch{grid-template-columns:1fr}
+  .side{position:static;grid-template-columns:1fr 1fr;align-items:start}
+  .steps{grid-template-columns:1fr 1fr}
+  .coin{grid-template-columns:1fr;padding:36px}
 }
-@media (max-width:600px){
+@media (max-width:700px){
   .tabs{display:none}
-  .cover{height:120px}
-  .posts,.creators,.grid2{grid-template-columns:1fr}
-  .post{min-height:0}
-  .stats{gap:20px}
-  .phone{width:270px}
-  form.card{padding:18px}
+  .hero{padding-top:36px}
+  .stage{height:570px}
+  .phone{width:236px}
+  .phone.left,.phone.right{display:none}
+  .steps,.creators,.grid2{grid-template-columns:1fr}
+  .step{min-height:0}
+  .opts.c3,.opts.c4{grid-template-columns:1fr 1fr}
+  .stepper button{flex-direction:column;justify-content:center;gap:4px;padding:8px 4px;font-size:12px;text-align:center;min-height:72px}
+  .panes{padding:20px}
+  .wiz-nav{padding:14px 20px}
+  .wiz-nav .count{display:none}
+  .wiz-nav .r{flex:1}
+  .wiz-nav .r .btn{width:100%;white-space:normal;padding:0 16px}
+  .side{grid-template-columns:1fr}
+  .side .mini{display:none}
+  .coin{padding:28px 22px;border-radius:22px}
+  .coinbar .wrap{gap:8px}
+  .ca-btn .full{display:none}
+  .top #connectTop{padding:0 14px;min-height:42px;font-size:14px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
-  .cap .txt::after{display:none}
+  .enter,.reveal{opacity:1!important;transform:none!important}
+  .center .cap .txt::after{display:none}
+  .rot span{transition:none}
 }
 </style>
 </head>
 <body>
-<header class="top">
+
+<!-- $MUSE bar: CA + X from pump.fun -->
+<div class="coinbar" role="region" aria-label="$MUSE coin">
+  <div class="wrap">
+    <span class="tk"><i></i>$MUSE</span>
+    <button class="ca-btn" type="button" data-copy-ca aria-label="Copy $MUSE contract address">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+      <span data-ca-short>CA drops at launch</span>
+    </button>
+    <a class="bar-link" data-buy hidden target="_blank" rel="noopener">Buy on pump.fun</a>
+    <a class="bar-link ghost" data-x hidden target="_blank" rel="noopener">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>
+      <span data-x-handle>X</span>
+    </a>
+  </div>
+</div>
+
+<header class="top" id="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Muse home">
       <span class="mark"><svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -198,6 +395,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;
       <a href="#how">How it works</a>
       <a href="#launch">Launch</a>
       <a href="#creators">Creators</a>
+      <a href="#muse">$MUSE</a>
       <a href="#faq">FAQ</a>
     </nav>
     <span class="spacer"></span>
@@ -206,145 +404,304 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;
 </header>
 
 <main id="top">
-  <div class="wrap">
-    <div class="cover" aria-hidden="true"></div>
-    <div class="hero">
-      <div class="profile">
-        <div class="avatar"><div><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
-        <div class="handle-row">
-          <span class="handle">@muse · pump.fun launchpad</span>
-          <span class="chip"><span class="dot"></span>Launches live</span>
-        </div>
-        <h1>Every coin gets its own creator.</h1>
-        <p class="bio">Launch a coin on Muse and it gets an AI TikTok influencer with its own face, voice and vibe — posting about your coin on its own, every day.</p>
-        <ul class="stats" aria-label="What every coin gets">
-          <li><b>1</b><span>AI influencer per coin</span></li>
-          <li><b>24/7</b><span>Posts on its own</span></li>
-          <li><b>0</b><span>Videos you edit</span></li>
-        </ul>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="#launch">Launch a coin</a>
+  <!-- hero -->
+  <div class="hero">
+    <div class="mesh" aria-hidden="true"><span class="m1"></span><span class="m2"></span><span class="m3"></span></div>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow enter"><span class="dot"></span>Launches live on pump.fun</span>
+        <h1 class="enter d1">Every coin gets its own <span class="rot" id="rot" aria-hidden="true"><span class="on">creator.</span><span>face.</span><span>voice.</span><span>fanbase.</span></span><span class="sr">creator.</span></h1>
+        <p class="lede enter d2">Launch a coin on Muse and it gets an AI TikTok influencer — its own look, voice and personality — posting about your coin on its own, every day.</p>
+        <div class="cta-row enter d3">
+          <a class="btn btn-primary" href="#launch">Launch a coin <span class="arrow" aria-hidden="true">→</span></a>
           <a class="btn btn-ghost" href="#how">See how it works</a>
         </div>
+        <ul class="trust enter d4">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>You sign. We never hold keys.</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Launch in under a minute</li>
+        </ul>
       </div>
 
-      <div class="phone-col">
-        <div class="phone" role="img" aria-label="Preview of your coin's AI influencer post">
-          <div class="screen">
-            <div class="vid"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
-            <div class="ph-top"><span>Following</span><b>For You</b></div>
-            <span class="ph-tag">AI creator</span>
-            <div class="persona" id="phInitials">M</div>
-            <div class="rail" aria-hidden="true">
-              <i><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.3 5 6.6 5c2 0 3.6 1.1 4.4 2.6h2C13.8 6.1 15.4 5 17.4 5c3.3 0 5.6 3.2 4.1 6.8C19.5 16.4 12 21 12 21z"/></svg></i>
-              <i><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M4 4h16v12H8l-4 4z"/></svg></i>
-              <i><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M14 4l7 7-7 7v-4c-5 0-8 1.5-10 5 1-5 4-9 10-10z"/></svg></i>
-            </div>
-            <div class="cap">
-              <div class="who" id="phHandle">@yourcoin.muse</div>
-              <div class="txt" id="phCaption" aria-live="polite"></div>
-              <div class="snd" id="phSound">♪ original sound — your coin</div>
-            </div>
-          </div>
-        </div>
-        <p class="preview-note">Preview — updates as you fill in your coin</p>
+      <div class="stage enter d3" id="stage" aria-label="Preview of your coin's AI creator in three vibes">
+        <div class="phone left" data-phone="left" aria-hidden="true"></div>
+        <div class="phone right" data-phone="right" aria-hidden="true"></div>
+        <div class="phone center" data-phone="center" role="img" aria-label="Preview of your coin's AI influencer post"></div>
+        <p class="preview-note">Live preview — fill in your coin below and watch it change</p>
       </div>
     </div>
+  </div>
 
+  <div class="marquee" aria-hidden="true">
+    <div class="track" id="marq"></div>
+  </div>
+
+  <div class="wrap">
+    <!-- how -->
     <section id="how">
-      <div class="sec-head"><div><h2>How it works</h2><p>Launch once. Your coin's creator handles the posting.</p></div></div>
-      <div class="posts">
-        <article class="card post"><span class="n">1</span><h3>Launch your coin</h3><p>Name, ticker, image. It launches straight on pump.fun from your own wallet.</p></article>
-        <article class="card post"><span class="n">2</span><h3>Pick its vibe</h3><p>Hype, deadpan, storytime or chaos. That sets how your influencer talks.</p></article>
-        <article class="card post"><span class="n">3</span><h3>It gets a face</h3><p>Muse builds an AI creator for your coin — a look, a voice and a TikTok account.</p></article>
-        <article class="card post"><span class="n">4</span><h3>It posts on its own</h3><p>Short videos about your coin go out every day. Your link sits in every bio.</p></article>
+      <div class="sec-head reveal">
+        <span class="kicker">How it works</span>
+        <h2>Launch once. Your creator does the posting.</h2>
+        <p>Pick how your coin's influencer looks, sounds and posts. Muse handles the rest.</p>
+      </div>
+      <div class="steps">
+        <article class="card step reveal"><span class="num" aria-hidden="true">01</span><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.4c0 3.1-7 1.6-7 4.9 0 1.4 1.6 2.7 3.5 2.7s3.5-1 3.5-2.5"/></svg></span><h3>Set up your coin</h3><p>Name, ticker, image. It launches straight on pump.fun from your own wallet.</p></article>
+        <article class="card step reveal"><span class="num" aria-hidden="true">02</span><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><h3>Design its creator</h3><p>Choose a look, a voice, a personality and a language for your influencer.</p></article>
+        <article class="card step reveal"><span class="num" aria-hidden="true">03</span><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></span><h3>Pick what it posts</h3><p>Chart updates, memes, lore, buy reactions — and how often it posts.</p></article>
+        <article class="card step reveal"><span class="num" aria-hidden="true">04</span><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span><h3>Launch and grow</h3><p>Your coin goes live and its creator starts posting, with your link in every bio.</p></article>
       </div>
     </section>
 
+    <!-- launch -->
     <section id="launch">
-      <div class="sec-head"><div><h2>Launch a coin</h2><p>Launches on pump.fun. You sign with your own wallet — Muse never holds your keys.</p></div></div>
+      <div class="sec-head reveal">
+        <span class="kicker">Launch</span>
+        <h2>Build your coin and its creator.</h2>
+        <p>Four quick steps. Everything launches on pump.fun, signed by your own wallet.</p>
+      </div>
       <div class="launch">
-        <form class="card" id="launchForm" novalidate>
-          <div class="grid2">
-            <div class="field">
-              <label for="fName">Coin name</label>
-              <input class="in" id="fName" name="name" maxlength="32" autocomplete="off" placeholder="e.g. Pink Moon">
-              <div class="err" id="eName"></div>
+        <form class="card wiz reveal" id="wiz" novalidate>
+          <div class="stepper" role="tablist" aria-label="Launch steps">
+            <button type="button" role="tab" data-go="0" class="on" aria-selected="true"><span class="n">1</span>Coin<span class="bar"></span></button>
+            <button type="button" role="tab" data-go="1" disabled aria-selected="false"><span class="n">2</span>Creator<span class="bar"></span></button>
+            <button type="button" role="tab" data-go="2" disabled aria-selected="false"><span class="n">3</span>Content<span class="bar"></span></button>
+            <button type="button" role="tab" data-go="3" disabled aria-selected="false"><span class="n">4</span>Launch<span class="bar"></span></button>
+          </div>
+
+          <div class="panes">
+            <!-- 1 coin -->
+            <div class="pane on" data-pane="0" role="tabpanel">
+              <h3>Your coin</h3>
+              <p class="sub">This is what shows on pump.fun.</p>
+              <div class="grid2">
+                <div class="field">
+                  <label class="lab" for="fName">Coin name <small id="cName">0/32</small></label>
+                  <input class="in" id="fName" maxlength="32" autocomplete="off" placeholder="e.g. Pink Moon">
+                  <div class="err" id="eName"></div>
+                </div>
+                <div class="field">
+                  <label class="lab" for="fTicker">Ticker <small>2–10 letters</small></label>
+                  <div class="prefix"><span aria-hidden="true">$</span><input class="in" id="fTicker" maxlength="10" autocomplete="off" placeholder="PINK"></div>
+                  <div class="err" id="eTicker"></div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="lab" for="fDesc">What's it about? <small id="cDesc">0/400</small></label>
+                <textarea class="in" id="fDesc" maxlength="400" placeholder="One or two lines your creator will talk about"></textarea>
+              </div>
+              <div class="field">
+                <span class="lab" id="imgLab">Coin image</span>
+                <div class="drop" id="drop">
+                  <span class="thumb" id="thumb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></span>
+                  <span><b id="imgName">Drop an image or tap to add</b><span class="hint">PNG, JPG, GIF or WEBP, up to 3 MB</span></span>
+                  <input type="file" id="fImg" accept="image/png,image/jpeg,image/gif,image/webp" aria-labelledby="imgLab">
+                </div>
+                <div class="err" id="eImg"></div>
+              </div>
             </div>
-            <div class="field">
-              <label for="fTicker">Ticker</label>
-              <input class="in" id="fTicker" name="ticker" maxlength="10" autocomplete="off" placeholder="e.g. PINK">
-              <div class="err" id="eTicker"></div>
+
+            <!-- 2 creator -->
+            <div class="pane" data-pane="1" role="tabpanel">
+              <h3>Design its creator</h3>
+              <p class="sub">How your coin's influencer looks and sounds.</p>
+              <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                <legend class="lab" style="margin-bottom:8px">Look</legend>
+                <div class="opts c3" id="looks">
+                  <label class="opt look"><input type="radio" name="look" value="anime" checked><span class="face"><span class="sw anime"></span><span class="t">Anime <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span></span></label>
+                  <label class="opt look"><input type="radio" name="look" value="real"><span class="face"><span class="sw real"></span><span class="t">Realistic <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span></span></label>
+                  <label class="opt look"><input type="radio" name="look" value="toon"><span class="face"><span class="sw toon"></span><span class="t">Cartoon <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span></span></label>
+                  <label class="opt look"><input type="radio" name="look" value="three"><span class="face"><span class="sw three"></span><span class="t">3D <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span></span></label>
+                  <label class="opt look"><input type="radio" name="look" value="pixel"><span class="face"><span class="sw pixel"></span><span class="t">Pixel <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span></span></label>
+                  <label class="opt look"><input type="radio" name="look" value="mascot"><span class="face"><span class="sw mascot" id="mascotSw">Your image</span><span class="t">Coin mascot <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span></span></label>
+                </div>
+              </fieldset>
+              <div class="grid2">
+                <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                  <legend class="lab" style="margin-bottom:8px">Creator</legend>
+                  <div class="chips">
+                    <label class="chip"><input type="radio" name="who" value="Girl" checked><span>Girl</span></label>
+                    <label class="chip"><input type="radio" name="who" value="Guy"><span>Guy</span></label>
+                    <label class="chip"><input type="radio" name="who" value="Creature"><span>Creature</span></label>
+                  </div>
+                </fieldset>
+                <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                  <legend class="lab" style="margin-bottom:8px">Voice</legend>
+                  <div class="chips">
+                    <label class="chip"><input type="radio" name="voice" value="Bright" checked><span>Bright</span></label>
+                    <label class="chip"><input type="radio" name="voice" value="Deep"><span>Deep</span></label>
+                    <label class="chip"><input type="radio" name="voice" value="Soft"><span>Soft</span></label>
+                    <label class="chip"><input type="radio" name="voice" value="Robot"><span>Robot</span></label>
+                  </div>
+                </fieldset>
+              </div>
+              <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                <legend class="lab" style="margin-bottom:8px">Personality</legend>
+                <div class="opts c3">
+                  <label class="opt"><input type="radio" name="vibe" value="hype" checked><span class="face"><span class="t">Hype <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Loud, fast, all caps energy</span></span></label>
+                  <label class="opt"><input type="radio" name="vibe" value="deadpan"><span class="face"><span class="t">Deadpan <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Dry, unbothered, weirdly funny</span></span></label>
+                  <label class="opt"><input type="radio" name="vibe" value="storytime"><span class="face"><span class="t">Storytime <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Builds lore, part 1, part 2…</span></span></label>
+                  <label class="opt"><input type="radio" name="vibe" value="chaos"><span class="face"><span class="t">Chaos <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Unhinged, meme-first</span></span></label>
+                  <label class="opt"><input type="radio" name="vibe" value="analyst"><span class="face"><span class="t">Analyst <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Charts, numbers, calm takes</span></span></label>
+                  <label class="opt"><input type="radio" name="vibe" value="wholesome"><span class="face"><span class="t">Wholesome <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Kind, cozy, community-first</span></span></label>
+                </div>
+              </fieldset>
+              <div class="field" style="max-width:320px">
+                <label class="lab" for="fLang">Language</label>
+                <select class="in" id="fLang">
+                  <option>English</option><option>Spanish</option><option>Portuguese</option><option>French</option><option>German</option><option>Japanese</option><option>Korean</option><option>Chinese</option><option>Hindi</option><option>Turkish</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 3 content -->
+            <div class="pane" data-pane="2" role="tabpanel">
+              <h3>What it posts</h3>
+              <p class="sub">Pick at least one kind of post.</p>
+              <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                <legend class="lab" style="margin-bottom:8px">Post types</legend>
+                <div class="opts c2" id="postTypes">
+                  <label class="opt"><input type="checkbox" name="posts" value="Chart updates" checked><span class="face"><span class="t">Chart updates <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Reacts to pumps, dips and new highs</span></span></label>
+                  <label class="opt"><input type="checkbox" name="posts" value="Memes" checked><span class="face"><span class="t">Memes <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Trend-format skits about your coin</span></span></label>
+                  <label class="opt"><input type="checkbox" name="posts" value="Lore"><span class="face"><span class="t">Lore <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Ongoing story series</span></span></label>
+                  <label class="opt"><input type="checkbox" name="posts" value="Buy reactions"><span class="face"><span class="t">Buy reactions <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Calls out big buys as they land</span></span></label>
+                  <label class="opt"><input type="checkbox" name="posts" value="Milestones"><span class="face"><span class="t">Milestones <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Holder counts, market cap goals</span></span></label>
+                  <label class="opt"><input type="checkbox" name="posts" value="Holder shoutouts"><span class="face"><span class="t">Holder shoutouts <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Thanks the community by name</span></span></label>
+                </div>
+                <div class="err" id="ePosts"></div>
+              </fieldset>
+              <div class="grid2">
+                <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                  <legend class="lab" style="margin-bottom:8px">How often</legend>
+                  <div class="chips">
+                    <label class="chip"><input type="radio" name="freq" value="1 a day"><span>1 a day</span></label>
+                    <label class="chip"><input type="radio" name="freq" value="3 a day" checked><span>3 a day</span></label>
+                    <label class="chip"><input type="radio" name="freq" value="6 a day"><span>6 a day</span></label>
+                    <label class="chip"><input type="radio" name="freq" value="Every hour"><span>Every hour</span></label>
+                  </div>
+                </fieldset>
+                <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                  <legend class="lab" style="margin-bottom:8px">Where</legend>
+                  <div class="chips">
+                    <label class="chip"><input type="checkbox" name="where" value="TikTok" checked><span>TikTok</span></label>
+                    <label class="chip"><input type="checkbox" name="where" value="Reels"><span>Reels</span></label>
+                    <label class="chip"><input type="checkbox" name="where" value="Shorts"><span>Shorts</span></label>
+                    <label class="chip"><input type="checkbox" name="where" value="X"><span>X</span></label>
+                  </div>
+                </fieldset>
+              </div>
+              <fieldset class="field" style="border:0;padding:0;margin:0">
+                <legend class="lab" style="margin-bottom:8px">When it starts</legend>
+                <div class="opts c3">
+                  <label class="opt"><input type="radio" name="start" value="At launch" checked><span class="face"><span class="t">At launch <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">First post the moment it's live</span></span></label>
+                  <label class="opt"><input type="radio" name="start" value="After first buys"><span class="face"><span class="t">After first buys <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Waits for 10 holders</span></span></label>
+                  <label class="opt"><input type="radio" name="start" value="On bond"><span class="face"><span class="t">On bond <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span></span><span class="d">Stays quiet until it graduates</span></span></label>
+                </div>
+              </fieldset>
+            </div>
+
+            <!-- 4 launch -->
+            <div class="pane" data-pane="3" role="tabpanel">
+              <h3>Launch</h3>
+              <p class="sub">Check everything, add your links, and sign.</p>
+              <fieldset class="field" style="border:0;padding:0;margin:0 0 22px">
+                <legend class="lab" style="margin-bottom:8px">Dev buy</legend>
+                <div class="chips" id="buyChips">
+                  <label class="chip"><input type="radio" name="buy" value="0" checked><span>None</span></label>
+                  <label class="chip"><input type="radio" name="buy" value="0.5"><span>0.5 SOL</span></label>
+                  <label class="chip"><input type="radio" name="buy" value="1"><span>1 SOL</span></label>
+                  <label class="chip"><input type="radio" name="buy" value="2"><span>2 SOL</span></label>
+                  <label class="chip"><input type="radio" name="buy" value="5"><span>5 SOL</span></label>
+                  <label class="chip"><input type="radio" name="buy" value="custom"><span>Custom</span></label>
+                </div>
+                <div id="customBuy" hidden style="max-width:220px;margin-top:10px">
+                  <label class="sr" for="fBuy">Custom dev buy in SOL</label>
+                  <input class="in" id="fBuy" type="number" min="0" max="85" step="0.01" inputmode="decimal" placeholder="SOL, up to 85">
+                </div>
+              </fieldset>
+              <div class="grid2">
+                <div class="field"><label class="lab" for="fX">X <small>optional</small></label><input class="in" id="fX" type="url" inputmode="url" placeholder="https://x.com/…"></div>
+                <div class="field"><label class="lab" for="fTg">Telegram <small>optional</small></label><input class="in" id="fTg" type="url" inputmode="url" placeholder="https://t.me/…"></div>
+              </div>
+              <div class="review" id="review"></div>
+              <div class="status" id="status" role="status" aria-live="polite"></div>
+            </div>
+
+            <!-- done -->
+            <div class="pane" data-pane="4" role="tabpanel">
+              <div class="done-pane">
+                <div class="badge"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></div>
+                <h3 id="doneTitle">You're live.</h3>
+                <p id="doneText">Your coin is on pump.fun and its creator is set up.</p>
+                <div class="ca-box"><span id="doneCa"></span><button class="copy light" type="button" id="doneCopy">Copy CA</button></div>
+                <div class="r">
+                  <a class="btn btn-primary" id="donePump" target="_blank" rel="noopener">Open on pump.fun <span class="arrow" aria-hidden="true">→</span></a>
+                  <a class="btn btn-ghost" id="doneTx" target="_blank" rel="noopener">View transaction</a>
+                  <button class="btn btn-ghost" type="button" id="again">Launch another</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="field">
-            <label for="fDesc">What's it about?</label>
-            <textarea class="in" id="fDesc" name="desc" maxlength="400" placeholder="One or two lines your influencer will talk about"></textarea>
+
+          <div class="wiz-nav" id="wizNav">
+            <button class="btn btn-ghost" type="button" id="back" hidden>← Back</button>
+            <span class="count" id="count">Step 1 of 4</span>
+            <div class="r"><button class="btn btn-primary" type="submit" id="next">Continue <span class="arrow" aria-hidden="true">→</span></button></div>
           </div>
-          <div class="field">
-            <span class="legend" id="imgLabel">Coin image</span>
-            <label class="drop" for="fImg" aria-labelledby="imgLabel">
-              <span class="ph" id="imgThumb"></span>
-              <span><b id="imgName">Add an image</b><br><span class="hint">PNG, JPG or GIF, up to 3 MB. Also used as your influencer's look.</span></span>
-              <input type="file" id="fImg" accept="image/png,image/jpeg,image/gif,image/webp">
-            </label>
-            <div class="err" id="eImg"></div>
-          </div>
-          <div class="field" role="radiogroup" aria-labelledby="vibeLabel">
-            <span class="legend" id="vibeLabel">Influencer vibe</span>
-            <div class="vibes">
-              <label class="vibe"><input type="radio" name="vibe" value="hype" checked><span>Hype</span></label>
-              <label class="vibe"><input type="radio" name="vibe" value="deadpan"><span>Deadpan</span></label>
-              <label class="vibe"><input type="radio" name="vibe" value="storytime"><span>Storytime</span></label>
-              <label class="vibe"><input type="radio" name="vibe" value="chaos"><span>Chaos</span></label>
-            </div>
-          </div>
-          <div class="grid2">
-            <div class="field">
-              <label for="fX">X link <span class="hint">(optional)</span></label>
-              <input class="in" id="fX" type="url" inputmode="url" placeholder="https://x.com/…">
-            </div>
-            <div class="field">
-              <label for="fBuy">Dev buy (SOL)</label>
-              <input class="in" id="fBuy" type="number" min="0" max="85" step="0.01" inputmode="decimal" value="0">
-              <span class="hint">0 is fine. Max 85.</span>
-            </div>
-          </div>
-          <div class="row-end">
-            <span class="wallet" id="walletLine">No wallet connected</span>
-            <button class="btn btn-primary" id="launchBtn" type="submit">Connect wallet to launch</button>
-          </div>
-          <div class="status" id="status" role="status" aria-live="polite"></div>
         </form>
 
-        <aside class="card side" aria-label="Launch summary">
-          <h3>Your launch</h3>
-          <div>
-            <div class="kv"><span>Coin</span><b id="sName">—</b></div>
-            <div class="kv"><span>Ticker</span><b id="sTicker">—</b></div>
-            <div class="kv"><span>Creator handle</span><b id="sHandle">—</b></div>
-            <div class="kv"><span>Vibe</span><b id="sVibe">Hype</b></div>
-            <div class="kv"><span>Dev buy</span><b id="sBuy">0 SOL</b></div>
-            <div class="kv"><span>Network</span><b>Solana · pump.fun</b></div>
+        <aside class="side">
+          <div class="mini"><div class="phone center" data-phone="mini" aria-hidden="true"></div></div>
+          <div class="card sum" aria-label="Launch summary">
+            <h3>Your launch</h3>
+            <div class="kv"><span>Coin</span><b data-s="name">—</b></div>
+            <div class="kv"><span>Ticker</span><b data-s="ticker">—</b></div>
+            <div class="kv"><span>Creator</span><b data-s="handle">—</b></div>
+            <div class="kv"><span>Look</span><b data-s="look">Anime</b></div>
+            <div class="kv"><span>Personality</span><b data-s="vibe">Hype</b></div>
+            <div class="kv"><span>Posts</span><b data-s="freq">3 a day</b></div>
+            <div class="kv"><span>Dev buy</span><b data-s="buy">None</b></div>
           </div>
-          <p class="hint" style="margin:0">pump.fun charges its normal create fee plus network fees. Your wallet shows the exact total before you sign.</p>
         </aside>
       </div>
     </section>
 
+    <!-- creators -->
     <section id="creators">
-      <div class="sec-head"><div><h2>Creators</h2><p>Coins launched from this browser and their AI influencers.</p></div></div>
-      <div id="creatorList"></div>
+      <div class="sec-head reveal">
+        <span class="kicker">Creators</span>
+        <h2>Your coins and their creators.</h2>
+        <p>Coins you've launched from this browser.</p>
+      </div>
+      <div id="creatorList" class="reveal"></div>
     </section>
 
+    <!-- $MUSE -->
+    <section id="muse">
+      <div class="coin reveal">
+        <div style="position:relative">
+          <span class="kicker" style="color:#ff8fbd">The launchpad coin</span>
+          <h2 style="margin-top:12px">$MUSE</h2>
+          <p>The coin behind Muse. Copy the contract address straight from here — anything posted before it shows up on this page isn't us.</p>
+        </div>
+        <div class="cells">
+          <div class="cell"><small>Contract address (pump.fun)</small><div class="val"><span data-ca-full>Drops at launch</span><button class="copy" type="button" data-copy-ca hidden>Copy</button></div></div>
+          <div class="cell"><small>Follow on X</small><div class="val big"><span data-x-handle>Coming soon</span></div></div>
+          <div class="r">
+            <a class="btn btn-primary" data-buy hidden target="_blank" rel="noopener">Buy $MUSE on pump.fun <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" data-x hidden target="_blank" rel="noopener" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.25)">Follow on X</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- faq -->
     <section id="faq">
-      <div class="sec-head"><div><h2>FAQ</h2></div></div>
+      <div class="sec-head reveal"><span class="kicker">FAQ</span><h2>Questions</h2></div>
       <div class="faq">
-        <details class="card"><summary>What does my coin actually get?</summary><p>Its own AI TikTok creator: a look based on your coin image, a voice, a personality from the vibe you pick, and an account that posts short videos about your coin.</p></details>
-        <details class="card"><summary>Is it a real pump.fun coin?</summary><p>Yes. Muse builds the standard pump.fun create transaction and you sign it in your own wallet. The coin shows up on pump.fun right away, with you as the dev.</p></details>
-        <details class="card"><summary>Does Muse hold my keys or funds?</summary><p>No. A fresh mint key is made in your browser, and your wallet signs. The server only builds the transaction.</p></details>
-        <details class="card"><summary>How often does the influencer post?</summary><p>Every day once it's live. Posts talk about your coin, its chart and its community, in the vibe you picked.</p></details>
-        <details class="card"><summary>What is $MUSE?</summary><p>The Muse launchpad coin. The contract address goes up here at launch — anything posted before that isn't us.</p></details>
+        <details class="card reveal"><summary>What does my coin actually get?<span class="pm" aria-hidden="true">+</span></summary><p>Its own AI creator: a look, a voice, a personality and a language you pick, posting the kinds of videos you chose about your coin.</p></details>
+        <details class="card reveal"><summary>Is it a real pump.fun coin?<span class="pm" aria-hidden="true">+</span></summary><p>Yes. Muse builds the standard pump.fun create transaction and you sign it in your own wallet. The coin shows up on pump.fun right away, with you as the dev.</p></details>
+        <details class="card reveal"><summary>Does Muse hold my keys or funds?<span class="pm" aria-hidden="true">+</span></summary><p>No. A fresh mint key is made in your browser and your wallet signs. The server only builds and sends the transaction you approved.</p></details>
+        <details class="card reveal"><summary>What does it cost?<span class="pm" aria-hidden="true">+</span></summary><p>pump.fun's normal create fee, network fees and any dev buy you choose. Your wallet shows the exact total before you sign.</p></details>
+        <details class="card reveal"><summary>What is $MUSE?<span class="pm" aria-hidden="true">+</span></summary><p>The Muse launchpad coin. Its contract address is posted at the top of this page and in the $MUSE section — trust only those.</p></details>
       </div>
     </section>
   </div>
@@ -353,164 +710,348 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;
 <footer>
   <div class="wrap">
     <span>Muse — AI creators for pump.fun coins</span>
-    <span class="ca" id="museCa">$MUSE · CA posts at launch</span>
+    <span class="links">
+      <button class="copy light" type="button" data-copy-ca><span data-ca-short>$MUSE CA drops at launch</span></button>
+      <a class="copy light" data-x hidden target="_blank" rel="noopener" style="text-decoration:none">X</a>
+    </span>
   </div>
 </footer>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
 <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
 <script>
+/* ===== $MUSE details — paste the CA from pump.fun and the X handle here ===== */
+const MUSE = {
+  ca: '',          // e.g. '7xKX...pump'
+  x: ''            // e.g. 'muse_pad' (no @)
+};
+/* =========================================================================== */
 (() => {
   const $ = id => document.getElementById(id);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const API = 'https://amoviepad.vercel.app/api/';
   const STORE = 'muse.launches.v1';
-  const f = { name:$('fName'), ticker:$('fTicker'), desc:$('fDesc'), img:$('fImg'), x:$('fX'), buy:$('fBuy') };
-  let wallet = null, imgFile = null, busy = false;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- live preview ---------- */
-  const vibeLabel = { hype:'Hype', deadpan:'Deadpan', storytime:'Storytime', chaos:'Chaos' };
-  const lines = {
-    hype: t => [`POV: you found $${t} before everyone else 🚀`, `$${t} chart said "watch this" and I'm watching 👀`, `if you're not in $${t} what are we even doing`],
-    deadpan: t => [`day 1 of telling you about $${t}. nobody asked.`, `$${t}. that's the post.`, `I'm an AI and even I bought $${t}.`],
-    storytime: t => [`storytime: how $${t} started with one dev and a dream…`, `so there I was, scrolling pump.fun, and then $${t} happened`, `the $${t} lore goes deeper than you think, part 1`],
-    chaos: t => [`$${t} $${t} $${t} sorry my keyboard only does this now`, `my therapist said stop posting $${t}. anyway, $${t}`, `breaking: local AI loses it over $${t} again`],
+  /* ---------- toast + copy ---------- */
+  let toastT;
+  function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+  async function copy(text, label){ try { await navigator.clipboard.writeText(text); toast(label + ' copied'); } catch { toast('Copy didn’t work — select it and copy by hand'); } }
+
+  /* ---------- $MUSE bar ---------- */
+  const short = k => k.slice(0,4) + '…' + k.slice(-4);
+  if (MUSE.ca){
+    $$('[data-ca-short]').forEach(e => e.innerHTML = `<span class="full">CA </span>${short(MUSE.ca)}`);
+    $$('[data-ca-full]').forEach(e => e.textContent = MUSE.ca);
+    $$('[data-copy-ca]').forEach(b => { b.hidden = false; b.addEventListener('click', () => copy(MUSE.ca, '$MUSE CA')); });
+    $$('[data-buy]').forEach(a => { a.href = 'https://pump.fun/coin/' + MUSE.ca; a.hidden = false; });
+  } else {
+    $$('[data-copy-ca]').forEach(b => { if (b.classList.contains('ca-btn') || b.classList.contains('copy')) b.disabled = true; });
+  }
+  if (MUSE.x){
+    const h = MUSE.x.replace(/^@/,'');
+    $$('[data-x-handle]').forEach(e => e.textContent = '@' + h);
+    $$('[data-x]').forEach(a => { a.href = 'https://x.com/' + h; a.hidden = false; });
+  }
+
+  /* ---------- nav shadow ---------- */
+  const nav = $('nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10), { passive:true });
+
+  /* ---------- rotating word ---------- */
+  const words = $$('#rot span'); let wi = 0;
+  if (!reduce) setInterval(() => {
+    const cur = words[wi]; cur.classList.remove('on'); cur.classList.add('out');
+    wi = (wi + 1) % words.length; const nx = words[wi]; nx.classList.remove('out'); void nx.offsetWidth; nx.classList.add('on');
+    setTimeout(() => cur.classList.remove('out'), 650);
+  }, 2400);
+
+  /* ---------- marquee ---------- */
+  const mq = ['Anime','Hype','Realistic','Deadpan','3D','Storytime','Pixel','Chaos','Cartoon','Analyst','Coin mascot','Wholesome','TikTok','Reels','Shorts'];
+  $('marq').innerHTML = [...mq, ...mq].map(w => `<span>${w}</span>`).join('');
+
+  /* ---------- reveal on scroll ---------- */
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold:.12, rootMargin:'0px 0px -40px 0px' });
+  const revealVisible = () => $$('.reveal:not(.in)').forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add('in'); });
+  addEventListener('scroll', revealVisible, { passive:true }); addEventListener('load', revealVisible);
+  $$('.reveal').forEach((el, i) => { el.style.transitionDelay = (el.parentElement.classList.contains('steps') || el.parentElement.classList.contains('faq') ? (i % 5) * 70 : 0) + 'ms'; io.observe(el); });
+
+  /* ---------- phones ---------- */
+  const PHONE = `<span class="notch"></span><div class="screen"><div class="vid"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+    <div class="ph-top"><span>Following</span><b>For You</b></div><span class="ph-tag" data-p="tag">AI creator</span>
+    <div class="persona" data-p="persona">M</div>
+    <div class="rail"><i data-p="like"><svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.3 5 6.6 5c2 0 3.6 1.1 4.4 2.6h2C13.8 6.1 15.4 5 17.4 5c3.3 0 5.6 3.2 4.1 6.8C19.5 16.4 12 21 12 21z"/></svg></i><i><svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M4 4h16v12H8l-4 4z"/></svg></i><i><svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M14 4l7 7-7 7v-4c-5 0-8 1.5-10 5 1-5 4-9 10-10z"/></svg></i></div>
+    <div class="cap"><div class="who" data-p="handle">@yourcoin.muse</div><div class="txt" data-p="txt"></div><div class="snd"><b>♪</b> <span data-p="snd">original sound — your coin</span></div></div></div>`;
+  $$('[data-phone]').forEach(p => p.innerHTML = PHONE);
+
+  const LOOKS = {
+    anime:{ label:'Anime', g1:'#ff6fb0', g2:'#6d3fd6', g3:'#ffc2e0' },
+    real:{ label:'Realistic', g1:'#d9906b', g2:'#5a2c1e', g3:'#f2c7a8' },
+    toon:{ label:'Cartoon', g1:'#38b6ff', g2:'#1d4ed8', g3:'#ffe14d' },
+    three:{ label:'3D', g1:'#22c3aa', g2:'#0f4c48', g3:'#a7f3e4' },
+    pixel:{ label:'Pixel', g1:'#ff3d8b', g2:'#7b1e4f', g3:'#ffb3d1' },
+    mascot:{ label:'Coin mascot', g1:'#ff3d8b', g2:'#7b1e4f', g3:'#ffb3d1' },
   };
-  const vibe = () => (document.querySelector('input[name=vibe]:checked') || {}).value || 'hype';
-  const tick = () => (f.ticker.value.replace(/[^a-z0-9]/gi,'').toUpperCase().slice(0,10));
+  const VIBES = {
+    hype:{ label:'Hype', lines:t => [`POV: you found $${t} before everyone else 🚀`, `$${t} chart said "watch this" and I'm watching 👀`, `if you're not in $${t} what are we even doing`] },
+    deadpan:{ label:'Deadpan', lines:t => [`day 1 of telling you about $${t}. nobody asked.`, `$${t}. that's the post.`, `I'm an AI and even I bought $${t}.`] },
+    storytime:{ label:'Storytime', lines:t => [`storytime: how $${t} started with one dev and a dream…`, `so there I was on pump.fun, and then $${t} happened`, `the $${t} lore goes deeper than you think, part 1`] },
+    chaos:{ label:'Chaos', lines:t => [`$${t} $${t} $${t} sorry my keyboard only does this now`, `they said stop posting $${t}. anyway, $${t}`, `breaking: local AI loses it over $${t} again`] },
+    analyst:{ label:'Analyst', lines:t => [`$${t} holders are up. here's what the chart is saying 📈`, `three things I'm watching on $${t} today`, `$${t}: volume check, no hype, just numbers`] },
+    wholesome:{ label:'Wholesome', lines:t => [`good morning $${t} fam, drink some water 💗`, `shoutout to everyone holding $${t} today`, `$${t} is a community first. love you guys`] },
+  };
+
+  const f = { name:$('fName'), ticker:$('fTicker'), desc:$('fDesc'), img:$('fImg'), x:$('fX'), tg:$('fTg'), buy:$('fBuy'), lang:$('fLang') };
+  const val = n => (document.querySelector(`input[name=${n}]:checked`) || {}).value;
+  const vals = n => $$(`input[name=${n}]:checked`).map(i => i.value);
+  const tick = () => f.ticker.value.replace(/[^a-z0-9]/gi,'').toUpperCase().slice(0,10);
   const handleFor = t => '@' + (t ? t.toLowerCase() : 'yourcoin') + '.muse';
+  let imgURL = null, imgFile = null;
 
-  let typeTimer = null, lineIdx = 0, target = '', shown = 0;
-  function nextLine(){
-    const t = tick() || 'YOURCOIN';
-    const set = lines[vibe()](t);
-    target = set[lineIdx % set.length]; lineIdx++; shown = 0; typeStep();
+  function paintPhone(ph, vibeKey){
+    const t = tick(), n = f.name.value.trim(), look = LOOKS[val('look')] || LOOKS.anime;
+    const q = s => ph.querySelector(`[data-p=${s}]`);
+    ph.style.setProperty('--g1', look.g1); ph.style.setProperty('--g2', look.g2); ph.style.setProperty('--g3', look.g3);
+    q('handle').textContent = handleFor(t);
+    q('snd').textContent = 'original sound — ' + (n || 'your coin') + ' AI';
+    q('tag').textContent = look.label + ' · ' + (VIBES[vibeKey] || VIBES.hype).label;
+    const p = q('persona'), ini = (t || 'M').slice(0,5);
+    p.textContent = ini; p.style.fontSize = ini.length <= 3 ? '30px' : ini.length === 4 ? '26px' : '21px';
+    const useImg = !!imgURL;
+    p.classList.toggle('has-img', !!useImg); p.classList.toggle('pixel', val('look') === 'pixel');
+    p.style.backgroundImage = useImg ? `url(${imgURL})` : '';
   }
+  const sideVibes = () => { const v = val('vibe') || 'hype'; const others = Object.keys(VIBES).filter(k => k !== v); return [others[0], others[2]]; };
+
+  /* typing on the live phones; static lines on side phones */
+  let tt = null, li = 0, target = '', shown = 0;
+  function liveTxt(){ return $$('[data-phone=center] [data-p=txt],[data-phone=mini] [data-p=txt]'); }
+  function nextLine(){ const set = VIBES[val('vibe') || 'hype'].lines(tick() || 'YOURCOIN'); target = set[li++ % set.length]; shown = 0; typeStep(); }
   function typeStep(){
-    clearTimeout(typeTimer);
-    const el = $('phCaption');
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent = target; typeTimer = setTimeout(nextLine, 4000); return; }
-    shown++; el.textContent = target.slice(0, shown);
-    typeTimer = setTimeout(shown < target.length ? typeStep : nextLine, shown < target.length ? 38 : 2600);
+    clearTimeout(tt);
+    if (reduce){ liveTxt().forEach(e => e.textContent = target); tt = setTimeout(nextLine, 4000); return; }
+    shown++; liveTxt().forEach(e => e.textContent = target.slice(0, shown));
+    tt = setTimeout(shown < target.length ? typeStep : nextLine, shown < target.length ? 36 : 2600);
   }
-  function syncPreview(restart){
-    const t = tick(), n = f.name.value.trim();
-    $('phHandle').textContent = handleFor(t);
-    const ini = (t || 'M').slice(0,5), pi = $('phInitials');
-    pi.textContent = ini; pi.style.fontSize = ini.length <= 3 ? '34px' : ini.length === 4 ? '28px' : '23px';
-    $('phSound').textContent = '♪ original sound — ' + (n || 'your coin') + ' AI';
-    $('sName').textContent = n || '—';
-    $('sTicker').textContent = t ? '$' + t : '—';
-    $('sHandle').textContent = t ? handleFor(t) : '—';
-    $('sVibe').textContent = vibeLabel[vibe()];
-    const b = Math.max(0, Math.min(Number(f.buy.value) || 0, 85));
-    $('sBuy').textContent = b + ' SOL';
-    if (restart){ lineIdx = 0; nextLine(); }
+  function paintAll(restart){
+    const v = val('vibe') || 'hype', [l, r] = sideVibes();
+    paintPhone($('stage').querySelector('[data-phone=center]'), v);
+    paintPhone(document.querySelector('[data-phone=mini]'), v);
+    const L = document.querySelector('[data-phone=left]'), R = document.querySelector('[data-phone=right]');
+    paintPhone(L, l); paintPhone(R, r);
+    const t = tick() || 'YOURCOIN';
+    L.querySelector('[data-p=txt]').textContent = VIBES[l].lines(t)[0];
+    R.querySelector('[data-p=txt]').textContent = VIBES[r].lines(t)[0];
+    if (restart){ li = 0; nextLine(); }
+    summary();
+    if (step === 3) review();
   }
-  ['input'].forEach(ev => { f.name.addEventListener(ev, () => syncPreview(false)); f.ticker.addEventListener(ev, () => syncPreview(true)); f.buy.addEventListener(ev, () => syncPreview(false)); });
-  f.ticker.addEventListener('blur', () => { f.ticker.value = tick(); });
-  document.querySelectorAll('input[name=vibe]').forEach(r => r.addEventListener('change', () => syncPreview(true)));
 
-  f.img.addEventListener('change', () => {
-    const file = f.img.files[0]; $('eImg').textContent = '';
+  /* floating hearts on the hero phone */
+  if (!reduce){
+    const center = $('stage').querySelector('[data-phone=center] .screen');
+    setInterval(() => {
+      if (document.hidden) return;
+      const h = document.createElement('span'); h.className = 'heart';
+      h.style.setProperty('--dx', (Math.random() * -60 - 10) + 'px'); h.style.setProperty('--rot', (Math.random() * 40 - 20) + 'deg');
+      h.innerHTML = `<svg width="${16 + Math.random()*10|0}" height="${16 + Math.random()*10|0}" viewBox="0 0 24 24" fill="${['#ff3d8b','#ffb3d1','#fff','#ff7a3d'][Math.random()*4|0]}"><path d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.3 5 6.6 5c2 0 3.6 1.1 4.4 2.6h2C13.8 6.1 15.4 5 17.4 5c3.3 0 5.6 3.2 4.1 6.8C19.5 16.4 12 21 12 21z"/></svg>`;
+      center.appendChild(h); setTimeout(() => h.remove(), 2500);
+      const like = center.querySelector('[data-p=like]'); like.classList.add('pop'); setTimeout(() => like.classList.remove('pop'), 300);
+    }, 900);
+  }
+
+  /* ---------- summary + review ---------- */
+  const buyVal = () => { const b = val('buy'); const n = b === 'custom' ? Number(f.buy.value) : Number(b); return Math.max(0, Math.min(Number.isFinite(n) ? n : 0, 85)); };
+  function setS(k, v){ $$(`[data-s=${k}]`).forEach(e => { if (e.textContent !== v){ e.textContent = v; e.classList.add('flash'); setTimeout(() => e.classList.remove('flash'), 500); } }); }
+  function summary(){
+    const t = tick(), n = f.name.value.trim(), b = buyVal();
+    setS('name', n || '—'); setS('ticker', t ? '$' + t : '—'); setS('handle', t ? handleFor(t) : '—');
+    setS('look', (LOOKS[val('look')] || LOOKS.anime).label); setS('vibe', VIBES[val('vibe') || 'hype'].label);
+    setS('freq', val('freq') || '—'); setS('buy', b ? b + ' SOL' : 'None');
+    $('cName').textContent = f.name.value.length + '/32'; $('cDesc').textContent = f.desc.value.length + '/400';
+  }
+  function review(){
+    const t = tick(), b = buyVal();
+    const rows = [
+      ['Coin', `${f.name.value.trim()} ($${t})`],
+      ['Creator', `${handleFor(t)} · ${val('who')} · ${val('voice')} voice`],
+      ['Look & personality', `${LOOKS[val('look')].label} · ${VIBES[val('vibe')].label} · ${f.lang.value}`],
+      ['Posts', `${vals('posts').join(', ')}`],
+      ['Schedule', `${val('freq')} on ${vals('where').join(', ') || 'TikTok'} · starts ${val('start').toLowerCase()}`],
+      ['Dev buy', b ? b + ' SOL' : 'None'],
+    ];
+    $('review').innerHTML = rows.map(([k, v]) => `<div><span>${k}</span><b>${v.replace(/</g,'&lt;')}</b></div>`).join('');
+  }
+
+  ['input','change'].forEach(ev => document.getElementById('wiz').addEventListener(ev, e => {
+    const restart = e.target === f.ticker || e.target.name === 'vibe';
+    if (e.target.name === 'buy') $('customBuy').hidden = val('buy') !== 'custom';
+    if (ev === 'input' && e.target.type === 'radio') return;
+    paintAll(restart);
+  }));
+  f.ticker.addEventListener('blur', () => { f.ticker.value = tick(); });
+
+  /* ---------- image ---------- */
+  function setImage(file){
+    $('eImg').textContent = '';
     if (!file) return;
-    if (file.size > 3_000_000){ $('eImg').textContent = 'That image is over 3 MB. Pick a smaller one.'; f.img.value=''; return; }
-    imgFile = file;
-    const url = URL.createObjectURL(file);
-    const thumb = $('imgThumb'); const img = new Image(); img.src = url; img.alt = ''; img.width = 52; img.height = 52;
-    img.style.cssText = 'width:52px;height:52px;border-radius:12px;object-fit:cover';
-    thumb.replaceWith(img); img.id = 'imgThumb';
+    if (!/^image\/(png|jpeg|gif|webp)$/.test(file.type)){ $('eImg').textContent = 'Use a PNG, JPG, GIF or WEBP image.'; return; }
+    if (file.size > 3_000_000){ $('eImg').textContent = 'That image is over 3 MB. Pick a smaller one.'; return; }
+    imgFile = file; if (imgURL) URL.revokeObjectURL(imgURL); imgURL = URL.createObjectURL(file);
+    $('thumb').style.backgroundImage = `url(${imgURL})`; $('drop').classList.add('has');
     $('imgName').textContent = file.name;
-    const p = $('phInitials'); p.style.backgroundImage = `url(${url})`; p.style.backgroundSize = 'cover'; p.style.backgroundPosition = 'center'; p.style.color = 'transparent';
-  });
+    const ms = $('mascotSw'); ms.style.backgroundImage = `url(${imgURL})`; ms.textContent = '';
+    paintAll(false);
+  }
+  f.img.addEventListener('change', () => setImage(f.img.files[0]));
+  const drop = $('drop');
+  ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => setImage(e.dataTransfer.files[0]));
+
+  /* ---------- wizard ---------- */
+  let step = 0, maxStep = 0, busy = false;
+  const panes = $$('[data-pane]'), tabs = $$('[data-go]');
+  function go(n, dir){
+    step = n; maxStep = Math.max(maxStep, n);
+    panes.forEach((p, i) => { p.classList.toggle('on', i === n); p.classList.toggle('back', dir < 0); });
+    tabs.forEach((t, i) => { t.classList.toggle('on', i === n); t.classList.toggle('done', i < n || (n === 4 && i <= 3)); t.disabled = n === 4 || i > maxStep; t.setAttribute('aria-selected', i === n); });
+    $('back').hidden = n === 0 || n === 4;
+    $('wizNav').hidden = n === 4;
+    $('count').textContent = `Step ${n + 1} of 4`;
+    const nx = $('next');
+    nx.innerHTML = n === 3 ? (wallet ? 'Launch coin' : 'Connect wallet & launch') + ' <span class="arrow" aria-hidden="true">→</span>' : 'Continue <span class="arrow" aria-hidden="true">→</span>';
+    if (n === 3) review();
+    const top = $('wiz').getBoundingClientRect().top;
+    if (top < 60 || top > innerHeight * .6) $('wiz').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block:'start' });
+  }
+  tabs.forEach(t => t.addEventListener('click', () => { const n = +t.dataset.go; if (n <= maxStep && (n < step || validate(step))) go(n, n < step ? -1 : 1); }));
+  $('back').addEventListener('click', () => go(step - 1, -1));
+
+  function validate(s){
+    let ok = true; const errs = [];
+    const fail = (el, eid, msg) => { ok = false; $(eid).textContent = msg; if (el){ el.classList.add('badf'); errs.push(el); } };
+    if (s === 0){
+      ['eName','eTicker','eImg'].forEach(i => $(i).textContent = ''); [f.name, f.ticker].forEach(i => i.classList.remove('badf'));
+      if (!f.name.value.trim()) fail(f.name, 'eName', 'Add a coin name.');
+      if (tick().length < 2) fail(f.ticker, 'eTicker', 'Add a ticker — 2 to 10 letters or numbers.');
+      if (!imgFile) fail(null, 'eImg', 'Add a coin image.');
+    }
+    if (s === 2){ $('ePosts').textContent = ''; if (!vals('posts').length) fail(null, 'ePosts', 'Pick at least one kind of post.'); }
+    if (s === 3 && val('buy') === 'custom' && (f.buy.value === '' || Number(f.buy.value) < 0 || Number(f.buy.value) > 85)){ ok = false; toast('Custom dev buy must be 0 to 85 SOL'); f.buy.focus(); }
+    if (errs[0]) errs[0].focus();
+    return ok;
+  }
+  [f.name, f.ticker].forEach(el => el.addEventListener('input', () => { el.classList.remove('badf'); const e = el.closest('.field').querySelector('.err'); if (e) e.textContent = ''; }));
 
   /* ---------- wallet ---------- */
+  let wallet = null;
   const provider = () => (window.phantom && window.phantom.solana) || (window.solana && window.solana.isPhantom ? window.solana : null) || window.solflare || window.backpack || null;
-  const short = k => k.slice(0,4) + '…' + k.slice(-4);
   function setWallet(pk){
-    wallet = pk;
-    $('walletLine').textContent = pk ? 'Connected · ' + short(pk) : 'No wallet connected';
-    $('connectTop').textContent = pk ? short(pk) : 'Connect wallet';
-    $('launchBtn').textContent = pk ? 'Launch coin' : 'Connect wallet to launch';
+    wallet = pk; $('connectTop').textContent = pk ? short(pk) : 'Connect wallet';
+    if (step === 3) $('next').innerHTML = (pk ? 'Launch coin' : 'Connect wallet & launch') + ' <span class="arrow" aria-hidden="true">→</span>';
   }
   async function connect(){
     const p = provider();
-    if (!p){ show('bad', 'No Solana wallet found. Install <a href="https://phantom.app" target="_blank" rel="noopener">Phantom</a>, then reload this page.'); return null; }
-    try { const r = await p.connect(); const pk = (r && r.publicKey ? r.publicKey : p.publicKey).toString(); setWallet(pk); return pk; }
-    catch { show('bad', 'Wallet connection was closed. Connect again when you’re ready.'); return null; }
+    if (!p){ status('bad', 'No Solana wallet found. Install <a href="https://phantom.app" target="_blank" rel="noopener">Phantom</a>, then reload this page.'); toast('No Solana wallet found'); return null; }
+    try { const r = await p.connect(); const pk = (r && r.publicKey ? r.publicKey : p.publicKey).toString(); setWallet(pk); toast('Wallet connected'); return pk; }
+    catch { toast('Wallet connection closed'); return null; }
   }
   $('connectTop').addEventListener('click', connect);
   const p0 = provider();
-  if (p0 && p0.connect){ p0.connect({ onlyIfTrusted:true }).then(r => setWallet((r && r.publicKey ? r.publicKey : p0.publicKey).toString())).catch(()=>{}); }
+  if (p0 && p0.connect){ p0.connect({ onlyIfTrusted:true }).then(r => setWallet((r && r.publicKey ? r.publicKey : p0.publicKey).toString())).catch(() => {}); }
 
-  /* ---------- launch ---------- */
-  function show(kind, html){ const s = $('status'); s.className = 'status show ' + kind; s.innerHTML = html; }
-  function validate(){
-    let ok = true;
-    $('eName').textContent = f.name.value.trim() ? '' : (ok = false, 'Add a coin name.');
-    $('eTicker').textContent = tick().length >= 2 ? '' : (ok = false, 'Add a ticker — 2 to 10 letters or numbers.');
-    $('eImg').textContent = imgFile ? '' : (ok = false, 'Add a coin image.');
-    if (!ok) (document.querySelector('.err:not(:empty)')?.previousElementSibling || f.name).focus?.();
-    return ok;
-  }
-  [f.name, f.ticker].forEach(el => el.addEventListener('input', () => { const e = el.parentElement.querySelector('.err'); if (e) e.textContent = ''; }));
-
+  function status(kind, html){ const s = $('status'); s.className = 'status show ' + kind; s.innerHTML = (kind === 'work' ? '<span class="spinner" aria-hidden="true"></span>' : '') + '<span>' + html + '</span>'; }
   const b64ToBytes = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
   async function jsonOrError(r){ let j = {}; try { j = await r.json(); } catch {} if (!r.ok) throw new Error(j.error || 'Something went wrong on our side. Try again.'); return j; }
 
-  $('launchForm').addEventListener('submit', async e => {
+  $('wiz').addEventListener('submit', async e => {
     e.preventDefault();
     if (busy) return;
-    const pk = wallet || await connect();
-    if (!pk) return;
-    if (!validate()) return;
-    if (typeof solanaWeb3 === 'undefined'){ show('bad', 'The launch tools didn’t load. Reload the page and try again.'); return; }
-    busy = true; const btn = $('launchBtn'); btn.disabled = true;
+    if (step < 3){ if (validate(step)) go(step + 1, 1); return; }
+    if (!validate(0)){ go(0, -1); return; }
+    if (!validate(3)) return;
+    const pk = wallet || await connect(); if (!pk) return;
+    if (typeof solanaWeb3 === 'undefined'){ status('bad', 'The launch tools didn’t load. Reload the page and try again.'); return; }
+    busy = true; const btn = $('next'); btn.disabled = true; $('back').disabled = true;
     const name = f.name.value.trim(), symbol = tick(), desc = f.desc.value.trim();
+    const creator = { look: val('look'), who: val('who'), voice: val('voice'), vibe: val('vibe'), lang: f.lang.value, posts: vals('posts'), freq: val('freq'), where: vals('where'), start: val('start') };
     try {
-      btn.textContent = 'Uploading…'; show('work', 'Uploading your coin image…');
+      btn.textContent = 'Uploading…'; status('work', 'Uploading your coin image…');
       const image = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error('Couldn’t read that image. Pick another one.')); r.readAsDataURL(imgFile); });
-      const meta = await jsonOrError(await fetch(API + 'metadata', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ name, ticker: symbol, description: desc || `${name} — launched on Muse. Its AI creator is ${handleFor(symbol)}.`, image, twitter: f.x.value.trim(), telegram: '', website: 'https://orch.lol/muse' }) }));
+      const meta = await jsonOrError(await fetch(API + 'metadata', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ name, ticker: symbol, description: desc || `${name} — launched on Muse. Its AI creator is ${handleFor(symbol)}.`, image, twitter: f.x.value.trim(), telegram: f.tg.value.trim(), website: 'https://orch.lol/muse' }) }));
 
-      btn.textContent = 'Building…'; show('work', 'Building your launch transaction…');
+      btn.textContent = 'Building…'; status('work', 'Building your launch transaction…');
       const mint = solanaWeb3.Keypair.generate();
-      const amount = Math.max(0, Math.min(Number(f.buy.value) || 0, 85));
-      const { tx } = await jsonOrError(await fetch(API + 'create-tx', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ creator: pk, mint: mint.publicKey.toBase58(), name, ticker: symbol, uri: meta.uri, devBuySol: amount }) }));
+      const { tx } = await jsonOrError(await fetch(API + 'create-tx', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ creator: pk, mint: mint.publicKey.toBase58(), name, ticker: symbol, uri: meta.uri, devBuySol: buyVal() }) }));
       const vtx = solanaWeb3.VersionedTransaction.deserialize(b64ToBytes(tx));
       vtx.sign([mint]);
 
-      btn.textContent = 'Approve in wallet…'; show('work', 'Approve the launch in your wallet.');
+      btn.textContent = 'Approve in wallet…'; status('work', 'Approve the launch in your wallet.');
       const signed = await provider().signTransaction(vtx);
-      btn.textContent = 'Sending…'; show('work', 'Sending your launch to Solana…');
+      btn.textContent = 'Sending…'; status('work', 'Sending your launch to Solana…');
       const raw = signed.serialize(); let bin = ''; for (let i = 0; i < raw.length; i++) bin += String.fromCharCode(raw[i]);
       const { signature: sig } = await jsonOrError(await fetch(API + 'send', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ tx: btoa(bin) }) }));
+
       const ca = mint.publicKey.toBase58();
-      const item = { ca, name, symbol, vibe: vibe(), image: meta.image, sig, at: Date.now() };
-      try { const list = JSON.parse(localStorage.getItem(STORE) || '[]'); list.unshift(item); localStorage.setItem(STORE, JSON.stringify(list.slice(0, 50))); } catch {}
+      try { const list = JSON.parse(localStorage.getItem(STORE) || '[]'); list.unshift({ ca, name, symbol, image: meta.image, sig, at: Date.now(), ...creator }); localStorage.setItem(STORE, JSON.stringify(list.slice(0, 50))); } catch {}
       renderCreators();
-      show('ok', `$${symbol} is live. <a href="https://pump.fun/coin/${ca}" target="_blank" rel="noopener">Open on pump.fun</a> · <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">View transaction</a><br>CA: <code>${ca}</code>`);
+      $('doneTitle').textContent = `$${symbol} is live.`;
+      $('doneText').textContent = `${handleFor(symbol)} is set up as a ${LOOKS[creator.look].label.toLowerCase()}, ${VIBES[creator.vibe].label.toLowerCase()} creator posting ${creator.freq}.`;
+      $('doneCa').textContent = ca;
+      $('doneCopy').onclick = () => copy(ca, 'CA');
+      $('donePump').href = 'https://pump.fun/coin/' + ca;
+      $('doneTx').href = 'https://solscan.io/tx/' + sig;
+      $('status').className = 'status';
+      go(4, 1); confetti();
     } catch (err) {
       const msg = String(err && err.message || err);
-      show('bad', /reject|denied|cancel/i.test(msg) ? 'Launch cancelled in your wallet. Nothing was sent.' : msg.replace(/</g,'&lt;'));
+      status('bad', /reject|denied|cancel|closed/i.test(msg) ? 'Launch cancelled in your wallet. Nothing was sent.' : msg.replace(/</g,'&lt;'));
     } finally {
-      busy = false; btn.disabled = false; btn.textContent = wallet ? 'Launch coin' : 'Connect wallet to launch';
+      busy = false; btn.disabled = false; $('back').disabled = false;
+      if (step === 3) btn.innerHTML = (wallet ? 'Launch coin' : 'Connect wallet & launch') + ' <span class="arrow" aria-hidden="true">→</span>';
     }
   });
+  $('again').addEventListener('click', () => {
+    $('wiz').reset(); f.ticker.value = ''; imgFile = null; imgURL = null;
+    $('thumb').style.backgroundImage = ''; $('drop').classList.remove('has'); $('imgName').textContent = 'Drop an image or tap to add';
+    const ms = $('mascotSw'); ms.style.backgroundImage = ''; ms.textContent = 'Your image';
+    $('customBuy').hidden = true; maxStep = 0; paintAll(true); go(0, -1);
+  });
+
+  /* ---------- confetti ---------- */
+  function confetti(){
+    if (reduce) return;
+    const c = $('confetti'), x = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight;
+    const cols = ['#ff3d8b','#ffb3d1','#2a0e1c','#ff7a3d','#10b981','#ffd23f'];
+    const ps = Array.from({ length: 160 }, () => ({ x: innerWidth / 2, y: innerHeight * .45, vx: (Math.random() - .5) * 16, vy: Math.random() * -14 - 4, s: Math.random() * 8 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: cols[Math.random() * cols.length | 0] }));
+    let t = 0;
+    (function frame(){
+      x.clearRect(0, 0, c.width, c.height); t++;
+      ps.forEach(p => { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - t / 160); x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); });
+      if (t < 160) requestAnimationFrame(frame); else x.clearRect(0, 0, c.width, c.height);
+    })();
+  }
 
   /* ---------- creators ---------- */
   function renderCreators(){
     let list = []; try { list = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch {}
     const box = $('creatorList');
     if (!list.length){
-      box.innerHTML = `<div class="card empty"><span class="ring"><svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#e9b6cd" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>No creators yet</h3><p>Launch a coin and its AI influencer shows up here, with links to the coin on pump.fun.</p><a class="btn btn-primary" href="#launch">Launch a coin</a></div>`;
+      box.innerHTML = `<div class="card empty"><span class="ring"><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#e9b6cd" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>No creators yet</h3><p>Launch a coin and its AI creator shows up here, with a link to the coin on pump.fun.</p><a class="btn btn-primary" href="#launch">Launch a coin <span class="arrow" aria-hidden="true">→</span></a></div>`;
       return;
     }
     box.innerHTML = '<div class="creators">' + list.map(c => {
       const s = String(c.symbol).replace(/[^A-Z0-9]/g,'');
       const av = c.image ? `<img src="${encodeURI(c.image)}" alt="" loading="lazy">` : s.slice(0,3);
-      return `<div class="card creator"><span class="av">${av}</span><span><b>$${s}</b><small>${handleFor(s)} · ${vibeLabel[c.vibe] || 'Hype'}</small></span><a class="btn btn-ghost" href="https://pump.fun/coin/${encodeURIComponent(c.ca)}" target="_blank" rel="noopener">View coin</a></div>`;
+      const sub = [LOOKS[c.look] && LOOKS[c.look].label, VIBES[c.vibe] && VIBES[c.vibe].label].filter(Boolean).join(' · ') || 'Hype';
+      return `<div class="card creator"><span class="av">${av}</span><span><b>$${s}</b><small>${handleFor(s)} · ${sub}</small></span><a class="btn btn-ghost" href="https://pump.fun/coin/${encodeURIComponent(c.ca)}" target="_blank" rel="noopener">View</a></div>`;
     }).join('') + '</div>';
   }
 
-  syncPreview(true); renderCreators();
+  paintAll(true); renderCreators();
 })();
 </script>
 </body>

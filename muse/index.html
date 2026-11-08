@@ -67,6 +67,9 @@ h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.025em;margi
 .tabs a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px;transition:background .2s var(--ease),color .2s var(--ease)}
 .tabs a:hover{background:var(--soft);color:var(--ink)}
 .spacer{flex:1}
+.nav-x{min-height:44px;padding:0 16px}
+.btn svg{flex:none}
+@media (max-width:700px){.nav-x{padding:0;width:42px;min-height:42px}.nav-x .nx-t{display:none}}
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:999px;border:0;font-weight:600;font-size:15px;text-decoration:none;white-space:nowrap;transition:background .2s var(--ease),transform .25s var(--spring),box-shadow .25s var(--ease),border-color .2s var(--ease)}
 .btn:hover{transform:translateY(-2px)}
 .btn:active{transform:translateY(0) scale(.98)}
@@ -405,6 +408,7 @@ footer .links{display:flex;gap:10px;flex-wrap:wrap}
       <a href="#faq">FAQ</a>
     </nav>
     <span class="spacer"></span>
+    <a class="btn btn-dark nav-x" data-x hidden target="_blank" rel="noopener" aria-label="Follow Muse on X"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg><span class="nx-t">Follow</span></a>
     <button class="btn btn-ghost" id="connectTop" type="button">Connect wallet</button>
   </div>
 </header>
@@ -420,7 +424,7 @@ footer .links{display:flex;gap:10px;flex-wrap:wrap}
         <p class="lede enter d2">Launch a coin on Muse and it gets an AI TikTok influencer — its own look, voice and personality — posting about your coin on its own, every day.</p>
         <div class="cta-row enter d3">
           <a class="btn btn-primary" href="#launch">Launch a coin <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="#how">See how it works</a>
+          <a class="btn btn-dark" data-x hidden target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg> Follow <span data-x-handle>on X</span></a>
         </div>
         <ul class="trust enter d4">
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>You sign. We never hold keys.</li>

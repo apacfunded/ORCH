@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Muse — every coin gets its own AI TikTok creator</title>
+<meta name="description" content="Launch a pump.fun coin on Muse and it gets its own AI TikTok influencer that posts about it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Syne:wght@500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23ff3d8b'/><path d='M16 44V22l16 14 16-14v22' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+:root{
+  --bg:#fff3f8;--surface:#fff;--ink:#2a0e1c;--muted:#7a5566;--line:#f3d3e2;--soft:#ffe4ef;
+  --accent:#ff3d8b;--accent-ink:#fff;--accent-deep:#d81f6b;--live:#10b981;
+  --r:18px;--shadow:0 1px 2px rgba(42,14,28,.06),0 8px 24px rgba(42,14,28,.06);
+  --display:'Syne',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.02em;margin:0}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,243,248,.94);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 22px var(--display)}
+.mark{width:34px;height:34px;border-radius:11px;background:var(--accent);display:grid;place-items:center}
+.tabs{display:flex;gap:4px;margin-left:12px}
+.tabs a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px}
+.tabs a:hover{background:var(--soft);color:var(--ink)}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;border:0;cursor:pointer;font-weight:600;font-size:15px;text-decoration:none;transition:background .15s ease,transform .15s ease}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent-deep)}
+.btn-ghost{background:var(--surface);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+
+/* profile hero */
+.cover{height:160px;margin-top:20px;border-radius:24px;background:
+  radial-gradient(60% 120% at 15% 20%,#ffb3d1 0,transparent 60%),
+  radial-gradient(50% 120% at 85% 30%,#ffd6e6 0,transparent 60%),
+  linear-gradient(120deg,#ff7fb1,#ff3d8b);position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 1px,transparent 1px 28px)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start}
+.profile{margin-top:-52px;position:relative}
+.avatar{width:112px;height:112px;border-radius:50%;background:var(--surface);padding:5px;box-shadow:var(--shadow)}
+.avatar>div{width:100%;height:100%;border-radius:50%;background:conic-gradient(from 210deg,#ff3d8b,#ff9cc2,#ff3d8b);display:grid;place-items:center}
+.handle-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.handle{font:500 15px var(--body);color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--soft);font-size:13px;font-weight:500;color:var(--accent-deep)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+.profile h1{font-size:clamp(36px,5.2vw,60px);line-height:1.02;margin-top:14px;max-width:14ch}
+.bio{color:var(--muted);font-size:18px;max-width:52ch;margin:16px 0 0}
+.stats{display:flex;gap:28px;margin:22px 0 0;padding:0;list-style:none}
+.stats b{display:block;font:600 22px var(--display)}
+.stats span{font-size:13px;color:var(--muted)}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+
+/* phone */
+.phone-col{margin-top:-90px;position:relative}
+.phone{width:300px;margin-left:auto;aspect-ratio:9/18.5;border-radius:42px;background:#1a0812;padding:10px;box-shadow:0 30px 60px -20px rgba(216,31,107,.45),0 0 0 1px rgba(0,0,0,.05)}
+.screen{position:relative;height:100%;border-radius:33px;overflow:hidden;background:#2a0e1c;color:#fff}
+.vid{position:absolute;inset:0;background:linear-gradient(160deg,#ff3d8b,#7b1e4f 55%,#2a0e1c)}
+.blob{position:absolute;border-radius:50%;filter:blur(30px);opacity:.75;animation:drift 9s ease-in-out infinite alternate}
+.b1{width:180px;height:180px;background:#ffb3d1;top:12%;left:-10%}
+.b2{width:150px;height:150px;background:#ff7a3d;bottom:22%;right:-12%;animation-delay:-3s}
+.b3{width:110px;height:110px;background:#fff;top:40%;left:30%;opacity:.25;animation-delay:-6s}
+@keyframes drift{to{transform:translate(30px,-26px) scale(1.15)}}
+.persona{position:absolute;top:30%;left:50%;transform:translateX(-50%);width:128px;height:128px;border-radius:50%;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.5);display:grid;place-items:center;font:600 34px var(--display);letter-spacing:-.03em}
+.persona::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(255,255,255,.25);animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{from{transform:scale(.92);opacity:1}to{transform:scale(1.18);opacity:0}}
+.ph-top{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:center;gap:16px;font-size:13px;font-weight:500;opacity:.9}
+.ph-top b{border-bottom:2px solid #fff;padding-bottom:2px}
+.ph-tag{position:absolute;top:44px;left:12px;background:rgba(0,0,0,.35);border-radius:999px;padding:3px 10px;font-size:12px}
+.rail{position:absolute;right:10px;bottom:120px;display:grid;gap:16px;justify-items:center}
+.rail i{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.cap{position:absolute;left:14px;right:62px;bottom:18px;font-size:13px;line-height:1.4}
+.cap .who{font-weight:600;font-size:14px;margin-bottom:4px}
+.cap .txt{min-height:56px}
+.cap .txt::after{content:"";display:inline-block;width:2px;height:13px;background:#fff;margin-left:2px;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.cap .snd{margin-top:8px;opacity:.85;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-note{text-align:right;color:var(--muted);font-size:13px;margin-top:10px}
+
+/* sections */
+section{padding:72px 0 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.sec-head h2{font-size:clamp(28px,3.4vw,38px)}
+.sec-head p{margin:6px 0 0;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+
+/* post grid how-it-works */
+.posts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.post{padding:20px;display:flex;flex-direction:column;gap:10px;min-height:220px}
+.post .n{width:36px;height:36px;border-radius:12px;background:var(--soft);color:var(--accent-deep);display:grid;place-items:center;font:600 16px var(--display)}
+.post h3{font-size:19px}
+.post p{margin:0;color:var(--muted);font-size:15px}
+
+/* launch */
+.launch{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
+form.card{padding:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{display:grid;gap:6px;margin-bottom:16px}
+.field label,.legend{font-weight:600;font-size:14px}
+.hint{font-size:13px;color:var(--muted)}
+.in{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;background:#fffafc;padding:11px 14px;transition:border-color .15s ease}
+.in:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,61,139,.15)}
+textarea.in{min-height:88px;resize:vertical}
+.err{color:#c4123f;font-size:13px;min-height:0}
+.vibes{display:flex;flex-wrap:wrap;gap:8px}
+.vibe{position:relative}
+.vibe input{position:absolute;opacity:0;inset:0}
+.vibe span{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fffafc;cursor:pointer;font-weight:500;font-size:14px}
+.vibe input:checked+span{background:var(--ink);color:#fff;border-color:var(--ink)}
+.vibe input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.drop{display:flex;align-items:center;gap:14px;border:1px dashed #e9b6cd;border-radius:14px;padding:12px;background:#fffafc;cursor:pointer;min-height:76px}
+.drop img,.drop .ph{width:52px;height:52px;border-radius:12px;object-fit:cover;background:var(--soft);flex:none}
+.drop input{position:absolute;width:1px;height:1px;opacity:0}
+.row-end{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px;margin-top:4px}
+.wallet{font-size:14px;color:var(--muted)}
+.side{padding:20px;display:grid;gap:14px;position:sticky;top:84px}
+.side h3{font-size:18px}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted)}
+.status{display:none;padding:14px 16px;border-radius:14px;font-size:14px;margin-top:16px}
+.status.show{display:block}
+.status.work{background:var(--soft);color:var(--ink)}
+.status.ok{background:#e6f8f1;color:#05603f}
+.status.bad{background:#fde8ee;color:#9b0f33}
+.status a{font-weight:600}
+
+/* creators */
+.creators{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.creator{padding:16px;display:flex;gap:12px;align-items:center}
+.creator .av{width:52px;height:52px;border-radius:50%;background:conic-gradient(var(--accent),#ffb3d1,var(--accent));display:grid;place-items:center;color:#fff;font:600 16px var(--display);flex:none;overflow:hidden}
+.creator .av img{width:100%;height:100%;object-fit:cover}
+.creator b{display:block}
+.creator small{color:var(--muted);font-size:13px}
+.creator a.btn{margin-left:auto;min-height:40px;padding:0 14px;font-size:14px}
+.empty{padding:36px 24px;text-align:center;display:grid;gap:12px;justify-items:center}
+.empty .ring{width:64px;height:64px;border-radius:50%;border:2px dashed #e9b6cd;display:grid;place-items:center}
+.empty p{margin:0;color:var(--muted);max-width:44ch}
+
+/* faq */
+.faq{display:grid;gap:10px;max-width:820px}
+details{padding:0 20px}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:60px;font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:500 22px var(--display);color:var(--accent)}
+details[open] summary::after{content:"–"}
+details p{margin:0 0 18px;color:var(--muted)}
+
+footer{margin-top:80px;border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+.ca{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+
+@media (max-width:960px){
+  .hero,.launch{grid-template-columns:1fr}
+  .phone-col{margin-top:8px}
+  .phone{margin:0 auto}
+  .preview-note{text-align:center}
+  .posts{grid-template-columns:1fr 1fr}
+  .creators{grid-template-columns:1fr 1fr}
+  .side{position:static}
+}
+@media (max-width:600px){
+  .tabs{display:none}
+  .cover{height:120px}
+  .posts,.creators,.grid2{grid-template-columns:1fr}
+  .post{min-height:0}
+  .stats{gap:20px}
+  .phone{width:270px}
+  form.card{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .cap .txt::after{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Muse home">
+      <span class="mark"><svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Muse
+    </a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#launch">Launch</a>
+      <a href="#creators">Creators</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="btn btn-ghost" id="connectTop" type="button">Connect wallet</button>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="cover" aria-hidden="true"></div>
+    <div class="hero">
+      <div class="profile">
+        <div class="avatar"><div><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+        <div class="handle-row">
+          <span class="handle">@muse · pump.fun launchpad</span>
+          <span class="chip"><span class="dot"></span>Launches live</span>
+        </div>
+        <h1>Every coin gets its own creator.</h1>
+        <p class="bio">Launch a coin on Muse and it gets an AI TikTok influencer with its own face, voice and vibe — posting about your coin on its own, every day.</p>
+        <ul class="stats" aria-label="What every coin gets">
+          <li><b>1</b><span>AI influencer per coin</span></li>
+          <li><b>24/7</b><span>Posts on its own</span></li>
+          <li><b>0</b><span>Videos you edit</span></li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#launch">Launch a coin</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+      </div>
+
+      <div class="phone-col">
+        <div class="phone" role="img" aria-label="Preview of your coin's AI influencer post">
+          <div class="screen">
+            <div class="vid"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+            <div class="ph-top"><span>Following</span><b>For You</b></div>
+            <span class="ph-tag">AI creator</span>
+            <div class="persona" id="phInitials">M</div>
+            <div class="rail" aria-hidden="true">
+              <i><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.3 5 6.6 5c2 0 3.6 1.1 4.4 2.6h2C13.8 6.1 15.4 5 17.4 5c3.3 0 5.6 3.2 4.1 6.8C19.5 16.4 12 21 12 21z"/></svg></i>
+              <i><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M4 4h16v12H8l-4 4z"/></svg></i>
+              <i><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M14 4l7 7-7 7v-4c-5 0-8 1.5-10 5 1-5 4-9 10-10z"/></svg></i>
+            </div>
+            <div class="cap">
+              <div class="who" id="phHandle">@yourcoin.muse</div>
+              <div class="txt" id="phCaption" aria-live="polite"></div>
+              <div class="snd" id="phSound">♪ original sound — your coin</div>
+            </div>
+          </div>
+        </div>
+        <p class="preview-note">Preview — updates as you fill in your coin</p>
+      </div>
+    </div>
+
+    <section id="how">
+      <div class="sec-head"><div><h2>How it works</h2><p>Launch once. Your coin's creator handles the posting.</p></div></div>
+      <div class="posts">
+        <article class="card post"><span class="n">1</span><h3>Launch your coin</h3><p>Name, ticker, image. It launches straight on pump.fun from your own wallet.</p></article>
+        <article class="card post"><span class="n">2</span><h3>Pick its vibe</h3><p>Hype, deadpan, storytime or chaos. That sets how your influencer talks.</p></article>
+        <article class="card post"><span class="n">3</span><h3>It gets a face</h3><p>Muse builds an AI creator for your coin — a look, a voice and a TikTok account.</p></article>
+        <article class="card post"><span class="n">4</span><h3>It posts on its own</h3><p>Short videos about your coin go out every day. Your link sits in every bio.</p></article>
+      </div>
+    </section>
+
+    <section id="launch">
+      <div class="sec-head"><div><h2>Launch a coin</h2><p>Launches on pump.fun. You sign with your own wallet — Muse never holds your keys.</p></div></div>
+      <div class="launch">
+        <form class="card" id="launchForm" novalidate>
+          <div class="grid2">
+            <div class="field">
+              <label for="fName">Coin name</label>
+              <input class="in" id="fName" name="name" maxlength="32" autocomplete="off" placeholder="e.g. Pink Moon">
+              <div class="err" id="eName"></div>
+            </div>
+            <div class="field">
+              <label for="fTicker">Ticker</label>
+              <input class="in" id="fTicker" name="ticker" maxlength="10" autocomplete="off" placeholder="e.g. PINK">
+              <div class="err" id="eTicker"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="fDesc">What's it about?</label>
+            <textarea class="in" id="fDesc" name="desc" maxlength="400" placeholder="One or two lines your influencer will talk about"></textarea>
+          </div>
+          <div class="field">
+            <span class="legend" id="imgLabel">Coin image</span>
+            <label class="drop" for="fImg" aria-labelledby="imgLabel">
+              <span class="ph" id="imgThumb"></span>
+              <span><b id="imgName">Add an image</b><br><span class="hint">PNG, JPG or GIF, up to 3 MB. Also used as your influencer's look.</span></span>
+              <input type="file" id="fImg" accept="image/png,image/jpeg,image/gif,image/webp">
+            </label>
+            <div class="err" id="eImg"></div>
+          </div>
+          <div class="field" role="radiogroup" aria-labelledby="vibeLabel">
+            <span class="legend" id="vibeLabel">Influencer vibe</span>
+            <div class="vibes">
+              <label class="vibe"><input type="radio" name="vibe" value="hype" checked><span>Hype</span></label>
+              <label class="vibe"><input type="radio" name="vibe" value="deadpan"><span>Deadpan</span></label>
+              <label class="vibe"><input type="radio" name="vibe" value="storytime"><span>Storytime</span></label>
+              <label class="vibe"><input type="radio" name="vibe" value="chaos"><span>Chaos</span></label>
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label for="fX">X link <span class="hint">(optional)</span></label>
+              <input class="in" id="fX" type="url" inputmode="url" placeholder="https://x.com/…">
+            </div>
+            <div class="field">
+              <label for="fBuy">Dev buy (SOL)</label>
+              <input class="in" id="fBuy" type="number" min="0" max="85" step="0.01" inputmode="decimal" value="0">
+              <span class="hint">0 is fine. Max 85.</span>
+            </div>
+          </div>
+          <div class="row-end">
+            <span class="wallet" id="walletLine">No wallet connected</span>
+            <button class="btn btn-primary" id="launchBtn" type="submit">Connect wallet to launch</button>
+          </div>
+          <div class="status" id="status" role="status" aria-live="polite"></div>
+        </form>
+
+        <aside class="card side" aria-label="Launch summary">
+          <h3>Your launch</h3>
+          <div>
+            <div class="kv"><span>Coin</span><b id="sName">—</b></div>
+            <div class="kv"><span>Ticker</span><b id="sTicker">—</b></div>
+            <div class="kv"><span>Creator handle</span><b id="sHandle">—</b></div>
+            <div class="kv"><span>Vibe</span><b id="sVibe">Hype</b></div>
+            <div class="kv"><span>Dev buy</span><b id="sBuy">0 SOL</b></div>
+            <div class="kv"><span>Network</span><b>Solana · pump.fun</b></div>
+          </div>
+          <p class="hint" style="margin:0">pump.fun charges its normal create fee plus network fees. Your wallet shows the exact total before you sign.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="creators">
+      <div class="sec-head"><div><h2>Creators</h2><p>Coins launched from this browser and their AI influencers.</p></div></div>
+      <div id="creatorList"></div>
+    </section>
+
+    <section id="faq">
+      <div class="sec-head"><div><h2>FAQ</h2></div></div>
+      <div class="faq">
+        <details class="card"><summary>What does my coin actually get?</summary><p>Its own AI TikTok creator: a look based on your coin image, a voice, a personality from the vibe you pick, and an account that posts short videos about your coin.</p></details>
+        <details class="card"><summary>Is it a real pump.fun coin?</summary><p>Yes. Muse builds the standard pump.fun create transaction and you sign it in your own wallet. The coin shows up on pump.fun right away, with you as the dev.</p></details>
+        <details class="card"><summary>Does Muse hold my keys or funds?</summary><p>No. A fresh mint key is made in your browser, and your wallet signs. The server only builds the transaction.</p></details>
+        <details class="card"><summary>How often does the influencer post?</summary><p>Every day once it's live. Posts talk about your coin, its chart and its community, in the vibe you picked.</p></details>
+        <details class="card"><summary>What is $MUSE?</summary><p>The Muse launchpad coin. The contract address goes up here at launch — anything posted before that isn't us.</p></details>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Muse — AI creators for pump.fun coins</span>
+    <span class="ca" id="museCa">$MUSE · CA posts at launch</span>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const API = 'https://amoviepad.vercel.app/api/';
+  const STORE = 'muse.launches.v1';
+  const f = { name:$('fName'), ticker:$('fTicker'), desc:$('fDesc'), img:$('fImg'), x:$('fX'), buy:$('fBuy') };
+  let wallet = null, imgFile = null, busy = false;
+
+  /* ---------- live preview ---------- */
+  const vibeLabel = { hype:'Hype', deadpan:'Deadpan', storytime:'Storytime', chaos:'Chaos' };
+  const lines = {
+    hype: t => [`POV: you found $${t} before everyone else 🚀`, `$${t} chart said "watch this" and I'm watching 👀`, `if you're not in $${t} what are we even doing`],
+    deadpan: t => [`day 1 of telling you about $${t}. nobody asked.`, `$${t}. that's the post.`, `I'm an AI and even I bought $${t}.`],
+    storytime: t => [`storytime: how $${t} started with one dev and a dream…`, `so there I was, scrolling pump.fun, and then $${t} happened`, `the $${t} lore goes deeper than you think, part 1`],
+    chaos: t => [`$${t} $${t} $${t} sorry my keyboard only does this now`, `my therapist said stop posting $${t}. anyway, $${t}`, `breaking: local AI loses it over $${t} again`],
+  };
+  const vibe = () => (document.querySelector('input[name=vibe]:checked') || {}).value || 'hype';
+  const tick = () => (f.ticker.value.replace(/[^a-z0-9]/gi,'').toUpperCase().slice(0,10));
+  const handleFor = t => '@' + (t ? t.toLowerCase() : 'yourcoin') + '.muse';
+
+  let typeTimer = null, lineIdx = 0, target = '', shown = 0;
+  function nextLine(){
+    const t = tick() || 'YOURCOIN';
+    const set = lines[vibe()](t);
+    target = set[lineIdx % set.length]; lineIdx++; shown = 0; typeStep();
+  }
+  function typeStep(){
+    clearTimeout(typeTimer);
+    const el = $('phCaption');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent = target; typeTimer = setTimeout(nextLine, 4000); return; }
+    shown++; el.textContent = target.slice(0, shown);
+    typeTimer = setTimeout(shown < target.length ? typeStep : nextLine, shown < target.length ? 38 : 2600);
+  }
+  function syncPreview(restart){
+    const t = tick(), n = f.name.value.trim();
+    $('phHandle').textContent = handleFor(t);
+    const ini = (t || 'M').slice(0,5), pi = $('phInitials');
+    pi.textContent = ini; pi.style.fontSize = ini.length <= 3 ? '34px' : ini.length === 4 ? '28px' : '23px';
+    $('phSound').textContent = '♪ original sound — ' + (n || 'your coin') + ' AI';
+    $('sName').textContent = n || '—';
+    $('sTicker').textContent = t ? '$' + t : '—';
+    $('sHandle').textContent = t ? handleFor(t) : '—';
+    $('sVibe').textContent = vibeLabel[vibe()];
+    const b = Math.max(0, Math.min(Number(f.buy.value) || 0, 85));
+    $('sBuy').textContent = b + ' SOL';
+    if (restart){ lineIdx = 0; nextLine(); }
+  }
+  ['input'].forEach(ev => { f.name.addEventListener(ev, () => syncPreview(false)); f.ticker.addEventListener(ev, () => syncPreview(true)); f.buy.addEventListener(ev, () => syncPreview(false)); });
+  f.ticker.addEventListener('blur', () => { f.ticker.value = tick(); });
+  document.querySelectorAll('input[name=vibe]').forEach(r => r.addEventListener('change', () => syncPreview(true)));
+
+  f.img.addEventListener('change', () => {
+    const file = f.img.files[0]; $('eImg').textContent = '';
+    if (!file) return;
+    if (file.size > 3_000_000){ $('eImg').textContent = 'That image is over 3 MB. Pick a smaller one.'; f.img.value=''; return; }
+    imgFile = file;
+    const url = URL.createObjectURL(file);
+    const thumb = $('imgThumb'); const img = new Image(); img.src = url; img.alt = ''; img.width = 52; img.height = 52;
+    img.style.cssText = 'width:52px;height:52px;border-radius:12px;object-fit:cover';
+    thumb.replaceWith(img); img.id = 'imgThumb';
+    $('imgName').textContent = file.name;
+    const p = $('phInitials'); p.style.backgroundImage = `url(${url})`; p.style.backgroundSize = 'cover'; p.style.backgroundPosition = 'center'; p.style.color = 'transparent';
+  });
+
+  /* ---------- wallet ---------- */
+  const provider = () => (window.phantom && window.phantom.solana) || (window.solana && window.solana.isPhantom ? window.solana : null) || window.solflare || window.backpack || null;
+  const short = k => k.slice(0,4) + '…' + k.slice(-4);
+  function setWallet(pk){
+    wallet = pk;
+    $('walletLine').textContent = pk ? 'Connected · ' + short(pk) : 'No wallet connected';
+    $('connectTop').textContent = pk ? short(pk) : 'Connect wallet';
+    $('launchBtn').textContent = pk ? 'Launch coin' : 'Connect wallet to launch';
+  }
+  async function connect(){
+    const p = provider();
+    if (!p){ show('bad', 'No Solana wallet found. Install <a href="https://phantom.app" target="_blank" rel="noopener">Phantom</a>, then reload this page.'); return null; }
+    try { const r = await p.connect(); const pk = (r && r.publicKey ? r.publicKey : p.publicKey).toString(); setWallet(pk); return pk; }
+    catch { show('bad', 'Wallet connection was closed. Connect again when you’re ready.'); return null; }
+  }
+  $('connectTop').addEventListener('click', connect);
+  const p0 = provider();
+  if (p0 && p0.connect){ p0.connect({ onlyIfTrusted:true }).then(r => setWallet((r && r.publicKey ? r.publicKey : p0.publicKey).toString())).catch(()=>{}); }
+
+  /* ---------- launch ---------- */
+  function show(kind, html){ const s = $('status'); s.className = 'status show ' + kind; s.innerHTML = html; }
+  function validate(){
+    let ok = true;
+    $('eName').textContent = f.name.value.trim() ? '' : (ok = false, 'Add a coin name.');
+    $('eTicker').textContent = tick().length >= 2 ? '' : (ok = false, 'Add a ticker — 2 to 10 letters or numbers.');
+    $('eImg').textContent = imgFile ? '' : (ok = false, 'Add a coin image.');
+    if (!ok) (document.querySelector('.err:not(:empty)')?.previousElementSibling || f.name).focus?.();
+    return ok;
+  }
+  [f.name, f.ticker].forEach(el => el.addEventListener('input', () => { const e = el.parentElement.querySelector('.err'); if (e) e.textContent = ''; }));
+
+  const b64ToBytes = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  async function jsonOrError(r){ let j = {}; try { j = await r.json(); } catch {} if (!r.ok) throw new Error(j.error || 'Something went wrong on our side. Try again.'); return j; }
+
+  $('launchForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (busy) return;
+    const pk = wallet || await connect();
+    if (!pk) return;
+    if (!validate()) return;
+    if (typeof solanaWeb3 === 'undefined'){ show('bad', 'The launch tools didn’t load. Reload the page and try again.'); return; }
+    busy = true; const btn = $('launchBtn'); btn.disabled = true;
+    const name = f.name.value.trim(), symbol = tick(), desc = f.desc.value.trim();
+    try {
+      btn.textContent = 'Uploading…'; show('work', 'Uploading your coin image…');
+      const image = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error('Couldn’t read that image. Pick another one.')); r.readAsDataURL(imgFile); });
+      const meta = await jsonOrError(await fetch(API + 'metadata', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ name, ticker: symbol, description: desc || `${name} — launched on Muse. Its AI creator is ${handleFor(symbol)}.`, image, twitter: f.x.value.trim(), telegram: '', website: 'https://orch.lol/muse' }) }));
+
+      btn.textContent = 'Building…'; show('work', 'Building your launch transaction…');
+      const mint = solanaWeb3.Keypair.generate();
+      const amount = Math.max(0, Math.min(Number(f.buy.value) || 0, 85));
+      const { tx } = await jsonOrError(await fetch(API + 'create-tx', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ creator: pk, mint: mint.publicKey.toBase58(), name, ticker: symbol, uri: meta.uri, devBuySol: amount }) }));
+      const vtx = solanaWeb3.VersionedTransaction.deserialize(b64ToBytes(tx));
+      vtx.sign([mint]);
+
+      btn.textContent = 'Approve in wallet…'; show('work', 'Approve the launch in your wallet.');
+      const signed = await provider().signTransaction(vtx);
+      btn.textContent = 'Sending…'; show('work', 'Sending your launch to Solana…');
+      const raw = signed.serialize(); let bin = ''; for (let i = 0; i < raw.length; i++) bin += String.fromCharCode(raw[i]);
+      const { signature: sig } = await jsonOrError(await fetch(API + 'send', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ tx: btoa(bin) }) }));
+      const ca = mint.publicKey.toBase58();
+      const item = { ca, name, symbol, vibe: vibe(), image: meta.image, sig, at: Date.now() };
+      try { const list = JSON.parse(localStorage.getItem(STORE) || '[]'); list.unshift(item); localStorage.setItem(STORE, JSON.stringify(list.slice(0, 50))); } catch {}
+      renderCreators();
+      show('ok', `$${symbol} is live. <a href="https://pump.fun/coin/${ca}" target="_blank" rel="noopener">Open on pump.fun</a> · <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">View transaction</a><br>CA: <code>${ca}</code>`);
+    } catch (err) {
+      const msg = String(err && err.message || err);
+      show('bad', /reject|denied|cancel/i.test(msg) ? 'Launch cancelled in your wallet. Nothing was sent.' : msg.replace(/</g,'&lt;'));
+    } finally {
+      busy = false; btn.disabled = false; btn.textContent = wallet ? 'Launch coin' : 'Connect wallet to launch';
+    }
+  });
+
+  /* ---------- creators ---------- */
+  function renderCreators(){
+    let list = []; try { list = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch {}
+    const box = $('creatorList');
+    if (!list.length){
+      box.innerHTML = `<div class="card empty"><span class="ring"><svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#e9b6cd" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>No creators yet</h3><p>Launch a coin and its AI influencer shows up here, with links to the coin on pump.fun.</p><a class="btn btn-primary" href="#launch">Launch a coin</a></div>`;
+      return;
+    }
+    box.innerHTML = '<div class="creators">' + list.map(c => {
+      const s = String(c.symbol).replace(/[^A-Z0-9]/g,'');
+      const av = c.image ? `<img src="${encodeURI(c.image)}" alt="" loading="lazy">` : s.slice(0,3);
+      return `<div class="card creator"><span class="av">${av}</span><span><b>$${s}</b><small>${handleFor(s)} · ${vibeLabel[c.vibe] || 'Hype'}</small></span><a class="btn btn-ghost" href="https://pump.fun/coin/${encodeURIComponent(c.ca)}" target="_blank" rel="noopener">View coin</a></div>`;
+    }).join('') + '</div>';
+  }
+
+  syncPreview(true); renderCreators();
+})();
+</script>
+</body>
+</html>

@@ -11,7 +11,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Syne:wght@500;600&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23ff3d8b'/><path d='M16 44V22l16 14 16-14v22' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="icon" type="image/png" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261108_173831_4ee8bb37-4655-4f36-a0d9-68d2a99c7bbf.png">
+<link rel="apple-touch-icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261108_173831_4ee8bb37-4655-4f36-a0d9-68d2a99c7bbf.png">
+<meta property="og:image" content="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261108_173831_4ee8bb37-4655-4f36-a0d9-68d2a99c7bbf.png">
+<meta name="twitter:card" content="summary">
 <style>
 :root{
   --bg:#fff3f8;--surface:#fff;--ink:#2a0e1c;--ink-2:#4a2236;--muted:#7a5566;--line:#f3d3e2;--soft:#ffe4ef;--soft-2:#fff8fb;
@@ -55,7 +58,10 @@ h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.025em;margi
 .top.scrolled{border-bottom-color:var(--line);background:rgba(255,243,248,.97)}
 .top .wrap{display:flex;align-items:center;gap:16px;height:66px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 22px var(--display)}
-.mark{width:36px;height:36px;border-radius:12px;background:var(--accent);display:grid;place-items:center;transition:transform .4s var(--spring)}
+.mark{width:36px;height:36px;border-radius:12px;background:var(--accent);object-fit:cover;display:block;transition:transform .4s var(--spring)}
+.coinbar .logo{width:24px;height:24px;border-radius:7px;object-fit:cover;vertical-align:middle;margin-right:8px}
+.coin-logo{width:112px;height:112px;border-radius:28px;object-fit:cover;box-shadow:0 20px 40px -14px rgba(255,61,139,.7);margin-bottom:22px;animation:bob2 5s ease-in-out infinite}
+@keyframes bob2{50%{transform:translateY(-8px) rotate(-3deg)}}
 .brand:hover .mark{transform:rotate(-8deg) scale(1.06)}
 .tabs{display:flex;gap:2px;margin-left:14px}
 .tabs a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px;transition:background .2s var(--ease),color .2s var(--ease)}
@@ -372,7 +378,7 @@ footer .links{display:flex;gap:10px;flex-wrap:wrap}
 <!-- $MUSE bar: CA + X from pump.fun -->
 <div class="coinbar" role="region" aria-label="$MUSE coin">
   <div class="wrap">
-    <span class="tk"><i></i>$MUSE</span>
+    <span class="tk"><img class="logo" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261108_173831_4ee8bb37-4655-4f36-a0d9-68d2a99c7bbf.png" alt="">$MUSE</span>
     <button class="ca-btn" type="button" data-copy-ca aria-label="Copy $MUSE contract address">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
       <span data-ca-short>CA drops at launch</span>
@@ -388,7 +394,7 @@ footer .links{display:flex;gap:10px;flex-wrap:wrap}
 <header class="top" id="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Muse home">
-      <span class="mark"><svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48V18l20 18 20-18v30" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <img class="mark" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261108_173831_4ee8bb37-4655-4f36-a0d9-68d2a99c7bbf.png" alt="" width="36" height="36">
       Muse
     </a>
     <nav class="tabs" aria-label="Sections">
@@ -678,7 +684,8 @@ footer .links{display:flex;gap:10px;flex-wrap:wrap}
     <section id="muse">
       <div class="coin reveal">
         <div style="position:relative">
-          <span class="kicker" style="color:#ff8fbd">The launchpad coin</span>
+          <img class="coin-logo" src="https://d8j0ntlcm91z4.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/hf_20261108_173831_4ee8bb37-4655-4f36-a0d9-68d2a99c7bbf.png" alt="$MUSE logo" width="112" height="112" loading="lazy">
+          <span class="kicker" style="color:#ff8fbd;display:block">The launchpad coin</span>
           <h2 style="margin-top:12px">$MUSE</h2>
           <p>The coin behind Muse. Copy the contract address straight from here — anything posted before it shows up on this page isn't us.</p>
         </div>

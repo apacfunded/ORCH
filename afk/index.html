@@ -260,7 +260,7 @@
     <div class="nav-right">
       <a class="btn btn-sm" href="https://x.com/afk_solona" target="_blank" rel="noopener" aria-label="$AFK on X">𝕏</a>
       <a class="btn btn-sm" href="#check">Check my timer</a>
-      <a class="btn btn-sm btn-mint" href="https://pump.fun" target="_blank" rel="noopener">Buy $AFK</a>
+      <a class="btn btn-sm btn-mint" href="https://pump.fun/coin/GfU48HSnZiMVUgobTEE894ki6qwN2Ng7f2rZLGq3pump" target="_blank" rel="noopener">Buy $AFK</a>
     </div>
   </div>
 </nav>
@@ -272,13 +272,13 @@
       <h1><span>Hold it.</span><span>Don't touch it.</span><span>Get paid.</span></h1>
       <p class="lede">Buy $AFK and leave it alone. <b>The longer you don't sell, the more SOL you get every 20 minutes.</b> Sell once and your timer goes back to zero.</p>
       <div class="hero-cta">
-        <a class="btn btn-mint" href="https://pump.fun" target="_blank" rel="noopener">Buy $AFK</a>
+        <a class="btn btn-mint" href="https://pump.fun/coin/GfU48HSnZiMVUgobTEE894ki6qwN2Ng7f2rZLGq3pump" target="_blank" rel="noopener">Buy $AFK</a>
         <a class="btn" href="#how">How it works</a>
         <a class="btn" href="https://x.com/afk_solona" target="_blank" rel="noopener">Follow on 𝕏</a>
       </div>
       <div class="ca">
         <small>CA</small>
-        <span class="num" id="caVal">Drops at launch</span>
+        <span class="num" id="caVal">GfU48HSnZiMVUgobTEE894ki6qwN2Ng7f2rZLGq3pump</span>
         <button class="btn btn-sm btn-sun" id="copyCa" type="button">Copy</button>
       </div>
     </div>
@@ -473,7 +473,7 @@
       <h2>Go AFK</h2>
       <p>Buy it. Close the tab. Come back to SOL.</p>
       <div class="hero-cta">
-        <a class="btn btn-sun" href="https://pump.fun" target="_blank" rel="noopener">Buy $AFK</a>
+        <a class="btn btn-sun" href="https://pump.fun/coin/GfU48HSnZiMVUgobTEE894ki6qwN2Ng7f2rZLGq3pump" target="_blank" rel="noopener">Buy $AFK</a>
         <a class="btn" href="#check">Check my timer</a>
         <a class="btn" href="https://x.com/afk_solona" target="_blank" rel="noopener">Follow @afk_solona</a>
       </div>
@@ -615,7 +615,7 @@
   const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800); };
   $('copyCa').addEventListener('click', async () => {
     const ca = $('caVal').textContent.trim();
-    if (ca === 'Drops at launch') return toast('The CA drops at launch.');
+    
     try { await navigator.clipboard.writeText(ca); toast('CA copied'); } catch { toast('Select the CA to copy it'); }
   });
 

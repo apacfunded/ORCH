@@ -1,28 +1,28 @@
 /* ============================================================
    DESIGN TOKENS — Pit
-   Palette: "Oxblood" (private vault at night). Light theme via [data-theme="light"].
+   Palette: "Gold leaf" (dark trading floor at night). Light theme via [data-theme="light"].
    Commodity accents are set per board from config; UI chrome stays neutral.
    ============================================================ */
 :root {
-  --bg: #120607;
-  --bg-2: #170909;
-  --surface-1: #1e0c0e;
-  --surface-2: #261114;
-  --surface-3: #33171b;
-  --border: rgba(246, 233, 234, 0.09);
-  --border-strong: rgba(246, 233, 234, 0.18);
+  --bg: #0d0b06;
+  --bg-2: #110e08;
+  --surface-1: #18140b;
+  --surface-2: #1f1a0f;
+  --surface-3: #292213;
+  --border: rgba(245, 239, 223, 0.09);
+  --border-strong: rgba(245, 239, 223, 0.18);
   --highlight: rgba(255, 255, 255, 0.04);
-  --text: #f6e9ea;
-  --text-2: #d2bcbf;
-  --text-3: #9a7f83;
-  --accent: #e0344a;
-  --accent-2: #7a1424;
-  --accent-ink: #fff4f5;
-  --accent-rgb: 224, 52, 74;
+  --text: #f5efdf;
+  --text-2: #c9c0a8;
+  --text-3: #8f866f;
+  --accent: #e6b84a;
+  --accent-2: #8a6a1e;
+  --accent-ink: #1a1304;
+  --accent-rgb: 230, 184, 74;
   --up: #58d68d;
   --up-dim: rgba(88, 214, 141, 0.16);
-  --down: #ff8a5c;
-  --down-dim: rgba(255, 138, 92, 0.16);
+  --down: #ef5d5d;
+  --down-dim: rgba(239, 93, 93, 0.16);
   --warn: #f2b84b;
   --house: #b9a2ff;
   --backed: #e6b84a;
@@ -63,30 +63,30 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f8eff0;
-  --bg-2: #f2e6e7;
-  --surface-1: #fffafa;
-  --surface-2: #f8eced;
-  --surface-3: #eedcde;
-  --border: rgba(42, 14, 18, 0.1);
-  --border-strong: rgba(42, 14, 18, 0.2);
+  --bg: #f4efe6;
+  --bg-2: #efe8db;
+  --surface-1: #fffaf2;
+  --surface-2: #f7f0e3;
+  --surface-3: #ece2cf;
+  --border: rgba(36, 28, 18, 0.1);
+  --border-strong: rgba(36, 28, 18, 0.2);
   --highlight: rgba(255, 255, 255, 0.5);
-  --text: #2a0e12;
-  --text-2: #5e3a3f;
-  --text-3: #8f6a6f;
-  --accent: #b3203a;
-  --accent-2: #6e1020;
-  --accent-ink: #fff7f8;
-  --accent-rgb: 179, 32, 58;
+  --text: #241c12;
+  --text-2: #5a4e3c;
+  --text-3: #8b7d64;
+  --accent: #b8860b;
+  --accent-2: #6b5010;
+  --accent-ink: #fffaf2;
+  --accent-rgb: 184, 134, 11;
   --up: #1e9e5a;
   --up-dim: rgba(30, 158, 90, 0.14);
-  --down: #d4552a;
-  --down-dim: rgba(212, 85, 42, 0.14);
+  --down: #c93a3a;
+  --down-dim: rgba(201, 58, 58, 0.14);
   --house: #6b4fd8;
   --backed: #b8860b;
   --backed-ink: #fffaf2;
-  --shadow-1: 0 8px 24px rgba(42, 14, 18, 0.08);
-  --shadow-2: 0 18px 50px rgba(42, 14, 18, 0.14);
+  --shadow-1: 0 8px 24px rgba(36, 28, 18, 0.08);
+  --shadow-2: 0 18px 50px rgba(36, 28, 18, 0.14);
   color-scheme: light;
 }
 

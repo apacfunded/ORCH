@@ -101,7 +101,7 @@ function liveHeroChart(feed) {
     const particles = [];
     let raf = 0;
     let timer = 0;
-    const color = heroFeedConfig.coinMint ? "#e0344a" : (byId("gold")?.color ?? "#e6b84a");
+    const color = heroFeedConfig.coinMint ? "#e6b84a" : (byId("gold")?.color ?? "#e6b84a");
     const draw = () => {
         const dpr = Math.min(2, devicePixelRatio || 1);
         const w = canvas.clientWidth, hgt = canvas.clientHeight;
@@ -297,7 +297,7 @@ export function coinExplorer(initial, ctx, fixedCommodity) {
     };
     const boardSel = h("select", { id: "f-board", class: "chip-select", "aria-label": "Board" });
     if (!fixedCommodity) {
-        chips.appendChild(mkChip("all", "All", "#e0344a"));
+        chips.appendChild(mkChip("all", "All", "#e6b84a"));
         boardSel.appendChild(h("option", { value: "" }, "Board: any"));
         for (const [cat, label] of Object.entries(categoryLabel)) {
             const og = h("optgroup", { label });

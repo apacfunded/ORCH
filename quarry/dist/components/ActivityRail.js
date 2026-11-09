@@ -18,7 +18,7 @@ export function activityRail() {
     }, 5000);
     const off = market().subscribeActivity((ev) => {
         const com = byId(ev.commodityId);
-        const row = h(ev.coinMint ? "a" : "div", { class: "ev fresh", href: ev.coinMint ? href(`/coin/${ev.coinMint}`) : undefined, style: `--c:${com?.color ?? "#e0344a"}` }, svg(ICON[ev.kind], "ico"), h("span", null, ev.text), h("time", null, timeAgo(ev.ts)));
+        const row = h(ev.coinMint ? "a" : "div", { class: "ev fresh", href: ev.coinMint ? href(`/coin/${ev.coinMint}`) : undefined, style: `--c:${com?.color ?? "#e6b84a"}` }, svg(ICON[ev.kind], "ico"), h("span", null, ev.text), h("time", null, timeAgo(ev.ts)));
         list.prepend(row);
         times.set(row, ev.ts);
         window.setTimeout(() => row.classList.remove("fresh"), 1200);

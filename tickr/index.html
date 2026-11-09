@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tickr — pick a team, launch a coin</title>
+<title>Tickr — launch coins paired with stocks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600&family=Figtree:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -357,6 +357,17 @@ footer a:hover{color:var(--ink)}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
+<style>
+.pick-search{width:100%;height:46px;border-radius:12px;border:1.5px solid var(--line2);padding:0 14px;outline:none;font-size:16px;margin-top:14px}
+.pick-search:focus{border-color:var(--ink)}
+.pick-grid{max-height:min(52vh,460px);overflow-y:auto;padding:4px 6px 8px 2px}
+.pick .ptile{padding:12px 8px;gap:4px}.pick .ptile svg{width:56px;height:56px}.pick .ptile b{font-size:17px}.ptile .px{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.pgroup{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.chips .sep{flex:none;width:1px;background:var(--line);margin:4px 2px}
+.house .sub2{font-size:13px;color:var(--muted)}
+@media (max-width:980px){.pick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.pick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 
@@ -365,15 +376,15 @@ footer a:hover{color:var(--ink)}
     <a class="brand" href="#" id="brand"></a>
     <div class="navlinks">
       <a href="#" data-route="board">Board</a>
-      <a href="#teams" data-route="teams">Teams</a>
-      <a href="#burns" data-route="burns">Burns</a>
+      <a href="#pairs" data-route="pairs">Pairs</a>
+      <a href="#rewards" data-route="rewards">Rewards</a>
     </div>
-    <button class="searchbtn" id="openPal" aria-label="Search coins and teams"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="flex:none"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="st">Search coins</span><kbd>Ctrl K</kbd></button>
+    <button class="searchbtn" id="openPal" aria-label="Search coins and stocks"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="flex:none"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="st">Search</span><kbd>Ctrl K</kbd></button>
     <button class="btn btn-sm connect" data-soon>Connect wallet</button>
     <button class="btn btn-sm btn-ink" data-launch><span>Launch<span class="launch-lg"> a coin</span></span></button>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   </div>
-  <div class="mobile-menu"><a href="#">Board</a><a href="#teams">Teams</a><a href="#burns">Burns</a><button class="btn" style="width:100%;margin-top:14px" data-soon>Connect wallet</button></div>
+  <div class="mobile-menu"><a href="#">Board</a><a href="#pairs">Pairs</a><a href="#rewards">Rewards</a><button class="btn" style="width:100%;margin-top:14px" data-soon>Connect wallet</button></div>
 </nav>
 
 <main>
@@ -382,31 +393,31 @@ footer a:hover{color:var(--ink)}
   <div class="wrap">
     <section class="hero">
       <div>
-        <span class="pill"><span class="dot"></span>Every coin rides a stock</span>
-        <h1>Pick a team.<br><span class="hl">Launch a coin.</span></h1>
-        <p class="lede">Tickr has four house coins, each paired with a real tokenized stock. Every coin launched here pairs with one of them — so your coin rides its team, and its team rides the stock.</p>
+        <span class="pill"><span class="dot"></span>Every coin is paired with a stock</span>
+        <h1>Pick a stock.<br><span class="hl">Launch a coin.</span></h1>
+        <p class="lede">On Tickr, your coin doesn't trade against SOL — it trades against a tokenized stock you choose. It rides its own chart and the stock's, and holders get paid in that stock.</p>
         <div class="hero-ctas">
           <button class="btn btn-ink" data-launch>Launch a coin</button>
-          <button class="btn" onclick="document.getElementById('houses').scrollIntoView({behavior:'smooth'})">Meet the teams</button>
+          <button class="btn" onclick="document.getElementById('popular').scrollIntoView({behavior:'smooth'})">See the pairs</button>
         </div>
         <div class="hero-stats">
           <div><small>Coins launched</small><strong>1,284</strong></div>
-          <div><small>House coins burned</small><strong id="hBurn">$96.4K</strong></div>
+          <div><small>Paid to holders</small><strong id="hPaid">$96.4K</strong></div>
           <div><small>24h volume</small><strong id="hVol">$2.81M</strong></div>
         </div>
       </div>
-      <div class="stage" aria-label="The four house coins">
-        <div class="stage-cap"><b>The house coins</b><span class="note">tap one to launch on its team</span></div>
+      <div class="stage" aria-label="Popular pairs">
+        <div class="stage-cap"><b>Popular pairs</b><span class="note">tap one to launch with it</span></div>
         <div class="stage-row" id="stage"></div>
       </div>
     </section>
   </div>
 
-  <section class="sec alt" id="houses">
+  <section class="sec alt" id="popular">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="kicker">House coins</div><h2>Four teams. Each one rides a stock.</h2><p class="sub">House coins are memecoins paired with tokenized stocks. When the stock moves, the team moves — and every coin on the team feels it.</p></div>
-        <div class="legend"><span><i style="background:var(--ink)"></i>House coin</span><span><i class="q"></i>Its stock</span></div>
+        <div><div class="kicker">Pairs</div><h2>Trade against the stocks you know.</h2><p class="sub">Every coin picks one stock to pair with. When the stock moves, every coin paired with it feels it.</p></div>
+        <a class="btn" href="#pairs">All ${n} pairs</a>
       </div>
       <div class="houses" id="housesGrid"></div>
       <p class="note" style="margin-top:16px">Example data until launch</p>
@@ -415,10 +426,10 @@ footer a:hover{color:var(--ink)}
 
   <section class="sec">
     <div class="wrap">
-      <div class="sec-head"><div><div class="kicker">Team battle</div><h2>Who's winning today?</h2><p class="sub">Share of 24h volume across all coins on each team.</p></div><a class="btn" href="#teams">Full leaderboard</a></div>
+      <div class="sec-head"><div><div class="kicker">Pair battle</div><h2>Which stock is winning today?</h2><p class="sub">Share of 24h volume across all coins, by the stock they're paired with.</p></div><a class="btn" href="#pairs">Full leaderboard</a></div>
       <div class="battle">
         <div class="battle-bar" id="battleBar"></div>
-        <div class="tbl-wrap"><table class="rank"><thead><tr><th>Team</th><th>24h volume</th><th class="hide-sm">Coins</th><th class="hide-sm">Burned 24h</th><th>24h</th></tr></thead><tbody id="rankBody"></tbody></table></div>
+        <div class="tbl-wrap"><table class="rank"><thead><tr><th>Pair</th><th>24h volume</th><th class="hide-sm">Coins</th><th class="hide-sm">Paid 24h</th><th>Stock 24h</th></tr></thead><tbody id="rankBody"></tbody></table></div>
       </div>
     </div>
   </section>
@@ -432,7 +443,7 @@ footer a:hover{color:var(--ink)}
           <div class="seg" role="group" aria-label="Sort coins"><button aria-pressed="true" data-sort="trend">Trending</button><button aria-pressed="false" data-sort="new">Newest</button><button aria-pressed="false" data-sort="mcap">Market cap</button></div>
         </div>
       </div>
-      <div class="chips" id="chips" role="group" aria-label="Filter by team"></div>
+      <div class="chips" id="chips" role="group" aria-label="Filter by stock"></div>
       <div class="grid" id="grid"></div>
       <p class="note" style="margin-top:16px">Example data until launch</p>
     </div>
@@ -445,7 +456,7 @@ footer a:hover{color:var(--ink)}
       <div class="battle" style="margin-top:22px">
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><b style="font-family:var(--display);font-weight:600;font-size:20px">Where the 1% fee goes</b><span class="note">per trade, on every coin</span></div>
         <div class="fees"><i style="width:50%;background:var(--ink)"></i><i style="width:30%;background:var(--yellow)"></i><i style="width:20%;background:var(--line2)"></i></div>
-        <div class="legend" style="font-size:15px;gap:22px"><span><i style="background:var(--ink)"></i>0.5% buys back &amp; burns the team's house coin</span><span><i style="background:var(--yellow)"></i>0.3% to the coin creator</span><span><i style="background:var(--line2)"></i>0.2% platform</span></div>
+        <div class="legend" style="font-size:15px;gap:22px"><span><i style="background:var(--ink)"></i>0.5% to holders, paid in the paired stock</span><span><i style="background:var(--yellow)"></i>0.3% to the coin creator</span><span><i style="background:var(--line2)"></i>0.2% platform</span></div>
       </div>
     </div>
   </section>
@@ -454,50 +465,52 @@ footer a:hover{color:var(--ink)}
     <div class="wrap">
       <div class="sec-head"><div><div class="kicker">FAQ</div><h2>Questions</h2></div></div>
       <div class="faq">
-        <details><summary>What's a house coin?</summary><p>One of Tickr's four memecoins — $tSPY, $tNVDA, $tTSLA and $tXAI. Each one trades against a real tokenized stock. They're memecoins, not shares, and don't give you ownership of any company.</p></details>
-        <details><summary>Why does every coin have to pick a team?</summary><p>Your coin is priced in its house coin. Every buy of your coin is also a buy of the house coin, so teams grow together — and you get a stock's momentum under your meme.</p></details>
-        <details><summary>Do I need the stock or the house coin to buy?</summary><p>No. Pay with SOL and Tickr routes it through the stock and the house coin into your coin in one transaction.</p></details>
-        <details><summary>Where do fees go?</summary><p>0.5% of every trade buys back and burns the house coin your coin is paired with. 0.3% goes to the coin's creator, 0.2% to the platform.</p></details>
+        <details><summary>What does "paired with a stock" mean?</summary><p>Your coin's bonding curve and pool are priced in a tokenized stock instead of SOL. If the stock goes up, your coin is worth more in dollars too — on top of its own moves.</p></details>
+        <details><summary>Are these real shares?</summary><p>No. Coins on Tickr are memecoins. They trade against tokenized stocks, but they don't give you ownership of any company.</p></details>
+        <details><summary>Do I need the stock to buy a coin?</summary><p>No. Pay with SOL and Tickr routes it through the stock into the coin in one transaction.</p></details>
+        <details><summary>How do holder rewards work?</summary><p>0.5% of every trade is collected in the paired stock and paid to holders by bag size every 20 minutes. Hold an NVDAx coin, get paid in NVDAx.</p></details>
         <details><summary>Who can use Tickr?</summary><p>Tokenized stocks aren't available to US persons or in some other regions, so trading on Tickr isn't either. Check your local rules.</p></details>
       </div>
     </div>
   </section>
 </div>
 
-<!-- ============ TEAMS ============ -->
-<div class="page" id="p-teams">
+<!-- ============ PAIRS ============ -->
+<div class="page" id="p-pairs">
   <div class="wrap">
-    <div class="page-head"><div class="kicker">Teams</div><h2>The team leaderboard</h2><p class="sub">How each house coin and its coins are doing. Example data until launch.</p></div>
-    <div class="battle" style="margin-bottom:28px"><div class="battle-bar" id="battleBar2"></div><div class="tbl-wrap"><table class="rank"><thead><tr><th>Team</th><th>24h volume</th><th class="hide-sm">Coins</th><th class="hide-sm">Burned 24h</th><th>24h</th></tr></thead><tbody id="rankBody2"></tbody></table></div></div>
+    <div class="page-head"><div class="kicker">Pairs</div><h2>Every stock you can pair with</h2><p class="sub">Volume, coins and rewards for each pair. Example data until launch.</p></div>
+    <div class="battle" style="margin-bottom:28px"><div class="battle-bar" id="battleBar2"></div><div class="tbl-wrap"><table class="rank"><thead><tr><th>Pair</th><th>24h volume</th><th class="hide-sm">Coins</th><th class="hide-sm">Paid 24h</th><th>Stock 24h</th></tr></thead><tbody id="rankBody2"></tbody></table></div></div>
     <div class="team-cards" id="teamCards"></div>
   </div>
 </div>
 
-<!-- ============ BURNS ============ -->
-<div class="page" id="p-burns">
+<!-- ============ REWARDS ============ -->
+<div class="page" id="p-rewards">
   <div class="wrap">
-    <div class="page-head"><div class="kicker">Burns</div><h2>Every trade burns a house coin.</h2><p class="sub">0.5% of all volume buys back the paired house coin and burns it. Example data until launch.</p></div>
-    <div class="kpis" id="burnKpis"></div>
+    <div class="page-head"><div class="kicker">Rewards</div><h2>Hold a coin, get paid in its stock.</h2><p class="sub">0.5% of every trade goes to holders in the paired stock, every 20 minutes. Example data until launch.</p></div>
+    <div class="kpis" id="rKpis"></div>
     <div class="twocol">
-      <div class="panel"><div class="panel-head"><h3>Burned per day</h3><span class="note">Last 30 days, USD</span></div><div style="padding:16px 20px"><canvas id="burnChart"></canvas></div><div class="legend" style="padding:0 20px 18px" id="burnLegend"></div></div>
-      <div class="panel"><div class="panel-head"><h3>Burn log</h3><span class="dot" aria-hidden="true"></span></div><div id="burnLog"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Paid to holders per day</h3><span class="note">Last 30 days, USD</span></div><div style="padding:16px 20px"><canvas id="payChart"></canvas></div><div class="legend" style="padding:0 20px 18px" id="payLegend"></div></div>
+      <div>
+        <div class="panel"><div class="panel-head"><h3>Your rewards</h3></div><div style="padding:20px"><small style="color:var(--dim)">Claimable</small><div class="num" style="font-size:34px;font-weight:500;margin:4px 0">$0.00</div><p style="color:var(--muted);font-size:15px;margin-bottom:16px">Connect a wallet to see rewards from every Tickr coin you hold.</p><button class="btn btn-ink" style="width:100%" data-soon>Connect wallet</button></div></div>
+        <div class="panel"><div class="panel-head"><h3>Payout log</h3><span class="dot" aria-hidden="true"></span></div><div id="payLog"></div></div>
+      </div>
     </div>
   </div>
 </div>
 </main>
 
-<footer><div class="wrap"><span>© 2026 Tickr · House coins are memecoins, not securities, and can go to zero. Not available to US persons. Not financial advice.</span><span><a href="#">X</a> · <a href="#">Docs</a> · <a href="#">Terms</a></span></div></footer>
+<footer><div class="wrap"><span>© 2026 Tickr · Coins on Tickr are memecoins, not securities, and can go to zero. Not available to US persons. Not financial advice.</span><span><a href="#">X</a> · <a href="#">Docs</a> · <a href="#">Terms</a></span></div></footer>
 
-<!-- drawer -->
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-label="Coin details" aria-hidden="true"><div class="dr-head" id="drHead"></div><div class="dr-body" id="drBody"></div></aside>
 
-<!-- launch -->
 <div class="modal" id="launch" role="dialog" aria-modal="true" aria-labelledby="lTitle" aria-hidden="true">
   <div class="modal-box">
-    <div class="modal-head"><h3 id="lTitle">Pick your team</h3><div class="stepper" aria-hidden="true"><i id="st1" class="on"></i><i id="st2"></i></div><button class="x" data-close aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-head"><h3 id="lTitle">Pick your pair</h3><div class="stepper" aria-hidden="true"><i id="st1" class="on"></i><i id="st2"></i></div><button class="x" data-close aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div id="lStep1" class="pick">
-      <p style="color:var(--muted)">Your coin will trade against this house coin, and its fees will burn it. You can't change teams later.</p>
+      <p style="color:var(--muted)">Your coin will trade against this stock, and holders get paid in it. You can't change it later.</p>
+      <input class="pick-search" id="pickSearch" placeholder="Search stocks — NVDA, Tesla, gold…" autocomplete="off" aria-label="Search stocks">
       <div class="pick-grid" id="pickGrid"></div>
       <div class="pick-foot"><button class="btn btn-ink" id="toStep2">Continue</button></div>
     </div>
@@ -516,50 +529,55 @@ footer a:hover{color:var(--ink)}
       <div class="lprev">
         <span class="note">Preview — how it shows on the board</span>
         <div id="lPrev"></div>
-        <dl class="pdl"><dt>Supply</dt><dd>1,000,000,000</dd><dt>Paired with</dt><dd id="pvQ">$tNVDA</dd><dt>Which rides</dt><dd id="pvS">NVDAx</dd><dt>Fees burn</dt><dd id="pvB">$tNVDA</dd></dl>
+        <dl class="pdl"><dt>Supply</dt><dd>1,000,000,000</dd><dt>Paired with</dt><dd id="pvQ">NVDAx</dd><dt>Holders paid in</dt><dd id="pvR">NVDAx</dd><dt>Graduates at</dt><dd id="pvG">—</dd></dl>
       </div>
     </div>
   </div>
 </div>
 
-<!-- palette -->
 <div class="pal" id="pal" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
-  <div class="pal-box"><input id="palIn" placeholder="Search coins or teams — or: launch COPE nvda" autocomplete="off"><div class="pal-list" id="palList" role="listbox"></div><div class="pal-hint">↑↓ move · Enter open · Esc close</div></div>
+  <div class="pal-box"><input id="palIn" placeholder="Search coins or stocks — or: launch COPE nvda" autocomplete="off"><div class="pal-list" id="palList" role="listbox"></div><div class="pal-hint">↑↓ move · Enter open · Esc close</div></div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ===== characters ===== */
-const TEAMS=[
- {k:'spy',t:'tSPY',name:'Team SPY',stock:'SPYx',sn:'S&P 500',c:'#3f6bff',light:'#e8eeff',px:0.0218,sp:688.3,vibe:'The calm one'},
- {k:'nvda',t:'tNVDA',name:'Team NVDA',stock:'NVDAx',sn:'NVIDIA',c:'#2fbf5b',light:'#e5f7ea',px:0.0481,sp:188.4,vibe:'The GPU maxi'},
- {k:'tsla',t:'tTSLA',name:'Team TSLA',stock:'TSLAx',sn:'Tesla',c:'#ff5246',light:'#ffeceb',px:0.0337,sp:412.1,vibe:'The wild one'},
- {k:'xai',t:'tXAI',name:'Team XAI',stock:'XAI',sn:'xAI pre-IPO',c:'#8a63ff',light:'#f0ebff',px:0.0612,sp:41.7,vibe:'The hype one'},
+/* ===== stocks ===== */
+const CATS=[['stock','Stocks'],['etf','ETFs'],['preipo','Pre-IPO'],['commodity','Commodities']];
+const PAIRS=[
+ {s:'NVDAx',n:'NVIDIA',cat:'stock',c:'#2fbf5b',light:'#e5f7ea',px:188.4,v:1},
+ {s:'TSLAx',n:'Tesla',cat:'stock',c:'#ff5246',light:'#ffeceb',px:412.1,v:2},
+ {s:'SPYx',n:'S&P 500',cat:'etf',c:'#3f6bff',light:'#e8eeff',px:688.3,v:0},
+ {s:'OPENAI',n:'OpenAI',cat:'preipo',c:'#10a37f',light:'#e3f6f0',px:1.92,v:3},
+ {s:'QQQx',n:'Nasdaq 100',cat:'etf',c:'#06b6d4',light:'#e0f7fb',px:612.0,v:0},
+ {s:'AAPLx',n:'Apple',cat:'stock',c:'#64748b',light:'#eef1f5',px:261.8,v:3},
+ {s:'METAx',n:'Meta',cat:'stock',c:'#6366f1',light:'#ececfe',px:742.7,v:1},
+ {s:'MSTRx',n:'Strategy',cat:'stock',c:'#f97316',light:'#fff0e5',px:296.2,v:2},
+ {s:'GMEx',n:'GameStop',cat:'stock',c:'#ec4899',light:'#fde9f3',px:24.9,v:2},
+ {s:'XAI',n:'xAI',cat:'preipo',c:'#8a63ff',light:'#f0ebff',px:41.7,v:3},
+ {s:'SPACEX',n:'SpaceX',cat:'preipo',c:'#334155',light:'#e9edf2',px:3.4,v:1},
+ {s:'GLDx',n:'Gold',cat:'commodity',c:'#eab308',light:'#fdf6dc',px:381.2,v:0},
 ];
-const TM=Object.fromEntries(TEAMS.map(t=>[t.k,t]));
-function face(k,id=''){
-  const t=TM[k],c=t.c,I='#141414';
-  const base=`<circle cx="50" cy="54" r="40" fill="${c}" stroke="${I}" stroke-width="4"/><circle cx="50" cy="54" r="31" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3.5"/><ellipse cx="32" cy="64" rx="5.5" ry="3.5" fill="#fff" opacity=".35"/><ellipse cx="68" cy="64" rx="5.5" ry="3.5" fill="#fff" opacity=".35"/>`;
-  const parts={
-    spy:`<circle cx="39" cy="50" r="5" fill="${I}"/><circle cx="61" cy="50" r="5" fill="${I}"/><circle cx="40.5" cy="48.5" r="1.6" fill="#fff"/><circle cx="62.5" cy="48.5" r="1.6" fill="#fff"/><path d="M42 64q8 6 16 0" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`,
-    nvda:`<rect x="27" y="43" width="20" height="12" rx="5" fill="${I}"/><rect x="53" y="43" width="20" height="12" rx="5" fill="${I}"/><path d="M47 48h6" stroke="${I}" stroke-width="3.5"/><rect x="31" y="45.5" width="6" height="2.5" rx="1.2" fill="#fff" opacity=".7"/><path d="M41 65q9 5 18-2" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`,
-    tsla:`<circle cx="39" cy="50" r="5.5" fill="${I}"/><path d="M56 51q5-5 10 0" fill="none" stroke="${I}" stroke-width="3.8" stroke-linecap="round"/><circle cx="40.5" cy="48.5" r="1.7" fill="#fff"/><path d="M40 62q10 12 20 0z" fill="${I}"/><path d="M76 16l-7 12h6l-5 11" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`,
-    xai:`<path d="M33 51q6-6 12 0M55 51q6-6 12 0" fill="none" stroke="${I}" stroke-width="3.8" stroke-linecap="round"/><path d="M42 63q8 7 16 0" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/><path d="M80 14l2.5 6.5 6.5 2.5-6.5 2.5L80 32l-2.5-6.5-6.5-2.5 6.5-2.5z" fill="${I}"/>`
-  };
-  return `<svg viewBox="0 0 100 100" aria-hidden="true">${base}${parts[k]}</svg>`;
-}
+const PM=Object.fromEntries(PAIRS.map(p=>[p.s,p]));
+const PARTS=[
+ I=>`<circle cx="39" cy="50" r="5" fill="${I}"/><circle cx="61" cy="50" r="5" fill="${I}"/><circle cx="40.5" cy="48.5" r="1.6" fill="#fff"/><circle cx="62.5" cy="48.5" r="1.6" fill="#fff"/><path d="M42 64q8 6 16 0" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`,
+ I=>`<rect x="27" y="43" width="20" height="12" rx="5" fill="${I}"/><rect x="53" y="43" width="20" height="12" rx="5" fill="${I}"/><path d="M47 48h6" stroke="${I}" stroke-width="3.5"/><rect x="31" y="45.5" width="6" height="2.5" rx="1.2" fill="#fff" opacity=".7"/><path d="M41 65q9 5 18-2" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`,
+ I=>`<circle cx="39" cy="50" r="5.5" fill="${I}"/><path d="M56 51q5-5 10 0" fill="none" stroke="${I}" stroke-width="3.8" stroke-linecap="round"/><circle cx="40.5" cy="48.5" r="1.7" fill="#fff"/><path d="M40 62q10 12 20 0z" fill="${I}"/>`,
+ I=>`<path d="M33 51q6-6 12 0M55 51q6-6 12 0" fill="none" stroke="${I}" stroke-width="3.8" stroke-linecap="round"/><path d="M42 63q8 7 16 0" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`
+];
+function face(s){const p=PM[s],I='#141414';return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="54" r="40" fill="${p.c}" stroke="${I}" stroke-width="4"/><circle cx="50" cy="54" r="31" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3.5"/><ellipse cx="32" cy="64" rx="5.5" ry="3.5" fill="#fff" opacity=".35"/><ellipse cx="68" cy="64" rx="5.5" ry="3.5" fill="#fff" opacity=".35"/>${PARTS[p.v](I)}</svg>`}
 const LOGO=`<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="6" y="6" width="88" height="88" rx="24" fill="#ffd23f" stroke="#141414" stroke-width="6"/><polyline points="24 64 42 46 56 58 76 36" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="62 36 76 36 76 50" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 document.getElementById('brand').innerHTML=LOGO+'Tickr';
+document.querySelector('a[href="#pairs"].btn').textContent=`All ${PAIRS.length} pairs`;
 
 /* ===== data ===== */
 function rw(n,vol,drift){const a=[1];for(let i=1;i<n;i++)a.push(a[i-1]*(1+(Math.random()-.5+drift)*vol));return a}
-TEAMS.forEach(t=>{t.ss=rw(96,.012,.02);t.hs=t.ss.map((v,i)=>Math.pow(v,1.8)*(1+(Math.random()-.5)*.012));t.chg=(t.hs.at(-1)/t.hs[0]-1)*100;t.burn=Math.random()*9000+4000;t.vol=0;t.coins=0});
-const NAMES=[['GPU Rich','GPURICH','nvda'],['Cybertruck Dog','CYBERDOG','tsla'],['Index Frog','IDXFROG','spy'],['Grok Cat','GROKCAT','xai'],['Jensen\'s Jacket','JACKET','nvda'],['Mars Cope','MARS','tsla'],['Boring Bull','BBULL','spy'],['Colossus','COLOSS','xai'],['Leather Inu','LEATHER','nvda'],['Elon\'s Doge','EDOGE','tsla'],['Dollar Cost','DCA','spy'],['Truth Seeker','SEEKER','xai'],['H100 Hamster','HAMSTER','nvda'],['Roadster','ROADSTR','tsla'],['Boomer Coin','BOOMER','spy'],['Ani Bot','ANI','xai'],['Blackwell','BWELL','nvda'],['Optimus Prime Inu','OPTI','tsla'],['Dividend Dog','DIVDOG','spy'],['Memphis Mode','MEMPHIS','xai']];
+PAIRS.forEach(p=>{p.ss=rw(96,p.cat==='preipo'?.02:.012,.02);p.chg=(p.ss.at(-1)/p.ss[0]-1)*100;p.paid=Math.random()*9000+2500});
+const NAMES=[['GPU Rich','GPURICH','NVDAx'],['Cybertruck Dog','CYBERDOG','TSLAx'],['Index Frog','IDXFROG','SPYx'],['Sam\'s Cat','SAMCAT','OPENAI'],['Jensen\'s Jacket','JACKET','NVDAx'],['Mars Cope','MARS','SPACEX'],['Boring Bull','BBULL','SPYx'],['Grok Cat','GROKCAT','XAI'],['Leather Inu','LEATHER','NVDAx'],['Elon\'s Doge','EDOGE','TSLAx'],['Tech Bro','TECHBRO','QQQx'],['iChud','ICHUD','AAPLx'],['Zuck Lizard','LIZARD','METAx'],['Saylor Moon','SAYLOR','MSTRx'],['Roaring Kitty','KITTY','GMEx'],['RuneScape Gold','GP','GLDx'],['Roadster','ROADSTR','TSLAx'],['Boomer Coin','BOOMER','SPYx'],['Colossus','COLOSS','XAI'],['Diamond Hands','DIAMOND','GMEx'],['Mag 7 Inu','MAG7','QQQx'],['Starship','SHIP','SPACEX'],['AGI Soon','AGI','OPENAI'],['Blackwell','BWELL','NVDAx']];
 const PAL=['#ffd23f','#ffb3c7','#a8e6ff','#c4f5a8','#ffcf99','#d9c8ff','#b8f0e0','#ffe0a3'];
-let coins=NAMES.map(([n,t,k],i)=>{const tm=TM[k];const own=rw(96,.065,.035);const series=own.map((v,j)=>v*Math.pow(tm.hs[j],1.6));const mcap=Math.exp(Math.random()*4+11.3);
-  return {n,t,k,series,mcap,usd:mcap/1e9,vol:mcap*(.03+Math.random()*.15),chg:(series.at(-1)/series[0]-1)*100,holders:(Math.random()*2800+90)|0,age:i*9+(Math.random()*8|0),bg:PAL[i%PAL.length],img:null}});
+let coins=NAMES.map(([n,t,s],i)=>{const p=PM[s];const own=rw(96,.065,.035);const series=own.map((v,j)=>v*Math.pow(p.ss[j],2));const mcap=Math.exp(Math.random()*4+11.3);
+  return {n,t,s,series,mcap,usd:mcap/1e9,vol:mcap*(.03+Math.random()*.15),chg:(series.at(-1)/series[0]-1)*100,holders:(Math.random()*2800+90)|0,age:i*9+(Math.random()*8|0),bg:PAL[i%PAL.length],img:null}});
 const byT=t=>coins.find(c=>c.t===t);
-function teamAgg(){TEAMS.forEach(t=>{const l=coins.filter(c=>c.k===t.k);t.coins=l.length*61+(t.k.length*13);t.vol=l.reduce((s,c)=>s+c.vol,0)})}
+function agg(){PAIRS.forEach(p=>{const l=coins.filter(c=>c.s===p.s);p.coins=l.length*37+p.s.length*11;p.vol=l.reduce((a,c)=>a+c.vol,0)+p.px*900})}
 
 /* ===== helpers ===== */
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -567,9 +585,10 @@ const usd=v=>v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K'
 const small=v=>{if(v>=1)return v.toFixed(2);if(v>=.001)return v.toFixed(4);const z=Math.floor(-Math.log10(v));return `0.0<sub style="font-size:.7em">${z}</sub>${(v*Math.pow(10,z+3)).toFixed(0)}`};
 const pct=v=>`<span class="${v>=0?'up':'down'}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const av=(c,s)=>c.img?`<span class="av av-${s}" style="background:url(${c.img}) center/cover"></span>`:`<span class="av av-${s}" style="background:${c.bg}">${esc((c.t||'?')[0])}</span>`;
-const tbadge=k=>{const t=TM[k];return `<span class="tbadge" style="background:${t.light};color:${t.c}">${face(k)}${t.name}</span>`};
+const av=(c,sz)=>c.img?`<span class="av av-${sz}" style="background:url(${c.img}) center/cover"></span>`:`<span class="av av-${sz}" style="background:${c.bg}">${esc((c.t||'?')[0])}</span>`;
+const pbadge=s=>{const p=PM[s];return `<span class="tbadge" style="background:${p.light};color:${p.c}">${face(s)}${p.s}</span>`};
 function toast(m){const el=$('#toast');el.textContent=m;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2800)}
+const catName=k=>CATS.find(c=>c[0]===k)[1];
 
 /* ===== charts ===== */
 function line(cv,a,b,color,opt={}){
@@ -584,136 +603,142 @@ function line(cv,a,b,color,opt={}){
   x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=color;x.lineWidth=opt.lw||2.2;x.lineJoin='round';x.lineCap='round';x.stroke();
   if(opt.dot){x.beginPath();x.arc(X(a.length-1),Y(a.at(-1)),4.5,0,7);x.fillStyle='#fff';x.fill();x.lineWidth=2.5;x.strokeStyle=color;x.stroke()}
 }
-function stacked(cv,days){
+const TOP=['NVDAx','TSLAx','SPYx','OPENAI'];
+function stacked(cv,days,keys){
   const dpr=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;if(!w)return;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
   const tot=days.map(d=>d.reduce((a,b)=>a+b,0)),mx=Math.max(...tot),bw=w/days.length;
   x.strokeStyle='#efeee9';for(let i=0;i<=4;i++){x.beginPath();x.moveTo(0,h*i/4);x.lineTo(w,h*i/4);x.stroke()}
-  days.forEach((d,i)=>{let y=h;d.forEach((v,j)=>{const bh=v/mx*(h-6);x.fillStyle=TEAMS[j].c;x.fillRect(i*bw+bw*.18,y-bh,bw*.64,bh);y-=bh});
-    x.strokeStyle='#141414';x.lineWidth=1.2;x.strokeRect(i*bw+bw*.18,y,bw*.64,h-y)});
+  days.forEach((d,i)=>{let y=h;d.forEach((v,j)=>{const bh=v/mx*(h-6);x.fillStyle=keys[j]?PM[keys[j]].c:'#d9d8d2';x.fillRect(i*bw+bw*.18,y-bh,bw*.64,bh);y-=bh});x.strokeStyle='#141414';x.lineWidth=1.2;x.strokeRect(i*bw+bw*.18,y,bw*.64,h-y)});
 }
 
-/* ===== hero stage ===== */
-$('#stage').innerHTML=TEAMS.map(t=>`<button class="char" data-team="${t.k}" aria-label="Launch on ${t.name}"><span class="face">${face(t.k)}</span><span class="shadow"></span><span class="pedestal"><b>$${t.t}</b><span>rides ${t.stock}</span></span></button>`).join('');
-$('#stage').addEventListener('click',e=>{const b=e.target.closest('[data-team]');if(b)openLaunch(b.dataset.team,2)});
+/* ===== hero ===== */
+$('#stage').innerHTML=TOP.map(s=>{const p=PM[s];return `<button class="char" data-pair="${s}" aria-label="Launch a coin paired with ${p.s}"><span class="face">${face(s)}</span><span class="shadow"></span><span class="pedestal"><b>${p.s}</b><span>${p.n}</span></span></button>`}).join('');
+$('#stage').addEventListener('click',e=>{const b=e.target.closest('[data-pair]');if(b)openLaunch(b.dataset.pair,2)});
 
-/* ===== houses ===== */
-function renderHouses(){
-  $('#housesGrid').innerHTML=TEAMS.map(t=>`<div class="house" data-house="${t.k}" tabindex="0" role="button" aria-label="Show ${t.name} coins">
-   <div class="house-top">${face(t.k)}<div class="meta"><b>$${t.t}</b><span>${t.vibe} · rides ${t.stock}</span></div></div>
-   <div class="px"><strong>$${t.px.toFixed(4)}</strong>${pct(t.chg)}</div>
-   <canvas data-hc="${t.k}"></canvas>
-   <dl><dt>${t.stock}</dt><dd>$${t.sp.toFixed(2)}</dd><dt>Coins on team</dt><dd>${t.coins}</dd><dt>Burned 24h</dt><dd>${usd(t.burn)}</dd></dl>
-   <button class="btn btn-team" style="background:${t.c}" data-launch-team="${t.k}">Launch on ${t.name}</button></div>`).join('');
-  $$('canvas[data-hc]').forEach(cv=>{const t=TM[cv.dataset.hc];line(cv,t.hs.slice(-60),t.ss.slice(-60),t.c,{dot:true})});
+/* ===== popular ===== */
+function renderPopular(){
+  const top=[...PAIRS].sort((a,b)=>b.vol-a.vol).slice(0,4);
+  $('#housesGrid').innerHTML=top.map(p=>`<div class="house" data-house="${p.s}" tabindex="0" role="button" aria-label="Show coins paired with ${p.s}">
+   <div class="house-top">${face(p.s)}<div class="meta"><b>${p.s}</b><span>${p.n} · ${catName(p.cat)}</span></div></div>
+   <div class="px"><strong>$${p.px.toFixed(2)}</strong>${pct(p.chg)}</div>
+   <canvas data-hc="${p.s}"></canvas>
+   <dl><dt>Coins paired</dt><dd>${p.coins}</dd><dt>24h volume</dt><dd>${usd(p.vol)}</dd><dt>Paid to holders 24h</dt><dd>${usd(p.paid)}</dd></dl>
+   <button class="btn btn-team" style="background:${p.c}" data-launch-pair="${p.s}">Launch on ${p.s}</button></div>`).join('');
+  $$('canvas[data-hc]').forEach(cv=>{const p=PM[cv.dataset.hc];line(cv,p.ss.slice(-60),null,p.c,{dot:true})});
 }
-$('#housesGrid').addEventListener('click',e=>{const lb=e.target.closest('[data-launch-team]');if(lb){e.stopPropagation();openLaunch(lb.dataset.launchTeam,2);return}
-  const h=e.target.closest('[data-house]');if(h){team=h.dataset.house;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})}});
-$('#housesGrid').addEventListener('keydown',e=>{const h=e.target.closest('[data-house]');if(h&&e.key==='Enter'&&e.target===h){team=h.dataset.house;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})}});
+function filterTo(s){qf=s;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})}
+$('#housesGrid').addEventListener('click',e=>{const lb=e.target.closest('[data-launch-pair]');if(lb){openLaunch(lb.dataset.launchPair,2);return}const h=e.target.closest('[data-house]');if(h)filterTo(h.dataset.house)});
+$('#housesGrid').addEventListener('keydown',e=>{const h=e.target.closest('[data-house]');if(h&&e.key==='Enter'&&e.target===h)filterTo(h.dataset.house)});
 
 /* ===== battle ===== */
-function renderBattle(barSel,bodySel){
-  const tot=TEAMS.reduce((s,t)=>s+t.vol,0);const sorted=[...TEAMS].sort((a,b)=>b.vol-a.vol);
-  $(barSel).innerHTML=TEAMS.map(t=>{const p=t.vol/tot*100;return `<div style="flex-basis:${p}%;background:${t.c}" title="${t.name} ${p.toFixed(0)}%">${face(t.k)}<span class="lbl">${p.toFixed(0)}%</span></div>`}).join('');
-  $(bodySel).innerHTML=sorted.map((t,i)=>`<tr><td><span class="team"><span class="pos">${i+1}</span>${face(t.k)}${t.name}</span></td><td>${usd(t.vol)}</td><td class="hide-sm">${t.coins}</td><td class="hide-sm">${usd(t.burn)}</td><td>${pct(t.chg)}</td></tr>`).join('');
+function renderBattle(barSel,bodySel,all){
+  const sorted=[...PAIRS].sort((a,b)=>b.vol-a.vol),tot=sorted.reduce((a,p)=>a+p.vol,0);
+  const top=sorted.slice(0,5),rest=sorted.slice(5).reduce((a,p)=>a+p.vol,0);
+  $(barSel).innerHTML=top.map(p=>{const q=p.vol/tot*100;return `<div style="flex-basis:${q}%;background:${p.c}" title="${p.s} ${q.toFixed(0)}%">${face(p.s)}<span class="lbl">${q.toFixed(0)}%</span></div>`}).join('')+`<div style="flex-basis:${rest/tot*100}%;background:#d9d8d2;color:var(--ink)"><span class="lbl">Others ${(rest/tot*100).toFixed(0)}%</span></div>`;
+  $(bodySel).innerHTML=(all?sorted:top).map((p,i)=>`<tr><td><span class="team"><span class="pos">${i+1}</span>${face(p.s)}${p.s}</span></td><td>${usd(p.vol)}</td><td class="hide-sm">${p.coins}</td><td class="hide-sm">${usd(p.paid)}</td><td>${pct(p.chg)}</td></tr>`).join('');
 }
 
 /* ===== board ===== */
-let team='all',sort='trend',text='';
+let cat='all',qf=null,sort='trend',text='';
 function renderChips(){
-  $('#chips').innerHTML=`<button class="chip all" data-t="all" aria-pressed="${team==='all'}">All teams <span class="ct">${coins.length}</span></button>`+TEAMS.map(t=>`<button class="chip" data-t="${t.k}" aria-pressed="${team===t.k}">${face(t.k)}${t.name}<span class="ct">${coins.filter(c=>c.k===t.k).length}</span></button>`).join('');
+  const top=[...PAIRS].sort((a,b)=>b.vol-a.vol).slice(0,6);
+  $('#chips').innerHTML=`<button class="chip all" data-cat="all" aria-pressed="${cat==='all'&&!qf}">All <span class="ct">${coins.length}</span></button>`+
+   CATS.map(([k,l])=>`<button class="chip all" data-cat="${k}" aria-pressed="${cat===k&&!qf}">${l}<span class="ct">${coins.filter(c=>PM[c.s].cat===k).length}</span></button>`).join('')+
+   `<span class="sep"></span>`+top.map(p=>`<button class="chip" data-q="${p.s}" aria-pressed="${qf===p.s}">${face(p.s)}${p.s}<span class="ct">${coins.filter(c=>c.s===p.s).length}</span></button>`).join('')+
+   (qf&&!top.find(p=>p.s===qf)?`<button class="chip" data-q="${qf}" aria-pressed="true">${face(qf)}${qf}</button>`:'');
 }
-$('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;team=b.dataset.t;renderChips();renderGrid()});
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;if(b.dataset.q){qf=qf===b.dataset.q?null:b.dataset.q;cat='all'}else{cat=b.dataset.cat;qf=null}renderChips();renderGrid()});
 $$('[data-sort]').forEach(b=>b.addEventListener('click',()=>{sort=b.dataset.sort;$$('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderGrid()}));
 $('#filterIn').addEventListener('input',e=>{text=e.target.value.trim().toLowerCase();renderGrid()});
-function cardHTML(c,fl=''){return `<button class="card ${fl}" data-coin="${esc(c.t)}" aria-label="${esc(c.n)}, ${TM[c.k].name}">
+function cardHTML(c,fl=''){return `<button class="card ${fl}" data-coin="${esc(c.t)}" aria-label="${esc(c.n)}, paired with ${c.s}">
  <div class="card-top">${av(c,46)}<div class="meta"><div class="nm">${esc(c.n)}</div><div class="tk">$${esc(c.t)}</div></div><div class="mc"><b>${usd(c.mcap)}</b><span>mkt cap</span></div></div>
  <canvas data-sp="${esc(c.t)}"></canvas>
- <div class="card-foot">${tbadge(c.k)}<span class="chg">${pct(c.chg)}</span></div></button>`}
+ <div class="card-foot">${pbadge(c.s)}<span class="chg">${pct(c.chg)}</span></div></button>`}
 function renderGrid(fl={}){
-  let l=coins.filter(c=>(team==='all'||c.k===team)&&(!text||c.n.toLowerCase().includes(text)||c.t.toLowerCase().includes(text)));
+  let l=coins.filter(c=>(cat==='all'||PM[c.s].cat===cat)&&(!qf||c.s===qf)&&(!text||c.n.toLowerCase().includes(text)||c.t.toLowerCase().includes(text)||c.s.toLowerCase().includes(text)));
   l.sort((a,b)=>sort==='new'?a.age-b.age:sort==='mcap'?b.mcap-a.mcap:b.chg-a.chg);
-  $('#grid').innerHTML=l.length?l.map(c=>cardHTML(c,fl[c.t]||'')).join(''):`<div class="empty"><b>Nothing here yet</b>Be the first coin on this team.<div style="margin-top:16px"><button class="btn btn-ink" data-launch>Launch a coin</button></div></div>`;
-  $$('canvas[data-sp]').forEach(cv=>{const c=byT(cv.dataset.sp);line(cv,c.series.slice(-48),null,TM[c.k].c,{pad:3,lw:2})});
+  $('#grid').innerHTML=l.length?l.map(c=>cardHTML(c,fl[c.t]||'')).join(''):`<div class="empty"><b>No coins on this pair yet</b>Be the first to launch one.<div style="margin-top:16px"><button class="btn btn-ink" data-launch-q="${qf||''}">Launch a coin</button></div></div>`;
+  $$('canvas[data-sp]').forEach(cv=>{const c=byT(cv.dataset.sp);line(cv,c.series.slice(-48),PM[c.s].ss.slice(-48),PM[c.s].c,{pad:3,lw:2})});
 }
-$('#grid').addEventListener('click',e=>{const c=e.target.closest('[data-coin]');if(c)openCoin(c.dataset.coin)});
+$('#grid').addEventListener('click',e=>{const q=e.target.closest('[data-launch-q]');if(q){openLaunch(q.dataset.launchQ||null,q.dataset.launchQ?2:1);return}const c=e.target.closest('[data-coin]');if(c)openCoin(c.dataset.coin)});
 
 /* ===== steps ===== */
 $('#steps').innerHTML=[
- ['1','Pick a team',`Choose a house coin. Your coin will trade against it — and ride its stock.`,`${face('spy')}${face('nvda')}${face('tsla')}${face('xai')}`],
- ['2','Launch your coin',`Name, ticker, image. 1B supply on a bonding curve priced in your team's house coin.`,`<span class="av av-52" style="background:#ffd23f;width:62px;height:62px;font-size:26px">C</span><span class="arrow">→</span>${face('nvda')}`],
- ['3','Every trade burns',`Buyers pay in SOL. 0.5% of each trade buys back and burns your team's house coin.`,`<span class="num" style="font-size:15px;padding:6px 10px;border:1.5px solid #141414;border-radius:10px;background:#fff">SOL</span><span class="arrow">→</span>${face('tsla')}<span style="font-size:30px">🔥</span>`],
+ ['1','Pick a stock',`Choose what your coin trades against — NVDA, Tesla, the S&P 500, OpenAI, gold and more.`,TOP.map(face).join('')],
+ ['2','Launch your coin',`Name, ticker, image. 1B supply on a bonding curve priced in your stock.`,`<span class="av av-52" style="background:#ffd23f;width:58px;height:58px;font-size:24px">C</span><span class="arrow">/</span>${face('NVDAx')}`],
+ ['3','Get paid in the stock',`Buyers pay in SOL. 0.5% of every trade is paid to holders in the paired stock.`,`<span class="num" style="font-size:15px;padding:6px 10px;border:1.5px solid #141414;border-radius:10px;background:#fff">SOL</span><span class="arrow">→</span>${face('TSLAx')}<span class="arrow">→</span><span class="num" style="font-size:15px;padding:6px 10px;border:1.5px solid #141414;border-radius:10px;background:#ffd23f">you</span>`],
 ].map(([n,h,p,ill])=>`<div class="step"><div class="ill">${ill}</div><div class="n">Step ${n}</div><h3>${h}</h3><p>${p}</p></div>`).join('');
-$$('.step .ill svg').forEach((s,i,a)=>{if(s.closest('.step')===$$('.step')[0]){s.style.width='48px';s.style.height='48px'}});
+$$('.step')[0].querySelectorAll('svg').forEach(s=>{s.style.width='48px';s.style.height='48px'});
+$$('.step')[1].querySelector('svg').style.cssText='width:58px;height:58px';
 
 /* ===== drawer ===== */
 let openT=null,side='buy',lastFocus=null,tf=96;
 const W=()=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';let s='';for(let i=0;i<4;i++)s+=a[Math.random()*a.length|0];return s+'…'+a[Math.random()*a.length|0]+a[Math.random()*a.length|0]};
-function tradeRow(c){const b=Math.random()>.4;return `<div class="row-s"><span class="${b?'up':'down'}" style="width:42px">${b?'BUY':'SELL'}</span><span>${W()}</span><span class="r">${(Math.random()*900+20).toFixed(0)} $${TM[c.k].t}</span></div>`}
+function tradeRow(c){const b=Math.random()>.4,p=PM[c.s];return `<div class="row-s"><span class="${b?'up':'down'}" style="width:42px">${b?'BUY':'SELL'}</span><span>${W()}</span><span class="r">${(Math.random()*300/p.px+.01).toFixed(3)} ${p.s}</span></div>`}
 function openCoin(t){
-  const c=byT(t);if(!c)return;openT=t;if(!$('#drawer').classList.contains('on'))lastFocus=document.activeElement;const tm=TM[c.k];
-  $('#drHead').innerHTML=`${av(c,52)}<div class="meta"><div class="nm">${esc(c.n)}</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><span class="num" style="color:var(--muted);font-size:14px">$${esc(c.t)}</span>${tbadge(c.k)}</div></div><button class="x" data-close aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  const c=byT(t);if(!c)return;openT=t;if(!$('#drawer').classList.contains('on'))lastFocus=document.activeElement;const p=PM[c.s];
+  $('#drHead').innerHTML=`${av(c,52)}<div class="meta"><div class="nm">${esc(c.n)}</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><span class="num" style="color:var(--muted);font-size:14px">$${esc(c.t)}</span>${pbadge(c.s)}</div></div><button class="x" data-close aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
   $('#drBody').innerHTML=`
   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span class="big-px" id="drPx">$${small(c.usd)}</span>${pct(c.chg)}</div>
-  <div class="num" style="font-size:14px;color:var(--muted)">= ${small(c.usd/tm.px)} $${tm.t}</div>
+  <div class="num" style="font-size:14px;color:var(--muted)">= ${small(c.usd/p.px)} ${p.s} · ${p.s} at $${p.px.toFixed(2)}</div>
   <div class="tf" role="group" aria-label="Timeframe"><button aria-pressed="${tf===24}" data-tf="24">1H</button><button aria-pressed="${tf===96}" data-tf="96">24H</button></div>
   <canvas id="drChart"></canvas>
-  <div class="legend" style="margin-top:8px"><span><i style="background:${tm.c}"></i>$${esc(c.t)}</span><span><i class="q"></i>$${tm.t}</span></div>
+  <div class="legend" style="margin-top:8px"><span><i style="background:${p.c}"></i>$${esc(c.t)}</span><span><i class="q"></i>${p.s}</span><span style="margin-left:auto" class="note">coin vs its stock, % change</span></div>
   <div class="trade">
     <div class="seg" role="group" aria-label="Buy or sell"><button aria-pressed="${side==='buy'}" data-side="buy">Buy</button><button aria-pressed="${side==='sell'}" data-side="sell">Sell</button></div>
     <label class="sr" for="amtIn">Amount</label><div class="amt"><input id="amtIn" inputmode="decimal" value="1"><span>${side==='buy'?'SOL':esc(c.t)}</span></div>
     <div class="presets">${side==='buy'?['0.1','0.5','1','5'].map(v=>`<button data-amt="${v}">${v} SOL</button>`).join(''):['25%','50%','75%','100%'].map(v=>`<button>${v}</button>`).join('')}</div>
-    <div class="route" aria-label="Route"><span class="step-r">SOL</span><span class="arr">→</span><span class="step-r">${tm.stock}</span><span class="arr">→</span><span class="step-r">$${tm.t}</span><span class="arr">→</span><span class="step-r">$${esc(c.t)}</span></div>
+    <div class="route" aria-label="Route"><span class="step-r">SOL</span><span class="arr">→</span><span class="step-r">${p.s}</span><span class="arr">→</span><span class="step-r">$${esc(c.t)}</span></div>
     <div class="youget"><span>You get about</span><b id="youGet"></b></div>
     <button class="btn btn-ink" style="width:100%" data-soon>${side==='buy'?'Buy':'Sell'} $${esc(c.t)}</button>
   </div>
-  <div class="mini"><div><small>Market cap</small><b>${usd(c.mcap)}</b></div><div><small>24h volume</small><b>${usd(c.vol)}</b></div><div><small>Holders</small><b>${c.holders.toLocaleString()}</b></div><div><small>Burned for team</small><b>${usd(c.vol*.005)}</b></div></div>
-  <div class="dr-sec"><h4>Top holders</h4>${[18.2,9.6,6.1,4.4,3.2].map(h=>`<div class="row-s"><span style="width:90px">${W()}</span><span class="bar"><i style="width:${h*4}%;background:${tm.c}"></i></span><span style="width:52px;text-align:right">${h}%</span></div>`).join('')}</div>
+  <div class="mini"><div><small>Market cap</small><b>${usd(c.mcap)}</b></div><div><small>24h volume</small><b>${usd(c.vol)}</b></div><div><small>Holders</small><b>${c.holders.toLocaleString()}</b></div><div><small>Paid to holders</small><b class="up">${usd(c.vol*.005*6)}</b></div></div>
+  <div class="dr-sec"><h4>Top holders</h4>${[18.2,9.6,6.1,4.4,3.2].map(h=>`<div class="row-s"><span style="width:90px">${W()}</span><span class="bar"><i style="width:${h*4}%;background:${p.c}"></i></span><span style="width:52px;text-align:right">${h}%</span></div>`).join('')}</div>
   <div class="dr-sec"><h4>Recent trades</h4><div id="drTrades">${Array.from({length:6},()=>tradeRow(c)).join('')}</div></div>
   <p class="note" style="margin-top:18px">Example data until launch</p>`;
   $('#drawer').classList.add('on');$('#drawer').setAttribute('aria-hidden','false');$('#scrim').classList.add('on');document.body.classList.add('lock');
   requestAnimationFrame(()=>{drawDr();calc();$('#drawer .x').focus()});
 }
-function drawDr(){const c=byT(openT);if(!c||!$('#drChart'))return;line($('#drChart'),c.series.slice(-tf),TM[c.k].hs.slice(-tf),TM[c.k].c,{grid:true,dot:true,lw:2.6})}
-function calc(){const c=byT(openT);const el=$('#youGet');if(!c||!el)return;const v=parseFloat($('#amtIn').value)||0;
-  el.textContent=side==='buy'?`${Math.round(v*182.6/c.usd).toLocaleString()} ${c.t}`:`${(v*c.usd/182.6).toFixed(4)} SOL`}
-$('#drawer').addEventListener('click',e=>{
-  const b=e.target.closest('[data-tf]');if(b){tf=+b.dataset.tf;$$('[data-tf]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawDr()}
-  const s=e.target.closest('[data-side]');if(s&&s.dataset.side!==side){side=s.dataset.side;openCoin(openT)}
-  const a=e.target.closest('[data-amt]');if(a){$('#amtIn').value=a.dataset.amt;calc()}});
+function drawDr(){const c=byT(openT);if(!c||!$('#drChart'))return;line($('#drChart'),c.series.slice(-tf),PM[c.s].ss.slice(-tf),PM[c.s].c,{grid:true,dot:true,lw:2.6})}
+function calc(){const c=byT(openT);const el=$('#youGet');if(!c||!el)return;const v=parseFloat($('#amtIn').value)||0;el.textContent=side==='buy'?`${Math.round(v*182.6/c.usd).toLocaleString()} ${c.t}`:`${(v*c.usd/182.6).toFixed(4)} SOL`}
+$('#drawer').addEventListener('click',e=>{const b=e.target.closest('[data-tf]');if(b){tf=+b.dataset.tf;$$('[data-tf]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawDr()}
+  const s=e.target.closest('[data-side]');if(s&&s.dataset.side!==side){side=s.dataset.side;openCoin(openT)}const a=e.target.closest('[data-amt]');if(a){$('#amtIn').value=a.dataset.amt;calc()}});
 $('#drawer').addEventListener('input',e=>{if(e.target.id==='amtIn')calc()});
 
 /* ===== launch ===== */
-let lt='nvda',lImg=null;
-function renderPick(){$('#pickGrid').innerHTML=TEAMS.map(t=>`<button class="ptile" data-pick="${t.k}" aria-pressed="${lt===t.k}">${face(t.k)}<b>$${t.t}</b><span>${t.vibe}<br>rides ${t.stock}</span></button>`).join('')}
-$('#pickGrid').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;lt=b.dataset.pick;renderPick()});
+let lq='NVDAx',lImg=null;
+function renderPick(f=''){f=f.toLowerCase();let h='';
+  CATS.forEach(([k,l])=>{const items=PAIRS.filter(p=>p.cat===k&&(!f||p.s.toLowerCase().includes(f)||p.n.toLowerCase().includes(f)));
+    if(items.length)h+=`<div class="pgroup">${l}</div>`+items.map(p=>`<button class="ptile" data-pick="${p.s}" aria-pressed="${lq===p.s}">${face(p.s)}<b>${p.s}</b><span>${p.n}</span><span class="px">$${p.px.toFixed(2)}</span></button>`).join('')});
+  $('#pickGrid').innerHTML=h||`<div class="pgroup" style="text-transform:none;font-weight:500;color:var(--muted)">No stock matches "${esc(f)}". Try NVDA, Tesla or gold.</div>`}
+$('#pickSearch').addEventListener('input',e=>renderPick(e.target.value));
+$('#pickGrid').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;lq=b.dataset.pick;renderPick($('#pickSearch').value)});
 $('#pickGrid').addEventListener('dblclick',e=>{if(e.target.closest('[data-pick]'))step(2)});
-function step(n){$('#lStep1').hidden=n!==1;$('#lStep2').hidden=n!==2;$('#st2').classList.toggle('on',n===2);$('#lTitle').textContent=n===1?'Pick your team':'Launch your coin';
-  if(n===2){const t=TM[lt];$('#teamSel').innerHTML=`${face(lt)}<div><b>${t.name}</b><div style="font-size:14px;color:var(--muted)">Paired with $${t.t}, which rides ${t.stock}</div></div><button type="button" id="chTeam">Change</button>`;renderPrev();setTimeout(()=>$('#fName').focus(),40)}
-  else setTimeout(()=>$('[data-pick][aria-pressed="true"]').focus(),40)}
+function step(n){$('#lStep1').hidden=n!==1;$('#lStep2').hidden=n!==2;$('#st2').classList.toggle('on',n===2);$('#lTitle').textContent=n===1?'Pick your pair':'Launch your coin';
+  if(n===2){const p=PM[lq];$('#teamSel').innerHTML=`${face(lq)}<div><b>Paired with ${p.s}</b><div style="font-size:14px;color:var(--muted)">${p.n} · holders get paid in ${p.s}</div></div><button type="button" id="chTeam">Change</button>`;renderPrev();setTimeout(()=>$('#fName').focus(),40)}
+  else setTimeout(()=>($('[data-pick][aria-pressed="true"]')||$('#pickSearch')).focus(),40)}
 $('#toStep2').addEventListener('click',()=>step(2));
 $('#teamSel').addEventListener('click',e=>{if(e.target.id==='chTeam')step(1)});
 const lTick=()=>($('#fTick').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-function renderPrev(){const t=TM[lt],tk=lTick()||'COPE';
-  const c={n:$('#fName').value||'Cope Capital',t:tk,k:lt,series:rw(48,.06,.05),mcap:4100,chg:0,bg:'#ffd23f',img:lImg};
-  $('#lPrev').innerHTML=cardHTML(c).replace('<button','<div').replace(/<\/button>$/,'</div>');line($('#lPrev canvas'),c.series,null,t.c,{pad:3,lw:2});
-  $('#pvQ').textContent='$'+t.t;$('#pvS').textContent=t.stock;$('#pvB').textContent='$'+t.t;$('#lSubmit').textContent=`Launch $${tk} on ${t.name}`}
+function renderPrev(){const p=PM[lq],tk=lTick()||'COPE';const c={n:$('#fName').value||'Cope Capital',t:tk,s:lq,series:rw(48,.06,.05).map((v,i)=>v*Math.pow(p.ss[48+i],2)),mcap:4100,chg:0,bg:'#ffd23f',img:lImg};
+  $('#lPrev').innerHTML=cardHTML(c).replace('<button','<div').replace(/<\/button>$/,'</div>');line($('#lPrev canvas'),c.series,p.ss.slice(48),p.c,{pad:3,lw:2});
+  $('#pvQ').textContent=p.s;$('#pvR').textContent=p.s;$('#pvG').textContent=`≈ ${Math.round(85700/p.px).toLocaleString()} ${p.s}`;$('#lSubmit').textContent=`Launch $${tk} / ${p.s}`}
 ['fName','fTick'].forEach(id=>$('#'+id).addEventListener('input',()=>{$('#'+id+'F').classList.remove('bad');renderPrev()}));
 $('#fImg').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{lImg=r.result;renderPrev()};r.readAsDataURL(f)});
 $('#lForm').addEventListener('submit',e=>{e.preventDefault();let ok=true;if(!$('#fName').value.trim()){$('#fNameF').classList.add('bad');ok=false}if(!lTick()){$('#fTickF').classList.add('bad');ok=false}
-  if(ok)toast(`$${lTick()} on ${TM[lt].name} is ready — launches open soon`)});
-function openLaunch(k,s=1,tick){lastFocus=document.activeElement;closeAll(true);if(k)lt=k;if(tick)$('#fTick').value=tick;renderPick();$('#launch').classList.add('on');$('#launch').setAttribute('aria-hidden','false');document.body.classList.add('lock');step(s)}
+  if(ok)toast(`$${lTick()} / ${lq} is ready — launches open soon`)});
+function openLaunch(s,st=1,tick){lastFocus=document.activeElement;closeAll(true);if(s)lq=s;if(tick)$('#fTick').value=tick;$('#pickSearch').value='';renderPick();$('#launch').classList.add('on');$('#launch').setAttribute('aria-hidden','false');document.body.classList.add('lock');step(st)}
 $('#launch').addEventListener('click',e=>{if(e.target.id==='launch')closeAll()});
 
 /* ===== palette ===== */
 let pi=[],ps=0;
 function openPal(){lastFocus=document.activeElement;$('#pal').classList.add('on');$('#pal').setAttribute('aria-hidden','false');document.body.classList.add('lock');$('#palIn').value='';renderPal();setTimeout(()=>$('#palIn').focus(),30)}
-function renderPal(){const v=$('#palIn').value.trim(),f=v.toLowerCase();pi=[];
-  const m=v.match(/^launch\s+(\w+)(?:\s+(\w+))?/i);
-  if(m){const tm=m[2]?TEAMS.find(t=>t.k.startsWith(m[2].toLowerCase())||t.t.toLowerCase()===m[2].toLowerCase()):null;
-    pi.push({go:()=>openLaunch(tm?.k,tm?2:1,m[1].toUpperCase()),h:`${tm?face(tm.k):'<span class="av av-30" style="background:#ffd23f;width:36px;height:36px">+</span>'}<div class="grow"><b>Launch $${esc(m[1].toUpperCase())}${tm?' on '+tm.name:''}</b><br><small>${tm?'Opens the launch form, team picked':'Add a team: spy, nvda, tsla or xai'}</small></div><span class="k">↵</span>`})}
-  else{TEAMS.filter(t=>!f||t.k.includes(f)||t.t.toLowerCase().includes(f)||t.sn.toLowerCase().includes(f)).forEach(t=>pi.push({go:()=>{route('board');team=t.k;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})},h:`${face(t.k)}<div class="grow"><b>${t.name}</b><br><small>$${t.t} · rides ${t.stock}</small></div><span class="k">$${t.px.toFixed(4)}</span>`}));
-    coins.filter(c=>!f||c.n.toLowerCase().includes(f)||c.t.toLowerCase().includes(f)).slice(0,6).forEach(c=>pi.push({go:()=>{route('board',true);openCoin(c.t)},h:`${av(c,30)}<div class="grow"><b>${esc(c.n)}</b><br><small>$${c.t} · ${TM[c.k].name}</small></div><span class="k">${usd(c.mcap)}</span>`}))}
-  ps=0;$('#palList').innerHTML=pi.length?pi.map((x,i)=>`<button class="pal-item" role="option" data-i="${i}" aria-selected="${i===0}">${x.h}</button>`).join(''):`<div style="padding:20px;color:var(--muted)">No matches. Try a ticker, a team, or "launch COPE nvda".</div>`}
+const findPair=q=>{q=q.toLowerCase();return PAIRS.find(p=>p.s.toLowerCase()===q||p.s.toLowerCase()===q+'x'||p.n.toLowerCase().startsWith(q))};
+function renderPal(){const v=$('#palIn').value.trim(),f=v.toLowerCase();pi=[];const m=v.match(/^launch\s+(\w+)(?:\s+(\w+))?/i);
+  if(m){const p=m[2]?findPair(m[2]):null;pi.push({go:()=>openLaunch(p?.s,p?2:1,m[1].toUpperCase()),h:`${p?face(p.s):'<span class="av av-30" style="background:#ffd23f;width:36px;height:36px">+</span>'}<div class="grow"><b>Launch $${esc(m[1].toUpperCase())}${p?' / '+p.s:''}</b><br><small>${p?'Opens the launch form, pair picked':'Add a stock after the ticker, like: launch COPE nvda'}</small></div><span class="k">↵</span>`})}
+  else{PAIRS.filter(p=>f&&(p.s.toLowerCase().includes(f)||p.n.toLowerCase().includes(f))).slice(0,4).forEach(p=>pi.push({go:()=>{route('board',true);filterTo(p.s)},h:`${face(p.s)}<div class="grow"><b>${p.s}</b><br><small>${p.n} · show coins paired with it</small></div><span class="k">$${p.px.toFixed(2)}</span>`}));
+    coins.filter(c=>!f||c.n.toLowerCase().includes(f)||c.t.toLowerCase().includes(f)).slice(0,6).forEach(c=>pi.push({go:()=>{route('board',true);openCoin(c.t)},h:`${av(c,30)}<div class="grow"><b>${esc(c.n)}</b><br><small>$${c.t} · paired with ${c.s}</small></div><span class="k">${usd(c.mcap)}</span>`}))}
+  ps=0;$('#palList').innerHTML=pi.length?pi.map((x,i)=>`<button class="pal-item" role="option" data-i="${i}" aria-selected="${i===0}">${x.h}</button>`).join(''):`<div style="padding:20px;color:var(--muted)">No matches. Try a ticker, a stock, or "launch COPE nvda".</div>`}
 function palGo(i){const x=pi[i];if(!x)return;$('#pal').classList.remove('on');$('#pal').setAttribute('aria-hidden','true');document.body.classList.remove('lock');x.go()}
 $('#palIn').addEventListener('input',renderPal);
 $('#palIn').addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!pi.length)return;ps=(ps+(e.key==='ArrowDown'?1:-1)+pi.length)%pi.length;$$('.pal-item').forEach((b,i)=>b.setAttribute('aria-selected',i===ps));$$('.pal-item')[ps].scrollIntoView({block:'nearest'})}if(e.key==='Enter'){e.preventDefault();palGo(ps)}});
@@ -722,57 +747,48 @@ $('#pal').addEventListener('click',e=>{if(e.target.id==='pal')closeAll()});
 $('#openPal').addEventListener('click',openPal);
 
 /* ===== global ===== */
-function closeAll(keepFocus){
-  ['#drawer','#launch','#pal'].forEach(s=>{$(s).classList.remove('on');$(s).setAttribute('aria-hidden','true')});$('#scrim').classList.remove('on');document.body.classList.remove('lock');openT=null;
-  if(!keepFocus&&lastFocus&&lastFocus.focus)lastFocus.focus()}
+function closeAll(keep){['#drawer','#launch','#pal'].forEach(s=>{$(s).classList.remove('on');$(s).setAttribute('aria-hidden','true')});$('#scrim').classList.remove('on');document.body.classList.remove('lock');openT=null;if(!keep&&lastFocus&&lastFocus.focus)lastFocus.focus()}
 $('#scrim').addEventListener('click',()=>closeAll());
 document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeAll();if(e.target.closest('[data-soon]'))toast('Wallets connect at launch — launches open soon');if(e.target.closest('[data-launch]')){e.preventDefault();openLaunch(null,1)}});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPal()}if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();openPal()}if(e.key==='Escape')closeAll()});
 $('#menuBtn').addEventListener('click',()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)});
 
 /* ===== pages ===== */
-const burnDays=Array.from({length:30},(_,i)=>TEAMS.map((t,j)=>Math.round((900+i*60)*(1+j*.25)*(.6+Math.random()*.8))));
-function renderTeams(){
-  renderBattle('#battleBar2','#rankBody2');
-  $('#teamCards').innerHTML=[...TEAMS].sort((a,b)=>b.vol-a.vol).map((t,i)=>`<div class="tcard"><div class="tcard-head" style="background:${t.light}">${face(t.k)}<div><b>${t.name}</b><span>$${t.t} · rides ${t.stock} (${t.sn})</span></div><span class="rk">#${i+1}</span></div>
-    ${coins.filter(c=>c.k===t.k).sort((a,b)=>b.mcap-a.mcap).slice(0,5).map(c=>`<div class="trow" data-coin="${c.t}" tabindex="0">${av(c,30)}<span class="nm">${esc(c.n)}</span><span class="v">${usd(c.mcap)}</span><span class="v" style="width:64px;text-align:right">${pct(c.chg)}</span></div>`).join('')}
-    <div style="padding:14px 20px"><button class="btn btn-team" style="background:${t.c};width:100%" data-launch-team2="${t.k}">Launch on ${t.name}</button></div></div>`).join('');
+const payDays=Array.from({length:30},(_,i)=>[...TOP.map((s,j)=>Math.round((700+i*50)*(1.4-j*.2)*(.6+Math.random()*.8))),Math.round((900+i*40)*(.6+Math.random()*.8))]);
+function renderPairsPage(){
+  renderBattle('#battleBar2','#rankBody2',true);
+  $('#teamCards').innerHTML=[...PAIRS].sort((a,b)=>b.vol-a.vol).map((p,i)=>{const l=coins.filter(c=>c.s===p.s).sort((a,b)=>b.mcap-a.mcap).slice(0,4);return `<div class="tcard"><div class="tcard-head" style="background:${p.light}">${face(p.s)}<div><b>${p.s}</b><span>${p.n} · $${p.px.toFixed(2)} ${pct(p.chg)}</span></div><span class="rk">#${i+1}</span></div>
+    ${l.length?l.map(c=>`<div class="trow" data-coin="${c.t}" tabindex="0">${av(c,30)}<span class="nm">${esc(c.n)}</span><span class="v">${usd(c.mcap)}</span><span class="v" style="width:64px;text-align:right">${pct(c.chg)}</span></div>`).join(''):`<div class="trow" style="cursor:default;color:var(--muted)">No coins yet — be first.</div>`}
+    <div style="padding:14px 20px"><button class="btn btn-team" style="background:${p.c};width:100%" data-launch-pair2="${p.s}">Launch on ${p.s}</button></div></div>`}).join('');
 }
-$('#teamCards').addEventListener('click',e=>{const l=e.target.closest('[data-launch-team2]');if(l){openLaunch(l.dataset.launchTeam2,2);return}const r=e.target.closest('[data-coin]');if(r)openCoin(r.dataset.coin)});
+$('#teamCards').addEventListener('click',e=>{const l=e.target.closest('[data-launch-pair2]');if(l){openLaunch(l.dataset.launchPair2,2);return}const r=e.target.closest('[data-coin]');if(r)openCoin(r.dataset.coin)});
 $('#teamCards').addEventListener('keydown',e=>{const r=e.target.closest('[data-coin]');if(r&&e.key==='Enter')openCoin(r.dataset.coin)});
-function burnRow(_,i=0){const t=TEAMS[Math.random()*4|0];return `<div class="log-row">${face(t.k)}<div><div style="font-weight:600">$${t.t} burned</div><span class="t">${new Date(Date.now()-i*47e3).toTimeString().slice(0,8)}</span></div><b>−${(Math.random()*80+5).toFixed(1)}K $${t.t}</b></div>`}
-function renderBurns(){
-  $('#burnKpis').innerHTML=TEAMS.map(t=>`<div class="kpi"><small style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;display:inline-block">${face(t.k)}</span>$${t.t} burned 24h</small><strong>${usd(t.burn)}</strong></div>`).join('');
-  stacked($('#burnChart'),burnDays);
-  $('#burnLegend').innerHTML=TEAMS.map(t=>`<span><i style="background:${t.c}"></i>$${t.t}</span>`).join('');
-  if(!$('#burnLog').children.length)$('#burnLog').innerHTML=Array.from({length:8},burnRow).join('');
-}
-const ROUTES={'':'board',teams:'teams',burns:'burns'};
-let cur='board';
-function route(r,keep){
-  r=r||ROUTES[location.hash.slice(1)]||'board';cur=r;
+function payRow(_,i=0){const c=coins[Math.random()*coins.length|0],p=PM[c.s];return `<div class="log-row">${face(c.s)}<div><div style="font-weight:600">$${esc(c.t)} holders paid</div><span class="t">${new Date(Date.now()-i*61e3).toTimeString().slice(0,8)}</span></div><b>${(Math.random()*90/p.px+.01).toFixed(3)} ${p.s}</b></div>`}
+function rKpis(){$('#rKpis').innerHTML=TOP.map(s=>{const p=PM[s];return `<div class="kpi"><small style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;display:inline-block">${face(s)}</span>Paid in ${s}, 24h</small><strong>${usd(p.paid)}</strong></div>`}).join('')}
+function renderRewards(){rKpis();stacked($('#payChart'),payDays,[...TOP,null]);$('#payLegend').innerHTML=TOP.map(s=>`<span><i style="background:${PM[s].c}"></i>${s}</span>`).join('')+`<span><i style="background:#d9d8d2"></i>Other pairs</span>`;
+  if(!$('#payLog').children.length)$('#payLog').innerHTML=Array.from({length:7},payRow).join('')}
+const ROUTES={'':'board',pairs:'pairs',rewards:'rewards'};let cur='board';
+function route(r,keep){r=r||ROUTES[location.hash.slice(1)]||'board';cur=r;
   $$('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+r));
   $$('.navlinks a').forEach(a=>a.dataset.route===r?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
   $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
-  requestAnimationFrame(()=>{if(r==='board'){renderHouses();renderBattle('#battleBar','#rankBody');renderGrid()}if(r==='teams')renderTeams();if(r==='burns')renderBurns()});
-  if(!keep)window.scrollTo(0,0);
-}
+  requestAnimationFrame(()=>{if(r==='board'){renderPopular();renderBattle('#battleBar','#rankBody');renderGrid()}if(r==='pairs')renderPairsPage();if(r==='rewards')renderRewards()});
+  if(!keep)window.scrollTo(0,0)}
 window.addEventListener('hashchange',()=>route());
 let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{route(cur,true);if(openT)drawDr()},150)});
 
 /* ===== live ===== */
 function tick(){
-  TEAMS.forEach(t=>{const d=(Math.random()-.49)*.004;t.sp*=1+d;t.ss.push(t.ss.at(-1)*(1+d));t.ss.shift();const hd=d*1.8+(Math.random()-.48)*.01;t.px*=1+hd;t.hs.push(t.hs.at(-1)*(1+hd));t.hs.shift();t.chg=(t.hs.at(-1)/t.hs[0]-1)*100;t.burn+=Math.random()*60});
+  PAIRS.forEach(p=>{const d=(Math.random()-.49)*(p.cat==='preipo'?.008:.004);p.px*=1+d;p.ss.push(p.ss.at(-1)*(1+d));p.ss.shift();p.chg=(p.ss.at(-1)/p.ss[0]-1)*100;p.paid+=Math.random()*40});
   const fl={};
-  coins.forEach(c=>{const tm=TM[c.k];const hd=tm.hs.at(-1)/tm.hs.at(-2)-1;const d=Math.random()<.3?(Math.random()-.46)*.05:0;const tot=(1+d)*(1+hd*1.6)-1;c.series.push(c.series.at(-1)*(1+tot));c.series.shift();c.usd*=1+tot;c.mcap=c.usd*1e9;c.chg=(c.series.at(-1)/c.series[0]-1)*100;if(d){c.vol+=c.mcap*Math.abs(d)*.3;fl[c.t]=tot>=0?'fu':'fd'}});
-  teamAgg();
-  const locked=document.body.classList.contains('lock');
-  if(cur==='board'&&!locked){renderHouses();renderBattle('#battleBar','#rankBody');renderGrid(fl)}
-  if(cur==='burns'&&!locked){$('#burnLog').insertAdjacentHTML('afterbegin',burnRow());$('#burnLog').lastElementChild.remove();$('#burnKpis').innerHTML=TEAMS.map(t=>`<div class="kpi"><small style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;display:inline-block">${face(t.k)}</span>$${t.t} burned 24h</small><strong>${usd(t.burn)}</strong></div>`).join('')}
-  if(openT){const c=byT(openT);const p=$('#drPx');if(p)p.innerHTML='$'+small(c.usd);drawDr();if(Math.random()<.5){const tr=$('#drTrades');if(tr){tr.insertAdjacentHTML('afterbegin',tradeRow(c));tr.lastElementChild.remove()}}}
-  $('#hBurn').textContent=usd(96400+TEAMS.reduce((s,t)=>s+t.burn,0)-30000);$('#hVol').textContent=usd(TEAMS.reduce((s,t)=>s+t.vol,0)*1.2);
+  coins.forEach(c=>{const p=PM[c.s];const qd=p.ss.at(-1)/p.ss.at(-2)-1;const d=Math.random()<.3?(Math.random()-.46)*.05:0;const tot=(1+d)*(1+qd*2)-1;c.series.push(c.series.at(-1)*(1+tot));c.series.shift();c.usd*=1+tot;c.mcap=c.usd*1e9;c.chg=(c.series.at(-1)/c.series[0]-1)*100;if(d){c.vol+=c.mcap*Math.abs(d)*.3;fl[c.t]=tot>=0?'fu':'fd'}});
+  agg();const locked=document.body.classList.contains('lock');
+  if(cur==='board'&&!locked){renderPopular();renderBattle('#battleBar','#rankBody');renderGrid(fl)}
+  if(cur==='rewards'&&!locked){rKpis();$('#payLog').insertAdjacentHTML('afterbegin',payRow());$('#payLog').lastElementChild.remove()}
+  if(openT){const c=byT(openT);const el=$('#drPx');if(el)el.innerHTML='$'+small(c.usd);drawDr();if(Math.random()<.5){const tr=$('#drTrades');if(tr){tr.insertAdjacentHTML('afterbegin',tradeRow(c));tr.lastElementChild.remove()}}}
+  $('#hPaid').textContent=usd(PAIRS.reduce((a,p)=>a+p.paid,0)+12000);$('#hVol').textContent=usd(PAIRS.reduce((a,p)=>a+p.vol,0));
 }
-teamAgg();renderChips();route();setInterval(tick,2400);
+agg();renderChips();route();setInterval(tick,2400);
 </script>
 </body>
 </html>

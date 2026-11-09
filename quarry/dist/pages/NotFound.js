@@ -1,5 +1,6 @@
-import { h } from "../lib/dom.js";
+import { UI } from "../components/Icons.js";
+import { h, svg } from "../lib/dom.js";
 import { href } from "../lib/router.js";
-export function notFoundPage(msg = "This page isn't on the table.") {
-    return h("div", { class: "page" }, h("div", { class: "notfound" }, h("span", { class: "label" }, "Element 404 · not found"), h("div", { class: "sym" }, "Nf"), h("p", { class: "muted", style: "max-width:460px" }, msg), h("div", { style: "display:flex;gap:10px" }, h("a", { class: "btn primary", href: href("/") }, "Back to the front page"), h("a", { class: "btn", href: href("/boards") }, "Open the table"))));
+export function notFoundPage(msg = "There's nothing in this pit.") {
+    return h("div", { class: "page nf" }, h("div", { class: "tumble" }, svg(UI.coin)), h("div", { class: "tumble" }, svg(UI.coin)), h("div", null, h("h1", null, "404"), h("p", { style: "color:var(--text-2);margin-top:8px" }, msg), h("a", { class: "btn primary", href: href("/"), style: "margin-top:16px" }, svg(UI.home), "Back to the floor")));
 }

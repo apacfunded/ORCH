@@ -59,41 +59,30 @@ const goldFeed = {
     },
     poll: goldQuote,
 };
-/** Live snapshot of a pump.fun token: DexScreener first, GeckoTerminal as fallback. */
-export async function tokenSnapshot(mint) {
-    const r = await json(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-    const pairs = (r?.pairs ?? []).filter((p) => p.chainId === "solana" && p.baseToken?.address === mint);
-    if (pairs.length) {
-        const p = pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
-        const price = Number(p.priceUsd);
-        if (Number.isFinite(price))
-            return { price, mc: p.marketCap ?? p.fdv ?? price * 1e9, change: p.priceChange?.h24 ?? null, pair: p.pairAddress, symbol: p.baseToken.symbol, name: p.baseToken.name, image: p.info?.imageUrl ?? null, volume: Number(p.volume?.h24) || 0, liquidity: Number(p.liquidity?.usd) || 0 };
-    }
-    const g = await json(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${mint}/pools?page=1`);
-    const pool = g?.data?.[0];
-    if (!pool)
-        return null;
-    const a = pool.attributes;
-    const price = Number(a.base_token_price_usd);
-    if (!Number.isFinite(price) || price <= 0)
-        return null;
-    const mc = Number(a.market_cap_usd ?? a.fdv_usd) || price * 1e9;
-    const sym = String(a.name ?? "").split("/")[0].trim();
-    const ch = Number(a.price_change_percentage?.h24);
-    return { price, mc, change: Number.isFinite(ch) ? ch : null, pair: a.address, symbol: sym, name: sym, image: null, volume: Number(a.volume_usd?.h24) || 0, liquidity: Number(a.reserve_in_usd) || 0 };
-}
 function tokenFeed(mint) {
     const quote = async () => {
-        const t = await tokenSnapshot(mint);
-        if (!t)
+        const r = await json(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+        const pairs = (r?.pairs ?? []).filter((p) => p.chainId === "solana" && p.baseToken.address === mint);
+        if (!pairs.length)
             return null;
+        const p = pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
+        const price = Number(p.priceUsd);
+        if (!Number.isFinite(price))
+            return null;
+        const mcap = p.marketCap ?? p.fdv ?? null;
         return {
-            label: `$${t.symbol} · MARKET CAP · LIVE`, title: `$${t.symbol}`, subtitle: t.name, image: t.image,
-            value: t.mc, priceUsd: t.price, change24h: t.change, link: `https://pump.fun/coin/${mint}`,
+            label: `$${p.baseToken.symbol} · ${mcap ? "MARKET CAP" : "PRICE"} · LIVE`,
+            title: `$${p.baseToken.symbol}`,
+            subtitle: p.baseToken.name,
+            image: p.info?.imageUrl ?? null,
+            value: mcap ?? price,
+            priceUsd: price,
+            change24h: p.priceChange?.h24 ?? null,
+            link: `https://pump.fun/coin/${mint}`,
         };
     };
     return {
-        intervalMs: 10000,
+        intervalMs: 8000,
         async initial() { const q = await quote(); return q ? { quote: q, history: [q.value] } : null; },
         poll: quote,
     };

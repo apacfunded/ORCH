@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tickr — pick a team, launch a coin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600&family=Figtree:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff;--bg2:#f6f6f3;--bg3:#efeee9;--ink:#141414;--muted:#6b6b6b;--dim:#8e8e8a;--line:#e7e6e1;--line2:#d9d8d2;
+  --yellow:#ffd23f;--up:#16a34a;--down:#e5484d;
+  --spy:#3f6bff;--nvda:#2fbf5b;--tsla:#ff5246;--xai:#8a63ff;
+  --display:'Gabarito',system-ui,sans-serif;--sans:'Figtree',system-ui,sans-serif;--mono:'DM Mono',ui-monospace,monospace;
+  --pop:3px 3px 0 var(--ink);--pop-h:5px 5px 0 var(--ink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+.num{font-family:var(--mono);font-feature-settings:"tnum"}
+.up{color:var(--up)}.down{color:var(--down)}
+:focus-visible{outline:2.5px solid var(--spy);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.note{font-family:var(--mono);font-size:12px;color:var(--dim)}
+
+/* buttons */
+.btn{height:46px;padding:0 20px;border-radius:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;border:1.5px solid var(--line2);background:var(--bg);transition:transform .15s,box-shadow .15s,border-color .15s}
+.btn:hover{border-color:var(--ink)}
+.btn-ink{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:var(--pop)}
+.btn-ink:hover{transform:translate(-2px,-2px);box-shadow:var(--pop-h)}
+.btn-ink:active{transform:none;box-shadow:1px 1px 0 var(--ink)}
+.btn-sm{height:40px;padding:0 14px;font-size:15px;border-radius:10px}
+.btn-team{color:#fff;border-color:var(--ink);box-shadow:var(--pop)}
+.btn-team:hover{transform:translate(-2px,-2px);box-shadow:var(--pop-h)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:8px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:-.02em;margin-right:10px}
+.brand svg{width:34px;height:34px}
+.navlinks{display:flex;gap:2px}
+.navlinks a{height:40px;padding:0 14px;border-radius:10px;display:flex;align-items:center;color:var(--muted);font-weight:500}
+.navlinks a:hover{color:var(--ink);background:var(--bg2)}
+.navlinks a[aria-current="page"]{color:var(--ink);background:var(--bg3)}
+.searchbtn{margin-left:auto;display:flex;align-items:center;gap:10px;height:40px;padding:0 10px 0 14px;border-radius:10px;border:1.5px solid var(--line);color:var(--dim);font-size:15px;width:230px;white-space:nowrap}
+.searchbtn:hover{border-color:var(--line2);color:var(--muted)}
+.searchbtn kbd{margin-left:auto;font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:6px;border:1px solid var(--line2)}
+.menu-btn{display:none;width:44px;height:44px;border-radius:10px;border:1.5px solid var(--line);place-items:center}
+.mobile-menu{display:none;border-top:1px solid var(--line);padding:8px 28px 16px}
+.mobile-menu a{display:flex;height:50px;align-items:center;font-weight:500;border-bottom:1px solid var(--line)}
+.nav.open .mobile-menu{display:block}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:40px;align-items:center;padding:64px 0 56px}
+.pill{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:999px;background:var(--bg2);border:1px solid var(--line);font-size:14px;font-weight:500;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--up);position:relative;flex:none}
+.dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--up);animation:ping 2s infinite}
+@keyframes ping{75%,100%{transform:scale(2.4);opacity:0}}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(44px,6vw,80px);line-height:.98;letter-spacing:-.035em;margin:20px 0 22px}
+.hl{position:relative;white-space:nowrap;z-index:0}
+.hl::before{content:'';position:absolute;left:-4px;right:-6px;bottom:.06em;height:.36em;background:var(--yellow);border-radius:8px;z-index:-1;transform:rotate(-1.2deg)}
+.lede{font-size:19px;color:var(--muted);max-width:500px}
+.hero-ctas{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:36px;margin-top:40px;flex-wrap:wrap}
+.hero-stats small{display:block;font-size:14px;color:var(--dim)}
+.hero-stats strong{font-family:var(--mono);font-weight:500;font-size:24px}
+
+.stage{position:relative;background:var(--bg2);border:1.5px solid var(--ink);border-radius:24px;box-shadow:6px 6px 0 var(--ink);padding:36px 24px 26px;overflow:hidden}
+.stage::before{content:'';position:absolute;inset:0;background-image:radial-gradient(var(--line2) 1.2px,transparent 1.2px);background-size:22px 22px;opacity:.7}
+.stage-row{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:end}
+.char{display:flex;flex-direction:column;align-items:center;gap:10px;border-radius:16px;padding:8px 4px}
+.char .face{width:100%;max-width:120px;aspect-ratio:1;animation:float 3.2s ease-in-out infinite;transition:transform .2s}
+.char:nth-child(2) .face{animation-delay:-.8s}.char:nth-child(3) .face{animation-delay:-1.6s}.char:nth-child(4) .face{animation-delay:-2.4s}
+.char:hover .face{transform:scale(1.06) rotate(-4deg);animation-play-state:paused}
+@keyframes float{50%{transform:translateY(-10px)}}
+.char .shadow{width:60%;height:10px;border-radius:50%;background:rgba(20,20,20,.12);margin-top:-6px}
+.pedestal{width:100%;background:#fff;border:1.5px solid var(--ink);border-radius:12px;padding:10px 8px;text-align:center;box-shadow:var(--pop)}
+.pedestal b{display:block;font-family:var(--display);font-weight:600;font-size:17px}
+.pedestal span{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.stage-cap{position:relative;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px}
+.stage-cap b{font-family:var(--display);font-weight:600;font-size:18px}
+
+/* sections */
+.sec{padding:80px 0}
+.sec.alt{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:28px;flex-wrap:wrap}
+.kicker{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(30px,3.6vw,44px);letter-spacing:-.03em;line-height:1.05;margin-top:8px}
+.sub{color:var(--muted);margin-top:8px;max-width:560px}
+
+/* house coins */
+.houses{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.house{background:#fff;border:1.5px solid var(--ink);border-radius:18px;padding:18px;box-shadow:var(--pop);display:flex;flex-direction:column;gap:14px;transition:transform .15s,box-shadow .15s;cursor:pointer;text-align:left;width:100%;min-width:0}
+.house:hover{transform:translate(-2px,-2px);box-shadow:var(--pop-h)}
+.house-top{display:flex;align-items:center;gap:12px}
+.house-top svg{width:54px;height:54px;flex:none}
+.house-top .meta{flex:1;min-width:0}
+.house-top b{font-family:var(--display);font-weight:600;font-size:21px;display:block;line-height:1.1}
+.house-top span{font-size:13px;color:var(--muted)}
+.house .px{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.house .px strong{font-family:var(--mono);font-weight:500;font-size:22px}
+.house canvas{width:100%;max-width:100%;height:70px;display:block}
+.house dl{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:14px;border-top:1px dashed var(--line2);padding-top:12px}
+.house dt{color:var(--muted)}
+.house dd{font-family:var(--mono);text-align:right}
+.house .btn{width:100%}
+.legend{display:flex;gap:14px;font-size:13px;color:var(--muted);flex-wrap:wrap;align-items:center}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.legend i.q{background:none;border-top:2px dashed var(--dim);height:0}
+
+/* team battle */
+.battle{background:#fff;border:1.5px solid var(--ink);border-radius:20px;box-shadow:var(--pop);padding:24px}
+.battle-bar{display:flex;height:54px;border-radius:14px;overflow:hidden;border:1.5px solid var(--ink);margin:6px 0 24px}
+.battle-bar div{display:flex;align-items:center;gap:8px;padding:0 12px;color:#fff;font-weight:600;font-size:15px;transition:flex-basis .6s ease;min-width:0;overflow:hidden;white-space:nowrap}
+.battle-bar div+div{border-left:1.5px solid var(--ink)}
+.battle-bar svg{width:30px;height:30px;flex:none}
+.rank{width:100%;border-collapse:collapse}
+.rank th{white-space:nowrap;font-size:13px;font-weight:500;color:var(--dim);text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
+.rank td{text-align:right;padding:14px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:15px;white-space:nowrap}
+.rank th:first-child,.rank td:first-child{text-align:left}
+.rank tr:last-child td{border-bottom:0}
+.rank .team{display:flex;align-items:center;gap:10px;font-family:var(--sans);font-weight:600}
+.rank .team svg{width:34px;height:34px}
+.rank .pos{font-family:var(--mono);color:var(--dim);width:22px;display:inline-block}
+.tbl-wrap{overflow-x:auto}
+
+/* board */
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{height:38px;padding:0 14px;border-radius:9px;font-size:15px;font-weight:500;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px var(--line)}
+.filter-in{height:44px;width:230px;border-radius:12px;border:1.5px solid var(--line);background:#fff;padding:0 14px;outline:none;font-size:15px}
+.filter-in:focus{border-color:var(--ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:20px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:40px;padding:0 14px 0 8px;border-radius:999px;border:1.5px solid var(--line);font-size:15px;font-weight:500;display:flex;align-items:center;gap:8px;background:#fff}
+.chip.all{padding-left:14px}
+.chip svg{width:26px;height:26px}
+.chip:hover{border-color:var(--line2)}
+.chip[aria-pressed="true"]{border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.chip .ct{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.card{min-width:0;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
+.card:hover{border-color:var(--ink);box-shadow:var(--pop);transform:translate(-2px,-2px)}
+.card-top{display:flex;gap:12px;align-items:center}
+.card-top .meta{flex:1;min-width:0}
+.card .nm{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .tk{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.card .mc{text-align:right;flex:none}
+.card .mc b{font-family:var(--mono);font-weight:500;font-size:16px;display:block}
+.card .mc span{font-size:12px;color:var(--dim)}
+.card canvas{width:100%;max-width:100%;height:54px;display:block}
+.card-foot{display:flex;align-items:center;gap:8px}
+.card-foot .chg{margin-left:auto;font-family:var(--mono);font-size:14px}
+.card.fu{animation:fu 1s}.card.fd{animation:fd 1s}
+@keyframes fu{from{background:#ecfdf3}}@keyframes fd{from{background:#fff1f1}}
+.av{flex:none;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:600;border:1.5px solid var(--ink)}
+.av-46{width:46px;height:46px;font-size:20px}.av-52{width:52px;height:52px;font-size:22px;border-radius:15px}.av-30{width:30px;height:30px;font-size:13px;border-radius:9px}
+.tbadge{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px 0 4px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
+.tbadge svg{width:22px;height:22px}
+.empty{grid-column:1/-1;border:1.5px dashed var(--line2);border-radius:18px;padding:48px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:24px}
+.step .ill{height:110px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
+.step .ill svg{width:62px;height:62px}
+.step .n{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.step h3{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:-.01em;margin:4px 0 6px}
+.step p{color:var(--muted);font-size:15px}
+.arrow{font-family:var(--mono);color:var(--dim);font-size:20px}
+.fees{display:flex;height:16px;border-radius:999px;overflow:hidden;border:1.5px solid var(--ink);margin:18px 0 10px}
+
+/* faq */
+.faq{max-width:840px}
+details{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;padding:22px 0;font-size:18px;font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';width:30px;height:30px;flex:none;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-family:var(--mono);font-size:18px;line-height:1}
+details[open] summary::after{content:'–';background:var(--yellow)}
+details p{color:var(--muted);padding-bottom:22px;max-width:720px}
+
+/* pages */
+.page{display:none}.page.on{display:block}
+.page-head{padding:56px 0 30px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi{border:1.5px solid var(--line);border-radius:16px;padding:18px 20px;background:#fff}
+.kpi small{font-size:14px;color:var(--dim);display:block;margin-bottom:4px}
+.kpi strong{font-family:var(--mono);font-weight:500;font-size:26px}
+.kpi .d{font-family:var(--mono);font-size:14px;margin-left:8px}
+.panel{border:1.5px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;margin-bottom:24px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);gap:12px;flex-wrap:wrap}
+.panel-head h3{font-family:var(--display);font-weight:600;font-size:20px}
+.panel canvas{display:block;width:100%;height:260px}
+.twocol{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:start}
+.log-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);font-size:15px;animation:slide .35s ease-out}
+.log-row:last-child{border-bottom:0}
+.log-row svg{width:30px;height:30px;flex:none}
+.log-row .t{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.log-row b{margin-left:auto;font-family:var(--mono);font-weight:500}
+@keyframes slide{from{opacity:0;transform:translateY(-6px)}}
+.team-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.tcard{border:1.5px solid var(--ink);border-radius:18px;background:#fff;box-shadow:var(--pop);overflow:hidden}
+.tcard-head{display:flex;align-items:center;gap:14px;padding:18px 20px;border-bottom:1.5px solid var(--ink)}
+.tcard-head svg{width:56px;height:56px}
+.tcard-head b{font-family:var(--display);font-weight:600;font-size:22px;display:block}
+.tcard-head span{font-size:14px;color:var(--muted)}
+.tcard-head .rk{margin-left:auto;font-family:var(--display);font-weight:600;font-size:30px}
+.trow{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--line);cursor:pointer}
+.trow:hover{background:var(--bg2)}
+.trow:last-child{border-bottom:0}
+.trow .nm{font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .v{font-family:var(--mono);font-size:14px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,20,20,.35);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(540px,100%);background:#fff;border-left:1.5px solid var(--ink);z-index:41;transform:translateX(102%);transition:transform .22s ease-out;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.dr-head{display:flex;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.dr-head .meta{flex:1;min-width:0}
+.dr-head .nm{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.02em;line-height:1.1}
+.x{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);display:grid;place-items:center;flex:none}
+.x:hover{border-color:var(--ink)}
+.dr-body{overflow-y:auto;flex:1;padding:20px}
+.big-px{font-family:var(--mono);font-size:32px;font-weight:500}
+.tf{display:flex;gap:4px;margin:14px 0 6px}
+.tf button{height:34px;padding:0 12px;border-radius:9px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.tf button[aria-pressed="true"]{background:var(--bg3);color:var(--ink)}
+#drChart{width:100%;max-width:100%;height:210px;display:block}
+.trade{border:1.5px solid var(--ink);border-radius:18px;padding:16px;margin:20px 0;box-shadow:var(--pop)}
+.trade .seg{margin-bottom:14px}.trade .seg button{flex:1}
+.amt{display:flex;align-items:center;border:1.5px solid var(--line2);border-radius:12px;padding:0 14px;height:58px}
+.amt:focus-within{border-color:var(--ink)}
+.amt input{flex:1;border:0;outline:none;font-family:var(--mono);font-size:22px;min-width:0;background:none}
+.amt span{font-family:var(--mono);color:var(--muted)}
+.presets{display:flex;gap:6px;margin:10px 0}
+.presets button{flex:1;height:38px;border-radius:10px;border:1.5px solid var(--line);font-family:var(--mono);font-size:13px}
+.presets button:hover{border-color:var(--ink)}
+.route{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:14px 0;font-size:13px}
+.route span.step-r{font-family:var(--mono);padding:4px 8px;border-radius:8px;background:var(--bg2);border:1px solid var(--line)}
+.route .arr{color:var(--dim)}
+.youget{display:flex;justify-content:space-between;font-size:15px;color:var(--muted);margin-bottom:14px}
+.youget b{font-family:var(--mono);font-weight:500;color:var(--ink)}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini div{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+.mini small{font-size:13px;color:var(--dim);display:block}
+.mini b{font-family:var(--mono);font-weight:500}
+.dr-sec{margin-top:24px}
+.dr-sec h4{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.row-s{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:14px}
+.row-s .bar{flex:1;height:8px;border-radius:4px;background:var(--bg3);overflow:hidden}
+.row-s .bar i{display:block;height:100%}
+.row-s .r{margin-left:auto;color:var(--muted)}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .2s;background:rgba(20,20,20,.35)}
+.modal.on{opacity:1;pointer-events:auto}
+.modal-box{width:min(920px,100%);max-height:calc(100vh - 48px);overflow-y:auto;background:#fff;border:1.5px solid var(--ink);border-radius:22px;box-shadow:8px 8px 0 var(--ink);transform:translateY(14px);transition:transform .2s}
+.modal.on .modal-box{transform:none}
+.modal-head{display:flex;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-family:var(--display);font-weight:600;font-size:24px}
+.stepper{display:flex;gap:6px;margin-left:auto;margin-right:8px}
+.stepper i{width:28px;height:6px;border-radius:3px;background:var(--line)}
+.stepper i.on{background:var(--ink)}
+.pick{padding:24px}
+.pick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:16px}
+.ptile{border:1.5px solid var(--line);border-radius:18px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:transform .15s,box-shadow .15s,border-color .15s}
+.ptile svg{width:84px;height:84px}
+.ptile b{font-family:var(--display);font-weight:600;font-size:19px}
+.ptile span{font-size:13px;color:var(--muted)}
+.ptile:hover{border-color:var(--ink)}
+.ptile[aria-pressed="true"]{border-color:var(--ink);box-shadow:var(--pop);transform:translate(-2px,-2px)}
+.pick-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.launch-grid{display:grid;grid-template-columns:1fr 330px}
+.lform{padding:24px;border-right:1px solid var(--line)}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
+.field input,.field textarea{width:100%;border-radius:12px;border:1.5px solid var(--line2);padding:0 14px;height:46px;outline:none;font-size:16px;background:#fff}
+.field textarea{height:80px;padding:10px 14px;resize:none}
+.field input:focus,.field textarea:focus{border-color:var(--ink)}
+.field .hint{font-size:13px;color:var(--dim);margin-top:6px}
+.field .err{font-size:14px;color:var(--down);margin-top:6px;display:none}
+.field.bad input{border-color:var(--down)}.field.bad .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.team-sel{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:18px}
+.team-sel svg{width:36px;height:36px}
+.team-sel b{font-weight:600}
+.team-sel button{margin-left:auto;font-weight:600;color:var(--spy);height:36px;padding:0 8px}
+.lprev{padding:24px;background:var(--bg2)}
+.lprev .card{cursor:default;margin:10px 0 18px}
+.lprev .card:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.pdl{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:15px}
+.pdl dt{color:var(--muted)}.pdl dd{font-family:var(--mono);text-align:right}
+
+/* palette */
+.pal{position:fixed;inset:0;z-index:60;display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px;background:rgba(20,20,20,.35);opacity:0;pointer-events:none;transition:opacity .15s}
+.pal.on{opacity:1;pointer-events:auto}
+.pal-box{width:min(600px,100%);background:#fff;border:1.5px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);overflow:hidden}
+.pal-box input{width:100%;height:60px;padding:0 20px;border:0;border-bottom:1px solid var(--line);outline:none;font-size:18px}
+.pal-list{max-height:380px;overflow-y:auto;padding:6px}
+.pal-item{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:12px;text-align:left}
+.pal-item svg{width:36px;height:36px;flex:none}
+.pal-item[aria-selected="true"]{background:var(--bg2)}
+.pal-item .grow{flex:1;min-width:0}
+.pal-item small{color:var(--dim);font-size:13px}
+.pal-item .k{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.pal-hint{padding:10px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);font-family:var(--mono)}
+
+.toast{position:fixed;left:50%;bottom:24px;z-index:70;transform:translate(-50%,16px);opacity:0;background:var(--ink);color:#fff;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:500;transition:.2s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer{border-top:1px solid var(--line);padding:34px 0 50px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a:hover{color:var(--ink)}
+
+/* responsive */
+@media (max-width:1180px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.houses{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:980px){
+  .navlinks{display:none}.menu-btn{display:grid}
+  .hero{grid-template-columns:1fr;padding-top:40px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .twocol,.team-cards{grid-template-columns:1fr}
+  .launch-grid{grid-template-columns:1fr}.lform{border-right:0;border-bottom:1px solid var(--line)}
+  .pick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .nav .wrap{gap:6px}
+  .searchbtn{width:44px;height:44px;padding:0;justify-content:center}.searchbtn .st,.searchbtn kbd{display:none}
+  .nav .connect{display:none}
+  .nav .launch-lg{display:none}
+  .grid,.houses{grid-template-columns:minmax(0,1fr)}
+  .stage{padding:24px 12px 18px}
+  .stage-row{gap:6px}
+  .pedestal{padding:8px 4px}.pedestal b{font-size:14px}.pedestal span{font-size:12px}
+  .hero-stats{gap:22px}
+  .controls,.filter-in{width:100%}.controls .seg{flex:1}.controls .seg button{flex:1;padding:0 8px}
+  .kpi strong{font-size:20px}
+  .modal{padding:0;place-items:end stretch}
+  .modal-box{border-radius:22px 22px 0 0;max-height:94vh;box-shadow:none}
+  .row2{grid-template-columns:1fr}
+  .ptile svg{width:64px;height:64px}
+  .rank th,.rank td{padding:12px 6px;font-size:14px}.rank .pos{display:none}.rank .team svg{width:28px;height:28px}
+  .hide-sm{display:none}
+  .battle{padding:16px}
+  .battle-bar div span.lbl{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#" id="brand"></a>
+    <div class="navlinks">
+      <a href="#" data-route="board">Board</a>
+      <a href="#teams" data-route="teams">Teams</a>
+      <a href="#burns" data-route="burns">Burns</a>
+    </div>
+    <button class="searchbtn" id="openPal" aria-label="Search coins and teams"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="flex:none"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="st">Search coins</span><kbd>Ctrl K</kbd></button>
+    <button class="btn btn-sm connect" data-soon>Connect wallet</button>
+    <button class="btn btn-sm btn-ink" data-launch><span>Launch<span class="launch-lg"> a coin</span></span></button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <div class="mobile-menu"><a href="#">Board</a><a href="#teams">Teams</a><a href="#burns">Burns</a><button class="btn" style="width:100%;margin-top:14px" data-soon>Connect wallet</button></div>
+</nav>
+
+<main>
+<!-- ============ BOARD ============ -->
+<div class="page" id="p-board">
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <span class="pill"><span class="dot"></span>Every coin rides a stock</span>
+        <h1>Pick a team.<br><span class="hl">Launch a coin.</span></h1>
+        <p class="lede">Tickr has four house coins, each paired with a real tokenized stock. Every coin launched here pairs with one of them — so your coin rides its team, and its team rides the stock.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-ink" data-launch>Launch a coin</button>
+          <button class="btn" onclick="document.getElementById('houses').scrollIntoView({behavior:'smooth'})">Meet the teams</button>
+        </div>
+        <div class="hero-stats">
+          <div><small>Coins launched</small><strong>1,284</strong></div>
+          <div><small>House coins burned</small><strong id="hBurn">$96.4K</strong></div>
+          <div><small>24h volume</small><strong id="hVol">$2.81M</strong></div>
+        </div>
+      </div>
+      <div class="stage" aria-label="The four house coins">
+        <div class="stage-cap"><b>The house coins</b><span class="note">tap one to launch on its team</span></div>
+        <div class="stage-row" id="stage"></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec alt" id="houses">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker">House coins</div><h2>Four teams. Each one rides a stock.</h2><p class="sub">House coins are memecoins paired with tokenized stocks. When the stock moves, the team moves — and every coin on the team feels it.</p></div>
+        <div class="legend"><span><i style="background:var(--ink)"></i>House coin</span><span><i class="q"></i>Its stock</span></div>
+      </div>
+      <div class="houses" id="housesGrid"></div>
+      <p class="note" style="margin-top:16px">Example data until launch</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="kicker">Team battle</div><h2>Who's winning today?</h2><p class="sub">Share of 24h volume across all coins on each team.</p></div><a class="btn" href="#teams">Full leaderboard</a></div>
+      <div class="battle">
+        <div class="battle-bar" id="battleBar"></div>
+        <div class="tbl-wrap"><table class="rank"><thead><tr><th>Team</th><th>24h volume</th><th class="hide-sm">Coins</th><th class="hide-sm">Burned 24h</th><th>24h</th></tr></thead><tbody id="rankBody"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt" id="coins">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="kicker">Coins</div><h2>Fresh on the board</h2></div>
+        <div class="controls">
+          <input class="filter-in" id="filterIn" placeholder="Search name or ticker" aria-label="Filter coins">
+          <div class="seg" role="group" aria-label="Sort coins"><button aria-pressed="true" data-sort="trend">Trending</button><button aria-pressed="false" data-sort="new">Newest</button><button aria-pressed="false" data-sort="mcap">Market cap</button></div>
+        </div>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Filter by team"></div>
+      <div class="grid" id="grid"></div>
+      <p class="note" style="margin-top:16px">Example data until launch</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="kicker">How it works</div><h2>Three steps, one click to buy.</h2></div></div>
+      <div class="steps" id="steps"></div>
+      <div class="battle" style="margin-top:22px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><b style="font-family:var(--display);font-weight:600;font-size:20px">Where the 1% fee goes</b><span class="note">per trade, on every coin</span></div>
+        <div class="fees"><i style="width:50%;background:var(--ink)"></i><i style="width:30%;background:var(--yellow)"></i><i style="width:20%;background:var(--line2)"></i></div>
+        <div class="legend" style="font-size:15px;gap:22px"><span><i style="background:var(--ink)"></i>0.5% buys back &amp; burns the team's house coin</span><span><i style="background:var(--yellow)"></i>0.3% to the coin creator</span><span><i style="background:var(--line2)"></i>0.2% platform</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="kicker">FAQ</div><h2>Questions</h2></div></div>
+      <div class="faq">
+        <details><summary>What's a house coin?</summary><p>One of Tickr's four memecoins — $tSPY, $tNVDA, $tTSLA and $tXAI. Each one trades against a real tokenized stock. They're memecoins, not shares, and don't give you ownership of any company.</p></details>
+        <details><summary>Why does every coin have to pick a team?</summary><p>Your coin is priced in its house coin. Every buy of your coin is also a buy of the house coin, so teams grow together — and you get a stock's momentum under your meme.</p></details>
+        <details><summary>Do I need the stock or the house coin to buy?</summary><p>No. Pay with SOL and Tickr routes it through the stock and the house coin into your coin in one transaction.</p></details>
+        <details><summary>Where do fees go?</summary><p>0.5% of every trade buys back and burns the house coin your coin is paired with. 0.3% goes to the coin's creator, 0.2% to the platform.</p></details>
+        <details><summary>Who can use Tickr?</summary><p>Tokenized stocks aren't available to US persons or in some other regions, so trading on Tickr isn't either. Check your local rules.</p></details>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ TEAMS ============ -->
+<div class="page" id="p-teams">
+  <div class="wrap">
+    <div class="page-head"><div class="kicker">Teams</div><h2>The team leaderboard</h2><p class="sub">How each house coin and its coins are doing. Example data until launch.</p></div>
+    <div class="battle" style="margin-bottom:28px"><div class="battle-bar" id="battleBar2"></div><div class="tbl-wrap"><table class="rank"><thead><tr><th>Team</th><th>24h volume</th><th class="hide-sm">Coins</th><th class="hide-sm">Burned 24h</th><th>24h</th></tr></thead><tbody id="rankBody2"></tbody></table></div></div>
+    <div class="team-cards" id="teamCards"></div>
+  </div>
+</div>
+
+<!-- ============ BURNS ============ -->
+<div class="page" id="p-burns">
+  <div class="wrap">
+    <div class="page-head"><div class="kicker">Burns</div><h2>Every trade burns a house coin.</h2><p class="sub">0.5% of all volume buys back the paired house coin and burns it. Example data until launch.</p></div>
+    <div class="kpis" id="burnKpis"></div>
+    <div class="twocol">
+      <div class="panel"><div class="panel-head"><h3>Burned per day</h3><span class="note">Last 30 days, USD</span></div><div style="padding:16px 20px"><canvas id="burnChart"></canvas></div><div class="legend" style="padding:0 20px 18px" id="burnLegend"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Burn log</h3><span class="dot" aria-hidden="true"></span></div><div id="burnLog"></div></div>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Tickr · House coins are memecoins, not securities, and can go to zero. Not available to US persons. Not financial advice.</span><span><a href="#">X</a> · <a href="#">Docs</a> · <a href="#">Terms</a></span></div></footer>
+
+<!-- drawer -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-label="Coin details" aria-hidden="true"><div class="dr-head" id="drHead"></div><div class="dr-body" id="drBody"></div></aside>
+
+<!-- launch -->
+<div class="modal" id="launch" role="dialog" aria-modal="true" aria-labelledby="lTitle" aria-hidden="true">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="lTitle">Pick your team</h3><div class="stepper" aria-hidden="true"><i id="st1" class="on"></i><i id="st2"></i></div><button class="x" data-close aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div id="lStep1" class="pick">
+      <p style="color:var(--muted)">Your coin will trade against this house coin, and its fees will burn it. You can't change teams later.</p>
+      <div class="pick-grid" id="pickGrid"></div>
+      <div class="pick-foot"><button class="btn btn-ink" id="toStep2">Continue</button></div>
+    </div>
+    <div id="lStep2" class="launch-grid" hidden>
+      <form class="lform" id="lForm" novalidate>
+        <div class="team-sel" id="teamSel"></div>
+        <div class="row2">
+          <div class="field" id="fNameF"><label for="fName">Name</label><input id="fName" maxlength="32" placeholder="Cope Capital"><div class="err">Add a name for your coin</div></div>
+          <div class="field" id="fTickF"><label for="fTick">Ticker</label><input id="fTick" maxlength="10" placeholder="COPE"><div class="err">Add a ticker — letters and numbers</div></div>
+        </div>
+        <div class="field"><label for="fDesc">Description</label><textarea id="fDesc" maxlength="160" placeholder="What's your coin about?"></textarea></div>
+        <div class="field"><label for="fImg">Image</label><input id="fImg" type="file" accept="image/*" style="padding-top:10px"><div class="hint">Square PNG or JPG works best</div></div>
+        <button class="btn btn-ink" type="submit" style="width:100%" id="lSubmit">Launch</button>
+        <p class="note" style="margin-top:10px">~0.02 SOL in network fees</p>
+      </form>
+      <div class="lprev">
+        <span class="note">Preview — how it shows on the board</span>
+        <div id="lPrev"></div>
+        <dl class="pdl"><dt>Supply</dt><dd>1,000,000,000</dd><dt>Paired with</dt><dd id="pvQ">$tNVDA</dd><dt>Which rides</dt><dd id="pvS">NVDAx</dd><dt>Fees burn</dt><dd id="pvB">$tNVDA</dd></dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- palette -->
+<div class="pal" id="pal" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
+  <div class="pal-box"><input id="palIn" placeholder="Search coins or teams — or: launch COPE nvda" autocomplete="off"><div class="pal-list" id="palList" role="listbox"></div><div class="pal-hint">↑↓ move · Enter open · Esc close</div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== characters ===== */
+const TEAMS=[
+ {k:'spy',t:'tSPY',name:'Team SPY',stock:'SPYx',sn:'S&P 500',c:'#3f6bff',light:'#e8eeff',px:0.0218,sp:688.3,vibe:'The calm one'},
+ {k:'nvda',t:'tNVDA',name:'Team NVDA',stock:'NVDAx',sn:'NVIDIA',c:'#2fbf5b',light:'#e5f7ea',px:0.0481,sp:188.4,vibe:'The GPU maxi'},
+ {k:'tsla',t:'tTSLA',name:'Team TSLA',stock:'TSLAx',sn:'Tesla',c:'#ff5246',light:'#ffeceb',px:0.0337,sp:412.1,vibe:'The wild one'},
+ {k:'xai',t:'tXAI',name:'Team XAI',stock:'XAI',sn:'xAI pre-IPO',c:'#8a63ff',light:'#f0ebff',px:0.0612,sp:41.7,vibe:'The hype one'},
+];
+const TM=Object.fromEntries(TEAMS.map(t=>[t.k,t]));
+function face(k,id=''){
+  const t=TM[k],c=t.c,I='#141414';
+  const base=`<circle cx="50" cy="54" r="40" fill="${c}" stroke="${I}" stroke-width="4"/><circle cx="50" cy="54" r="31" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3.5"/><ellipse cx="32" cy="64" rx="5.5" ry="3.5" fill="#fff" opacity=".35"/><ellipse cx="68" cy="64" rx="5.5" ry="3.5" fill="#fff" opacity=".35"/>`;
+  const parts={
+    spy:`<circle cx="39" cy="50" r="5" fill="${I}"/><circle cx="61" cy="50" r="5" fill="${I}"/><circle cx="40.5" cy="48.5" r="1.6" fill="#fff"/><circle cx="62.5" cy="48.5" r="1.6" fill="#fff"/><path d="M42 64q8 6 16 0" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`,
+    nvda:`<rect x="27" y="43" width="20" height="12" rx="5" fill="${I}"/><rect x="53" y="43" width="20" height="12" rx="5" fill="${I}"/><path d="M47 48h6" stroke="${I}" stroke-width="3.5"/><rect x="31" y="45.5" width="6" height="2.5" rx="1.2" fill="#fff" opacity=".7"/><path d="M41 65q9 5 18-2" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/>`,
+    tsla:`<circle cx="39" cy="50" r="5.5" fill="${I}"/><path d="M56 51q5-5 10 0" fill="none" stroke="${I}" stroke-width="3.8" stroke-linecap="round"/><circle cx="40.5" cy="48.5" r="1.7" fill="#fff"/><path d="M40 62q10 12 20 0z" fill="${I}"/><path d="M76 16l-7 12h6l-5 11" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+    xai:`<path d="M33 51q6-6 12 0M55 51q6-6 12 0" fill="none" stroke="${I}" stroke-width="3.8" stroke-linecap="round"/><path d="M42 63q8 7 16 0" fill="none" stroke="${I}" stroke-width="3.5" stroke-linecap="round"/><path d="M80 14l2.5 6.5 6.5 2.5-6.5 2.5L80 32l-2.5-6.5-6.5-2.5 6.5-2.5z" fill="${I}"/>`
+  };
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">${base}${parts[k]}</svg>`;
+}
+const LOGO=`<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="6" y="6" width="88" height="88" rx="24" fill="#ffd23f" stroke="#141414" stroke-width="6"/><polyline points="24 64 42 46 56 58 76 36" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="62 36 76 36 76 50" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+document.getElementById('brand').innerHTML=LOGO+'Tickr';
+
+/* ===== data ===== */
+function rw(n,vol,drift){const a=[1];for(let i=1;i<n;i++)a.push(a[i-1]*(1+(Math.random()-.5+drift)*vol));return a}
+TEAMS.forEach(t=>{t.ss=rw(96,.012,.02);t.hs=t.ss.map((v,i)=>Math.pow(v,1.8)*(1+(Math.random()-.5)*.012));t.chg=(t.hs.at(-1)/t.hs[0]-1)*100;t.burn=Math.random()*9000+4000;t.vol=0;t.coins=0});
+const NAMES=[['GPU Rich','GPURICH','nvda'],['Cybertruck Dog','CYBERDOG','tsla'],['Index Frog','IDXFROG','spy'],['Grok Cat','GROKCAT','xai'],['Jensen\'s Jacket','JACKET','nvda'],['Mars Cope','MARS','tsla'],['Boring Bull','BBULL','spy'],['Colossus','COLOSS','xai'],['Leather Inu','LEATHER','nvda'],['Elon\'s Doge','EDOGE','tsla'],['Dollar Cost','DCA','spy'],['Truth Seeker','SEEKER','xai'],['H100 Hamster','HAMSTER','nvda'],['Roadster','ROADSTR','tsla'],['Boomer Coin','BOOMER','spy'],['Ani Bot','ANI','xai'],['Blackwell','BWELL','nvda'],['Optimus Prime Inu','OPTI','tsla'],['Dividend Dog','DIVDOG','spy'],['Memphis Mode','MEMPHIS','xai']];
+const PAL=['#ffd23f','#ffb3c7','#a8e6ff','#c4f5a8','#ffcf99','#d9c8ff','#b8f0e0','#ffe0a3'];
+let coins=NAMES.map(([n,t,k],i)=>{const tm=TM[k];const own=rw(96,.065,.035);const series=own.map((v,j)=>v*Math.pow(tm.hs[j],1.6));const mcap=Math.exp(Math.random()*4+11.3);
+  return {n,t,k,series,mcap,usd:mcap/1e9,vol:mcap*(.03+Math.random()*.15),chg:(series.at(-1)/series[0]-1)*100,holders:(Math.random()*2800+90)|0,age:i*9+(Math.random()*8|0),bg:PAL[i%PAL.length],img:null}});
+const byT=t=>coins.find(c=>c.t===t);
+function teamAgg(){TEAMS.forEach(t=>{const l=coins.filter(c=>c.k===t.k);t.coins=l.length*61+(t.k.length*13);t.vol=l.reduce((s,c)=>s+c.vol,0)})}
+
+/* ===== helpers ===== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const usd=v=>v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(2);
+const small=v=>{if(v>=1)return v.toFixed(2);if(v>=.001)return v.toFixed(4);const z=Math.floor(-Math.log10(v));return `0.0<sub style="font-size:.7em">${z}</sub>${(v*Math.pow(10,z+3)).toFixed(0)}`};
+const pct=v=>`<span class="${v>=0?'up':'down'}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const av=(c,s)=>c.img?`<span class="av av-${s}" style="background:url(${c.img}) center/cover"></span>`:`<span class="av av-${s}" style="background:${c.bg}">${esc((c.t||'?')[0])}</span>`;
+const tbadge=k=>{const t=TM[k];return `<span class="tbadge" style="background:${t.light};color:${t.c}">${face(k)}${t.name}</span>`};
+function toast(m){const el=$('#toast');el.textContent=m;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2800)}
+
+/* ===== charts ===== */
+function line(cv,a,b,color,opt={}){
+  const dpr=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;if(!w)return;
+  cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
+  const n=s=>s.map(v=>v/s[0]-1);a=n(a);b=b?n(b):[];const all=a.concat(b);let mn=Math.min(...all),mx=Math.max(...all);if(mx-mn<1e-6){mx+=.01;mn-=.01}
+  const p=opt.pad??5,X=i=>i/(a.length-1)*w,Y=v=>p+(1-(v-mn)/(mx-mn))*(h-p*2);
+  if(opt.grid){x.strokeStyle='#efeee9';x.lineWidth=1;for(let i=1;i<4;i++){x.beginPath();x.moveTo(0,h*i/4);x.lineTo(w,h*i/4);x.stroke()}}
+  if(b.length){x.beginPath();b.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.setLineDash([4,4]);x.strokeStyle='#a3a39e';x.lineWidth=1.6;x.stroke();x.setLineDash([])}
+  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,color+'33');g.addColorStop(1,color+'00');
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(w,h);x.lineTo(0,h);x.fillStyle=g;x.fill();
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=color;x.lineWidth=opt.lw||2.2;x.lineJoin='round';x.lineCap='round';x.stroke();
+  if(opt.dot){x.beginPath();x.arc(X(a.length-1),Y(a.at(-1)),4.5,0,7);x.fillStyle='#fff';x.fill();x.lineWidth=2.5;x.strokeStyle=color;x.stroke()}
+}
+function stacked(cv,days){
+  const dpr=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;if(!w)return;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  const tot=days.map(d=>d.reduce((a,b)=>a+b,0)),mx=Math.max(...tot),bw=w/days.length;
+  x.strokeStyle='#efeee9';for(let i=0;i<=4;i++){x.beginPath();x.moveTo(0,h*i/4);x.lineTo(w,h*i/4);x.stroke()}
+  days.forEach((d,i)=>{let y=h;d.forEach((v,j)=>{const bh=v/mx*(h-6);x.fillStyle=TEAMS[j].c;x.fillRect(i*bw+bw*.18,y-bh,bw*.64,bh);y-=bh});
+    x.strokeStyle='#141414';x.lineWidth=1.2;x.strokeRect(i*bw+bw*.18,y,bw*.64,h-y)});
+}
+
+/* ===== hero stage ===== */
+$('#stage').innerHTML=TEAMS.map(t=>`<button class="char" data-team="${t.k}" aria-label="Launch on ${t.name}"><span class="face">${face(t.k)}</span><span class="shadow"></span><span class="pedestal"><b>$${t.t}</b><span>rides ${t.stock}</span></span></button>`).join('');
+$('#stage').addEventListener('click',e=>{const b=e.target.closest('[data-team]');if(b)openLaunch(b.dataset.team,2)});
+
+/* ===== houses ===== */
+function renderHouses(){
+  $('#housesGrid').innerHTML=TEAMS.map(t=>`<div class="house" data-house="${t.k}" tabindex="0" role="button" aria-label="Show ${t.name} coins">
+   <div class="house-top">${face(t.k)}<div class="meta"><b>$${t.t}</b><span>${t.vibe} · rides ${t.stock}</span></div></div>
+   <div class="px"><strong>$${t.px.toFixed(4)}</strong>${pct(t.chg)}</div>
+   <canvas data-hc="${t.k}"></canvas>
+   <dl><dt>${t.stock}</dt><dd>$${t.sp.toFixed(2)}</dd><dt>Coins on team</dt><dd>${t.coins}</dd><dt>Burned 24h</dt><dd>${usd(t.burn)}</dd></dl>
+   <button class="btn btn-team" style="background:${t.c}" data-launch-team="${t.k}">Launch on ${t.name}</button></div>`).join('');
+  $$('canvas[data-hc]').forEach(cv=>{const t=TM[cv.dataset.hc];line(cv,t.hs.slice(-60),t.ss.slice(-60),t.c,{dot:true})});
+}
+$('#housesGrid').addEventListener('click',e=>{const lb=e.target.closest('[data-launch-team]');if(lb){e.stopPropagation();openLaunch(lb.dataset.launchTeam,2);return}
+  const h=e.target.closest('[data-house]');if(h){team=h.dataset.house;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})}});
+$('#housesGrid').addEventListener('keydown',e=>{const h=e.target.closest('[data-house]');if(h&&e.key==='Enter'&&e.target===h){team=h.dataset.house;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})}});
+
+/* ===== battle ===== */
+function renderBattle(barSel,bodySel){
+  const tot=TEAMS.reduce((s,t)=>s+t.vol,0);const sorted=[...TEAMS].sort((a,b)=>b.vol-a.vol);
+  $(barSel).innerHTML=TEAMS.map(t=>{const p=t.vol/tot*100;return `<div style="flex-basis:${p}%;background:${t.c}" title="${t.name} ${p.toFixed(0)}%">${face(t.k)}<span class="lbl">${p.toFixed(0)}%</span></div>`}).join('');
+  $(bodySel).innerHTML=sorted.map((t,i)=>`<tr><td><span class="team"><span class="pos">${i+1}</span>${face(t.k)}${t.name}</span></td><td>${usd(t.vol)}</td><td class="hide-sm">${t.coins}</td><td class="hide-sm">${usd(t.burn)}</td><td>${pct(t.chg)}</td></tr>`).join('');
+}
+
+/* ===== board ===== */
+let team='all',sort='trend',text='';
+function renderChips(){
+  $('#chips').innerHTML=`<button class="chip all" data-t="all" aria-pressed="${team==='all'}">All teams <span class="ct">${coins.length}</span></button>`+TEAMS.map(t=>`<button class="chip" data-t="${t.k}" aria-pressed="${team===t.k}">${face(t.k)}${t.name}<span class="ct">${coins.filter(c=>c.k===t.k).length}</span></button>`).join('');
+}
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;team=b.dataset.t;renderChips();renderGrid()});
+$$('[data-sort]').forEach(b=>b.addEventListener('click',()=>{sort=b.dataset.sort;$$('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderGrid()}));
+$('#filterIn').addEventListener('input',e=>{text=e.target.value.trim().toLowerCase();renderGrid()});
+function cardHTML(c,fl=''){return `<button class="card ${fl}" data-coin="${esc(c.t)}" aria-label="${esc(c.n)}, ${TM[c.k].name}">
+ <div class="card-top">${av(c,46)}<div class="meta"><div class="nm">${esc(c.n)}</div><div class="tk">$${esc(c.t)}</div></div><div class="mc"><b>${usd(c.mcap)}</b><span>mkt cap</span></div></div>
+ <canvas data-sp="${esc(c.t)}"></canvas>
+ <div class="card-foot">${tbadge(c.k)}<span class="chg">${pct(c.chg)}</span></div></button>`}
+function renderGrid(fl={}){
+  let l=coins.filter(c=>(team==='all'||c.k===team)&&(!text||c.n.toLowerCase().includes(text)||c.t.toLowerCase().includes(text)));
+  l.sort((a,b)=>sort==='new'?a.age-b.age:sort==='mcap'?b.mcap-a.mcap:b.chg-a.chg);
+  $('#grid').innerHTML=l.length?l.map(c=>cardHTML(c,fl[c.t]||'')).join(''):`<div class="empty"><b>Nothing here yet</b>Be the first coin on this team.<div style="margin-top:16px"><button class="btn btn-ink" data-launch>Launch a coin</button></div></div>`;
+  $$('canvas[data-sp]').forEach(cv=>{const c=byT(cv.dataset.sp);line(cv,c.series.slice(-48),null,TM[c.k].c,{pad:3,lw:2})});
+}
+$('#grid').addEventListener('click',e=>{const c=e.target.closest('[data-coin]');if(c)openCoin(c.dataset.coin)});
+
+/* ===== steps ===== */
+$('#steps').innerHTML=[
+ ['1','Pick a team',`Choose a house coin. Your coin will trade against it — and ride its stock.`,`${face('spy')}${face('nvda')}${face('tsla')}${face('xai')}`],
+ ['2','Launch your coin',`Name, ticker, image. 1B supply on a bonding curve priced in your team's house coin.`,`<span class="av av-52" style="background:#ffd23f;width:62px;height:62px;font-size:26px">C</span><span class="arrow">→</span>${face('nvda')}`],
+ ['3','Every trade burns',`Buyers pay in SOL. 0.5% of each trade buys back and burns your team's house coin.`,`<span class="num" style="font-size:15px;padding:6px 10px;border:1.5px solid #141414;border-radius:10px;background:#fff">SOL</span><span class="arrow">→</span>${face('tsla')}<span style="font-size:30px">🔥</span>`],
+].map(([n,h,p,ill])=>`<div class="step"><div class="ill">${ill}</div><div class="n">Step ${n}</div><h3>${h}</h3><p>${p}</p></div>`).join('');
+$$('.step .ill svg').forEach((s,i,a)=>{if(s.closest('.step')===$$('.step')[0]){s.style.width='48px';s.style.height='48px'}});
+
+/* ===== drawer ===== */
+let openT=null,side='buy',lastFocus=null,tf=96;
+const W=()=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';let s='';for(let i=0;i<4;i++)s+=a[Math.random()*a.length|0];return s+'…'+a[Math.random()*a.length|0]+a[Math.random()*a.length|0]};
+function tradeRow(c){const b=Math.random()>.4;return `<div class="row-s"><span class="${b?'up':'down'}" style="width:42px">${b?'BUY':'SELL'}</span><span>${W()}</span><span class="r">${(Math.random()*900+20).toFixed(0)} $${TM[c.k].t}</span></div>`}
+function openCoin(t){
+  const c=byT(t);if(!c)return;openT=t;if(!$('#drawer').classList.contains('on'))lastFocus=document.activeElement;const tm=TM[c.k];
+  $('#drHead').innerHTML=`${av(c,52)}<div class="meta"><div class="nm">${esc(c.n)}</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><span class="num" style="color:var(--muted);font-size:14px">$${esc(c.t)}</span>${tbadge(c.k)}</div></div><button class="x" data-close aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  $('#drBody').innerHTML=`
+  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span class="big-px" id="drPx">$${small(c.usd)}</span>${pct(c.chg)}</div>
+  <div class="num" style="font-size:14px;color:var(--muted)">= ${small(c.usd/tm.px)} $${tm.t}</div>
+  <div class="tf" role="group" aria-label="Timeframe"><button aria-pressed="${tf===24}" data-tf="24">1H</button><button aria-pressed="${tf===96}" data-tf="96">24H</button></div>
+  <canvas id="drChart"></canvas>
+  <div class="legend" style="margin-top:8px"><span><i style="background:${tm.c}"></i>$${esc(c.t)}</span><span><i class="q"></i>$${tm.t}</span></div>
+  <div class="trade">
+    <div class="seg" role="group" aria-label="Buy or sell"><button aria-pressed="${side==='buy'}" data-side="buy">Buy</button><button aria-pressed="${side==='sell'}" data-side="sell">Sell</button></div>
+    <label class="sr" for="amtIn">Amount</label><div class="amt"><input id="amtIn" inputmode="decimal" value="1"><span>${side==='buy'?'SOL':esc(c.t)}</span></div>
+    <div class="presets">${side==='buy'?['0.1','0.5','1','5'].map(v=>`<button data-amt="${v}">${v} SOL</button>`).join(''):['25%','50%','75%','100%'].map(v=>`<button>${v}</button>`).join('')}</div>
+    <div class="route" aria-label="Route"><span class="step-r">SOL</span><span class="arr">→</span><span class="step-r">${tm.stock}</span><span class="arr">→</span><span class="step-r">$${tm.t}</span><span class="arr">→</span><span class="step-r">$${esc(c.t)}</span></div>
+    <div class="youget"><span>You get about</span><b id="youGet"></b></div>
+    <button class="btn btn-ink" style="width:100%" data-soon>${side==='buy'?'Buy':'Sell'} $${esc(c.t)}</button>
+  </div>
+  <div class="mini"><div><small>Market cap</small><b>${usd(c.mcap)}</b></div><div><small>24h volume</small><b>${usd(c.vol)}</b></div><div><small>Holders</small><b>${c.holders.toLocaleString()}</b></div><div><small>Burned for team</small><b>${usd(c.vol*.005)}</b></div></div>
+  <div class="dr-sec"><h4>Top holders</h4>${[18.2,9.6,6.1,4.4,3.2].map(h=>`<div class="row-s"><span style="width:90px">${W()}</span><span class="bar"><i style="width:${h*4}%;background:${tm.c}"></i></span><span style="width:52px;text-align:right">${h}%</span></div>`).join('')}</div>
+  <div class="dr-sec"><h4>Recent trades</h4><div id="drTrades">${Array.from({length:6},()=>tradeRow(c)).join('')}</div></div>
+  <p class="note" style="margin-top:18px">Example data until launch</p>`;
+  $('#drawer').classList.add('on');$('#drawer').setAttribute('aria-hidden','false');$('#scrim').classList.add('on');document.body.classList.add('lock');
+  requestAnimationFrame(()=>{drawDr();calc();$('#drawer .x').focus()});
+}
+function drawDr(){const c=byT(openT);if(!c||!$('#drChart'))return;line($('#drChart'),c.series.slice(-tf),TM[c.k].hs.slice(-tf),TM[c.k].c,{grid:true,dot:true,lw:2.6})}
+function calc(){const c=byT(openT);const el=$('#youGet');if(!c||!el)return;const v=parseFloat($('#amtIn').value)||0;
+  el.textContent=side==='buy'?`${Math.round(v*182.6/c.usd).toLocaleString()} ${c.t}`:`${(v*c.usd/182.6).toFixed(4)} SOL`}
+$('#drawer').addEventListener('click',e=>{
+  const b=e.target.closest('[data-tf]');if(b){tf=+b.dataset.tf;$$('[data-tf]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawDr()}
+  const s=e.target.closest('[data-side]');if(s&&s.dataset.side!==side){side=s.dataset.side;openCoin(openT)}
+  const a=e.target.closest('[data-amt]');if(a){$('#amtIn').value=a.dataset.amt;calc()}});
+$('#drawer').addEventListener('input',e=>{if(e.target.id==='amtIn')calc()});
+
+/* ===== launch ===== */
+let lt='nvda',lImg=null;
+function renderPick(){$('#pickGrid').innerHTML=TEAMS.map(t=>`<button class="ptile" data-pick="${t.k}" aria-pressed="${lt===t.k}">${face(t.k)}<b>$${t.t}</b><span>${t.vibe}<br>rides ${t.stock}</span></button>`).join('')}
+$('#pickGrid').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;lt=b.dataset.pick;renderPick()});
+$('#pickGrid').addEventListener('dblclick',e=>{if(e.target.closest('[data-pick]'))step(2)});
+function step(n){$('#lStep1').hidden=n!==1;$('#lStep2').hidden=n!==2;$('#st2').classList.toggle('on',n===2);$('#lTitle').textContent=n===1?'Pick your team':'Launch your coin';
+  if(n===2){const t=TM[lt];$('#teamSel').innerHTML=`${face(lt)}<div><b>${t.name}</b><div style="font-size:14px;color:var(--muted)">Paired with $${t.t}, which rides ${t.stock}</div></div><button type="button" id="chTeam">Change</button>`;renderPrev();setTimeout(()=>$('#fName').focus(),40)}
+  else setTimeout(()=>$('[data-pick][aria-pressed="true"]').focus(),40)}
+$('#toStep2').addEventListener('click',()=>step(2));
+$('#teamSel').addEventListener('click',e=>{if(e.target.id==='chTeam')step(1)});
+const lTick=()=>($('#fTick').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+function renderPrev(){const t=TM[lt],tk=lTick()||'COPE';
+  const c={n:$('#fName').value||'Cope Capital',t:tk,k:lt,series:rw(48,.06,.05),mcap:4100,chg:0,bg:'#ffd23f',img:lImg};
+  $('#lPrev').innerHTML=cardHTML(c).replace('<button','<div').replace(/<\/button>$/,'</div>');line($('#lPrev canvas'),c.series,null,t.c,{pad:3,lw:2});
+  $('#pvQ').textContent='$'+t.t;$('#pvS').textContent=t.stock;$('#pvB').textContent='$'+t.t;$('#lSubmit').textContent=`Launch $${tk} on ${t.name}`}
+['fName','fTick'].forEach(id=>$('#'+id).addEventListener('input',()=>{$('#'+id+'F').classList.remove('bad');renderPrev()}));
+$('#fImg').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{lImg=r.result;renderPrev()};r.readAsDataURL(f)});
+$('#lForm').addEventListener('submit',e=>{e.preventDefault();let ok=true;if(!$('#fName').value.trim()){$('#fNameF').classList.add('bad');ok=false}if(!lTick()){$('#fTickF').classList.add('bad');ok=false}
+  if(ok)toast(`$${lTick()} on ${TM[lt].name} is ready — launches open soon`)});
+function openLaunch(k,s=1,tick){lastFocus=document.activeElement;closeAll(true);if(k)lt=k;if(tick)$('#fTick').value=tick;renderPick();$('#launch').classList.add('on');$('#launch').setAttribute('aria-hidden','false');document.body.classList.add('lock');step(s)}
+$('#launch').addEventListener('click',e=>{if(e.target.id==='launch')closeAll()});
+
+/* ===== palette ===== */
+let pi=[],ps=0;
+function openPal(){lastFocus=document.activeElement;$('#pal').classList.add('on');$('#pal').setAttribute('aria-hidden','false');document.body.classList.add('lock');$('#palIn').value='';renderPal();setTimeout(()=>$('#palIn').focus(),30)}
+function renderPal(){const v=$('#palIn').value.trim(),f=v.toLowerCase();pi=[];
+  const m=v.match(/^launch\s+(\w+)(?:\s+(\w+))?/i);
+  if(m){const tm=m[2]?TEAMS.find(t=>t.k.startsWith(m[2].toLowerCase())||t.t.toLowerCase()===m[2].toLowerCase()):null;
+    pi.push({go:()=>openLaunch(tm?.k,tm?2:1,m[1].toUpperCase()),h:`${tm?face(tm.k):'<span class="av av-30" style="background:#ffd23f;width:36px;height:36px">+</span>'}<div class="grow"><b>Launch $${esc(m[1].toUpperCase())}${tm?' on '+tm.name:''}</b><br><small>${tm?'Opens the launch form, team picked':'Add a team: spy, nvda, tsla or xai'}</small></div><span class="k">↵</span>`})}
+  else{TEAMS.filter(t=>!f||t.k.includes(f)||t.t.toLowerCase().includes(f)||t.sn.toLowerCase().includes(f)).forEach(t=>pi.push({go:()=>{route('board');team=t.k;renderChips();renderGrid();$('#coins').scrollIntoView({behavior:'smooth'})},h:`${face(t.k)}<div class="grow"><b>${t.name}</b><br><small>$${t.t} · rides ${t.stock}</small></div><span class="k">$${t.px.toFixed(4)}</span>`}));
+    coins.filter(c=>!f||c.n.toLowerCase().includes(f)||c.t.toLowerCase().includes(f)).slice(0,6).forEach(c=>pi.push({go:()=>{route('board',true);openCoin(c.t)},h:`${av(c,30)}<div class="grow"><b>${esc(c.n)}</b><br><small>$${c.t} · ${TM[c.k].name}</small></div><span class="k">${usd(c.mcap)}</span>`}))}
+  ps=0;$('#palList').innerHTML=pi.length?pi.map((x,i)=>`<button class="pal-item" role="option" data-i="${i}" aria-selected="${i===0}">${x.h}</button>`).join(''):`<div style="padding:20px;color:var(--muted)">No matches. Try a ticker, a team, or "launch COPE nvda".</div>`}
+function palGo(i){const x=pi[i];if(!x)return;$('#pal').classList.remove('on');$('#pal').setAttribute('aria-hidden','true');document.body.classList.remove('lock');x.go()}
+$('#palIn').addEventListener('input',renderPal);
+$('#palIn').addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!pi.length)return;ps=(ps+(e.key==='ArrowDown'?1:-1)+pi.length)%pi.length;$$('.pal-item').forEach((b,i)=>b.setAttribute('aria-selected',i===ps));$$('.pal-item')[ps].scrollIntoView({block:'nearest'})}if(e.key==='Enter'){e.preventDefault();palGo(ps)}});
+$('#palList').addEventListener('click',e=>{const b=e.target.closest('.pal-item');if(b)palGo(+b.dataset.i)});
+$('#pal').addEventListener('click',e=>{if(e.target.id==='pal')closeAll()});
+$('#openPal').addEventListener('click',openPal);
+
+/* ===== global ===== */
+function closeAll(keepFocus){
+  ['#drawer','#launch','#pal'].forEach(s=>{$(s).classList.remove('on');$(s).setAttribute('aria-hidden','true')});$('#scrim').classList.remove('on');document.body.classList.remove('lock');openT=null;
+  if(!keepFocus&&lastFocus&&lastFocus.focus)lastFocus.focus()}
+$('#scrim').addEventListener('click',()=>closeAll());
+document.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeAll();if(e.target.closest('[data-soon]'))toast('Wallets connect at launch — launches open soon');if(e.target.closest('[data-launch]')){e.preventDefault();openLaunch(null,1)}});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPal()}if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();openPal()}if(e.key==='Escape')closeAll()});
+$('#menuBtn').addEventListener('click',()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)});
+
+/* ===== pages ===== */
+const burnDays=Array.from({length:30},(_,i)=>TEAMS.map((t,j)=>Math.round((900+i*60)*(1+j*.25)*(.6+Math.random()*.8))));
+function renderTeams(){
+  renderBattle('#battleBar2','#rankBody2');
+  $('#teamCards').innerHTML=[...TEAMS].sort((a,b)=>b.vol-a.vol).map((t,i)=>`<div class="tcard"><div class="tcard-head" style="background:${t.light}">${face(t.k)}<div><b>${t.name}</b><span>$${t.t} · rides ${t.stock} (${t.sn})</span></div><span class="rk">#${i+1}</span></div>
+    ${coins.filter(c=>c.k===t.k).sort((a,b)=>b.mcap-a.mcap).slice(0,5).map(c=>`<div class="trow" data-coin="${c.t}" tabindex="0">${av(c,30)}<span class="nm">${esc(c.n)}</span><span class="v">${usd(c.mcap)}</span><span class="v" style="width:64px;text-align:right">${pct(c.chg)}</span></div>`).join('')}
+    <div style="padding:14px 20px"><button class="btn btn-team" style="background:${t.c};width:100%" data-launch-team2="${t.k}">Launch on ${t.name}</button></div></div>`).join('');
+}
+$('#teamCards').addEventListener('click',e=>{const l=e.target.closest('[data-launch-team2]');if(l){openLaunch(l.dataset.launchTeam2,2);return}const r=e.target.closest('[data-coin]');if(r)openCoin(r.dataset.coin)});
+$('#teamCards').addEventListener('keydown',e=>{const r=e.target.closest('[data-coin]');if(r&&e.key==='Enter')openCoin(r.dataset.coin)});
+function burnRow(_,i=0){const t=TEAMS[Math.random()*4|0];return `<div class="log-row">${face(t.k)}<div><div style="font-weight:600">$${t.t} burned</div><span class="t">${new Date(Date.now()-i*47e3).toTimeString().slice(0,8)}</span></div><b>−${(Math.random()*80+5).toFixed(1)}K $${t.t}</b></div>`}
+function renderBurns(){
+  $('#burnKpis').innerHTML=TEAMS.map(t=>`<div class="kpi"><small style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;display:inline-block">${face(t.k)}</span>$${t.t} burned 24h</small><strong>${usd(t.burn)}</strong></div>`).join('');
+  stacked($('#burnChart'),burnDays);
+  $('#burnLegend').innerHTML=TEAMS.map(t=>`<span><i style="background:${t.c}"></i>$${t.t}</span>`).join('');
+  if(!$('#burnLog').children.length)$('#burnLog').innerHTML=Array.from({length:8},burnRow).join('');
+}
+const ROUTES={'':'board',teams:'teams',burns:'burns'};
+let cur='board';
+function route(r,keep){
+  r=r||ROUTES[location.hash.slice(1)]||'board';cur=r;
+  $$('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+r));
+  $$('.navlinks a').forEach(a=>a.dataset.route===r?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+  $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
+  requestAnimationFrame(()=>{if(r==='board'){renderHouses();renderBattle('#battleBar','#rankBody');renderGrid()}if(r==='teams')renderTeams();if(r==='burns')renderBurns()});
+  if(!keep)window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',()=>route());
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{route(cur,true);if(openT)drawDr()},150)});
+
+/* ===== live ===== */
+function tick(){
+  TEAMS.forEach(t=>{const d=(Math.random()-.49)*.004;t.sp*=1+d;t.ss.push(t.ss.at(-1)*(1+d));t.ss.shift();const hd=d*1.8+(Math.random()-.48)*.01;t.px*=1+hd;t.hs.push(t.hs.at(-1)*(1+hd));t.hs.shift();t.chg=(t.hs.at(-1)/t.hs[0]-1)*100;t.burn+=Math.random()*60});
+  const fl={};
+  coins.forEach(c=>{const tm=TM[c.k];const hd=tm.hs.at(-1)/tm.hs.at(-2)-1;const d=Math.random()<.3?(Math.random()-.46)*.05:0;const tot=(1+d)*(1+hd*1.6)-1;c.series.push(c.series.at(-1)*(1+tot));c.series.shift();c.usd*=1+tot;c.mcap=c.usd*1e9;c.chg=(c.series.at(-1)/c.series[0]-1)*100;if(d){c.vol+=c.mcap*Math.abs(d)*.3;fl[c.t]=tot>=0?'fu':'fd'}});
+  teamAgg();
+  const locked=document.body.classList.contains('lock');
+  if(cur==='board'&&!locked){renderHouses();renderBattle('#battleBar','#rankBody');renderGrid(fl)}
+  if(cur==='burns'&&!locked){$('#burnLog').insertAdjacentHTML('afterbegin',burnRow());$('#burnLog').lastElementChild.remove();$('#burnKpis').innerHTML=TEAMS.map(t=>`<div class="kpi"><small style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;display:inline-block">${face(t.k)}</span>$${t.t} burned 24h</small><strong>${usd(t.burn)}</strong></div>`).join('')}
+  if(openT){const c=byT(openT);const p=$('#drPx');if(p)p.innerHTML='$'+small(c.usd);drawDr();if(Math.random()<.5){const tr=$('#drTrades');if(tr){tr.insertAdjacentHTML('afterbegin',tradeRow(c));tr.lastElementChild.remove()}}}
+  $('#hBurn').textContent=usd(96400+TEAMS.reduce((s,t)=>s+t.burn,0)-30000);$('#hVol').textContent=usd(TEAMS.reduce((s,t)=>s+t.vol,0)*1.2);
+}
+teamAgg();renderChips();route();setInterval(tick,2400);
+</script>
+</body>
+</html>

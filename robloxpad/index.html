@@ -258,13 +258,15 @@ footer .small{color:#aab6d3;font-size:14px;width:100%}
   </div>
   <div class="wrap">
     <div>
-      <span class="tag"><span class="dot" style="background:var(--yellow);box-shadow:none;animation:none"></span>$RBXPAD · Coming soon</span>
+      <span class="tag"><span class="dot"></span>$RBXPAD · Live on pump.fun</span>
       <h1>Every coin gets a <span class="y">game.</span></h1>
       <p class="lede">Launch a coin and it gets its own Roblox game. Game revenue buys back your coin and burns it.</p>
       <div class="cta">
-        <a class="btn red" href="#launch">Launch a coin</a>
+        <a class="btn red" href="https://pump.fun/coin/Abh4YsGULgCA3qZ9YzVvezNNNNUWtZjC5nExpYfapump" target="_blank" rel="noopener">Buy $RBXPAD</a>
+        <a class="btn" href="#launch">Launch a coin</a>
         <a class="btn white" href="https://x.com/robloxpad_orch" target="_blank" rel="noopener">Follow @robloxpad_orch</a>
       </div>
+      <div class="ca" style="margin-top:16px;display:inline-flex"><span style="font-weight:600;color:#aab6d3">CA</span><code class="mono" id="caTextHero">Abh4YsGULgCA3qZ9YzVvezNNNNUWtZjC5nExpYfapump</code><button class="btn" type="button" id="copyCaHero">Copy</button></div>
       <div class="chips">
         <div class="chip"><b>1 coin</b><small>1 Roblox game</small></div>
         <div class="chip"><b>Revenue</b><small>Buys back the coin</small></div>
@@ -369,7 +371,8 @@ footer .small{color:#aab6d3;font-size:14px;width:100%}
 <footer>
   <div class="wrap">
     <a class="logo" href="#top" style="color:#fff"><img class="pfp" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/8647b512-f675-4869-9b6e-f550d191ddc7.jpg" alt=""><span>Roblox<em>Pad</em></span></a>
-    <div class="ca"><span style="font-weight:600;color:#aab6d3">CA</span><code class="mono" id="caText">Coming soon</code><button class="btn" type="button" id="copyCa">Copy</button></div>
+    <div class="ca"><span style="font-weight:600;color:#aab6d3">CA</span><code class="mono" id="caText">Abh4YsGULgCA3qZ9YzVvezNNNNUWtZjC5nExpYfapump</code><button class="btn" type="button" id="copyCa">Copy</button></div>
+    <a class="btn red" href="https://pump.fun/coin/Abh4YsGULgCA3qZ9YzVvezNNNNUWtZjC5nExpYfapump" target="_blank" rel="noopener">Buy on pump.fun</a>
     <a class="btn white" href="https://x.com/robloxpad_orch" target="_blank" rel="noopener">Follow @robloxpad_orch</a>
     <div class="small">RobloxPad is not affiliated with Roblox Corporation. Memecoins are risky. Only spend what you can lose.</div>
   </div>
@@ -454,11 +457,12 @@ const items=["Every coin gets a game","Game revenue buys back the coin","Bought 
 document.getElementById("marquee").innerHTML=items+items+items+items;
 
 /* copy CA */
-document.getElementById("copyCa").onclick=()=>{
-  const t=document.getElementById("caText").textContent;
-  if(t==="Coming soon"){say("The CA posts here at launch.");return}
-  navigator.clipboard.writeText(t).then(()=>say("CA copied")).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("caText"));const s=getSelection();s.removeAllRanges();s.addRange(r);say("Press copy on your keyboard")});
-};
+const CA="Abh4YsGULgCA3qZ9YzVvezNNNNUWtZjC5nExpYfapump";
+function copyCa(elId){
+  navigator.clipboard.writeText(CA).then(()=>say("CA copied")).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById(elId));const s=getSelection();s.removeAllRanges();s.addRange(r);say("Press copy on your keyboard")});
+}
+document.getElementById("copyCa").onclick=()=>copyCa("caText");
+document.getElementById("copyCaHero").onclick=()=>copyCa("caTextHero");
 </script>
 
 </body>

@@ -13,7 +13,7 @@ const hex = (s) => {
 };
 const GOLD = hex("#e6b84a");
 const SILVER = hex("#c7d1dc");
-const CRIMSON = hex("#e6b84a");
+const CRIMSON = hex("#e0344a");
 const PALETTE = [CRIMSON, CRIMSON, CRIMSON, CRIMSON, GOLD, SILVER, SILVER, hex("#9cff3d"), hex("#b5793f"), hex("#d08a7a"), hex("#5b4b8a")];
 export function background() {
     const el = h("div", { id: "bg", "aria-hidden": "true" });
@@ -22,7 +22,7 @@ export function background() {
     const grain = h("div", { class: "grain" });
     el.append(floor, canvas, grain);
     if (reducedMotion()) {
-        el.style.background = "radial-gradient(1200px 600px at 70% -10%, rgba(230,184,74,.14), transparent 60%), radial-gradient(800px 500px at 10% 100%, rgba(199,209,220,.06), transparent 60%)";
+        el.style.background = "radial-gradient(1200px 600px at 70% -10%, rgba(224,52,74,.14), transparent 60%), radial-gradient(800px 500px at 10% 100%, rgba(199,209,220,.06), transparent 60%)";
         canvas.remove();
         floor.remove();
         return { el, tint() { }, destroy() { } };
@@ -115,11 +115,11 @@ export function background() {
         const cx = w / 2;
         c.save();
         const g = c.createLinearGradient(0, horizon, 0, hgt);
-        g.addColorStop(0, "rgba(230,184,74,0)");
-        g.addColorStop(1, "rgba(230,184,74,0.07)");
+        g.addColorStop(0, "rgba(224,52,74,0)");
+        g.addColorStop(1, "rgba(224,52,74,0.07)");
         c.fillStyle = g;
         c.fillRect(0, horizon, w, hgt - horizon);
-        c.strokeStyle = "rgba(230,184,74,0.08)";
+        c.strokeStyle = "rgba(224,52,74,0.08)";
         c.lineWidth = 1;
         // vertical lines converging
         for (let i = -14; i <= 14; i++) {

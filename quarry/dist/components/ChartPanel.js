@@ -65,7 +65,7 @@ export function chartPanel(coin) {
                 handleScale: true,
             });
             candles = chart.addCandlestickSeries({
-                upColor: "#58d68d", downColor: "#ef5d5d", wickUpColor: "#58d68d", wickDownColor: "#ef5d5d", borderVisible: false,
+                upColor: "#58d68d", downColor: "#ff8a5c", wickUpColor: "#58d68d", wickDownColor: "#ff8a5c", borderVisible: false,
                 priceLineVisible: true, priceLineStyle: lwc.LineStyle.Dashed, priceLineColor: accent, lastValueVisible: true,
                 priceFormat: { type: "custom", formatter: (p) => fmtVal(p), minMove: 1e-12 },
             });
@@ -169,7 +169,7 @@ export function chartPanel(coin) {
     };
     let pulseTimer = 0;
     const pulsePriceLine = (dir) => {
-        candles?.applyOptions({ priceLineColor: dir === "up" ? "#58d68d" : "#ef5d5d" });
+        candles?.applyOptions({ priceLineColor: dir === "up" ? "#58d68d" : "#ff8a5c" });
         window.clearTimeout(pulseTimer);
         pulseTimer = window.setTimeout(() => candles?.applyOptions({ priceLineColor: accent }), 350);
     };
@@ -265,7 +265,7 @@ class FallbackChart {
         this.bars.forEach((b, i) => {
             const x = i * bw + bw / 2;
             const up = b.c >= b.o;
-            c.strokeStyle = c.fillStyle = up ? "#58d68d" : "#ef5d5d";
+            c.strokeStyle = c.fillStyle = up ? "#58d68d" : "#ff8a5c";
             c.beginPath();
             c.moveTo(x, y(b.h));
             c.lineTo(x, y(b.l));

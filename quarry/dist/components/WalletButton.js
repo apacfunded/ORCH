@@ -88,7 +88,7 @@ export function openWalletModal() {
                 close();
             }
             catch {
-                toast("Connection was cancelled", { color: "#ef5d5d" });
+                toast("Connection was cancelled", { color: "#ff8a5c" });
             } } }, p.name, h("small", null, "detected")))
         : [
             h("p", { class: "muted", style: "font-size:13.5px" }, "No Solana wallet extension was found. Install Phantom, Solflare or Backpack, then try again."),

@@ -66,7 +66,7 @@ export function coinCard(coin, opts = {}) {
                 if (c.status === "graduated") {
                     statusEl.replaceChildren(badge("graduated"));
                     bond.replaceWith(h("div", { class: "spacer" }));
-                    el.animate([{ boxShadow: "0 0 0 0 rgba(230,184,74,.9)" }, { boxShadow: "0 0 0 18px rgba(230,184,74,0)" }], { duration: 900, easing: "ease-out" });
+                    el.animate([{ boxShadow: "0 0 0 0 rgba(224,52,74,.9)" }, { boxShadow: "0 0 0 18px rgba(224,52,74,0)" }], { duration: 900, easing: "ease-out" });
                 }
             }
             else if (c.status !== "graduated") {

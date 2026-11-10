@@ -62,6 +62,9 @@ h1 em{font-style:normal;color:var(--accent)}
 .ca code{min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;color:var(--ink)}
 .ca button{border:0;background:var(--accent-soft);color:var(--deep);font-weight:600;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;min-height:36px}
 
+.trust{list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:13px;color:var(--muted)}
+.trust li{display:flex;align-items:center;gap:7px}
+.trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
 /* tank (signature) */
 .tank-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;position:relative}
 .tank-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
@@ -100,6 +103,9 @@ input[type=range]{width:100%;accent-color:var(--accent);height:28px}
 
 /* sections */
 section{padding:72px 0}
+.band{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.band .card{box-shadow:none;background:var(--bg)}
+.band .card .num{background:#fff}
 .sec-head{max-width:620px;margin-bottom:36px}
 h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;line-height:1.1;font-weight:600}
 .sec-head p{color:var(--muted);margin-top:12px;font-size:17px}
@@ -116,10 +122,11 @@ h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;line-height:1.1;font-w
 @media(max-width:520px){.tiers{grid-template-columns:1fr}}
 .tier{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
 .tier .fill{height:90px;position:relative;background:linear-gradient(#f8fbff,#eef3f8);overflow:hidden}
-.tier .fill i{position:absolute;left:0;right:0;bottom:0;background:var(--water);opacity:.9}
-.tier .fill i::before{content:"";position:absolute;left:-10%;right:-10%;top:-6px;height:12px;background:radial-gradient(circle at 10px 6px,var(--water) 6px,transparent 7px) 0 0/20px 12px repeat-x}
+.tier .fill i{position:absolute;left:0;right:0;bottom:0;background:var(--water);z-index:1}
+.tier .fill i::before{content:"";position:absolute;left:0;right:0;top:-11px;height:12px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M0 7 Q30 0 60 7 T120 7 V12 H0 Z' fill='%233b82f6'/%3E%3C/svg%3E") 0 0/120px 12px repeat-x}
+.tier .fill::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to top,transparent 0 23px,rgba(12,22,38,.06) 23px 24px)}
 .tier-body{padding:18px}
-.tier-body .label{margin-bottom:6px}
+.tier-body .label{display:block;margin-bottom:6px}
 .tier-body b{font-size:26px;letter-spacing:-.02em;font-weight:600}
 .tier-body p{color:var(--muted);font-size:14px;margin-top:8px}
 .tier.hot{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
@@ -143,6 +150,8 @@ h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;line-height:1.1;font-w
 .field{margin-bottom:16px}
 .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
 .field input,.field select,.field textarea{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;background:#fff;color:var(--ink)}
+.field input[type=file]{padding:7px 10px;font-size:14px;color:var(--muted)}
+.field input[type=file]::file-selector-button{border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:6px 10px;font:inherit;font-size:13px;font-weight:600;color:var(--ink);margin-right:10px;cursor:pointer}
 .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .summary{background:var(--ink);color:#fff;border-radius:var(--radius);padding:24px}
@@ -155,7 +164,8 @@ h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;line-height:1.1;font-w
 .note{font-size:12px;color:var(--muted);margin-top:10px}
 
 /* feed */
-.feed{display:grid;grid-template-columns:1fr;gap:10px}
+.feed{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.feed{grid-template-columns:1fr}}
 .coin{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .coin .av{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-weight:600;color:var(--deep)}
 .coin .nm{font-weight:600;font-size:15px}
@@ -215,6 +225,9 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
         <a class="btn btn-primary" href="#launch">Launch a coin</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
+      <ul class="trust">
+        <li>Built on Solana</li><li>Curve settings readable on-chain</li><li>LP locked at graduation</li><li>Creator fees, same claim flow</li>
+      </ul>
       <div class="ca">
         <span class="label">CA</span>
         <code class="mono" id="ca">Launching soon — CA will be posted here</code>
@@ -264,7 +277,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
   </div>
 </header>
 
-<section id="how">
+<section id="how" class="band">
   <div class="wrap">
     <div class="sec-head">
       <h2>Fill the pool first. Then open the doors.</h2>
@@ -278,7 +291,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
   </div>
 </section>
 
-<section id="presets" style="padding-top:0">
+<section id="presets">
   <div class="wrap">
     <div class="sec-head">
       <h2>Presets, or go custom.</h2>
@@ -391,7 +404,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
 
 <footer>
   <div class="wrap foot">
-    <span>© 2026 Liquidity · orch.lol/liquidity</span>
+    <span>© 2026 Liquidity · <a href="https://orch.lol" style="text-decoration:underline">orch.lol</a> · <a href="#" id="xlink3" style="text-decoration:underline">X</a></span>
     <span>Not financial advice. Memecoins can go to zero. Example figures shown until launch.</span>
   </div>
 </footer>
@@ -491,6 +504,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
     const txt = document.getElementById('ca').textContent.trim();
     navigator.clipboard && navigator.clipboard.writeText(txt).then(()=>{ toast.classList.add('on'); setTimeout(()=>toast.classList.remove('on'),1400); });
   });
+  document.getElementById('xlink3').href=document.getElementById('xlink').href;
   document.getElementById('f-go').addEventListener('click', ()=>{ toast.textContent='Launching opens when $LIQ is live'; toast.classList.add('on'); setTimeout(()=>{toast.classList.remove('on'); toast.textContent='Copied';},1800); });
 
   // ticker + demo feed

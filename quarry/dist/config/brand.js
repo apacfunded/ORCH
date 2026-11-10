@@ -11,7 +11,7 @@ export const brand = {
     /** CONFIG: platform coin ticker. Shown as "Coming soon" while null. */
     platformTicker: "QUARRY",
     /** Main coin CA on pump.fun. */
-    mainCoinMint: "3GDBWQxGecz3odxywZYj3DXhznLYcwXLAdgm6HaYpump",
+    mainCoinMint: null,
     /** CONFIG: X / Twitter handle without the @. null hides the link. */
     xHandle: null,
     /** CONFIG: Telegram invite URL. null hides the link. */

@@ -1261,7 +1261,7 @@ h1,h2,h3{letter-spacing:-.03em}
 // programId set (and mode not "pump"): coins launch on the Fairgate program. Neither: pre-launch page.
 const FG_API = (window.FG_API || "").replace(/\/$/, "");
 const SITE_URL = window.FG_SITE || "https://orch.lol/fairgate/";
-const CONFIG = Object.assign({ mode: "pump", programId: "", rpc: FG_API + "/api/rpc", tokenMint: "HW5gJjVoVQuqBrFi2pV3VsRxmXXh9B6ph6hG1vAYpump" }, window.FG_CONFIG || {});
+const CONFIG = Object.assign({ mode: "pump", programId: "", rpc: FG_API + "/api/rpc", tokenMint: "" }, window.FG_CONFIG || {});
 const PUMP = CONFIG.mode === "pump" && !!window.FG;
 const LIVE = !PUMP && !!(CONFIG.programId && window.FG);
 const PRELAUNCH = !LIVE && !PUMP;

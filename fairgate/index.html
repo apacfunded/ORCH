@@ -957,6 +957,13 @@ h1,h2,h3{letter-spacing:-.03em}
 .pumpNote{border-color:rgba(255,192,110,.4)!important;background:rgba(255,192,110,.06)!important;line-height:1.55}
 .pumpNote b{color:var(--ink)}
 
+.heroCa{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px;padding:10px 10px 10px 16px;border:1px solid rgba(163,177,255,.35);border-radius:16px;background:rgba(163,177,255,.08);max-width:100%}
+.heroCa[hidden]{display:none}
+.heroCaL{font-weight:700;font-size:13px;color:var(--signal);white-space:nowrap}
+.heroCaA{flex:1;min-width:0;font:500 13px/1.3 "Martian Mono","DejaVu Sans Mono",monospace;color:var(--ink);overflow-wrap:anywhere}
+@media(max-width:560px){.heroCaA{flex-basis:100%;order:3}}
+.heroCopy h1+.heroCa{margin:4px 0 22px}
+
 </style>
 </head>
 <body>
@@ -1019,6 +1026,7 @@ h1,h2,h3{letter-spacing:-.03em}
         <h1>Launch it.<br><em>Nobody</em> bundles it.</h1>
         <p>Every coin on Fairgate opens at a slot nobody can predict, taxes snipers and early dumpers into its own liquidity, and shows a live bundle check on its page.</p>
         <div class="cta"><a class="btn sig" href="#launch">Launch a coin <span class="arr" aria-hidden="true">→</span></a><a class="btn ghost" href="#how">How it works</a></div>
+        <div class="heroCa" id="heroCa" hidden><span class="heroCaL">$GATE CA</span><code class="heroCaA" id="heroCaA"></code><button class="btn sm ghost" type="button" id="heroCaCopy">Copy</button><a class="btn sm sig" id="heroCaBuy" target="_blank" rel="noopener">Buy</a></div>
       </div>
       <div class="card gate" id="gate" aria-live="off"></div>
     </div>
@@ -2262,6 +2270,7 @@ if (CONFIG.tokenMint && $id("tkAddr")) {
   $id("tkAddr").textContent = m;
   $id("tkBtns").innerHTML = `<button class="btn sm ghost" type="button" data-copy="${esc(m)}">Copy</button><a class="btn sm sig" href="https://pump.fun/coin/${encodeURIComponent(m)}" target="_blank" rel="noopener">Buy on pump.fun</a><a class="btn sm ghost" href="#coin-${esc(m)}">Bundle check</a>`;
   if ($id("tkWhen")) $id("tkWhen").textContent = m.slice(0, 6) + "…" + m.slice(-6);
+  if ($id("heroCa")) { $id("heroCaA").textContent = m; $id("heroCaBuy").href = "https://pump.fun/coin/" + encodeURIComponent(m); $id("heroCaCopy").onclick = () => { navigator.clipboard?.writeText(m); $id("heroCaCopy").textContent = "Copied"; setTimeout(() => $id("heroCaCopy").textContent = "Copy", 1400); }; $id("heroCa").hidden = false; const h1 = $id("heroCa").closest(".heroCopy")?.querySelector("h1"); if (h1) h1.after($id("heroCa")); }
   const p = document.querySelector("#v-token .xpIntro p"); if (p) p.textContent = "The coin behind the launchpad. Live on pump.fun.";
 }
 // start after live-ui.js / pump-ui.js (same script, below) have set up their state

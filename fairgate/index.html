@@ -16,7 +16,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: Exposure's app shell (left icon sidebar, top search, card sections, hash-routed views) on a midnight field of linked wallets: deep navy, periwinkle signal, mint = clean, rose = blocked */
 :root{
@@ -964,6 +964,108 @@ h1,h2,h3{letter-spacing:-.03em}
 @media(max-width:560px){.heroCaA{flex-basis:100%;order:3}}
 .heroCopy h1+.heroCa{margin:4px 0 22px}
 
+/* ===== v2: "the gate" — top navigation, centred hero under an arch, flatter hairline surfaces. Same palette and logo. ===== */
+:root{--display:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif;--navH:64px;--arch:rgba(163,177,255,.38)}
+h1,h2,h3,.pageH{font-family:var(--display);font-weight:700}
+h2{font-size:clamp(24px,2.4vw,30px);letter-spacing:-.035em}
+
+/* --- surfaces: hairline, no cursor spotlight, one radius scale --- */
+.card,.list,.tablewrap,.statbar,.gate{background:rgba(12,17,36,.72);border:1px solid var(--line);border-radius:18px;box-shadow:none}
+.grid .card:hover{transform:none;border-color:rgba(163,177,255,.4);box-shadow:none}
+.btn{border-radius:12px}
+.btn.sig{box-shadow:none}
+.btn.sig:hover{box-shadow:0 0 0 4px rgba(163,177,255,.18)}
+.chip{border-radius:10px}
+.eyebrow,.kicker{letter-spacing:.08em}
+
+/* --- desktop: top navigation replaces the sidebar --- */
+@media (min-width:901px){
+  .shell{display:block}
+  .side{position:fixed;inset:0 0 auto 0;height:var(--navH);z-index:30;flex-direction:row;align-items:center;gap:20px;padding:0 380px 0 24px;
+    border-right:0;border-bottom:1px solid var(--line);background:rgba(7,10,22,.78)}
+  .side .logo{padding:0;flex:none}
+  .side nav.tabs,.side .tabs{flex-direction:row;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+  .side .tabs::-webkit-scrollbar{display:none}
+  .side .tabs a{position:relative;min-height:40px;padding:8px 12px;border-radius:10px;font-size:14px;white-space:nowrap;gap:0}
+  .side .tabs a svg{display:none}
+  .side .tabs a[data-v="launch"]{display:none}
+  .side .tabs a.on{background:none;box-shadow:none;color:var(--ink)}
+  .side .tabs a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-12px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--signal),var(--ok))}
+  .sideFoot{display:none}
+  .mainCol{padding-top:var(--navH)}
+  .topbar{position:fixed;top:0;right:0;left:auto;height:var(--navH);z-index:31;padding:0 24px;gap:10px;background:none;border:0;
+    -webkit-backdrop-filter:none;backdrop-filter:none;width:auto}
+  .topbar .search{flex:none;width:44px;transition:width .25s cubic-bezier(.2,.8,.2,1)}
+  .topbar .search:focus-within{width:300px}
+  .topbar .search input{padding-left:40px;padding-right:12px;cursor:pointer}
+  .topbar .search:focus-within input{cursor:text}
+  .topbar .search:not(:focus-within) input::placeholder{color:transparent}
+  .topbar .search kbd{display:none}
+  .navSweep{top:calc(var(--navH) - 2px)}
+}
+
+main{max-width:1200px;margin-inline:auto}
+
+/* --- live strip: slim and centred --- */
+.demoBar{justify-content:center;border-style:solid;border-color:rgba(94,230,196,.25);background:rgba(94,230,196,.06);border-radius:999px;padding:8px 18px;width:fit-content;max-width:100%;margin:8px auto 0}
+
+/* --- hero: centred under the gate arch --- */
+#v-explore .heroSplit{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:28px;padding:72px 24px 40px;margin-top:24px;isolation:isolate}
+#v-explore .heroSplit::before{content:"";position:absolute;z-index:-1;left:50%;top:0;width:min(860px,100%);height:100%;transform:translateX(-50%);
+  border:1px solid var(--arch);border-bottom:0;border-radius:430px 430px 0 0;
+  background:radial-gradient(ellipse 70% 55% at 50% 0%,rgba(163,177,255,.13),transparent 70%);
+  -webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}
+#v-explore .heroSplit::after{content:"";position:absolute;z-index:-1;left:50%;top:22px;width:min(780px,90%);height:calc(100% - 22px);transform:translateX(-50%);
+  border:1px dashed rgba(94,230,196,.22);border-bottom:0;border-radius:390px 390px 0 0;
+  -webkit-mask:linear-gradient(#000 40%,transparent 85%);mask:linear-gradient(#000 40%,transparent 85%)}
+#v-explore .heroCopy{display:flex;flex-direction:column;align-items:center;max-width:720px}
+#v-explore .heroCopy .kicker{justify-content:center}
+.heroSplit h1{font-size:clamp(46px,7vw,92px);letter-spacing:-.05em;line-height:.95}
+#v-explore .heroCopy>p{max-width:560px;margin-inline:auto}
+#v-explore .heroCopy .cta{justify-content:center}
+.heroCopy h1+.heroCa{margin:18px auto 6px;width:fit-content;max-width:100%;text-align:left}
+
+/* bundle check becomes a single wide bar under the copy */
+#v-explore .gate{width:min(720px,100%);padding:18px;text-align:left;border-color:rgba(163,177,255,.32);background:rgba(10,14,30,.85)}
+#v-explore .gate .eyebrow{display:none}
+#v-explore .gate .gateBig{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+#v-explore .gate .gateBig b{font-size:20px!important;letter-spacing:-.02em;background:none;color:var(--ink);-webkit-text-fill-color:currentColor}
+#v-explore .gate .gateBig span{color:var(--muted);font-size:14px}
+#v-explore .gate .ckForm input{border-radius:12px}
+
+/* stats: open row of numbers, no box */
+#v-explore .statbar{background:none;border:0;border-radius:0;border-block:1px solid var(--line);margin-top:8px}
+.statbar>div{background:none}
+.statbar b{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:-.03em}
+
+/* --- section heads --- */
+.sec-head{align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+.sec-head p{max-width:560px}
+
+/* --- coin cards --- */
+.card.coin{padding:18px;gap:14px}
+.card.coin .kv{background:none;border:0;padding:0;border-top:1px solid var(--line);padding-top:12px;border-radius:0}
+.card.coin .prog{height:4px}
+.card.coin .coin-actions .btn{flex:1}
+
+/* --- page heads elsewhere --- */
+.pageH{font-size:clamp(36px,4.6vw,58px);letter-spacing:-.045em}
+
+@media (max-width:900px){
+  #v-explore .heroSplit{padding:40px 8px 24px;margin-top:8px}
+  #v-explore .heroSplit::before{border-radius:220px 220px 0 0}
+  #v-explore .heroSplit::after{display:none}
+  .heroSplit h1{font-size:clamp(40px,11vw,60px)}
+  .demoBar{border-radius:14px}
+}
+@media (prefers-reduced-motion:reduce){.topbar .search{transition:none}}
+#v-explore .gate{display:flex;flex-direction:column;gap:12px;min-height:0;height:auto}
+#v-explore .gate .gateBig{justify-content:flex-start;margin:0}
+#v-explore .gate .msg:empty{display:none}
+#v-explore .heroSplit{padding-bottom:28px}
+#v-explore .statbar{width:100%;margin-top:0}
+@media (min-width:901px) and (max-width:1200px){.side{gap:12px;padding-right:350px}.side .tabs a{padding:8px 8px;font-size:13.5px}.side .tabs a.on::after{left:8px;right:8px}}
+
 </style>
 </head>
 <body>
@@ -1174,7 +1276,7 @@ h1,h2,h3{letter-spacing:-.03em}
       <dl class="xpFacts">
         <div><dt>Chain</dt><dd>Solana</dd></div>
         <div><dt>Launches on</dt><dd>pump.fun</dd></div>
-        <div><dt>Ticker</dt><dd>$GATE (placeholder until launch)</dd></div>
+        <div><dt>Ticker</dt><dd>$GATE</dd></div>
         <div><dt>Contract</dt><dd id="tkWhen">Posted on launch day</dd></div>
       </dl>
     </div>

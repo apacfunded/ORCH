@@ -297,8 +297,8 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
       <div class="card">
         <form id="lform" novalidate>
           <div class="two">
-            <div class="field" id="f-name"><label for="fname">Coin name</label><input id="fname" maxlength="32" placeholder="Sunny" autocomplete="off"><span class="err">Add a name.</span></div>
-            <div class="field" id="f-tick"><label for="ftick">Ticker</label><input id="ftick" maxlength="10" placeholder="SUNNY" autocomplete="off"><span class="err">Add a ticker.</span></div>
+            <div class="field" id="f-name"><label for="fname">Coin name</label><input id="fname" maxlength="32" placeholder="Your coin name" autocomplete="off"><span class="err">Add a name.</span></div>
+            <div class="field" id="f-tick"><label for="ftick">Ticker</label><input id="ftick" maxlength="10" placeholder="TICKER" autocomplete="off"><span class="err">Add a ticker.</span></div>
           </div>
           <div class="field"><label for="fdesc">Description</label><textarea id="fdesc" maxlength="280" placeholder="What's the coin about?"></textarea></div>
           <div class="field">
@@ -318,7 +318,7 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
         <div class="card">
           <div class="label">Preview</div>
           <div class="pcard">
-            <div style="display:flex;gap:12px;align-items:center"><div class="pimg" id="pimg">S</div><div><div class="pname" id="pname">Sunny</div><div class="ptick" id="ptick">$SUNNY · Optimism</div></div></div>
+            <div style="display:flex;gap:12px;align-items:center"><div class="pimg" id="pimg">?</div><div><div class="pname" id="pname">Your coin</div><div class="ptick" id="ptick">$TICKER · Optimism</div></div></div>
             <p class="note" id="pdesc" style="margin-top:12px">Your description shows here.</p>
             <div class="prog" style="margin:14px 0 6px"><span style="width:0"></span></div>
             <div class="note">Bonding curve 0% · on pump.fun</div>
@@ -431,7 +431,7 @@ $("sideR").innerHTML='<div class="side-empty">Call Scores show up here once coin
 
 
 /* form */
-function upd(){const n=$("fname").value.trim()||"Sunny";const t=($("ftick").value.trim()||"SUNNY").toUpperCase();$("pname").textContent=n;$("ptick").textContent="$"+t+" · Optimism";if(!$("pimg").style.backgroundImage)$("pimg").textContent=n[0].toUpperCase();$("pdesc").textContent=$("fdesc").value.trim()||"Your description shows here.";const b=Math.max(0,parseFloat($("fbuy").value)||0);$("cbuy").textContent=b+" SOL";try{localStorage.setItem("opad_draft",JSON.stringify({n:$("fname").value,t:$("ftick").value,d:$("fdesc").value,x:$("fx").value,b:$("fbuy").value}))}catch(_){}}
+function upd(){const n=$("fname").value.trim()||"Your coin";const t=($("ftick").value.trim()||"TICKER").toUpperCase();$("pname").textContent=n;$("ptick").textContent="$"+t+" · Optimism";if(!$("pimg").style.backgroundImage)$("pimg").textContent=$("fname").value.trim()?n[0].toUpperCase():"?";$("pdesc").textContent=$("fdesc").value.trim()||"Your description shows here.";const b=Math.max(0,parseFloat($("fbuy").value)||0);$("cbuy").textContent=b+" SOL";try{localStorage.setItem("opad_draft",JSON.stringify({n:$("fname").value,t:$("ftick").value,d:$("fdesc").value,x:$("fx").value,b:$("fbuy").value}))}catch(_){}}
 ["fname","ftick","fdesc","fbuy","fx"].forEach(i=>$(i).addEventListener("input",upd));
 $("ftick").addEventListener("input",e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,""));
 ["fname","ftick"].forEach(i=>$(i).addEventListener("input",e=>$("f-"+(i==="fname"?"name":"tick")).classList.remove("bad")));

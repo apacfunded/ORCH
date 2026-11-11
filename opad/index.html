@@ -185,6 +185,12 @@ tbody tr:hover{background:var(--bg2)}
 .legend{font-size:14px;display:grid;gap:7px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}
 
+.empty-st{grid-column:1/-1;border:1.5px dashed var(--line2);border-radius:var(--r);padding:34px 22px;text-align:center;color:var(--muted);font-size:15px}
+.empty-st b{display:block;color:var(--ink);font:600 18px Syne,sans-serif;margin-bottom:6px}
+.side-empty{border:1.5px dashed var(--line2);border-radius:14px;padding:18px 14px;color:var(--dim);font-size:13.5px;text-align:center}
+.ca-bar{display:none;align-items:center;gap:8px;margin-top:18px;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:6px 6px 6px 14px;max-width:100%}
+.ca-bar.on{display:inline-flex}
+.ca-bar code{font:500 14px "DM Mono",monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
 /* faq */
 .faq{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 20px}
@@ -244,6 +250,7 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
         <a class="btn btn-red" href="#launch">Launch on pump.fun</a>
         <a class="btn btn-ghost" href="scanner/">Open the scanner</a>
       </div>
+      <div class="ca-bar" id="caBar"><code id="caText"></code><button class="btn btn-ghost btn-sm" id="caCopy" type="button">Copy CA</button><a class="btn btn-red btn-sm" id="caBuy" href="https://pump.fun" target="_blank" rel="noopener">Buy</a></div>
       <div class="meta"><span><b>No bridge.</b> No ETH.</span><span><b>No new wallet.</b> Your pump.fun one.</span><span><b>Callout scanner</b> built in.</span></div>
     </div>
     <aside class="side right" aria-label="Top calls right now">
@@ -255,10 +262,10 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
 
 <div class="strip">
   <div class="wrap">
-    <div class="cell"><div class="lbl"><span class="dot"></span>Launched today</div><div class="val" id="today">96</div></div>
-    <div class="cell"><div class="lbl">24h volume</div><div class="val">$2.41M<small>▲ 38%</small></div></div>
-    <div class="cell"><div class="lbl">Near graduation</div><div class="val">7</div></div>
-    <div class="cell"><div class="lbl">OP coins on pump.fun</div><div class="val" id="launched">1,284</div></div>
+    <div class="cell"><div class="lbl"><span class="dot"></span>Launched today</div><div class="val" id="today">—</div></div>
+    <div class="cell"><div class="lbl">24h volume</div><div class="val">—</div></div>
+    <div class="cell"><div class="lbl">Near graduation</div><div class="val">—</div></div>
+    <div class="cell"><div class="lbl">OP coins on pump.fun</div><div class="val" id="launched">—</div></div>
   </div>
 </div>
 
@@ -272,7 +279,6 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
       </div>
     </div>
     <div class="grid" id="grid"></div>
-    <p class="demo">Example data until launch.</p>
   </section>
 
   <section id="how">
@@ -339,7 +345,6 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
       </table>
     </div>
     <div class="cards" id="cards"></div>
-    <p class="demo">Example data until launch.</p>
   </section>
 
   <section id="scanner">
@@ -348,7 +353,7 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
       <div class="card">
         <div class="label"><span class="dot"></span>Top to call right now</div>
         <div id="scanTop" style="display:grid;gap:10px"></div>
-        <p class="demo" style="margin-top:14px">Example data until launch. Call Score is OPAD's own estimate.</p>
+        <p class="demo" style="margin-top:14px">Call Score is OPAD's own estimate.</p>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:14px">
         <div class="label" style="color:var(--sun)">◆ Why call OP coins now</div>
@@ -388,12 +393,7 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
 const $=id=>document.getElementById(id);
 const colors=["#ff1f3d","#ff8a3d","#7a3cff","#2ee6a6","#ffb547","#e0344a","#2563eb","#ff5c72"];
 /* name,ticker,mcap,vol,chg,curve%,age min */
-const coins=[
- ["Sunny","SUNNY",61800,412000,212,92,180],["Red Pill","REDPILL",54200,288000,88,86,240],["Glass Half Full","FULL",48900,201000,64,74,95],
- ["OP Dog","OPDOG",41100,176000,41,61,310],["Superchain Cat","SUPERCAT",33700,140000,29,50,45],["Layer Two Lad","L2LAD",27400,98000,-6,40,520],
- ["Bright Side","BRIGHT",19800,77000,18,29,22],["Good Vibes Only","GVO",14200,51000,9,21,12],["Morning Star","MORN",6300,18000,15,9,4],
- ["Hopium OP","HOPE",7400,22000,94,11,2],["Daybreak","DAWN",4100,9000,31,6,1],["Optimist Prime","PRIME",9900,30000,52,14,7]
-];
+const coins=[];
 const fmt=n=>"$"+(n>=1000?(n/1000).toFixed(1)+"K":n);
 const age=m=>m<60?m+"m":m<1440?Math.round(m/60)+"h":Math.round(m/1440)+"d";
 const stat=c=>c[5]>=80?'<span class="pill b">Near graduation</span>':c[5]<10?'<span class="pill r">Just launched</span>':'<span class="pill g">On curve</span>';
@@ -402,6 +402,7 @@ function renderGrid(f){
   if(f==="new")list.sort((a,b)=>a.c[6]-b.c[6]);
   if(f==="near")list=list.filter(x=>x.c[5]>=60).sort((a,b)=>b.c[5]-a.c[5]);
   if(f==="top")list.sort((a,b)=>b.c[2]-a.c[2]);
+  if(!list.length){$("grid").innerHTML='<div class="empty-st"><b>No Optimism coins yet.</b>Launch the first one and it shows up here.</div>';return}
   $("grid").innerHTML=list.slice(0,6).map(({c,i},k)=>`<div class="card coin" style="animation-delay:${k*50}ms">
    <div class="top"><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div class="nm">${c[0]}</div><div class="tk">$${c[1]}</div></div><span class="age">${age(c[6])} ago</span></div>
    <div class="row"><span style="color:var(--muted)">Market cap</span><b>${fmt(c[2])}</b></div>
@@ -413,26 +414,21 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.que
 
 function spark(up){let p="",y=20;for(let i=0;i<=9;i++){y+=(up?-1:1)*(Math.random()*4-1);y=Math.max(3,Math.min(25,y));p+=(i?"L":"M")+(i*10)+" "+y.toFixed(1)}return `<svg class="mini" viewBox="0 0 90 28"><path d="${p}" fill="none" stroke="${up?'#2ee6a6':'#ff5c72'}" stroke-width="2"/></svg>`}
 const ranked=coins.map((c,i)=>({c,i})).sort((a,b)=>b.c[2]-a.c[2]).slice(0,8);
-$("rows").innerHTML=ranked.map(({c,i},k)=>`<tr><td class="mono" style="color:var(--dim)">${k+1}</td>
+$("rows").innerHTML=ranked.length?"":'<tr><td colspan="7" style="text-align:center;padding:34px;color:var(--muted)">No Optimism coins yet. Rankings show up after the first launches.</td></tr>';
+if(ranked.length)$("rows").innerHTML=ranked.map(({c,i},k)=>`<tr><td class="mono" style="color:var(--dim)">${k+1}</td>
  <td><div class="coincell"><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div style="font-weight:600">${c[0]}</div><div class="mono" style="font-size:13px;color:var(--muted)">$${c[1]}</div></div></div></td>
  <td class="mono">${fmt(c[2])}</td><td class="mono">${fmt(c[3])}</td>
  <td><div style="display:flex;align-items:center;gap:8px">${spark(c[4]>0)}<span class="${c[4]>0?"up":"dn"}">${c[4]>0?"+":""}${c[4]}%</span></div></td>
  <td>${stat(c)}</td><td><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Trade</a></td></tr>`).join("");
-$("cards").innerHTML=ranked.map(({c,i},k)=>`<div class="card coin"><div class="top"><span class="mono" style="color:var(--dim)">${k+1}</span><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div class="nm">${c[0]}</div><div class="tk">$${c[1]}</div></div><span class="age ${c[4]>0?"up":"dn"}">${c[4]>0?"+":""}${c[4]}%</span></div>
+$("cards").innerHTML=ranked.length?"":'<div class="empty-st"><b>No Optimism coins yet.</b>Rankings show up after the first launches.</div>';
+if(ranked.length)$("cards").innerHTML=ranked.map(({c,i},k)=>`<div class="card coin"><div class="top"><span class="mono" style="color:var(--dim)">${k+1}</span><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div class="nm">${c[0]}</div><div class="tk">$${c[1]}</div></div><span class="age ${c[4]>0?"up":"dn"}">${c[4]>0?"+":""}${c[4]}%</span></div>
  <div class="row"><span style="color:var(--muted)">Market cap</span><b>${fmt(c[2])}</b></div><div class="row"><span>${stat(c)}</span><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Trade</a></div></div>`).join("");
 
 /* hero side stacks (example data) */
 const fresh=[["Daybreak","DAWN"],["Hopium OP","HOPE"],["Morning Star","MORN"],["Optimist Prime","PRIME"],["Clear Skies","SKIES"],["Upward","UPW"],["Gm Optimism","GMOP"],["Red Sky","RSKY"],["Half Moon","HALF"],["Bullish Bird","BIRD"]];
-let fl=0;const sideL=$("sideL");
-function freshCard(){const [n,t]=fresh[fl%fresh.length];const mc=3.5+Math.random()*6,up=Math.round(5+Math.random()*120);fl++;
-  return `<div class="mc"><div class="av" style="background:${colors[fl%8]}">${n[0]}</div><div><div class="nm">${n}</div><div class="sub2">$${t} · ${Math.max(1,Math.round(Math.random()*40))}s</div></div><div class="rt"><div class="big">$${mc.toFixed(1)}K</div><div class="cap up">▲ ${up}%</div></div></div>`}
-sideL.innerHTML=[0,1,2,3].map(freshCard).join("");
-setInterval(()=>{sideL.insertAdjacentHTML("afterbegin",freshCard());sideL.lastElementChild.remove()},3800);
-const tops=[["Superchain Cat","SUPERCAT",33700,4,70],["Glass Half Full","FULL",48900,2,69],["Sunny","SUNNY",61800,0,68],["Bright Side","BRIGHT",19800,6,62]];
-function renderTops(){$("sideR").innerHTML=tops.map(([n,t,mc,i,sc])=>`<div class="mc"><div class="av" style="background:${colors[i%8]}">${n[0]}</div><div><div class="nm">${n}</div><div class="sub2">$${t} · ${fmt(mc)}</div></div><div class="rt"><div class="big" style="color:${sc>=70?"var(--red2)":"var(--sun)"}">${sc}</div><div class="cap">score</div></div></div>`).join("")}
-renderTops();
-setInterval(()=>{tops.forEach(r=>{r[2]=Math.round(r[2]*(1+(Math.random()-.45)*.03));r[4]=Math.max(40,Math.min(95,r[4]+Math.round((Math.random()-.5)*3)))});tops.sort((a,b)=>b[4]-a[4]);renderTops()},5000);
-let launched=1284,today=96;setInterval(()=>{launched++;today++;$("launched").textContent=launched.toLocaleString();$("today").textContent=today},4000);
+$("sideL").innerHTML='<div class="side-empty">New Optimism coins show up here as they launch.</div>';
+$("sideR").innerHTML='<div class="side-empty">Call Scores show up here once coins are live.</div>';
+
 
 /* form */
 function upd(){const n=$("fname").value.trim()||"Sunny";const t=($("ftick").value.trim()||"SUNNY").toUpperCase();$("pname").textContent=n;$("ptick").textContent="$"+t+" · Optimism";if(!$("pimg").style.backgroundImage)$("pimg").textContent=n[0].toUpperCase();$("pdesc").textContent=$("fdesc").value.trim()||"Your description shows here.";const b=Math.max(0,parseFloat($("fbuy").value)||0);$("cbuy").textContent=b+" SOL";try{localStorage.setItem("opad_draft",JSON.stringify({n:$("fname").value,t:$("ftick").value,d:$("fdesc").value,x:$("fx").value,b:$("fbuy").value}))}catch(_){}}
@@ -448,10 +444,11 @@ try{const d=JSON.parse(localStorage.getItem("opad_draft")||"null");if(d){$("fnam
 /* scanner preview */
 const callScore=c=>{const mc=clamp01((Math.log10(c[2])-3.6)/1.4),mo=clamp01((c[4]+20)/120),cu=c[5]>=95?.4:clamp01(c[5]/85);return Math.round((mc*.45+mo*.3+cu*.25)*100)};
 function clamp01(v){return Math.max(0,Math.min(1,v))}
-$("scanTop").innerHTML=[[["Superchain Cat","SUPERCAT",33700],4,70],[["Glass Half Full","FULL",48900],2,69],[["Sunny","SUNNY",61800],0,68],[["Bright Side","BRIGHT",19800],6,62]].map(([c,i,s])=>`<div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:var(--bg2);border:1px solid var(--line)">
- <div class="av" style="background:${colors[i%8]};width:40px;height:40px;border-radius:11px;font-size:15px">${c[0][0]}</div>
- <div><div style="font-weight:600">${c[0]}</div><div class="mono" style="font-size:13px;color:var(--muted)">$${c[1]} · ${fmt(c[2])}</div></div>
- <div style="margin-left:auto;text-align:right"><div class="mono" style="font-size:20px;font-weight:500;color:${s>=70?"var(--red2)":"var(--sun)"}">${s}</div><div style="font-size:12px;color:var(--dim)">Call Score</div></div></div>`).join("");
+$("scanTop").innerHTML='<div class="empty-st" style="padding:26px 16px"><b>Nothing to call yet.</b>The top Optimism coins to call show up here once coins are live.</div>';
+/* main coin CA: paste it between the quotes to show it in the hero */
+const MAIN_CA="";
+if(MAIN_CA){$("caText").textContent=MAIN_CA;$("caBuy").href="https://pump.fun/coin/"+MAIN_CA;$("caBar").classList.add("on")}
+$("caCopy").onclick=()=>{navigator.clipboard.writeText(MAIN_CA).then(()=>toast("CA copied.")).catch(()=>toast("Long-press the address to copy."))};
 </script>
 </body>
 </html>

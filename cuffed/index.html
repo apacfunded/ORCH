@@ -3,359 +3,419 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cuffed — the dev can't dump</title>
-<meta name="description" content="Launch a pump.fun coin with the dev buy cuffed. Locked on-chain, unlocked on a schedule everyone can see.">
-<meta property="og:title" content="Cuffed — the dev can't dump">
-<meta property="og:description" content="Launch a coin with the dev buy cuffed. Locked, vested, visible.">
-<meta name="theme-color" content="#0d0405">
+<title>Cuffed ($CUFFED) — the dev can't dump</title>
+<meta name="description" content="Cuffed: pump.fun coins with the dev buy locked. The dev can't dump, and anyone can check it.">
+<meta property="og:title" content="Cuffed ($CUFFED) — the dev can't dump">
+<meta property="og:description" content="Pump.fun coins with the dev bag locked. Check it yourself.">
+<meta property="og:image" content="https://orch.lol/cuffed/pfp.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orch.lol/cuffed/pfp.png">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="pfp.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d0405;--bg2:#140708;--surface:#1b0a0c;--surface2:#241012;--line:#36181b;--line2:#4a2226;
-  --text:#f6e9ea;--muted:#b3969a;--dim:#7d6064;--accent:#e0344a;--accent2:#ff5468;--steel:#d6d0d1;--ok:#10b981;
-  --r:18px;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
-  --d:"Anton",Impact,"Arial Narrow",sans-serif;--b:"Work Sans",system-ui,-apple-system,sans-serif;--m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --bg:#000;--bg2:#0a0a0a;--s1:#111;--s2:#181818;--line:#232323;--line2:#333;
+  --text:#f4f4f1;--muted:#a3a3a0;--dim:#6b6b68;
+  --red:#ff2d3d;--red2:#ff5a66;--ok:#22e07a;
+  --r:20px;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --d:"Anton",Impact,"Arial Narrow",sans-serif;--b:"Inter Tight",system-ui,-apple-system,sans-serif;--m:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{overflow-x:clip;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--text);font:400 16px/1.55 var(--b);-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit}
-::selection{background:var(--accent);color:#fff}
-.wrap{max-width:1200px;margin:0 auto;padding:0 22px}
-.display{font-family:var(--d);font-weight:400;text-transform:uppercase;line-height:.9;letter-spacing:.005em}
-:focus-visible{outline:3px solid var(--accent2);outline-offset:3px;border-radius:8px}
+img{display:block;max-width:100%}
+::selection{background:var(--text);color:#000}
+.wrap{max-width:1220px;margin:0 auto;padding:0 22px}
+.display{font-family:var(--d);font-weight:400;text-transform:uppercase;line-height:.88;letter-spacing:.005em}
+:focus-visible{outline:3px solid var(--red2);outline-offset:3px;border-radius:8px}
+.mono{font-family:var(--m)}
 
-body::before{content:"";position:fixed;inset:-50%;z-index:100;pointer-events:none;opacity:.06;
+/* film grain */
+body::before{content:"";position:fixed;inset:-50%;z-index:300;pointer-events:none;opacity:.07;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:grain 1s steps(4) infinite}
 @keyframes grain{25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-1%,3%)}}
 
-.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;font:600 15px var(--b);cursor:pointer;border:2px solid transparent;transition:transform .25s var(--spring),background .2s,border-color .2s,box-shadow .25s;overflow:hidden;white-space:nowrap}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 10px 30px -10px rgba(224,52,74,.7)}
-.btn-primary:hover{background:var(--accent2);box-shadow:0 16px 40px -10px rgba(224,52,74,.9)}
-.btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
-.btn-primary:hover::after{transform:translateX(120%)}
-.btn-ghost{border-color:var(--line2);background:transparent}
-.btn-ghost:hover{border-color:var(--text)}
+/* custom cursor ring (desktop) */
+#cur{position:fixed;left:0;top:0;z-index:400;width:38px;height:38px;margin:-19px 0 0 -19px;border:1.5px solid rgba(255,255,255,.6);border-radius:50%;pointer-events:none;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),background .3s,border-color .3s;mix-blend-mode:difference;display:none}
+#cur.big{width:70px;height:70px;margin:-35px 0 0 -35px;background:#fff;border-color:#fff}
+@media(hover:hover) and (pointer:fine){#cur{display:block}}
+
+/* buttons */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 28px;border-radius:999px;font:600 15px var(--b);cursor:pointer;border:1.5px solid transparent;transition:transform .25s var(--spring),background .2s,border-color .2s,color .2s,box-shadow .3s;overflow:hidden;white-space:nowrap;isolation:isolate}
+.btn-w{background:var(--text);color:#000}
+.btn-w::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--red);transform:translateY(101%);transition:transform .45s var(--ease)}
+.btn-w:hover{color:#fff;box-shadow:0 16px 40px -12px rgba(255,45,61,.7)}
+.btn-w:hover::before{transform:none}
+.btn-g{border-color:var(--line2);background:transparent}
+.btn-g:hover{border-color:var(--text)}
 .btn:active{transform:scale(.96)}
 .btn svg{width:18px;height:18px;transition:transform .3s var(--ease)}
 .btn:hover svg{transform:translateX(3px)}
+.btn[aria-disabled=true]{opacity:.55;cursor:not-allowed}
 
-#intro{position:fixed;inset:0;z-index:200;background:var(--bg);display:grid;place-items:center;transition:clip-path 1s var(--ease) .1s;clip-path:inset(0 0 0 0)}
+/* intro: mugshot flash */
+#intro{position:fixed;inset:0;z-index:500;background:#000;display:grid;place-items:center;transition:clip-path 1s var(--ease);clip-path:inset(0)}
 #intro.out{clip-path:inset(0 0 100% 0)}
-#intro .lk{width:110px;height:140px}
-#intro .shackle{transform:translateY(-22px);transition:transform .45s var(--spring) .35s}
-#intro.shut .shackle{transform:translateY(0)}
-#intro .word{position:absolute;bottom:18%;font:400 22px var(--d);letter-spacing:.3em;color:var(--accent);opacity:0;transform:scale(.8);transition:all .3s var(--spring) .7s}
-#intro.shut .word{opacity:1;transform:scale(1)}
-#intro.shut .lk{animation:clank .35s .8s}
-@keyframes clank{30%{transform:rotate(-8deg) scale(1.05)}60%{transform:rotate(5deg)}}
+#intro img{width:min(46vw,260px);transform:scale(1.7);opacity:0;transition:transform .5s var(--spring),opacity .2s}
+#intro.slam img{transform:scale(1);opacity:1;animation:clank .4s .45s}
+#intro .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#intro.slam .flash{animation:flash .5s .42s}
+#intro .w{position:absolute;bottom:16%;font:400 18px var(--m);letter-spacing:.5em;color:var(--muted);opacity:0;transition:opacity .3s .6s}
+#intro.slam .w{opacity:1}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+@keyframes clank{25%{transform:rotate(-6deg) scale(1.04)}55%{transform:rotate(4deg)}80%{transform:rotate(-1deg)}}
 
-nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;width:min(1160px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 10px 0 18px;border-radius:999px;background:rgba(20,7,8,.9);border:1px solid var(--line);box-shadow:0 20px 50px -20px rgba(0,0,0,.8);transition:transform .4s var(--ease)}
-nav.hide{transform:translate(-50%,-130%)}
-.logo{display:flex;align-items:center;gap:10px;font:400 26px var(--d);text-transform:uppercase;letter-spacing:.02em}
-.logo svg{width:36px;height:24px}
-.navlinks{display:flex;gap:4px;align-items:center}
+/* nav */
+nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:60;width:min(1180px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;height:66px;padding:0 9px 0 10px;border-radius:999px;background:rgba(10,10,10,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);transition:transform .45s var(--ease)}
+nav.hide{transform:translate(-50%,-140%)}
+.logo{display:flex;align-items:center;gap:11px;font:400 26px var(--d);text-transform:uppercase;letter-spacing:.02em}
+.logo img{width:46px;height:46px;border-radius:50%;border:1px solid var(--line2);transition:transform .5s var(--spring)}
+.logo:hover img{transform:rotate(-18deg) scale(1.08)}
+.navlinks{display:flex;gap:2px;align-items:center}
 .navlinks a.t{padding:10px 14px;color:var(--muted);font-weight:500;font-size:15px;border-radius:999px;transition:color .2s,background .2s}
-.navlinks a.t:hover{color:var(--text);background:var(--surface2)}
-.navlinks .btn{min-height:46px;padding:0 20px}
-@media(max-width:860px){.navlinks a.t{display:none}}
+.navlinks a.t:hover{color:var(--text);background:var(--s2)}
+.navlinks .btn{min-height:48px;padding:0 22px}
+@media(max-width:900px){.navlinks a.t{display:none}}
 
-.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:120px 0 60px;overflow:hidden;isolation:isolate}
-.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(60% 55% at 72% 48%,rgba(224,52,74,.28),transparent 70%),radial-gradient(40% 40% at 10% 90%,rgba(224,52,74,.12),transparent 70%)}
-.bars{position:absolute;inset:0;z-index:-1;display:flex;justify-content:space-around;pointer-events:none}
-.bars i{width:14px;height:100%;background:linear-gradient(90deg,#1a0b0d,#2b1416 40%,#1a0b0d);opacity:.55;transform:translateY(-100%);animation:barDrop 1.1s var(--ease) forwards}
-@keyframes barDrop{to{transform:translateY(0)}}
-.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:center;width:100%}
-.tag{display:inline-flex;gap:10px;align-items:center;padding:9px 16px 9px 12px;border:1px solid var(--line2);background:var(--surface);border-radius:999px;font-weight:500;font-size:14px;color:var(--muted)}
-.tag .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:ping 1.6s infinite}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(224,52,74,.6)}70%,100%{box-shadow:0 0 0 10px rgba(224,52,74,0)}}
-.hero h1{font-size:clamp(76px,12.5vw,172px);margin:24px 0 22px}
-.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.04em}
-.hero h1 .ln>span{display:inline-block;transform:translateY(105%);transition:transform 1s var(--ease)}
-.hero h1 .red{color:var(--accent)}
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:130px 0 70px;overflow:hidden;isolation:isolate}
+.hero .wrap{display:grid;grid-template-columns:1.08fr .92fr;gap:30px;align-items:center;width:100%}
+.spot{position:absolute;inset:0;z-index:-1;background:radial-gradient(520px circle at var(--mx,70%) var(--my,45%),rgba(255,255,255,.075),transparent 60%);transition:background .1s}
+.pill{display:inline-flex;gap:10px;align-items:center;padding:8px 16px 8px 10px;border:1px solid var(--line2);background:var(--s1);border-radius:999px;font:500 13px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pill .dot{width:9px;height:9px;border-radius:50%;background:var(--red);animation:ping 1.6s infinite}
+.pill.live .dot{background:var(--ok);animation-name:pingG}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,45,61,.6)}70%,100%{box-shadow:0 0 0 10px rgba(255,45,61,0)}}
+@keyframes pingG{0%{box-shadow:0 0 0 0 rgba(34,224,122,.6)}70%,100%{box-shadow:0 0 0 10px rgba(34,224,122,0)}}
+.hero h1{font-size:clamp(78px,13vw,190px);margin:26px 0 24px}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.03em}
+.hero h1 .ln>span{display:inline-block;transform:translateY(108%) rotate(4deg);transform-origin:left bottom;transition:transform 1.05s var(--ease)}
 .ready .hero h1 .ln>span{transform:none}
-.ready .hero h1 .ln:nth-child(2)>span{transition-delay:.08s}
-.ready .hero h1 .ln:nth-child(3)>span{transition-delay:.16s}
-.strike{position:relative}
-.strike::after{content:"";position:absolute;left:-3%;right:-3%;top:50%;height:.08em;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease) 1.2s}
+.ready .hero h1 .ln:nth-child(2)>span{transition-delay:.09s}
+.ready .hero h1 .ln:nth-child(3)>span{transition-delay:.18s}
+.hero h1 .o{color:transparent;-webkit-text-stroke:2px var(--text)}
+.strike{position:relative;color:var(--red)}
+.strike::after{content:"";position:absolute;left:-3%;right:-3%;top:52%;height:.075em;background:var(--text);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease) 1.25s}
 .ready .strike::after{transform:scaleX(1)}
-.lead{font-size:19px;color:var(--muted);max-width:520px;margin-bottom:30px}
+.lead{font-size:19px;color:var(--muted);max-width:540px;margin-bottom:32px}
 .lead b{color:var(--text);font-weight:600}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap}
-.ca{margin-top:26px;display:inline-flex;align-items:center;gap:10px;padding:6px 6px 6px 16px;background:var(--surface);border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--muted)}
-.ca code{font:500 14px var(--m);color:var(--text)}
-.ca button{min-height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--surface2);cursor:pointer;font-weight:600;font-size:13px}
-.fade{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.fade{opacity:0;transform:translateY(20px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .ready .fade{opacity:1;transform:none}
-.ready .fade.d1{transition-delay:.35s}.ready .fade.d2{transition-delay:.5s}.ready .fade.d3{transition-delay:.65s}
+.ready .d1{transition-delay:.4s}.ready .d2{transition-delay:.55s}.ready .d3{transition-delay:.7s}
 
-.stage{position:relative;height:min(620px,72vh);min-height:440px}
-#chain{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
-#chain.drag{cursor:grabbing}
-.hint{position:absolute;right:6%;top:8%;display:flex;align-items:center;gap:8px;font:500 13px var(--m);color:var(--muted);pointer-events:none;transition:opacity .4s}
-.hint svg{width:30px;height:30px;color:var(--accent);animation:nudge 1.6s ease-in-out infinite}
-@keyframes nudge{50%{transform:translate(6px,6px) rotate(8deg)}}
-.lockcard{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);display:flex;gap:14px;align-items:center;padding:12px 20px 12px 12px;background:var(--surface);border:1px solid var(--line2);border-radius:16px;box-shadow:0 20px 50px -20px #000;white-space:nowrap}
-.lockcard .ic{width:42px;height:42px;border-radius:12px;background:rgba(224,52,74,.14);display:grid;place-items:center}
-.lockcard small{display:block;font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.lockcard b{font:500 22px var(--m);letter-spacing:-.02em}
-.scrollcue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:26px;height:42px;border:2px solid var(--line2);border-radius:20px}
-.scrollcue::after{content:"";position:absolute;left:50%;top:8px;width:4px;height:8px;margin-left:-2px;border-radius:4px;background:var(--accent);animation:cue 1.6s infinite}
-@keyframes cue{60%{transform:translateY(12px);opacity:0}100%{opacity:0}}
-@media(max-width:900px){.hero{min-height:0}.hero .wrap{grid-template-columns:1fr}.stage{height:460px;min-height:0;margin-top:10px}.scrollcue{display:none}}
+/* mugshot board */
+.board{position:relative;aspect-ratio:1/1.08;max-width:560px;width:100%;justify-self:center;perspective:1100px}
+.mug{position:absolute;inset:0;border-radius:28px;background:#050505;border:1px solid var(--line);overflow:hidden;transform-style:preserve-3d;transition:transform .5s var(--ease);box-shadow:0 60px 120px -50px rgba(255,255,255,.08)}
+.heights{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0 23px,rgba(255,255,255,.06) 23px 24px)}
+.heights span{position:absolute;left:14px;font:500 11px var(--m);color:var(--dim);transform:translateY(-50%)}
+.heights i{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.14)}
+.mug img{position:absolute;left:50%;top:47%;width:86%;transform:translate(-50%,-50%) translateZ(50px);mix-blend-mode:screen;filter:drop-shadow(0 30px 40px rgba(0,0,0,.9))}
+.mug .swing{animation:swing 5s ease-in-out infinite;transform-origin:50% 20%}
+@keyframes swing{50%{transform:translate(-50%,-50%) translateZ(50px) rotate(-3deg)}}
+.plate{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) translateZ(70px);display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 22px;background:#f4f4f1;color:#000;border-radius:6px;font:700 13px var(--m);letter-spacing:.14em;box-shadow:0 20px 40px -10px #000;white-space:nowrap}
+.plate b{font:400 30px/1 var(--d);letter-spacing:.06em}
+.ring{position:absolute;right:-6%;top:-6%;width:150px;height:150px;animation:spin 16s linear infinite;z-index:3}
+.ring text{font:700 10px var(--m);fill:var(--text)}
+.ring .core{fill:var(--red)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stamp{position:absolute;left:-4%;top:12%;z-index:4;padding:8px 18px;border:4px solid var(--red);color:var(--red);font:400 34px/1 var(--d);letter-spacing:.06em;border-radius:10px;transform:rotate(-14deg) scale(2.2);opacity:0;background:rgba(0,0,0,.6)}
+.ready .stamp{animation:stampIn .45s var(--spring) 1.5s forwards}
+@keyframes stampIn{to{transform:rotate(-14deg) scale(1);opacity:1}}
+@media(max-width:940px){.hero{min-height:0}.hero .wrap{grid-template-columns:1fr}.board{max-width:440px;margin-top:20px}.ring{width:120px;height:120px;right:-2%}}
 
-#toast{position:fixed;left:50%;bottom:26px;z-index:150;transform:translate(-50%,160%);display:flex;gap:12px;align-items:center;padding:14px 20px 14px 14px;background:var(--accent);color:#fff;border-radius:16px;font-weight:600;box-shadow:0 20px 50px -10px rgba(224,52,74,.6);transition:transform .5s var(--spring);width:max-content;max-width:calc(100% - 32px)}
-#toast.on{transform:translate(-50%,0)}
-#toast .ic{width:34px;height:34px;border-radius:10px;background:rgba(0,0,0,.2);display:grid;place-items:center;flex:none}
+/* status / CA */
+.status{margin-top:30px;max-width:560px;border:1px solid var(--line2);background:var(--s1);border-radius:18px;padding:6px;display:grid;gap:6px}
+.status .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px 6px}
+.status .top small{font:500 12px var(--m);color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+.lockst{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font:700 12px var(--m);letter-spacing:.08em;text-transform:uppercase;background:var(--s2);color:var(--muted)}
+.lockst svg{width:13px;height:14px}
+.lockst.on{background:rgba(34,224,122,.12);color:var(--ok)}
+.carow{display:flex;align-items:center;gap:8px;background:#000;border:1px solid var(--line);border-radius:13px;padding:6px 6px 6px 16px}
+.carow code{flex:1;min-width:0;font:500 14px var(--m);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.carow code.soon{color:var(--muted)}
+.carow button{flex:none;min-height:40px;padding:0 16px;border-radius:10px;border:0;background:var(--text);color:#000;cursor:pointer;font-weight:700;font-size:13px;transition:transform .2s var(--spring)}
+.carow button:active{transform:scale(.94)}
+.carow button:disabled{background:var(--s2);color:var(--dim);cursor:not-allowed}
+.links{display:flex;gap:6px}
+.links a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:12px;background:var(--s2);font-weight:600;font-size:14px;transition:background .2s}
+.links a:hover{background:var(--line2)}
+.links a[aria-disabled=true]{opacity:.45;pointer-events:none}
 
-.marquee{position:relative;background:var(--accent);color:#fff;overflow:hidden;transform:rotate(-1.5deg) scale(1.04);margin:10px 0;box-shadow:0 20px 60px -20px rgba(224,52,74,.6);z-index:2}
-.marquee.b{background:var(--bg2);color:var(--text);transform:rotate(1.5deg) scale(1.04);margin-top:-40px;z-index:1;border-block:1px solid var(--line)}
-.mq{display:flex;width:max-content;padding:16px 0;animation:mq 30s linear infinite;font:400 34px var(--d);text-transform:uppercase;letter-spacing:.01em}
-.marquee.b .mq{animation-direction:reverse;color:var(--dim)}
-.mq span{display:flex;align-items:center;gap:34px;padding-right:34px}
-.mq svg{width:42px;height:22px}
+/* tape marquees */
+.tape{position:relative;overflow:hidden;z-index:2;background:var(--text);color:#000;transform:rotate(-2deg) scale(1.05);margin:20px 0 0;box-shadow:0 20px 60px -20px rgba(255,255,255,.15)}
+.tape.b{background:var(--red);color:#fff;transform:rotate(1.6deg) scale(1.05);margin-top:-46px;z-index:1}
+.mq{display:flex;width:max-content;padding:15px 0;animation:mq 34s linear infinite;font:400 32px var(--d);text-transform:uppercase;letter-spacing:.02em}
+.tape.b .mq{animation-direction:reverse}
+.mq span{display:flex;align-items:center;gap:30px;padding-right:30px}
+.mq img{width:34px;height:34px;border-radius:50%;filter:invert(1)}
+.tape.b .mq img{filter:none;mix-blend-mode:multiply}
 @keyframes mq{to{transform:translateX(-50%)}}
 
-section{position:relative;padding:120px 0}
-.eyebrow{display:inline-flex;gap:10px;align-items:center;font:500 13px var(--m);color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
-.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent)}
-.h2{font-size:clamp(54px,8vw,108px)}
-.sub{color:var(--muted);max-width:440px;font-size:17px}
-.sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:56px}
-.example{display:inline-flex;margin-top:14px;font:500 12px var(--m);color:var(--muted);border:1px dashed var(--line2);padding:6px 10px;border-radius:8px;letter-spacing:.04em}
+section{position:relative;padding:130px 0}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;font:500 13px var(--m);color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+.eyebrow::before{content:"";width:9px;height:9px;background:var(--red);border-radius:2px}
+.h2{font-size:clamp(56px,8.4vw,120px)}
+.sub{color:var(--muted);max-width:460px;font-size:17px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:60px}
 
-.rv{opacity:0;transform:translateY(40px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv{opacity:0;transform:translateY(44px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .rv.in{opacity:1;transform:none}
 .split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.04em}
-.split .w>span{display:inline-block;transform:translateY(105%);transition:transform .9s var(--ease)}
+.split .w>span{display:inline-block;transform:translateY(108%);transition:transform .9s var(--ease)}
 .split.in .w>span{transform:none}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line)}
-.stats>div{padding:40px 24px;border-right:1px solid var(--line)}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stats>div{padding:38px 26px;border-right:1px solid var(--line);transition:background .3s}
+.stats>div:hover{background:var(--s1)}
 .stats>div:last-child{border-right:0}
-.stats b{display:block;font:400 clamp(44px,5.5vw,72px)/1 var(--d);margin-bottom:6px}
-.stats b em{font-style:normal;color:var(--accent)}
+.stats b{display:block;font:400 clamp(48px,5.8vw,80px)/1 var(--d);margin-bottom:8px}
+.stats b em{font-style:normal;color:var(--red)}
 .stats small{color:var(--muted);font-size:15px}
 @media(max-width:820px){.stats{grid-template-columns:1fr 1fr}.stats>div:nth-child(2){border-right:0}.stats>div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
 
-.how{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px}
-.how .left{position:sticky;top:120px;align-self:start}
-.prog{margin-top:36px;height:4px;background:var(--line);border-radius:4px;overflow:hidden;max-width:360px}
-.prog i{display:block;height:100%;width:0;background:var(--accent)}
+/* how */
+.how{display:grid;grid-template-columns:.9fr 1.1fr;gap:70px}
+.how .left{position:sticky;top:130px;align-self:start}
+.prog{margin-top:40px;display:flex;gap:6px;max-width:360px}
+.prog i{flex:1;height:5px;border-radius:4px;background:var(--line);overflow:hidden;position:relative}
+.prog i::after{content:"";position:absolute;inset:0;background:var(--red);transform:scaleX(var(--f,0));transform-origin:left}
 .steps{display:grid;gap:22px}
-.step{position:relative;padding:34px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);overflow:hidden;transition:border-color .4s,opacity .9s var(--ease),transform .9s var(--ease)}
-.step.on{border-color:var(--accent)}
-.step .n{font:400 120px/1 var(--d);color:transparent;-webkit-text-stroke:1.5px var(--line2);position:absolute;right:22px;top:12px;transition:-webkit-text-stroke-color .4s,color .4s}
-.step.on .n{-webkit-text-stroke-color:var(--accent);color:rgba(224,52,74,.1)}
-.step .ico{width:56px;height:56px;border-radius:16px;background:var(--surface2);display:grid;place-items:center;margin-bottom:60px}
+.step{position:relative;padding:36px;border-radius:var(--r);background:var(--s1);border:1px solid var(--line);overflow:hidden;transition:border-color .4s,background .4s,opacity .9s var(--ease),transform .9s var(--ease)}
+.step.on{border-color:var(--line2);background:var(--s2)}
+.step .n{font:400 130px/1 var(--d);color:transparent;-webkit-text-stroke:1.5px var(--line2);position:absolute;right:24px;top:10px;transition:-webkit-text-stroke-color .4s,color .4s}
+.step.on .n{-webkit-text-stroke-color:var(--red);color:rgba(255,45,61,.1)}
+.step .ico{width:58px;height:58px;border-radius:16px;background:#000;border:1px solid var(--line2);display:grid;place-items:center;margin-bottom:64px;transition:transform .5s var(--spring)}
+.step.on .ico{transform:rotate(-10deg) scale(1.08)}
 .step .ico svg{width:28px;height:28px}
-.step h3{font:400 40px/1 var(--d);text-transform:uppercase;margin-bottom:10px}
-.step p{color:var(--muted);max-width:420px}
+.step h3{font:400 42px/1 var(--d);text-transform:uppercase;margin-bottom:10px}
+.step p{color:var(--muted);max-width:430px}
 @media(max-width:900px){.how{grid-template-columns:1fr;gap:30px}.how .left{position:static}.step .n{font-size:90px}}
 
+/* configurator */
 .cfg{display:grid;grid-template-columns:1fr 1.1fr;gap:20px}
 @media(max-width:900px){.cfg{grid-template-columns:1fr}}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:30px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:32px}
 @media(max-width:520px){.card{padding:22px}}
-.field{margin-bottom:24px}
+.field{margin-bottom:26px}
 .field label,.field .lab{display:flex;justify-content:space-between;font-weight:600;font-size:14px;margin-bottom:10px}
-.field .lab output{font:500 14px var(--m);color:var(--accent2)}
-.field input[type=text]{width:100%;min-height:52px;background:var(--bg);border:1px solid var(--line2);border-radius:12px;color:var(--text);padding:0 16px;font:500 16px var(--b);transition:border-color .2s,box-shadow .2s}
-.field input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 4px rgba(224,52,74,.18)}
+.field .lab output{font:500 14px var(--m);color:var(--text)}
+.field input[type=text]{width:100%;min-height:54px;background:#000;border:1px solid var(--line2);border-radius:12px;color:var(--text);padding:0 16px;font:500 16px var(--b);transition:border-color .2s,box-shadow .2s}
+.field input::placeholder{color:var(--dim)}
+.field input:focus{border-color:var(--text);outline:none;box-shadow:0 0 0 4px rgba(255,255,255,.1)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;cursor:pointer}
-input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent) var(--p,10%),var(--line2) var(--p,10%))}
-input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent) var(--p,10%),var(--line2) var(--p,10%))}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:#fff;border:6px solid var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.5);transition:transform .2s var(--spring)}
-input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:6px solid var(--accent)}
-input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--text) var(--p,10%),var(--line2) var(--p,10%))}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--text) var(--p,10%),var(--line2) var(--p,10%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-11px;border-radius:50%;background:#000;border:6px solid var(--text);box-shadow:0 4px 14px rgba(0,0,0,.6);transition:transform .2s var(--spring),border-color .2s}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#000;border:6px solid var(--text)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);border-color:var(--red)}
 .ticks{display:flex;justify-content:space-between;font:500 12px var(--m);color:var(--dim);margin-top:-4px}
-.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line2);border-radius:14px;padding:4px}
-.seg button{position:relative;z-index:1;min-height:46px;border:0;background:transparent;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted);transition:color .3s}
-.seg button[aria-pressed=true]{color:#fff}
-.seg .pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--accent);border-radius:10px;transition:transform .45s var(--spring)}
-.seg[data-v=cliff] .pill{transform:translateX(100%)}
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;background:#000;border:1px solid var(--line2);border-radius:14px;padding:4px}
+.seg button{position:relative;z-index:1;min-height:48px;border:0;background:transparent;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted);transition:color .3s}
+.seg button[aria-pressed=true]{color:#000}
+.seg .knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--text);border-radius:10px;transition:transform .45s var(--spring)}
+.seg[data-v=cliff] .knob{transform:translateX(100%)}
 .prev-top{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:20px}
-.prev-top h3{font:400 46px/1 var(--d);text-transform:uppercase;word-break:break-all}
+.prev-top h3{font:400 48px/1 var(--d);text-transform:uppercase;word-break:break-all}
 .prev-top p{color:var(--muted);font-size:15px;margin-top:6px}
-.padlock{width:54px;height:62px;flex:none}
-.padlock .sh{transition:transform .35s var(--spring)}
-.padlock.pop .sh{transform:translateY(-8px)}
-.chart{position:relative;height:210px;background:var(--bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.prev-top img{width:64px;height:64px;border-radius:50%;border:1px solid var(--line2);flex:none;transition:transform .4s var(--spring)}
+.prev-top img.pop{transform:rotate(-20deg) scale(1.12)}
+.chart{position:relative;height:220px;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
 .chart svg{width:100%;height:100%;display:block}
 .chart .grid line{stroke:var(--line);stroke-width:1}
-.chart path.area{fill:url(#ga);transition:d .6s var(--ease)}
-.chart path.ln{fill:none;stroke:var(--accent2);stroke-width:3;stroke-linejoin:round;vector-effect:non-scaling-stroke;transition:d .6s var(--ease)}
+.chart path.area{fill:url(#ga)}
+.chart path.ln{fill:none;stroke:var(--text);stroke-width:3;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 .chart .tag2{position:absolute;top:12px;left:14px;font:500 12px var(--m);color:var(--muted)}
 .axis{display:flex;justify-content:space-between;font:500 12px var(--m);color:var(--dim);margin-bottom:20px}
 .kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
-.kv div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kv div{background:#000;border:1px solid var(--line);border-radius:12px;padding:14px}
 .kv small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
 .kv b{font:500 20px var(--m)}
-.badge{display:inline-flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--accent);padding:8px 14px 8px 10px;border-radius:999px;font-weight:600;font-size:14px}
-.badge svg{width:30px;height:18px}
+.badge{display:inline-flex;align-items:center;gap:10px;background:#000;border:1px solid var(--line2);padding:6px 16px 6px 6px;border-radius:999px;font-weight:600;font-size:14px}
+.badge img{width:30px;height:30px;border-radius:50%}
 .form-msg{margin-top:14px;font-size:14px;color:var(--muted);min-height:22px}
 @media(max-width:520px){.kv{grid-template-columns:1fr 1fr}.kv div:last-child{grid-column:span 2}}
 
-.dump{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+/* try to dump */
+#test{background:var(--bg2);border-block:1px solid var(--line)}
+.dump{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center}
 @media(max-width:900px){.dump{grid-template-columns:1fr}}
-.wallet{position:relative;padding:28px;border-radius:24px;background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--line2);box-shadow:0 40px 80px -40px #000}
-.wallet.shake{animation:shake .5s}
-@keyframes shake{15%,55%{transform:translateX(-10px) rotate(-1deg)}35%,75%{transform:translateX(10px) rotate(1deg)}}
-.wallet .row{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
-.wallet .row:last-of-type{border-bottom:0}
-.wallet .row small{color:var(--muted);font-size:15px}
-.wallet .row b{font:500 18px var(--m)}
-.wallet .bag{display:flex;align-items:center;gap:14px}
-.wallet .coin{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8a98,var(--accent) 60%,#8e1626);display:grid;place-items:center;font:400 18px var(--d);color:#fff}
-.sellbtn{width:100%;margin-top:18px;min-height:58px;border-radius:16px;border:0;background:#fff;color:var(--bg);font:600 17px var(--b);cursor:pointer;transition:transform .2s var(--spring),background .2s}
-.sellbtn:hover{background:#ffe3e6}
-.sellbtn:active{transform:scale(.97)}
-.denied{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
-.denied span{font:400 64px var(--d);color:var(--accent);border:5px solid var(--accent);padding:4px 22px;border-radius:12px;transform:rotate(-12deg) scale(2);opacity:0;transition:all .35s var(--spring);background:rgba(13,4,5,.88)}
-.denied.on span{transform:rotate(-12deg) scale(1);opacity:1}
-.blocked{font:400 clamp(90px,14vw,180px)/1 var(--d);color:var(--accent);display:inline-block}
+.blocked{font:400 clamp(100px,15vw,200px)/1 var(--d);color:var(--red);display:inline-block}
 .blocked.bump{animation:bump .4s var(--spring)}
 @keyframes bump{40%{transform:scale(1.18)}}
+.cell{position:relative;border-radius:28px;background:#000;border:1px solid var(--line2);overflow:hidden}
+.cell .bars{position:absolute;inset:0;display:flex;justify-content:space-around;pointer-events:none;z-index:2}
+.cell .bars i{width:12px;height:100%;background:linear-gradient(90deg,#1b1b1b,#4a4a4a 45%,#1b1b1b);opacity:.55}
+.cell canvas{display:block;width:100%;height:440px;touch-action:none;cursor:grab;position:relative;z-index:1}
+.cell canvas.drag{cursor:grabbing}
+.cell .hint{position:absolute;left:18px;top:16px;z-index:3;display:flex;align-items:center;gap:8px;font:500 13px var(--m);color:var(--muted);pointer-events:none;transition:opacity .4s}
+.cell .foot{position:relative;z-index:3;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:16px;border-top:1px solid var(--line);background:var(--s1)}
+.cell .foot small{color:var(--muted);font-size:14px}
+.cell .foot b{display:block;font:500 16px var(--m)}
+.sellbtn{min-height:54px;padding:0 26px;border-radius:14px;border:0;background:var(--text);color:#000;font:700 16px var(--b);cursor:pointer;transition:transform .2s var(--spring),background .2s,color .2s}
+.sellbtn:hover{background:var(--red);color:#fff}
+.sellbtn:active{transform:scale(.95)}
+.denied{position:absolute;inset:0;z-index:4;display:grid;place-items:center;pointer-events:none}
+.denied span{font:400 72px var(--d);color:var(--red);border:6px solid var(--red);padding:4px 24px;border-radius:12px;transform:rotate(-12deg) scale(2.2);opacity:0;transition:all .35s var(--spring);background:rgba(0,0,0,.85)}
+.denied.on span{transform:rotate(-12deg) scale(1);opacity:1}
+.cell.shake{animation:shake .5s}
+@keyframes shake{15%,55%{transform:translateX(-10px) rotate(-.6deg)}35%,75%{transform:translateX(10px) rotate(.6deg)}}
 
-.feed{display:flex;gap:10px;overflow:hidden;margin-bottom:18px;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
-.feed .ev{flex:none;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);animation:evIn .6s var(--spring)}
-.feed .ev b{color:var(--text);font-weight:600}
-.feed .ev i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
-@keyframes evIn{from{opacity:0;transform:translateX(-30px) scale(.9)}}
-.tbl{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.tr{display:grid;grid-template-columns:1.3fr .8fr 1.6fr 1fr 1.2fr;gap:12px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);transition:background .2s}
+/* board */
+.tbl{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tr{display:grid;grid-template-columns:1.4fr 2fr 1fr auto;gap:14px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);transition:background .2s}
 .tr:last-child{border-bottom:0}
-.tr:not(.th):hover{background:var(--surface2)}
+.tr:not(.th):hover{background:var(--s2)}
 .th{font:500 12px var(--m);color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding-block:14px}
-.tk{display:flex;align-items:center;gap:12px;font-weight:600}
-.tk i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font:400 16px var(--d);color:#fff;font-style:normal;flex:none}
+.tk{display:flex;align-items:center;gap:12px;font-weight:700}
+.tk img{width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);flex:none}
 .tk small{display:block;color:var(--muted);font-weight:400;font-size:13px}
-.mono{font:500 15px var(--m)}
-.lbar{display:flex;align-items:center;gap:12px}
-.lbar .bar{flex:1;height:8px;background:var(--bg);border-radius:8px;overflow:hidden}
-.lbar .bar i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1.4s var(--ease)}
-.st{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font:500 13px var(--m);white-space:nowrap}
-.st.lock{background:rgba(224,52,74,.14);color:#ff8392}
-.st.free{background:rgba(16,185,129,.14);color:#4ade80}
-@media(max-width:760px){.tr{grid-template-columns:1.1fr 1fr;row-gap:10px;padding:16px}.tr .h-s{display:none}.tr .lbar{grid-column:1/-1;order:3}}
+.tr code{font:500 13px var(--m);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.st{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font:700 12px var(--m);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;background:rgba(34,224,122,.12);color:var(--ok)}
+.tr a.go{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);font-weight:600;font-size:14px;transition:border-color .2s,background .2s}
+.tr a.go:hover{border-color:var(--text)}
+.empty{display:grid;place-items:center;text-align:center;gap:14px;padding:64px 22px}
+.empty img{width:84px;height:84px;border-radius:50%;border:1px solid var(--line2);animation:swing2 3s ease-in-out infinite}
+@keyframes swing2{50%{transform:rotate(-12deg)}}
+.empty b{font:400 34px/1 var(--d);text-transform:uppercase}
+.empty p{color:var(--muted);max-width:380px}
+@media(max-width:760px){.tr{grid-template-columns:1fr auto;row-gap:10px;padding:16px}.tr .h-s{display:none}}
 
+/* vs */
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:820px){.vs{grid-template-columns:1fr}}
-.vs .card{padding:36px;min-height:360px;display:flex;flex-direction:column}
-.vs h3{font:400 52px/1 var(--d);text-transform:uppercase;margin-bottom:24px}
+.vs .card{padding:38px;min-height:380px;display:flex;flex-direction:column}
+.vs h3{font:400 54px/1 var(--d);text-transform:uppercase;margin-bottom:24px}
 .vs ul{list-style:none;display:grid;gap:16px;margin-top:auto}
 .vs li{display:flex;gap:14px;align-items:flex-start;font-size:17px}
 .vs li svg{width:22px;height:22px;flex:none;margin-top:2px}
 .vs .bad{color:var(--muted)}
 .vs .bad h3{color:var(--dim)}
-.vs .good{background:linear-gradient(160deg,#2a0e12,var(--surface));border-color:var(--accent);box-shadow:0 40px 90px -40px rgba(224,52,74,.5)}
-.chart-dump{width:100%;height:90px;margin-bottom:22px}
+.vs .good{background:linear-gradient(160deg,#1c1c1c,#0c0c0c);border-color:var(--line2);box-shadow:0 40px 90px -40px rgba(255,255,255,.12)}
+.chart-dump{width:100%;height:96px;margin-bottom:24px}
 .chart-dump path{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;stroke-dasharray:1000;stroke-dashoffset:1000;transition:stroke-dashoffset 2.2s var(--ease) .3s}
 .in .chart-dump path{stroke-dashoffset:0}
 
+/* faq */
 .faq{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px}
 @media(max-width:900px){.faq{grid-template-columns:1fr;gap:20px}}
 .qa{border-bottom:1px solid var(--line)}
 .qa button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:26px 0;background:none;border:0;text-align:left;font-weight:600;font-size:19px;cursor:pointer;min-height:44px}
-.qa .pm{position:relative;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--line2);transition:transform .4s var(--spring),background .3s,border-color .3s}
-.qa .pm::before,.qa .pm::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;margin:-1px 0 0 -6px;background:var(--text);transition:transform .4s var(--ease)}
+.qa .pm{position:relative;width:36px;height:36px;flex:none;border-radius:50%;border:1px solid var(--line2);transition:transform .4s var(--spring),background .3s,border-color .3s}
+.qa .pm::before,.qa .pm::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;margin:-1px 0 0 -6px;background:var(--text);transition:transform .4s var(--ease),background .3s}
 .qa .pm::after{transform:rotate(90deg)}
-.qa.open .pm{background:var(--accent);border-color:var(--accent);transform:rotate(180deg)}
+.qa.open .pm{background:var(--text);border-color:var(--text);transform:rotate(180deg)}
+.qa.open .pm::before,.qa.open .pm::after{background:#000}
 .qa.open .pm::after{transform:rotate(0)}
 .qa .a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
 .qa.open .a{grid-template-rows:1fr}
 .qa .a>div{overflow:hidden}
 .qa .a p{color:var(--muted);padding-bottom:26px;max-width:620px;font-size:17px}
 
-.closer{position:relative;padding:160px 0 140px;text-align:center;overflow:hidden;isolation:isolate}
-.closer .big{font:400 clamp(90px,19vw,300px)/.82 var(--d);text-transform:uppercase}
+/* closer */
+.closer{position:relative;padding:170px 0 150px;text-align:center;overflow:hidden;isolation:isolate}
+.closer .ghost{position:absolute;left:50%;top:50%;width:min(900px,120vw);transform:translate(-50%,-50%) rotate(var(--rot,0deg));opacity:.07;z-index:-1;mix-blend-mode:screen;pointer-events:none;transition:transform .2s linear}
+.closer .big{font:400 clamp(96px,20vw,320px)/.82 var(--d);text-transform:uppercase}
 .closer .big span{display:block}
 .closer .big .o{color:transparent;-webkit-text-stroke:2px var(--line2)}
-.closer .big .r{color:var(--accent)}
-.closer p{color:var(--muted);margin:30px 0;font-size:18px}
-.glow{position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(224,52,74,.28),transparent 65%);pointer-events:none;transform:translate(-50%,-50%);left:50%;top:50%;z-index:-1;transition:left .5s var(--ease),top .5s var(--ease)}
+.closer .big .r{color:var(--red)}
+.closer p{color:var(--muted);margin:32px 0;font-size:18px}
 footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--muted);font-size:14px}
-footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+footer .fl{display:flex;align-items:center;gap:12px}
+footer img{width:30px;height:30px;border-radius:50%}
 footer a{text-decoration:underline;text-underline-offset:3px}
+
+#toast{position:fixed;left:50%;bottom:26px;z-index:250;transform:translate(-50%,170%);display:flex;gap:12px;align-items:center;padding:10px 20px 10px 10px;background:var(--text);color:#000;border-radius:16px;font-weight:700;box-shadow:0 20px 50px -10px rgba(0,0,0,.8);transition:transform .5s var(--spring);width:max-content;max-width:calc(100% - 32px)}
+#toast.on{transform:translate(-50%,0)}
+#toast img{width:36px;height:36px;border-radius:10px;flex:none;filter:invert(1)}
 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  .bars i{transform:none}
 }
 </style>
 </head>
 <body>
+<div id="cur" aria-hidden="true"></div>
 
 <div id="intro" aria-hidden="true">
-  <svg class="lk" viewBox="0 0 110 140">
-    <defs><linearGradient id="st" x1="0" x2="1"><stop offset="0" stop-color="#8f8889"/><stop offset=".45" stop-color="#f4f0f0"/><stop offset="1" stop-color="#7d7677"/></linearGradient></defs>
-    <path class="shackle" d="M25 64V40a30 30 0 0 1 60 0v24" fill="none" stroke="url(#st)" stroke-width="12"/>
-    <rect x="10" y="60" width="90" height="74" rx="16" fill="#e0344a"/>
-    <rect x="10" y="60" width="90" height="12" rx="6" fill="#ff5468" opacity=".5"/>
-    <circle cx="55" cy="92" r="9" fill="#0d0405"/><rect x="51" y="96" width="8" height="18" rx="3" fill="#0d0405"/>
-  </svg>
-  <div class="word">CLICK</div>
+  <img src="pfp.png" alt="">
+  <div class="flash"></div>
+  <div class="w">CLICK.</div>
 </div>
 
 <nav id="nav" aria-label="Main">
-  <a href="#top" class="logo" aria-label="Cuffed home">
-    <svg viewBox="0 0 60 40" aria-hidden="true"><circle cx="18" cy="20" r="13" fill="none" stroke="#e0344a" stroke-width="6"/><circle cx="42" cy="20" r="13" fill="none" stroke="#d6d0d1" stroke-width="6"/></svg>
-    Cuffed
-  </a>
+  <a href="#top" class="logo" aria-label="Cuffed home"><img src="pfp.png" alt="">Cuffed</a>
   <div class="navlinks">
     <a class="t" href="#how">How it works</a>
     <a class="t" href="#launch">Launch</a>
     <a class="t" href="#test">Try to dump</a>
-    <a class="t" href="#board">Cuffed coins</a>
-    <a class="btn btn-primary" href="#launch">Cuff a dev</a>
+    <a class="t" href="#board">Who's cuffed</a>
+    <a class="btn btn-w" href="#" id="navBuy" data-buy>Buy $CUFFED</a>
   </div>
 </nav>
 
 <header class="hero" id="top">
-  <div class="bars" aria-hidden="true" id="bars"></div>
+  <div class="spot" id="spot"></div>
   <div class="wrap">
     <div>
-      <span class="tag fade"><span class="dot"></span>Dev bag locked on-chain</span>
+      <span class="pill fade" id="pill"><span class="dot"></span><span id="pillTxt">$CUFFED launching soon</span></span>
       <h1 class="display">
         <span class="ln"><span>The dev</span></span>
-        <span class="ln"><span class="red">can't</span></span>
+        <span class="ln"><span class="o">can't</span></span>
         <span class="ln"><span class="strike">dump.</span></span>
       </h1>
-      <p class="lead fade d1">Launch a pump.fun coin with the dev buy <b>handcuffed</b>. It's locked on-chain and unlocks on a schedule everyone can see. No surprise dumps. No "dev sold."</p>
+      <p class="lead fade d1">Pump.fun coins with the dev buy <b>handcuffed</b>. The bag is locked, so the dev can't sell it, and anyone can check.</p>
       <div class="cta-row fade d2">
-        <a class="btn btn-primary" href="#launch">Launch a cuffed coin <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <a class="btn btn-ghost" href="#test">Try to dump</a>
+        <a class="btn btn-w" href="#" data-buy>Buy $CUFFED <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-g" href="#test">Try to dump</a>
       </div>
-      <div class="ca fade d3">$CUFFED <code id="ca">Coming soon</code><button type="button" id="copy">Copy</button></div>
+
+      <div class="status fade d3" id="status">
+        <div class="top"><small>$CUFFED contract</small><span class="lockst" id="lockst"><svg viewBox="0 0 20 22"><path d="M5 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="2" y="9" width="16" height="12" rx="3" fill="currentColor"/></svg><span id="lockTxt">Not live yet</span></span></div>
+        <div class="carow"><code id="ca" class="soon">CA drops at launch</code><button type="button" id="copy" disabled>Copy</button></div>
+        <div class="links">
+          <a id="lPump" href="#" target="_blank" rel="noopener" aria-disabled="true">pump.fun</a>
+          <a id="lDex" href="#" target="_blank" rel="noopener" aria-disabled="true">DexScreener</a>
+          <a id="lSol" href="#" target="_blank" rel="noopener" aria-disabled="true">Solscan</a>
+        </div>
+      </div>
     </div>
 
-    <div class="stage fade d2">
-      <canvas id="chain" aria-label="Interactive handcuffs. Drag the money bag. It can't get away."></canvas>
-      <div class="hint" id="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 1 1 4 0v6m0-2a2 2 0 1 1 4 0v3m0-1a2 2 0 1 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3l-3-5a2 2 0 0 1 3-2l2 2V9"/></svg>Drag the bag</div>
-      <div class="lockcard">
-        <div class="ic"><svg width="20" height="22" viewBox="0 0 20 22"><path d="M5 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="#ff5468" stroke-width="2.5"/><rect x="2" y="9" width="16" height="12" rx="3" fill="#ff5468"/></svg></div>
-        <div><small>Dev bag unlocks in</small><b id="countdown">29d 23:59:59</b></div>
+    <div class="board fade d2" id="board3d">
+      <svg class="ring" viewBox="0 0 150 150" aria-hidden="true">
+        <defs><path id="circ" d="M75,75 m-58,0 a58,58 0 1,1 116,0 a58,58 0 1,1 -116,0"/></defs>
+        <text textLength="360" lengthAdjust="spacing"><textPath href="#circ" textLength="360" lengthAdjust="spacingAndGlyphs">DEV LOCKED • CAN'T DUMP • DEV LOCKED • CAN'T DUMP •</textPath></text>
+        <circle class="core" cx="75" cy="75" r="9"/>
+      </svg>
+      <div class="stamp" aria-hidden="true">LOCKED</div>
+      <div class="mug" id="mug">
+        <div class="heights" id="heights"></div>
+        <img class="swing" src="pfp.png" alt="Cuffed logo: a pair of handcuffs">
+        <div class="plate"><span>SOLANA DEPT · PUMP.FUN</span><b>$CUFFED</b><span id="plateTxt">DEV BAG · LOCKED</span></div>
       </div>
     </div>
   </div>
-  <div class="scrollcue" aria-hidden="true"></div>
 </header>
 
-<div class="marquee" aria-hidden="true"><div class="mq" id="mq1"></div></div>
-<div class="marquee b" aria-hidden="true"><div class="mq" id="mq2"></div></div>
+<div class="tape" aria-hidden="true"><div class="mq" id="mq1"></div></div>
+<div class="tape b" aria-hidden="true"><div class="mq" id="mq2"></div></div>
 
 <section style="padding-bottom:40px">
   <div class="wrap">
     <div class="stats rv">
       <div><b data-count="100" data-suf="%">0</b><small>of the dev buy locked</small></div>
-      <div><b data-count="0">0</b><small>early unlocks. Ever.</small></div>
-      <div><b data-count="365" data-suf="d">0</b><small>max lock length</small></div>
-      <div><b><em>1</em> tx</b><small>to launch cuffed</small></div>
+      <div><b data-count="0">0</b><small>early unlocks</small></div>
+      <div><b data-count="0">0</b><small>dev sells while locked</small></div>
+      <div><b>1<em>×</em></b><small>launch on pump.fun, same as always</small></div>
     </div>
   </div>
 </section>
@@ -365,19 +425,19 @@ footer a{text-decoration:underline;text-underline-offset:3px}
     <div class="left">
       <div class="eyebrow">How it works</div>
       <h2 class="display h2 split">Three steps to cuffs.</h2>
-      <p class="sub" style="margin-top:22px">Your coin still launches on pump.fun. The dev buy just goes into a lock instead of your wallet.</p>
-      <div class="prog"><i id="prog"></i></div>
+      <p class="sub" style="margin-top:22px">Your coin still launches on pump.fun. The dev buy just gets locked instead of sitting free in your wallet.</p>
+      <div class="prog" id="prog"><i></i><i></i><i></i></div>
     </div>
     <div class="steps">
       <div class="step rv"><div class="n">01</div>
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ff5468" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9c0-1-1.3-1.8-3-1.8S9 8 9 9.4s1.3 1.8 3 2.2 3 1 3 2.3-1.3 2-3 2-3-.9-3-2"/></svg></div>
-        <h3>Set your dev buy</h3><p>Pick how much SOL you buy at launch, same as you would on pump.fun.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9c0-1-1.3-1.8-3-1.8S9 8 9 9.4s1.3 1.8 3 2.2 3 1 3 2.3-1.3 2-3 2-3-.9-3-2"/></svg></div>
+        <h3>Launch on pump.fun</h3><p>Make your coin and do your dev buy like you normally would.</p></div>
       <div class="step rv"><div class="n">02</div>
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ff5468" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="14" r="4.5"/><circle cx="16.5" cy="14" r="4.5"/><path d="M12 14h0M7.5 5v4.5M16.5 5v4.5"/></svg></div>
-        <h3>Pick the cuffs</h3><p>Choose how long it's locked, from 1 day to a full year, and whether it unlocks a little every day or all at the end.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="4" y="11" width="16" height="10" rx="3"/></svg></div>
+        <h3>Lock the dev bag</h3><p>The dev buy gets cuffed. Pick how long, and whether it frees up a little each day or all at the end.</p></div>
       <div class="step rv"><div class="n">03</div>
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ff5468" stroke-width="2" stroke-linecap="round"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="4" y="11" width="16" height="10" rx="3"/></svg></div>
-        <h3>Launch cuffed</h3><p>Tokens land in an on-chain lock. Your coin gets a Cuffed badge and a public countdown anyone can check.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
+        <h3>Holders can check</h3><p>The coin gets a "Dev locked" tag on its Cuffed page with links to check it on-chain.</p></div>
     </div>
   </div>
 </section>
@@ -385,14 +445,14 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 <section id="launch">
   <div class="wrap">
     <div class="sec-head">
-      <div><div class="eyebrow">Launch</div><h2 class="display h2 split">Cuff a coin.</h2></div>
-      <p class="sub">Set it up and watch the unlock schedule update as you go.</p>
+      <div><div class="eyebrow">Plan your lock</div><h2 class="display h2 split">Cuff a coin.</h2></div>
+      <p class="sub">Set it up and see the unlock schedule change as you go.</p>
     </div>
     <div class="cfg">
       <form class="card rv" id="form" novalidate>
         <div class="row2">
-          <div class="field"><label for="name">Coin name</label><input type="text" id="name" placeholder="Jailbird" maxlength="32" autocomplete="off"></div>
-          <div class="field"><label for="ticker">Ticker</label><input type="text" id="ticker" placeholder="JAIL" maxlength="10" autocomplete="off"></div>
+          <div class="field"><label for="name">Coin name</label><input type="text" id="name" placeholder="Your coin" maxlength="32" autocomplete="off"></div>
+          <div class="field"><label for="ticker">Ticker</label><input type="text" id="ticker" placeholder="TICKER" maxlength="10" autocomplete="off"></div>
         </div>
         <div class="field">
           <div class="lab"><label for="buy" style="margin:0">Dev buy</label><output id="buyOut">2.0 SOL</output></div>
@@ -407,24 +467,24 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <div class="field">
           <div class="lab"><span>How it unlocks</span></div>
           <div class="seg" id="seg" data-v="linear" role="group" aria-label="Unlock type">
-            <span class="pill"></span>
+            <span class="knob"></span>
             <button type="button" data-v="linear" aria-pressed="true">A little every day</button>
             <button type="button" data-v="cliff" aria-pressed="false">All at the end</button>
           </div>
         </div>
-        <button class="btn btn-primary" type="submit" style="width:100%">Launch cuffed coin</button>
+        <button class="btn btn-w" type="submit" style="width:100%">Launch cuffed coin</button>
         <div class="form-msg" id="msg" role="status"></div>
       </form>
 
       <div class="card rv" style="transition-delay:.1s">
         <div class="prev-top">
-          <div><h3 id="pvName">$JAIL</h3><p id="pvSub">2.0 SOL dev buy · locked 30 days</p></div>
-          <svg class="padlock" id="pad" viewBox="0 0 54 62" aria-hidden="true"><path class="sh" d="M13 28V18a14 14 0 0 1 28 0v10" fill="none" stroke="#d6d0d1" stroke-width="6"/><rect x="4" y="26" width="46" height="34" rx="9" fill="#e0344a"/><circle cx="27" cy="41" r="4.5" fill="#0d0405"/><rect x="25" y="43" width="4" height="9" rx="2" fill="#0d0405"/></svg>
+          <div><h3 id="pvName">$TICKER</h3><p id="pvSub">2.0 SOL dev buy · locked 30 days</p></div>
+          <img id="pad" src="pfp.png" alt="">
         </div>
         <div class="chart">
           <span class="tag2">% of dev bag unlocked</span>
           <svg viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
-            <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0344a" stop-opacity=".55"/><stop offset="1" stop-color="#e0344a" stop-opacity="0"/></linearGradient></defs>
+            <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f1" stop-opacity=".28"/><stop offset="1" stop-color="#f4f4f1" stop-opacity="0"/></linearGradient></defs>
             <g class="grid"><line x1="0" y1="50" x2="400" y2="50"/><line x1="0" y1="100" x2="400" y2="100"/><line x1="0" y1="150" x2="400" y2="150"/></g>
             <path class="area" id="area" d="M0 196 L400 6 L400 200 L0 200 Z"/>
             <path class="ln" id="line" d="M0 196 L400 6"/>
@@ -434,29 +494,28 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <div class="kv">
           <div><small>Unlocks per day</small><b id="perDay">3.33%</b></div>
           <div><small>Tokens locked</small><b id="tokens">~67M</b></div>
-          <div><small>Fully free</small><b id="freeOn">Dec 10</b></div>
+          <div><small>Fully free</small><b id="freeOn">—</b></div>
         </div>
-        <span class="badge"><svg viewBox="0 0 60 40" aria-hidden="true"><circle cx="18" cy="20" r="13" fill="none" stroke="#e0344a" stroke-width="6"/><circle cx="42" cy="20" r="13" fill="none" stroke="#d6d0d1" stroke-width="6"/></svg>Cuffed · dev can't dump</span>
+        <span class="badge"><img src="pfp.png" alt="">Cuffed · dev locked</span>
       </div>
     </div>
   </div>
 </section>
 
-<section id="test" style="background:var(--bg2);border-block:1px solid var(--line)">
+<section id="test">
   <div class="wrap dump">
     <div>
       <div class="eyebrow">Try it</div>
       <h2 class="display h2 split">Go on. Try to dump.</h2>
-      <p class="sub" style="margin:22px 0 30px">This is the dev wallet of a cuffed coin. Hit sell and see what happens.</p>
+      <p class="sub" style="margin:22px 0 30px">Drag the dev bag out of the cell, or hit sell. See how far you get.</p>
       <div class="blocked" id="blocked">0</div>
       <p class="sub">dump attempts blocked on this page</p>
     </div>
-    <div class="wallet rv" id="wallet">
-      <div class="row"><div class="bag"><div class="coin">J</div><div><b style="font-family:var(--b);font-weight:600">$JAIL</b><br><small>Dev wallet · example</small></div></div><b>69.4M</b></div>
-      <div class="row"><small>Locked</small><b>100%</b></div>
-      <div class="row"><small>Unlocks in</small><b id="wc">29d 23:59:59</b></div>
-      <div class="row"><small>Can sell now</small><b style="color:var(--accent2)">0</b></div>
-      <button class="sellbtn" id="sell" type="button">Sell 100%</button>
+    <div class="cell rv" id="cell">
+      <div class="bars" aria-hidden="true" id="cbars"></div>
+      <div class="hint" id="hint">↘ Drag the bag</div>
+      <canvas id="chain" aria-label="Interactive handcuffs. The dev bag is chained to the cell and can't get away."></canvas>
+      <div class="foot"><div><small>Dev bag</small><b>100% locked · 0 sellable</b></div><button class="sellbtn" id="sell" type="button">Sell 100%</button></div>
       <div class="denied" id="denied"><span>CUFFED</span></div>
     </div>
   </div>
@@ -465,13 +524,10 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 <section id="board">
   <div class="wrap">
     <div class="sec-head">
-      <div><div class="eyebrow">Live board</div><h2 class="display h2 split">Who's cuffed.</h2><span class="example">Example data until launch</span></div>
-      <p class="sub">Every coin launched on Cuffed, with how much of the dev bag is still locked.</p>
+      <div><div class="eyebrow">Live board</div><h2 class="display h2 split">Who's cuffed.</h2></div>
+      <p class="sub">Coins with a locked dev bag. Each one links straight to pump.fun so you can check it.</p>
     </div>
-    <div class="feed" id="feed"></div>
-    <div class="tbl rv" id="tbl">
-      <div class="tr th"><span>Coin</span><span class="h-s">Dev buy</span><span class="h-s">Still locked</span><span class="h-s">Unlock</span><span class="h-s">Status</span></div>
-    </div>
+    <div class="tbl rv" id="tbl"></div>
   </div>
 </section>
 
@@ -480,21 +536,21 @@ footer a{text-decoration:underline;text-underline-offset:3px}
     <div class="sec-head"><div><div class="eyebrow">Why cuff it</div><h2 class="display h2 split">Pick your chart.</h2></div></div>
     <div class="vs">
       <div class="card bad rv">
-        <svg class="chart-dump" viewBox="0 0 300 90" preserveAspectRatio="none"><path d="M0 80 L40 70 L80 50 L110 30 L130 18 L140 84 L300 87" stroke="#7d6064"/></svg>
+        <svg class="chart-dump" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80 L40 70 L80 50 L110 30 L130 18 L140 84 L300 87" stroke="#6b6b68"/></svg>
         <h3>Normal launch</h3>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#7d6064" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Dev can sell the whole bag one minute in</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#7d6064" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Holders stare at the dev wallet all day</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#7d6064" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>"Dev sold" kills the chart</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#6b6b68" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Dev can sell the whole bag a minute in</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#6b6b68" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Holders watch the dev wallet all day</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#6b6b68" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>"Dev sold" kills the chart</li>
         </ul>
       </div>
       <div class="card good rv" style="transition-delay:.12s">
-        <svg class="chart-dump" viewBox="0 0 300 90" preserveAspectRatio="none"><path d="M0 85 L40 74 L70 78 L110 58 L140 62 L180 40 L210 46 L250 22 L300 6" stroke="#ff5468"/></svg>
+        <svg class="chart-dump" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 85 L40 74 L70 78 L110 58 L140 62 L180 40 L210 46 L250 22 L300 6" stroke="#f4f4f1"/></svg>
         <h3>Cuffed launch</h3>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#ff5468" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Dev bag is locked on-chain</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#ff5468" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Unlock schedule is public from minute one</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#ff5468" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Cuffed badge tells buyers you're here for the run</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#ff2d3d" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Dev bag is locked</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#ff2d3d" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Anyone can check it on-chain</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#ff2d3d" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>Buyers know the dev is here for the run</li>
         </ul>
       </div>
     </div>
@@ -509,54 +565,104 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 </section>
 
 <div class="closer" id="closer">
-  <div class="glow" id="glow"></div>
+  <img class="ghost" id="ghost" src="pfp.png" alt="">
   <div class="wrap">
     <div class="big rv"><span class="o">Cuff</span><span>the</span><span class="r">dev.</span></div>
-    <p>Launch a coin your holders can actually trust.</p>
+    <p>Coins your holders can actually trust.</p>
     <div class="cta-row" style="justify-content:center">
-      <a class="btn btn-primary" href="#launch">Launch a cuffed coin <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <a class="btn btn-ghost" href="#" id="buyBtn">Buy $CUFFED</a>
+      <a class="btn btn-w" href="#" data-buy>Buy $CUFFED <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-g" href="#top">Check the CA</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="wrap">
-    <span>© 2026 Cuffed · <a href="https://orch.lol">orch.lol</a></span>
-    <span>Not financial advice. Locks are on-chain; read the schedule before you buy.</span>
+    <span class="fl"><img src="pfp.png" alt="">© 2026 Cuffed · <a href="https://orch.lol">orch.lol</a></span>
+    <span>Not financial advice. Check the lock yourself before you buy.</span>
   </div>
 </footer>
 
-<div id="toast" role="status"><span class="ic"><svg width="16" height="18" viewBox="0 0 20 22"><path d="M5 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="#fff" stroke-width="2.5"/><rect x="2" y="9" width="16" height="12" rx="3" fill="#fff"/></svg></span><span id="toastTxt">Nice try. The dev bag is cuffed.</span></div>
+<div id="toast" role="status"><img src="pfp.png" alt=""><span id="toastTxt">Nice try. The dev bag is cuffed.</span></div>
 
 <script>
+/* ============================================================
+   $CUFFED SETTINGS — paste the real CA here when it's live.
+   devLocked:true shows the green "Dev locked" tag everywhere.
+   ============================================================ */
+var CUFFED = {
+  ca: "",
+  devLocked: true
+};
+/* Coins on the "Who's cuffed" board. $CUFFED is added
+   automatically once the CA above is filled in.
+   Add others like: {ticker:"XYZ", name:"Name", ca:"...pump", img:"pfp.png"} */
+var BOARD = [];
+
 (function(){
 var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
 var $=function(s){return document.querySelector(s)};
+var LIVE=!!CUFFED.ca;
 
 /* intro */
 var intro=$('#intro');
 function startPage(){document.body.classList.add('ready')}
 if(RM){intro.remove();startPage()}
 else{
-  setTimeout(function(){intro.classList.add('shut')},150);
-  setTimeout(function(){intro.classList.add('out');startPage()},1250);
+  setTimeout(function(){intro.classList.add('slam')},120);
+  setTimeout(function(){intro.classList.add('out');startPage()},1300);
   setTimeout(function(){intro.remove()},2400);
 }
 
-/* bars */
-var bars=$('#bars'),nb=innerWidth<700?6:11;
-for(var i=0;i<nb;i++){var b=document.createElement('i');b.style.animationDelay=(1.2+i*.05)+'s';bars.appendChild(b)}
+/* toast */
+var tt;function toast(m){$('#toastTxt').textContent=m;$('#toast').classList.add('on');clearTimeout(tt);tt=setTimeout(function(){$('#toast').classList.remove('on')},2600)}
 
-/* nav hide on scroll down */
+/* CA + lock status */
+var pumpUrl=LIVE?'https://pump.fun/coin/'+CUFFED.ca:'#';
+if(LIVE){
+  var ca=$('#ca');ca.textContent=CUFFED.ca;ca.classList.remove('soon');
+  $('#copy').disabled=false;
+  [['#lPump',pumpUrl],['#lDex','https://dexscreener.com/solana/'+CUFFED.ca],['#lSol','https://solscan.io/token/'+CUFFED.ca]].forEach(function(l){var a=$(l[0]);a.href=l[1];a.removeAttribute('aria-disabled')});
+  $('#pill').classList.add('live');$('#pillTxt').textContent='$CUFFED is live';
+  if(CUFFED.devLocked){$('#lockst').classList.add('on');$('#lockTxt').textContent='Dev locked';$('#plateTxt').textContent='DEV LOCKED ✓'}
+  else{$('#lockTxt').textContent='Live'}
+  BOARD.unshift({ticker:'CUFFED',name:'Cuffed',ca:CUFFED.ca,img:'pfp.png',locked:CUFFED.devLocked});
+}
+$('#copy').addEventListener('click',function(){
+  if(!LIVE)return;
+  (navigator.clipboard?navigator.clipboard.writeText(CUFFED.ca):Promise.reject()).then(function(){toast('CA copied. Dev is locked.')},function(){toast('Long-press the CA to copy it.')});
+});
+document.querySelectorAll('[data-buy]').forEach(function(b){
+  if(LIVE){b.href=pumpUrl;b.target='_blank';b.rel='noopener'}
+  else b.addEventListener('click',function(e){e.preventDefault();toast('$CUFFED isn\'t live yet. CA drops at launch.')});
+});
+
+/* cursor + spotlight */
+var cur=$('#cur'),spot=$('#spot'),hero=$('#top');
+if(FINE){
+  addEventListener('pointermove',function(e){cur.style.transform='translate('+e.clientX+'px,'+e.clientY+'px)'},{passive:true});
+  document.querySelectorAll('a,button,canvas,input').forEach(function(el){el.addEventListener('pointerenter',function(){cur.classList.add('big')});el.addEventListener('pointerleave',function(){cur.classList.remove('big')})});
+}
+hero.addEventListener('pointermove',function(e){var r=hero.getBoundingClientRect();spot.style.setProperty('--mx',(e.clientX-r.left)+'px');spot.style.setProperty('--my',(e.clientY-r.top)+'px')});
+
+/* mugshot board: height lines + 3D tilt */
+var hs=$('#heights'),labels=['7\'0"','6\'6"','6\'0"','5\'6"','5\'0"','4\'6"'];
+labels.forEach(function(l,i){var y=(8+i*15)+'%';hs.insertAdjacentHTML('beforeend','<i style="top:'+y+'"></i><span style="top:'+y+'">'+l+'</span>')});
+var b3=$('#board3d'),mug=$('#mug');
+if(FINE&&!RM){
+  b3.addEventListener('pointermove',function(e){var r=b3.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;mug.style.transform='rotateY('+(x*16)+'deg) rotateX('+(-y*16)+'deg)'});
+  b3.addEventListener('pointerleave',function(){mug.style.transform=''});
+}
+
+/* nav hide */
 var lastY=0,nav=$('#nav');
 addEventListener('scroll',function(){var y=scrollY;nav.classList.toggle('hide',y>lastY&&y>300);lastY=y},{passive:true});
 
-/* marquees */
-var cuffSvg='<svg viewBox="0 0 60 40"><circle cx="18" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="42" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="6"/></svg>';
-function mq(el,words){var s='';for(var k=0;k<2;k++)s+='<span>'+words.map(function(w){return w+cuffSvg}).join('')+'</span>';el.innerHTML=s}
-mq($('#mq1'),['Dev bag locked','No surprise dumps','Public unlock schedule','Cuffed badge on every chart']);
-mq($('#mq2'),['Can\'t rug','Won\'t rug','Physically cannot rug','Launch through pump.fun']);
+/* tapes */
+function mq(el,words){var s='';for(var k=0;k<2;k++)s+='<span>'+words.map(function(w){return w+'<img src="pfp.png" alt="">'}).join('')+'</span>';el.innerHTML=s}
+mq($('#mq1'),['Dev locked','Can\'t dump','Check it on-chain','Launch on pump.fun']);
+mq($('#mq2'),['Do not cross','Dev bag in custody','No early release','$CUFFED']);
 
 /* split headings */
 document.querySelectorAll('.split').forEach(function(h){
@@ -565,42 +671,83 @@ document.querySelectorAll('.split').forEach(function(h){
 
 /* reveal */
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;e.target.classList.add('in');io.unobserve(e.target);
-  if(e.target.querySelector('[data-count]'))countUp(e.target);
-  if(e.target.id==='tbl')fillBars();})},{threshold:.12});
+  if(e.target.querySelector('[data-count]'))countUp(e.target)})},{threshold:.12});
 document.querySelectorAll('.rv,.split').forEach(function(el){io.observe(el)});
 function countUp(root){root.querySelectorAll('[data-count]').forEach(function(el){
   var to=+el.dataset.count,suf=el.dataset.suf||'',t0=performance.now(),dur=1400;
   (function f(t){var p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,4);el.innerHTML=Math.round(to*e)+(suf?'<em>'+suf+'</em>':'');if(p<1)requestAnimationFrame(f)})(t0);
 })}
 
-/* time */
-var END=Date.now()+30*864e5-1000;
-function fmt(ms){var s=Math.max(0,Math.floor(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;return d+'d '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0')}
+/* how: step progress */
+var stepsEls=[].slice.call(document.querySelectorAll('.step')),progs=[].slice.call(document.querySelectorAll('#prog i'));
+function onScroll(){
+  stepsEls.forEach(function(s,i){var q=s.getBoundingClientRect(),f=Math.min(1,Math.max(0,(innerHeight*.75-q.top)/(q.height)));
+    progs[i].style.setProperty('--f',f);s.classList.toggle('on',q.top<innerHeight*.62&&q.bottom>innerHeight*.3)});
+  var c=$('#closer').getBoundingClientRect();$('#ghost').style.setProperty('--rot',((c.top/innerHeight)*-25)+'deg');
+}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
 
-/* toast */
-var tt;function toast(msg){$('#toastTxt').textContent=msg;$('#toast').classList.add('on');clearTimeout(tt);tt=setTimeout(function(){$('#toast').classList.remove('on')},2600)}
-$('#copy').addEventListener('click',function(){toast('CA drops at launch.')});
-$('#buyBtn').addEventListener('click',function(e){e.preventDefault();toast('$CUFFED isn\'t live yet. Buy link drops at launch.')});
+/* configurator */
+var st={buy:2,len:30,mode:'linear'},pad=$('#pad');
+function pct(el){el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%')}
+function popLock(){pad.classList.add('pop');clearTimeout(pad._t);pad._t=setTimeout(function(){pad.classList.remove('pop')},260)}
+$('#buy').addEventListener('input',function(e){st.buy=+e.target.value;pct(e.target);render()});
+$('#len').addEventListener('input',function(e){st.len=+e.target.value;pct(e.target);render();popLock()});
+['name','ticker'].forEach(function(id){$('#'+id).addEventListener('input',render)});
+$('#seg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;st.mode=b.dataset.v;this.dataset.v=st.mode;
+  this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});render();popLock()});
+pct($('#buy'));pct($('#len'));
+function render(){
+  var tk=($('#ticker').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'')||'TICKER';
+  $('#pvName').textContent='$'+tk;
+  var dl=st.len+(st.len===1?' day':' days');
+  $('#pvSub').textContent=st.buy.toFixed(1)+' SOL dev buy · locked '+dl;
+  $('#buyOut').textContent=st.buy.toFixed(1)+' SOL';$('#lenOut').textContent=dl;
+  $('#mid').textContent='Day '+Math.round(st.len/2);$('#axisEnd').textContent='Day '+st.len;
+  var line=st.mode==='linear'?'M0 196 L400 6':'M0 196 L392 196 L400 6';
+  $('#line').setAttribute('d',line);$('#area').setAttribute('d',line+' L400 200 L0 200 Z');
+  $('#perDay').textContent=st.mode==='linear'?(100/st.len).toFixed(2)+'%':'0%';
+  var tok=1073*(1-30/(30+st.buy));
+  $('#tokens').textContent='~'+(tok>=100?Math.round(tok):tok.toFixed(1))+'M';
+  $('#freeOn').textContent=new Date(Date.now()+st.len*864e5).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+render();
+$('#form').addEventListener('submit',function(e){e.preventDefault();$('#msg').textContent='Launching through Cuffed opens after $CUFFED goes live. Your settings stay on this page.';popLock()});
 
-/* ===== chain physics hero ===== */
+/* board */
+var tbl=$('#tbl');
+if(!BOARD.length){
+  tbl.innerHTML='<div class="empty"><img src="pfp.png" alt=""><b>Nobody cuffed yet</b><p>$CUFFED goes first. It shows up here with its CA and lock status the moment it\'s live.</p></div>';
+}else{
+  tbl.innerHTML='<div class="tr th"><span>Coin</span><span class="h-s">Contract</span><span class="h-s">Dev bag</span><span></span></div>'+
+  BOARD.map(function(c){var short=c.ca.slice(0,6)+'…'+c.ca.slice(-6);
+    return '<div class="tr"><div class="tk"><img src="'+(c.img||'pfp.png')+'" alt=""><div>$'+c.ticker+'<small>'+c.name+'</small></div></div>'+
+    '<code class="h-s">'+short+'</code>'+
+    '<span class="h-s">'+(c.locked!==false?'<span class="st">● Dev locked</span>':'—')+'</span>'+
+    '<a class="go" href="https://pump.fun/coin/'+c.ca+'" target="_blank" rel="noopener">View</a></div>'}).join('');
+}
+
+/* ===== try to dump: chain physics ===== */
+var cb=$('#cbars');for(var i=0;i<(innerWidth<700?5:7);i++)cb.appendChild(document.createElement('i'));
 var cv=$('#chain'),cx=cv.getContext('2d'),W=0,H=0,DPR=Math.min(2,devicePixelRatio||1);
-var N=10,SEG=24,pts=[],drag=false,ptr={x:0,y:0},anchor={x:0,y:0},strain=0,warned=0,hintGone=false,T0=performance.now(),R=56;
+var N=9,SEG=24,pts=[],drag=false,ptr={x:0,y:0},anchor={x:0,y:0},strain=0,warned=0,hintGone=false,T0=performance.now(),R=50;
 function size(){var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0);
-  R=Math.max(40,Math.min(62,W/8.5));SEG=Math.max(17,Math.min(25,W/24));anchor.x=Math.max(R*2+10,W*.3);anchor.y=H*.26;
+  R=Math.max(36,Math.min(54,W/10));SEG=Math.max(16,Math.min(24,W/26));anchor.x=W*.32;anchor.y=H*.24;
   pts=[];for(var i=0;i<N;i++)pts.push({x:anchor.x+i*SEG*.7,y:anchor.y+i*SEG*.7,ox:anchor.x+i*SEG*.7,oy:anchor.y+i*SEG*.7});
 }
 size();addEventListener('resize',size);
 function pos(e){var r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
 function bagC(){var l=pts[N-1];return{x:l.x,y:l.y+R*1.2}}
-cv.addEventListener('pointerdown',function(e){var p=pos(e),c=bagC();if(Math.hypot(p.x-c.x,p.y-c.y)<R*1.9){drag=true;cv.classList.add('drag');cv.setPointerCapture(e.pointerId);ptr=p;if(!hintGone){hintGone=true;$('#hint').style.opacity=0}}});
+cv.addEventListener('pointerdown',function(e){var p=pos(e),c=bagC();if(Math.hypot(p.x-c.x,p.y-c.y)<R*2){drag=true;cv.classList.add('drag');cv.setPointerCapture(e.pointerId);ptr=p;if(!hintGone){hintGone=true;$('#hint').style.opacity=0}}});
 cv.addEventListener('pointermove',function(e){if(drag)ptr=pos(e)});
-function up(){if(!drag)return;drag=false;cv.classList.remove('drag');if(strain>.8&&Date.now()-warned>2500){warned=Date.now();toast('Nice try. The dev bag is cuffed.')}}
+function up(){if(!drag)return;drag=false;cv.classList.remove('drag');if(strain>.8&&Date.now()-warned>2500){warned=Date.now();blockedHit('Nice try. The dev bag is cuffed.')}}
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-
+var visible=true;new IntersectionObserver(function(es){visible=es[0].isIntersecting;if(visible)requestAnimationFrame(step)}).observe(cv);
 function step(){
-  var t=(performance.now()-T0)/1000,ax=anchor.x+Math.sin(t*1.1)*5,ay=anchor.y+Math.sin(t*1.7)*7,i,j,k;
+  if(!visible)return;
+  var t=(performance.now()-T0)/1000,ax=anchor.x+Math.sin(t*1.1)*4,ay=anchor.y+Math.sin(t*1.7)*5,i,j,k;
   for(i=1;i<N;i++){var p=pts[i],vx=(p.x-p.ox)*.982,vy=(p.y-p.oy)*.982;p.ox=p.x;p.oy=p.y;p.x+=vx;p.y+=vy+(i===N-1?1.3:.5)}
-  if(!drag&&!RM)pts[N-1].x+=Math.sin(t*1.25)*.32;
+  if(!drag&&!RM)pts[N-1].x+=Math.sin(t*1.25)*.3;
   var last=pts[N-1],maxL=SEG*(N-1)*.98;
   if(drag){var tx=ptr.x,ty=ptr.y-R*1.2,dx=tx-ax,dy=ty-ay,d=Math.hypot(dx,dy);strain=Math.min(1,d/maxL);
     if(d>maxL){dx*=maxL/d;dy*=maxL/d}last.x+=(ax+dx-last.x)*.4;last.y+=(ay+dy-last.y)*.4}
@@ -615,180 +762,86 @@ function step(){
   draw(ax,ay,t);
   requestAnimationFrame(step);
 }
-function steel(x0,y0,x1,y1){var g=cx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,'#5f5859');g.addColorStop(.32,'#f8f4f4');g.addColorStop(.5,'#c2bbbc');g.addColorStop(.75,'#827b7c');g.addColorStop(1,'#d9d3d4');return g}
+function steel(x0,y0,x1,y1){var g=cx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,'#5a5a5a');g.addColorStop(.32,'#ffffff');g.addColorStop(.5,'#c4c4c4');g.addColorStop(.75,'#7c7c7c');g.addColorStop(1,'#dadada');return g}
 function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
 function cuff(x,y,r,rot,label){
   var w=r*.32;
   cx.save();cx.translate(x,y);cx.rotate(rot);
-  cx.shadowColor='rgba(0,0,0,.6)';cx.shadowBlur=34;cx.shadowOffsetY=20;
-  // outer band
+  cx.shadowColor='rgba(0,0,0,.7)';cx.shadowBlur=30;cx.shadowOffsetY=18;
   cx.lineWidth=w;cx.strokeStyle=steel(-r,-r,r,r);cx.beginPath();cx.arc(0,0,r,0,Math.PI*2);cx.stroke();
   cx.shadowColor='transparent';
-  // bevel lines
   cx.lineWidth=1.5;cx.strokeStyle='rgba(0,0,0,.4)';cx.beginPath();cx.arc(0,0,r-w/2,0,Math.PI*2);cx.stroke();
   cx.strokeStyle='rgba(255,255,255,.25)';cx.beginPath();cx.arc(0,0,r+w/2-1,0,Math.PI*2);cx.stroke();
-  // center groove
-  cx.strokeStyle='rgba(40,30,31,.35)';cx.lineWidth=2;cx.beginPath();cx.arc(0,0,r,0,Math.PI*2);cx.stroke();
-  // specular
-  cx.lineWidth=w*.22;cx.strokeStyle='rgba(255,255,255,.75)';cx.lineCap='round';cx.beginPath();cx.arc(0,0,r+w*.18,Math.PI*1.12,Math.PI*1.45);cx.stroke();
-  // ratchet teeth on inner bottom
-  cx.strokeStyle='rgba(50,40,41,.55)';cx.lineWidth=2;cx.lineCap='butt';
+  cx.lineWidth=w*.22;cx.strokeStyle='rgba(255,255,255,.8)';cx.lineCap='round';cx.beginPath();cx.arc(0,0,r+w*.18,Math.PI*1.12,Math.PI*1.45);cx.stroke();
+  cx.strokeStyle='rgba(40,40,40,.55)';cx.lineWidth=2;cx.lineCap='butt';
   for(var a=.25;a<1.3;a+=.11){cx.beginPath();cx.moveTo(Math.cos(a)*(r-w/2),Math.sin(a)*(r-w/2));cx.lineTo(Math.cos(a)*(r-w*.1),Math.sin(a)*(r-w*.1));cx.stroke()}
-  // lock box (where chain attaches) at angle 0
   cx.fillStyle=steel(r-w,-r*.4,r+w*1.6,r*.4);rr(r-w*.7,-r*.36,w*2.3,r*.72,8);cx.fill();
-  cx.strokeStyle='rgba(0,0,0,.3)';cx.lineWidth=1.5;rr(r-w*.7,-r*.36,w*2.3,r*.72,8);cx.stroke();
-  cx.fillStyle='#2a2223';cx.beginPath();cx.arc(r+w*.45,0,w*.28,0,Math.PI*2);cx.fill();
-  cx.fillStyle='#2a2223';cx.fillRect(r+w*.45-1.5,0,3,w*.45);
-  // hinge rivet opposite side
+  cx.fillStyle='#1d1d1d';cx.beginPath();cx.arc(r+w*.45,0,w*.28,0,Math.PI*2);cx.fill();cx.fillRect(r+w*.45-1.5,0,3,w*.45);
   cx.fillStyle=steel(-r-w,-6,-r+w,6);cx.beginPath();cx.arc(-r,0,w*.38,0,Math.PI*2);cx.fill();
   cx.restore();
-  if(label){
-    cx.save();cx.translate(x,y);
-    cx.fillStyle='rgba(224,52,74,.12)';cx.beginPath();cx.arc(0,0,r-w*.6,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#f6e9ea';cx.font='400 '+Math.round(r*.48)+'px Anton, Impact, sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(label,0,2);
-    cx.restore();
-  }
+  if(label){cx.save();cx.translate(x,y);cx.fillStyle='#f4f4f1';cx.font='400 '+Math.round(r*.46)+'px Anton, Impact, sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(label,0,2);cx.restore()}
 }
 function link(a,b,i){
   var mx=(a.x+b.x)/2,my=(a.y+b.y)/2,ang=Math.atan2(b.y-a.y,b.x-a.x),L=Math.hypot(b.x-a.x,b.y-a.y);
   cx.save();cx.translate(mx,my);cx.rotate(ang);
   var flat=i%2===0,rw=L*.78,rh=flat?L*.38:L*.12;
-  cx.lineWidth=flat?5.5:7;cx.strokeStyle=steel(-rw,-rh-4,rw,rh+4);
+  cx.lineWidth=flat?5:6.5;cx.strokeStyle=steel(-rw,-rh-4,rw,rh+4);
   cx.beginPath();cx.ellipse(0,0,rw,Math.max(3,rh),0,0,Math.PI*2);cx.stroke();
-  if(flat){cx.lineWidth=1.6;cx.strokeStyle='rgba(255,255,255,.7)';cx.beginPath();cx.ellipse(0,0,rw,rh,0,Math.PI*1.15,Math.PI*1.65);cx.stroke()}
   cx.restore();
 }
 function bag(x,y,rot,s){
   cx.save();cx.translate(x,y);cx.rotate(rot);cx.scale(s,s);
-  cx.shadowColor='rgba(0,0,0,.65)';cx.shadowBlur=44;cx.shadowOffsetY=28;
-  var g=cx.createRadialGradient(-26,50,8,0,78,100);g.addColorStop(0,'#ff7d8c');g.addColorStop(.5,'#e0344a');g.addColorStop(1,'#6e0e1c');
+  cx.shadowColor='rgba(0,0,0,.7)';cx.shadowBlur=40;cx.shadowOffsetY=26;
+  var g=cx.createRadialGradient(-26,50,8,0,78,100);g.addColorStop(0,'#ff7a84');g.addColorStop(.5,'#ff2d3d');g.addColorStop(1,'#6d0a14');
   cx.fillStyle=g;cx.beginPath();cx.moveTo(-16,0);cx.bezierCurveTo(-28,14,-82,44,-76,104);cx.bezierCurveTo(-70,156,70,156,76,104);cx.bezierCurveTo(82,44,28,14,16,0);cx.closePath();cx.fill();
   cx.shadowColor='transparent';
-  // folds
-  cx.strokeStyle='rgba(110,14,28,.55)';cx.lineWidth=3;cx.lineCap='round';
-  cx.beginPath();cx.moveTo(-10,14);cx.quadraticCurveTo(-22,40,-40,52);cx.stroke();
-  cx.beginPath();cx.moveTo(10,14);cx.quadraticCurveTo(24,40,44,50);cx.stroke();
-  // top flaps
-  cx.fillStyle='#b91f33';cx.beginPath();cx.moveTo(-12,0);cx.quadraticCurveTo(-34,-24,-20,-30);cx.quadraticCurveTo(-8,-14,0,-4);cx.closePath();cx.fill();
+  cx.fillStyle='#b81524';cx.beginPath();cx.moveTo(-12,0);cx.quadraticCurveTo(-34,-24,-20,-30);cx.quadraticCurveTo(-8,-14,0,-4);cx.closePath();cx.fill();
   cx.beginPath();cx.moveTo(12,0);cx.quadraticCurveTo(34,-24,20,-30);cx.quadraticCurveTo(8,-14,0,-4);cx.closePath();cx.fill();
-  // shine
   cx.fillStyle='rgba(255,255,255,.2)';cx.beginPath();cx.ellipse(-44,84,9,26,.35,0,Math.PI*2);cx.fill();
-  // $ emblem
-  cx.fillStyle='rgba(110,14,28,.45)';cx.beginPath();cx.arc(0,96,34,0,Math.PI*2);cx.fill();
-  cx.fillStyle='#fff';cx.font='400 54px Anton, Impact, sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('$',0,98);
+  cx.fillStyle='#fff';cx.font='400 30px Anton, Impact, sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('DEV',0,86);cx.fillText('BAG',0,116);
   cx.restore();
 }
 function draw(ax,ay,t){
   cx.clearRect(0,0,W,H);
   var l=pts[N-1],p=pts[N-2];
-  // floor shadow under bag
-  var floorY=H-R*1.15;
-  cx.fillStyle='rgba(0,0,0,.4)';cx.beginPath();cx.ellipse(l.x,floorY,R*1.2,R*.16,0,0,Math.PI*2);cx.fill();
-  // dev cuff
+  cx.fillStyle='rgba(255,255,255,.06)';cx.beginPath();cx.ellipse(l.x,H-R*1.1,R*1.3,R*.16,0,0,Math.PI*2);cx.fill();
   var c1x=ax-R*1.05,c1y=ay;
-  cuff(c1x,c1y,R,Math.sin(t*1.1)*.05,'DEV');
-  // chain
+  cuff(c1x,c1y,R,Math.sin(t*1.1)*.05,'');
   for(var i=0;i<N-1;i++)link(pts[i],pts[i+1],i);
-  // bag hangs from second cuff
   var ang=Math.atan2(l.y-p.y,l.x-p.x)-Math.PI/2,tilt=Math.max(-.55,Math.min(.55,ang*.55+(l.x-l.ox)*.03));
-  var s=R/60;
-  var bx=l.x-Math.sin(tilt)*R*.62,by=l.y+Math.cos(tilt)*R*.62;
+  var s=R/60,bx=l.x-Math.sin(tilt)*R*.62,by=l.y+Math.cos(tilt)*R*.62;
   bag(bx,by,tilt,s*.95);
-  cuff(l.x+Math.sin(tilt)*0,l.y+R*.62*.0+R*.62,R*.6,tilt+Math.PI*1.5,null);
-  // strain sparks at dev cuff
-  if(strain>.85){var al=Math.min(1,(strain-.85)*7);cx.strokeStyle='rgba(255,84,104,'+al+')';cx.lineWidth=2.5;cx.lineCap='round';
+  cuff(l.x,l.y+R*.62,R*.6,tilt+Math.PI*1.5,null);
+  if(strain>.85){var al=Math.min(1,(strain-.85)*7);cx.strokeStyle='rgba(255,90,102,'+al+')';cx.lineWidth=2.5;cx.lineCap='round';
     for(var s2=0;s2<6;s2++){var a=Math.random()*Math.PI*2,r1=R*1.25,r2=R*1.55+Math.random()*R*.3;cx.beginPath();cx.moveTo(c1x+Math.cos(a)*r1,c1y+Math.sin(a)*r1);cx.lineTo(c1x+Math.cos(a)*r2,c1y+Math.sin(a)*r2);cx.stroke()}}
 }
 requestAnimationFrame(step);
 
-/* sticky steps */
-var stepsEls=[].slice.call(document.querySelectorAll('.step')),prog=$('#prog'),how=$('#how');
-function onScroll(){
-  var r=how.getBoundingClientRect(),p=Math.min(1,Math.max(0,(innerHeight*.6-r.top)/(r.height-innerHeight*.2)));
-  prog.style.width=(p*100)+'%';
-  stepsEls.forEach(function(s){var q=s.getBoundingClientRect();s.classList.toggle('on',q.top<innerHeight*.62&&q.bottom>innerHeight*.3)});
-}
-addEventListener('scroll',onScroll,{passive:true});onScroll();
-
-/* configurator */
-var st={buy:2,len:30,mode:'linear'},pad=$('#pad');
-function pct(el){el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%')}
-function popLock(){pad.classList.add('pop');clearTimeout(pad._t);pad._t=setTimeout(function(){pad.classList.remove('pop')},220)}
-$('#buy').addEventListener('input',function(e){st.buy=+e.target.value;pct(e.target);render()});
-$('#len').addEventListener('input',function(e){st.len=+e.target.value;pct(e.target);render();popLock()});
-['name','ticker'].forEach(function(id){$('#'+id).addEventListener('input',render)});
-$('#seg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;st.mode=b.dataset.v;this.dataset.v=st.mode;
-  this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});render();popLock()});
-pct($('#buy'));pct($('#len'));
-function render(){
-  var tk=($('#ticker').value||'JAIL').toUpperCase().replace(/[^A-Z0-9]/g,'')||'JAIL';
-  $('#pvName').textContent='$'+tk;
-  var dl=st.len+(st.len===1?' day':' days');
-  $('#pvSub').textContent=st.buy.toFixed(1)+' SOL dev buy · locked '+dl;
-  $('#buyOut').textContent=st.buy.toFixed(1)+' SOL';$('#lenOut').textContent=dl;
-  $('#mid').textContent='Day '+Math.round(st.len/2);$('#axisEnd').textContent='Day '+st.len;
-  var line=st.mode==='linear'?'M0 196 L400 6':'M0 196 L392 196 L400 6';
-  $('#line').setAttribute('d',line);$('#area').setAttribute('d',line+' L400 200 L0 200 Z');
-  $('#perDay').textContent=st.mode==='linear'?(100/st.len).toFixed(2)+'%':'0%';
-  var tok=1073*(1-30/(30+st.buy));
-  $('#tokens').textContent='~'+(tok>=100?Math.round(tok):tok.toFixed(1))+'M';
-  $('#freeOn').textContent=new Date(Date.now()+st.len*864e5).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-}
-render();
-$('#form').addEventListener('submit',function(e){e.preventDefault();$('#msg').textContent='Launching opens when $CUFFED goes live. Your settings stay on this page.';popLock()});
-
-/* dump test */
-var blocked=0,wallet=$('#wallet'),denied=$('#denied'),bl=$('#blocked');
+var blocked=0,cell=$('#cell'),denied=$('#denied'),bl=$('#blocked');
 var lines=['Nice try. The dev bag is cuffed.','Still cuffed.','Not happening, dev.','The cuffs don\'t care.','Holders say thanks.'];
-$('#sell').addEventListener('click',function(){
+function blockedHit(msg){
   blocked++;bl.textContent=blocked;bl.classList.remove('bump');void bl.offsetWidth;bl.classList.add('bump');
-  wallet.classList.remove('shake');void wallet.offsetWidth;wallet.classList.add('shake');
+  cell.classList.remove('shake');void cell.offsetWidth;cell.classList.add('shake');
   denied.classList.add('on');clearTimeout(denied._t);denied._t=setTimeout(function(){denied.classList.remove('on')},1100);
-  toast(lines[Math.min(blocked-1,lines.length-1)]);
+  toast(msg||lines[Math.min(blocked-1,lines.length-1)]);
   if(navigator.vibrate)navigator.vibrate([40,30,40]);
-});
-
-/* board */
-var demo=[['JAIL','Jailbird','#e0344a',3.0,'linear',30,12.4],['PERP','Perp Walk','#7c3aed',1.5,'cliff',90,40.2],['BAIL','Bail Money','#0ea5e9',5.0,'linear',180,20.7],['CELL','Cellmate','#f59e0b',0.8,'cliff',7,7],['WARD','Warden','#10b981',2.2,'linear',90,71.3],['PAROLE','Parole','#ec4899',4.1,'linear',60,3.1]];
-var tbl=$('#tbl');
-demo.forEach(function(r){
-  var left=Math.max(0,r[5]-r[6]),free=left===0,locked=free?0:(r[4]==='linear'?left/r[5]*100:100);
-  var el=document.createElement('div');el.className='tr';
-  el.innerHTML='<div class="tk"><i style="background:'+r[2]+'">'+r[1][0]+'</i><div>$'+r[0]+'<small>'+r[1]+'</small></div></div>'+
-    '<span class="mono h-s">'+r[3].toFixed(1)+' SOL</span>'+
-    '<div class="lbar"><div class="bar"><i data-w="'+locked.toFixed(1)+'"></i></div><span class="mono">'+Math.round(locked)+'%</span></div>'+
-    '<span class="h-s" style="color:var(--muted)">'+(r[4]==='linear'?'Daily':'At end')+' · '+r[5]+'d</span>'+
-    '<span style="justify-self:end">'+(free?'<span class="st free">Free</span>':'<span class="st lock" data-end="'+(Date.now()+left*864e5)+'">'+fmt(left*864e5)+'</span>')+'</span>';
-  tbl.appendChild(el);
-});
-function fillBars(){tbl.querySelectorAll('.bar i').forEach(function(b,i){setTimeout(function(){b.style.width=b.dataset.w+'%'},i*90)})}
-
-var feed=$('#feed'),evs=[['$JAIL','dump attempt blocked'],['$PERP','new holder trusted the cuffs'],['$BAIL','unlocked 0.55% today'],['$WARD','dev tried to sell. Denied.'],['$PAROLE','launched cuffed for 60d'],['$CELL','cuffs came off on schedule']],ei=0;
-function pushEv(){var e=evs[ei++%evs.length],d=document.createElement('div');d.className='ev';d.innerHTML='<i></i><b>'+e[0]+'</b> '+e[1];feed.prepend(d);if(feed.children.length>8)feed.lastChild.remove()}
-for(var k=0;k<4;k++)pushEv();setInterval(pushEv,2600);
-
-function tick(){var now=Date.now();$('#countdown').textContent=fmt(END-now);$('#wc').textContent=fmt(END-now);
-  tbl.querySelectorAll('[data-end]').forEach(function(s){s.textContent=fmt(+s.dataset.end-now)})}
-tick();setInterval(tick,1000);
+}
+$('#sell').addEventListener('click',function(){blockedHit()});
 
 /* FAQ */
 var qa=[
-  ['Does my coin still launch on pump.fun?','Yes. It launches on pump.fun like normal. Cuffed just sends your dev buy into an on-chain lock instead of your wallet.'],
-  ['Can I unlock early?','No. That\'s the whole point. Once it\'s cuffed, nobody can unlock it early, not even us.'],
+  ['Does the coin still launch on pump.fun?','Yes. It launches on pump.fun like normal. The only difference is the dev buy is locked instead of sitting free in the dev wallet.'],
+  ['Is the $CUFFED dev bag locked?','Yes. The $CUFFED dev locks the dev buy on pump.fun right after launch. The CA is at the top of this page, so you can check it yourself.'],
+  ['Can the dev unlock early?','No. That\'s the whole point. Once it\'s cuffed, it stays cuffed until the lock ends.'],
   ['What\'s the difference between the two unlock types?','"A little every day" frees an equal slice of the bag each day until the lock ends. "All at the end" keeps everything locked until the last day, then frees it all at once.'],
-  ['Do I still get creator fees?','Yes. Creator fees go to you as normal. Only the tokens from your dev buy are locked.'],
-  ['How do holders check the lock?','Every cuffed coin gets a public page with the lock address, the countdown and how much is still locked. The lock is on-chain, so anyone can verify it.'],
-  ['What is $CUFFED?','The coin behind the launchpad. Its own dev buy is cuffed too.']
+  ['Does the dev still get creator fees?','Yes. Creator fees work like normal. Only the tokens from the dev buy are locked.'],
+  ['How do I check a lock?','Every coin on the board links to its pump.fun page. The lock is on-chain, so anyone can check it.']
 ];
 $('#qas').innerHTML=qa.map(function(q,i){return '<div class="qa rv"><button type="button" aria-expanded="false" aria-controls="a'+i+'">'+q[0]+'<span class="pm"></span></button><div class="a" id="a'+i+'"><div><p>'+q[1]+'</p></div></div></div>'}).join('');
 document.querySelectorAll('.qa').forEach(function(el){io.observe(el);el.querySelector('button').addEventListener('click',function(){var o=el.classList.toggle('open');this.setAttribute('aria-expanded',o)})});
 
-/* closer glow */
-var closer=$('#closer'),glow=$('#glow');
-closer.addEventListener('pointermove',function(e){var r=closer.getBoundingClientRect();glow.style.left=(e.clientX-r.left)+'px';glow.style.top=(e.clientY-r.top)+'px'});
-
 /* magnetic buttons */
-if(!RM&&matchMedia('(hover:hover)').matches){document.querySelectorAll('.btn-primary').forEach(function(b){
+if(!RM&&FINE){document.querySelectorAll('.btn-w').forEach(function(b){
   b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();b.style.transform='translate('+((e.clientX-r.left-r.width/2)*.15)+'px,'+((e.clientY-r.top-r.height/2)*.25)+'px)'});
   b.addEventListener('pointerleave',function(){b.style.transform=''});
 })}

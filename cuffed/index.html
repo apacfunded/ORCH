@@ -83,6 +83,9 @@ nav.hide{transform:translate(-50%,-140%)}
 .navlinks a.t{padding:10px 14px;color:var(--muted);font-weight:500;font-size:15px;border-radius:999px;transition:color .2s,background .2s}
 .navlinks a.t:hover{color:var(--text);background:var(--s2)}
 .navlinks .btn{min-height:48px;padding:0 22px}
+.xbtn{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;border:1px solid var(--line2);margin-right:6px;transition:border-color .2s,background .2s,transform .3s var(--spring)}
+.xbtn:hover{border-color:var(--text);background:var(--s2);transform:rotate(-8deg)}
+.xbtn svg{width:18px;height:18px}
 @media(max-width:900px){.navlinks a.t{display:none}}
 
 /* hero */
@@ -382,6 +385,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
     <a class="t" href="#launch">Launch</a>
     <a class="t" href="#test">Try to dump</a>
     <a class="t" href="#board">Who's cuffed</a>
+    <a class="xbtn" href="https://x.com/cuffed_sol" target="_blank" rel="noopener" aria-label="Cuffed on X (@cuffed_sol)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.9-6.4L6.3 22H3.2l7.3-8.3L1 2h6.3l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg></a>
     <a class="btn btn-w" href="#" id="navBuy" data-buy>Buy $CUFFED</a>
   </div>
 </nav>
@@ -400,6 +404,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
       <div class="cta-row fade d2">
         <a class="btn btn-w" href="#" data-buy>Buy $CUFFED <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn btn-g" href="#test">Try to dump</a>
+        <a class="btn btn-g" href="https://x.com/cuffed_sol" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.9-6.4L6.3 22H3.2l7.3-8.3L1 2h6.3l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg>@cuffed_sol</a>
       </div>
 
       <div class="status fade d3" id="status">
@@ -608,13 +613,14 @@ footer a{text-decoration:underline;text-underline-offset:3px}
     <div class="cta-row" style="justify-content:center">
       <a class="btn btn-w" href="#" data-buy>Buy $CUFFED <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn btn-g" href="#top">Check the CA</a>
+      <a class="btn btn-g" href="https://x.com/cuffed_sol" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.9-6.4L6.3 22H3.2l7.3-8.3L1 2h6.3l4.4 5.9L18.9 2zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20z"/></svg>Follow @cuffed_sol</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="wrap">
-    <span class="fl"><img src="pfp.png" alt="">© 2026 Cuffed · <a href="https://orch.lol">orch.lol</a></span>
+    <span class="fl"><img src="pfp.png" alt="">© 2026 Cuffed · <a href="https://orch.lol">orch.lol</a> · <a href="https://x.com/cuffed_sol" target="_blank" rel="noopener">@cuffed_sol</a></span>
     <span>Not financial advice. Check the lock yourself before you buy.</span>
   </div>
 </footer>

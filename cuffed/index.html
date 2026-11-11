@@ -28,6 +28,7 @@
 html{overflow-x:clip;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--text);font:400 16px/1.55 var(--b);-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:inherit;text-decoration:none}
+[hidden]{display:none!important}
 button{font:inherit;color:inherit}
 img{display:block;max-width:100%}
 ::selection{background:var(--text);color:#000}
@@ -242,6 +243,28 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);border-color
 .badge{display:inline-flex;align-items:center;gap:10px;background:#000;border:1px solid var(--line2);padding:6px 16px 6px 6px;border-radius:999px;font-weight:600;font-size:14px}
 .badge img{width:30px;height:30px;border-radius:50%}
 .form-msg{margin-top:14px;font-size:14px;color:var(--muted);min-height:22px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.opt{color:var(--dim);font-weight:500;font-size:12px;margin-left:6px}
+.field textarea{width:100%;background:#000;border:1px solid var(--line2);border-radius:12px;color:var(--text);padding:14px 16px;font:500 16px var(--b);resize:vertical;min-height:64px;transition:border-color .2s,box-shadow .2s}
+.field textarea:focus{border-color:var(--text);outline:none;box-shadow:0 0 0 4px rgba(255,255,255,.1)}
+.drop{display:flex;align-items:center;gap:14px;min-height:76px;padding:10px 14px;border:1.5px dashed var(--line2);border-radius:14px;background:#000;cursor:pointer;transition:border-color .2s,background .2s}
+.drop:hover,.drop.over{border-color:var(--text);background:#0b0b0b}
+#img:focus-visible+.drop,.drop:focus-within{outline:3px solid var(--red2);outline-offset:3px}
+.drop img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--line2);flex:none}
+.drop span{display:grid;gap:2px}.drop b{font-weight:600}.drop small{color:var(--dim);font-size:13px}
+.fee-note{font-size:13px;color:var(--muted);margin:-6px 0 18px;line-height:1.5}
+.steps-log{list-style:none;display:grid;gap:8px;margin-top:6px}
+.steps-log li{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted)}
+.steps-log li i{width:18px;height:18px;flex:none;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--text);animation:spin .8s linear infinite}
+.steps-log li.ok{color:var(--text)}
+.steps-log li.ok i{animation:none;border:0;background:var(--ok);position:relative}.steps-log li.ok i::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#000;font-size:12px;font-weight:800}
+.steps-log li.bad{color:var(--red2)}.steps-log li.bad i{animation:none;border-color:var(--red);background:var(--red)}
+.done-card{margin-top:14px;padding:16px;border-radius:14px;border:1px solid rgba(34,224,122,.35);background:rgba(34,224,122,.07);display:grid;gap:10px}
+.done-card b{font-size:16px}.done-card .links a{background:var(--s2)}
+.pending{margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(255,45,61,.4);background:rgba(255,45,61,.07);font-size:14px;display:grid;gap:10px}
+.pending .btn{min-height:46px}
+.tr .meta{font-size:13px;color:var(--muted);display:block;margin-top:4px}
+.tr .acts{display:flex;gap:6px}
 @media(max-width:520px){.kv{grid-template-columns:1fr 1fr}.kv div:last-child{grid-column:span 2}}
 
 /* try to dump */
@@ -367,7 +390,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   <div class="spot" id="spot"></div>
   <div class="wrap">
     <div>
-      <span class="pill fade" id="pill"><span class="dot"></span><span id="pillTxt">$CUFFED launching soon</span></span>
+      <span class="pill fade" id="pill"><span class="dot"></span><span id="pillTxt">Launchpad live · $CUFFED soon</span></span>
       <h1 class="display">
         <span class="ln"><span>The dev</span></span>
         <span class="ln"><span class="o">can't</span></span>
@@ -434,10 +457,10 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <h3>Launch on pump.fun</h3><p>Make your coin and do your dev buy like you normally would.</p></div>
       <div class="step rv"><div class="n">02</div>
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="4" y="11" width="16" height="10" rx="3"/></svg></div>
-        <h3>Lock the dev bag</h3><p>The dev buy gets cuffed. Pick how long, and whether it frees up a little each day or all at the end.</p></div>
+        <h3>Lock the dev bag</h3><p>Right after launch, your whole dev buy goes into a Streamflow lock that can't be cancelled. Pick how long, and whether it frees up a little each day or all at the end.</p></div>
       <div class="step rv"><div class="n">03</div>
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
-        <h3>Holders can check</h3><p>The coin gets a "Dev locked" tag on its Cuffed page with links to check it on-chain.</p></div>
+        <h3>Holders can check</h3><p>We verify the lock on-chain before the coin shows up as "Dev locked" on the board, with a link to the lock on Streamflow.</p></div>
     </div>
   </div>
 </section>
@@ -445,14 +468,24 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 <section id="launch">
   <div class="wrap">
     <div class="sec-head">
-      <div><div class="eyebrow">Plan your lock</div><h2 class="display h2 split">Cuff a coin.</h2></div>
-      <p class="sub">Set it up and see the unlock schedule change as you go.</p>
+      <div><div class="eyebrow">Launchpad · live</div><h2 class="display h2 split">Cuff a coin.</h2></div>
+      <p class="sub">Launch on pump.fun with your dev buy locked on Streamflow. You sign everything from your own wallet.</p>
     </div>
     <div class="cfg">
       <form class="card rv" id="form" novalidate>
         <div class="row2">
           <div class="field"><label for="name">Coin name</label><input type="text" id="name" placeholder="Your coin" maxlength="32" autocomplete="off"></div>
           <div class="field"><label for="ticker">Ticker</label><input type="text" id="ticker" placeholder="TICKER" maxlength="10" autocomplete="off"></div>
+        </div>
+        <div class="field">
+          <span class="lab"><span>Coin image</span></span>
+          <label class="drop" for="img" id="drop"><img id="imgPrev" alt="" hidden><span id="dropTxt"><b>Upload image</b><small>PNG, JPG, GIF or WEBP · up to 3 MB</small></span></label>
+          <input type="file" id="img" accept="image/png,image/jpeg,image/gif,image/webp" class="sr">
+        </div>
+        <div class="field"><label for="desc">Description <small class="opt">optional</small></label><textarea id="desc" maxlength="500" rows="2" placeholder="What's your coin about?"></textarea></div>
+        <div class="row2">
+          <div class="field"><label for="xl">X link <small class="opt">optional</small></label><input type="text" id="xl" placeholder="https://x.com/…" autocomplete="off"></div>
+          <div class="field"><label for="tg">Telegram <small class="opt">optional</small></label><input type="text" id="tg" placeholder="https://t.me/…" autocomplete="off"></div>
         </div>
         <div class="field">
           <div class="lab"><label for="buy" style="margin:0">Dev buy</label><output id="buyOut">2.0 SOL</output></div>
@@ -472,8 +505,11 @@ footer a{text-decoration:underline;text-underline-offset:3px}
             <button type="button" data-v="cliff" aria-pressed="false">All at the end</button>
           </div>
         </div>
-        <button class="btn btn-w" type="submit" style="width:100%">Launch cuffed coin</button>
+        <p class="fee-note">You approve twice: once to launch on pump.fun, once to cuff it (lock + fee split). Costs: your dev buy and pump.fun's create fee, then about 0.22 SOL to cuff it (0.05 SOL Cuffed fee + Streamflow's ~0.16 SOL lock fee) plus 0.19% of the locked tokens to Streamflow. Cuffed gets 20% of the coin's creator fees; you keep 80%.</p>
+        <button class="btn btn-w" type="submit" id="go" style="width:100%">Connect wallet &amp; launch</button>
         <div class="form-msg" id="msg" role="status"></div>
+        <ol class="steps-log" id="log" aria-live="polite"></ol>
+        <div class="pending" id="pending" hidden></div>
       </form>
 
       <div class="card rv" style="transition-delay:.1s">
@@ -525,7 +561,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   <div class="wrap">
     <div class="sec-head">
       <div><div class="eyebrow">Live board</div><h2 class="display h2 split">Who's cuffed.</h2></div>
-      <p class="sub">Coins with a locked dev bag. Each one links straight to pump.fun so you can check it.</p>
+      <p class="sub">Every coin here was checked on-chain before it was listed. Hit Lock to see its dev bag on Streamflow.</p>
     </div>
     <div class="tbl rv" id="tbl"></div>
   </div>
@@ -712,20 +748,143 @@ function render(){
   $('#freeOn').textContent=new Date(Date.now()+st.len*864e5).toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 render();
-$('#form').addEventListener('submit',function(e){e.preventDefault();$('#msg').textContent='Launching through Cuffed opens after $CUFFED goes live. Your settings stay on this page.';popLock()});
 
-/* board */
-var tbl=$('#tbl');
-if(!BOARD.length){
-  tbl.innerHTML='<div class="empty"><img src="pfp.png" alt=""><b>Nobody cuffed yet</b><p>$CUFFED goes first. It shows up here with its CA and lock status the moment it\'s live.</p></div>';
-}else{
-  tbl.innerHTML='<div class="tr th"><span>Coin</span><span class="h-s">Contract</span><span class="h-s">Dev bag</span><span></span></div>'+
-  BOARD.map(function(c){var short=c.ca.slice(0,6)+'…'+c.ca.slice(-6);
-    return '<div class="tr"><div class="tk"><img src="'+(c.img||'pfp.png')+'" alt=""><div>$'+c.ticker+'<small>'+c.name+'</small></div></div>'+
-    '<code class="h-s">'+short+'</code>'+
-    '<span class="h-s">'+(c.locked!==false?'<span class="st">● Dev locked</span>':'—')+'</span>'+
-    '<a class="go" href="https://pump.fun/coin/'+c.ca+'" target="_blank" rel="noopener">View</a></div>'}).join('');
+/* ===== launch: wallet -> pump.fun create -> cuff (fee split + Streamflow lock) -> verify ===== */
+var API='https://cuffed-api.vercel.app/api', imgData=null, busy=false;
+var esc=function(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var short=function(a){return a?a.slice(0,4)+'…'+a.slice(-4):''};
+var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+var store={get:function(k){try{return JSON.parse(localStorage.getItem('cuffed:'+k))}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem('cuffed:'+k):localStorage.setItem('cuffed:'+k,JSON.stringify(v))}catch(e){}}};
+function b64ToBytes(b){return Uint8Array.from(atob(b),function(c){return c.charCodeAt(0)})}
+function bytesToB64(b){var s='';for(var i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)}
+var web3P=null;
+function loadWeb3(){ if(window.solanaWeb3) return Promise.resolve(window.solanaWeb3);
+  return web3P||(web3P=new Promise(function(res,rej){var sc=document.createElement('script');sc.src='https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js';sc.onload=function(){res(window.solanaWeb3)};sc.onerror=function(){web3P=null;rej(new Error('Could not load the Solana library. Check your connection and try again.'))};document.head.appendChild(sc)}))}
+var wallet={pk:null,p:null};
+function provider(){return (window.phantom&&window.phantom.solana)||window.solflare||(window.backpack&&window.backpack.solana)||window.solana||null}
+async function connect(){
+  var p=provider();
+  if(!p){ if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){location.href='https://phantom.app/ul/browse/'+encodeURIComponent(location.href)+'?ref='+encodeURIComponent(location.origin);return null}
+    throw new Error('No Solana wallet found. Install Phantom, Solflare or Backpack, then reload.'); }
+  var r=await p.connect(); wallet.p=p; wallet.pk=((r&&r.publicKey)||p.publicKey).toString(); return wallet.pk;
 }
+async function api(path,body){
+  var r=await fetch(API+path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});
+  var j=await r.json().catch(function(){return{}});
+  if(!r.ok) throw new Error(j.error||('Request failed ('+r.status+'). Try again in a minute.'));
+  return j;
+}
+async function signAll(txs){
+  if(wallet.p.signAllTransactions) return wallet.p.signAllTransactions(txs);
+  var out=[];for(var i=0;i<txs.length;i++)out.push(await wallet.p.signTransaction(txs[i]));return out;
+}
+var logEl=$('#log');
+function logStep(t){var li=document.createElement('li');li.innerHTML='<i></i><span>'+esc(t)+'</span>';logEl.appendChild(li);
+  return{ok:function(m){li.className='ok';if(m)li.lastChild.textContent=m},bad:function(){li.className='bad'}}}
+function niceErr(e){var m=(e&&e.message)||String(e||'');
+  if(/reject|cancel|denied|4001/i.test(m)||(e&&e.code===4001))return 'You cancelled in your wallet.';
+  return m||'Something went wrong. Try again.';}
+
+/* image */
+$('#img').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;
+  if(f.size>3*1024*1024){$('#msg').textContent='That image is over 3 MB. Pick a smaller one.';this.value='';return}
+  var rd=new FileReader();rd.onload=function(){imgData=rd.result;var im=$('#imgPrev');im.src=imgData;im.hidden=false;pad.src=imgData;$('#dropTxt').innerHTML='<b>'+esc(f.name)+'</b><small>Tap to change</small>';$('#msg').textContent=''};rd.readAsDataURL(f)});
+['dragover','dragleave','drop'].forEach(function(ev){$('#drop').addEventListener(ev,function(e){e.preventDefault();this.classList.toggle('over',ev==='dragover');
+  if(ev==='drop'&&e.dataTransfer.files[0]){var dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);$('#img').files=dt.files;$('#img').dispatchEvent(new Event('change'))}})});
+
+$('#form').addEventListener('submit',function(e){e.preventDefault();launch()});
+async function launch(){
+  if(busy)return;
+  var name=$('#name').value.trim(), ticker=$('#ticker').value.toUpperCase().replace(/[^A-Z0-9]/g,''), desc=$('#desc').value.trim();
+  var msg=$('#msg');
+  if(!name){msg.textContent='Add a coin name.';$('#name').focus();return}
+  if(ticker.length<2){msg.textContent='Add a ticker of at least 2 letters.';$('#ticker').focus();return}
+  if(!imgData){msg.textContent='Add a coin image.';$('#drop').scrollIntoView({block:'center'});return}
+  if(store.get('pending')){msg.textContent='Finish cuffing your last coin first (below).';return}
+  busy=true;$('#go').setAttribute('aria-disabled','true');msg.textContent='';logEl.innerHTML='';
+  var s;
+  try{
+    s=logStep('Connecting your wallet'); var W=await loadWeb3(); if(!await connect()) return; s.ok('Wallet '+short(wallet.pk));
+    s=logStep('Uploading your coin image');
+    var meta=await api('/metadata',{name:name,ticker:ticker,description:desc,image:imgData,twitter:$('#xl').value.trim(),telegram:$('#tg').value.trim(),website:''}); s.ok();
+    var mintKp=W.Keypair.generate(), mint=mintKp.publicKey.toBase58();
+    s=logStep('Building your pump.fun launch');
+    var c=await api('/create-tx',{creator:wallet.pk,mint:mint,name:name,ticker:ticker,uri:meta.uri,devBuySol:st.buy}); s.ok();
+    s=logStep('Approve the launch in your wallet');
+    var signed=await wallet.p.signTransaction(W.VersionedTransaction.deserialize(b64ToBytes(c.tx)));
+    var fin=W.VersionedTransaction.deserialize(signed.serialize()); fin.sign([mintKp]); s.ok('Launch approved');
+    s=logStep('Sending it to Solana');
+    var sent=await api('/send',{tx:bytesToB64(fin.serialize())}); s.ok('$'+ticker+' launched on pump.fun');
+    var p={creator:wallet.pk,mint:mint,signature:sent.signature,name:name,ticker:ticker,description:desc,image:meta.image,uri:meta.uri,days:st.len,mode:st.mode};
+    store.set('pending',p);
+    await cuffCoin(p,W);
+  }catch(e){ if(s)s.bad(); msg.textContent=niceErr(e); toast(niceErr(e)); }
+  finally{ busy=false;$('#go').removeAttribute('aria-disabled'); showPending(); }
+}
+async function cuffCoin(p,W){
+  var s=logStep('Waiting for your dev tokens to land'), c=null;
+  var streamKp=W.Keypair.generate();
+  for(var i=0;i<24&&!c;i++){ try{ c=await api('/cuff-tx',{creator:p.creator,mint:p.mint,streamId:streamKp.publicKey.toBase58(),days:p.days,mode:p.mode}); }
+    catch(e){ if(!/not landed/i.test(e.message)||i===23) throw e; await sleep(2500); } }
+  s.ok('Dev bag found');
+  s=logStep('Approve the cuffs: lock + fee split');
+  var txs=[]; if(c.feeTx) txs.push(W.VersionedTransaction.deserialize(b64ToBytes(c.feeTx)));
+  txs.push(W.VersionedTransaction.deserialize(b64ToBytes(c.lockTx)));
+  var signed=await signAll(txs);
+  var lock=W.VersionedTransaction.deserialize(signed[signed.length-1].serialize()); lock.sign([streamKp]); s.ok('Cuffs approved');
+  s=logStep('Locking the dev bag');
+  if(c.feeTx) await api('/send',{tx:bytesToB64(signed[0].serialize())});
+  var ls=await api('/send',{tx:bytesToB64(lock.serialize())}); s.ok('Dev bag locked');
+  s=logStep('Verifying on-chain');
+  var reg=null;
+  for(var j=0;j<8&&!reg;j++){ try{ reg=await api('/register',Object.assign({},p,{lockSignature:ls.signature,streamId:streamKp.publicKey.toBase58()})); }
+    catch(e){ if(j===7||!/not found yet|not set up|not locked yet|still be landing/i.test(e.message)) throw e; await sleep(4000); } }
+  s.ok('Verified: dev locked');
+  store.set('pending',null);
+  var sf='https://app.streamflow.finance/contract/solana/mainnet/'+streamKp.publicKey.toBase58();
+  logEl.insertAdjacentHTML('afterend','<div class="done-card" id="done"><b>$'+esc(p.ticker)+' is live and cuffed. 🔒</b><span>The dev bag is locked'+(reg.coin&&reg.coin.unlockAt?' until '+new Date(reg.coin.unlockAt*1000).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'')+'.</span><div class="links"><a href="https://pump.fun/coin/'+esc(p.mint)+'" target="_blank" rel="noopener">pump.fun</a><a href="'+sf+'" target="_blank" rel="noopener">View lock</a><a href="#board">Board</a></div></div>');
+  loadBoard();
+}
+function showPending(){
+  var p=store.get('pending'), box=$('#pending');
+  if(!p){box.hidden=true;return}
+  box.hidden=false;
+  box.innerHTML='<span><b>$'+esc(p.ticker)+'</b> launched but isn\'t cuffed yet. Until you finish, it won\'t show as dev locked.</span><button class="btn btn-w" type="button" id="finish">Finish cuffing $'+esc(p.ticker)+'</button>';
+  $('#finish').addEventListener('click',async function(){
+    if(busy)return;busy=true;logEl.innerHTML='';var d=$('#done');if(d)d.remove();
+    try{var W=await loadWeb3(); if(!wallet.pk||wallet.pk!==p.creator){await connect(); if(wallet.pk!==p.creator) throw new Error('Connect the wallet that launched $'+p.ticker+' ('+short(p.creator)+').');}
+      await cuffCoin(p,W);}
+    catch(e){var li=logEl.lastElementChild;if(li&&!li.className)li.className='bad';$('#msg').textContent=niceErr(e);toast(niceErr(e))}
+    finally{busy=false;showPending()}
+  });
+}
+showPending();
+
+/* board: manual entries + every verified Cuffed launch from the API */
+var tbl=$('#tbl');
+function fmtDate(t){return new Date(t*1000).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function renderBoard(coins){
+  if(!coins.length){
+    tbl.innerHTML='<div class="empty"><img src="pfp.png" alt=""><b>Nobody cuffed yet</b><p>Launch the first cuffed coin above. Every coin shows up here with its lock the moment it\'s verified.</p><a class="btn btn-w" href="#launch">Cuff a coin</a></div>';
+    return;
+  }
+  tbl.innerHTML='<div class="tr th"><span>Coin</span><span class="h-s">Contract</span><span class="h-s">Dev bag</span><span></span></div>'+
+  coins.map(function(c){var ca=c.mint||c.ca, sh=ca.slice(0,6)+'…'+ca.slice(-6);
+    var until=c.unlockAt?(c.mode==='cliff'?'Unlocks '+fmtDate(c.unlockAt):'Fully free '+fmtDate(c.unlockAt)):'';
+    return '<div class="tr"><div class="tk"><img src="'+esc(c.image||c.img||'pfp.png')+'" alt="" loading="lazy"><div>$'+esc(c.ticker)+'<small>'+esc(c.name)+'</small></div></div>'+
+    '<code class="h-s">'+sh+'</code>'+
+    '<span class="h-s"><span class="st">● Dev locked</span>'+(until?'<span class="meta">'+until+'</span>':'')+'</span>'+
+    '<span class="acts">'+(c.streamId?'<a class="go" href="https://app.streamflow.finance/contract/solana/mainnet/'+esc(c.streamId)+'" target="_blank" rel="noopener">Lock</a>':'')+
+    '<a class="go" href="https://pump.fun/coin/'+esc(ca)+'" target="_blank" rel="noopener">View</a></span></div>'}).join('');
+}
+function loadBoard(){
+  renderBoard(BOARD);
+  fetch(API+'/coins').then(function(r){return r.json()}).then(function(j){
+    var seen={};var all=BOARD.concat(j.coins||[]).filter(function(c){var k=c.mint||c.ca;if(seen[k])return false;seen[k]=1;return true});
+    renderBoard(all);
+  }).catch(function(){});
+}
+loadBoard();
 
 /* ===== try to dump: chain physics ===== */
 var cb=$('#cbars');for(var i=0;i<(innerWidth<700?5:7);i++)cb.appendChild(document.createElement('i'));
@@ -830,12 +989,15 @@ $('#sell').addEventListener('click',function(){blockedHit()});
 
 /* FAQ */
 var qa=[
-  ['Does the coin still launch on pump.fun?','Yes. It launches on pump.fun like normal. The only difference is the dev buy is locked instead of sitting free in the dev wallet.'],
+  ['Does the coin still launch on pump.fun?','Yes. It launches on pump.fun like normal, signed from your own wallet. Then your whole dev buy is locked in a Streamflow contract instead of sitting free in your wallet.'],
+  ['What does it cost?','Your dev buy and pump.fun\'s normal create fee, then about 0.22 SOL to cuff it: a 0.05 SOL Cuffed fee and Streamflow\'s lock fee (about 0.16 SOL, plus 0.19% of the locked tokens). Cuffed also gets 20% of the coin\'s pump.fun creator fees and you keep 80%. That split is set on-chain at launch and can\'t be changed.'],
+  ['Why do I approve twice?','The first approval launches the coin on pump.fun. The second one cuffs it: it locks the dev bag and sets the creator-fee split. If you stop after the first, the coin is live but not cuffed, and you can finish from this page.'],
   ['Is the $CUFFED dev bag locked?','Yes. The $CUFFED dev locks the dev buy on pump.fun right after launch. The CA is at the top of this page, so you can check it yourself.'],
-  ['Can the dev unlock early?','No. That\'s the whole point. Once it\'s cuffed, it stays cuffed until the lock ends.'],
+  ['Can the dev unlock early?','No. The Streamflow lock can\'t be cancelled or transferred by anyone, including us. Once it\'s cuffed, it stays cuffed until the lock ends.'],
   ['What\'s the difference between the two unlock types?','"A little every day" frees an equal slice of the bag each day until the lock ends. "All at the end" keeps everything locked until the last day, then frees it all at once.'],
   ['Does the dev still get creator fees?','Yes. Creator fees work like normal. Only the tokens from the dev buy are locked.'],
-  ['How do I check a lock?','Every coin on the board links to its pump.fun page. The lock is on-chain, so anyone can check it.']
+  ['How do I check a lock?','Every coin on the board has a Lock link to its contract on Streamflow, which shows the amount, the schedule and that it can\'t be cancelled. It\'s all on-chain.'],
+  ['Does Cuffed hold my keys or funds?','No. Every transaction is signed in your own wallet. The locked tokens sit in Streamflow\'s audited contract and unlock back to your wallet on schedule.']
 ];
 $('#qas').innerHTML=qa.map(function(q,i){return '<div class="qa rv"><button type="button" aria-expanded="false" aria-controls="a'+i+'">'+q[0]+'<span class="pm"></span></button><div class="a" id="a'+i+'"><div><p>'+q[1]+'</p></div></div></div>'}).join('');
 document.querySelectorAll('.qa').forEach(function(el){io.observe(el);el.querySelector('button').addEventListener('click',function(){var o=el.classList.toggle('open');this.setAttribute('aria-expanded',o)})});

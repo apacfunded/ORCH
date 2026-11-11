@@ -31,7 +31,8 @@ export default wrap(async (req) => {
           const { tokenBalance } = await import('../lib/solana.js');
           const P = (await import('../lib/pump-sdk.cjs')).default;
           const mint = String(req.query.mint);
-          const bc = PUMP_SDK.decodeBondingCurve(await connection().getAccountInfo(P.bondingCurvePda(new PublicKey(mint))));
+          const bcInfo = await connection().getAccountInfo(P.bondingCurvePda(new PublicKey(mint)));
+          const bc = bcInfo ? PUMP_SDK.decodeBondingCurve(bcInfo) : null;
           let creator = String(req.query.creator || bc.creator.toBase58());
           if (req.query.holder === 'auto') {
             // Find a real wallet holding this coin (system-owned, has SOL) to measure a lock's true cost.
@@ -47,7 +48,7 @@ export default wrap(async (req) => {
             }
           }
           const bal = await tokenBalance(creator, mint);
-          out.sim = { creator, curveCreator: bc.creator.toBase58(), complete: bc.complete, creatorBalance: bal.raw.toString() };
+          out.sim = { creator, curveCreator: bc?.creator.toBase58() ?? null, complete: bc?.complete ?? null, creatorBalance: bal.raw.toString() };
           const raw = bal.raw > 0n ? bal.raw : 1_000_000_000n;
           const real = await buildCuff({ creator, mint, streamId: Keypair.generate().publicKey.toBase58(), days: 30, mode: req.query.mode === 'cliff' ? 'cliff' : 'linear', raw, decimals: bal.decimals });
           const watch = [creator, (await import('../lib/pump.js')).TREASURY()];
@@ -55,7 +56,7 @@ export default wrap(async (req) => {
           const simOne = async (b64) => { if (!b64) return null; const r = await rpc('simulateTransaction', [b64, { encoding: 'base64', sigVerify: false, replaceRecentBlockhash: true, commitment: 'confirmed', accounts: { encoding: 'base64', addresses: watch } }]);
             const post = (r.value.accounts || []).map((x) => x?.lamports ?? null);
             return { err: r.value.err, units: r.value.unitsConsumed, solChange: watch.map((a, i) => ({ who: i ? 'treasury' : 'creator', sol: post[i] == null ? null : (post[i] - pre[i]) / 1e9 })), logs: (r.value.logs || []).slice(-8) }; };
-          out.sim.fee = req.query.holder === 'auto' ? 'skipped (holder is not the creator)' : await simOne(real.feeTx).catch((e) => ({ error: e.message }));
+          out.sim.fee = (req.query.holder === 'auto' || !bc) ? 'skipped (holder is not the creator)' : await simOne(real.feeTx).catch((e) => ({ error: e.message }));
           out.sim.lock = await simOne(real.lockTx).catch((e) => ({ error: e.message }));
         }
       } catch (e) { out.cuffError = String(e.stack || e.message).slice(0, 800); }

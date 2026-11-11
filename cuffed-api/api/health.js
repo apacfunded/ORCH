@@ -32,7 +32,7 @@ export default wrap(async (req) => {
           const P = (await import('../lib/pump-sdk.cjs')).default;
           const mint = String(req.query.mint);
           const bcInfo = await connection().getAccountInfo(P.bondingCurvePda(new PublicKey(mint)));
-          const bc = bcInfo ? PUMP_SDK.decodeBondingCurve(bcInfo) : null;
+          const bc = bcInfo?.data?.length >= 49 ? PUMP_SDK.decodeBondingCurve(bcInfo) : null;
           let creator = String(req.query.creator || bc.creator.toBase58());
           if (req.query.holder === 'auto') {
             // Find a real wallet holding this coin (system-owned, has SOL) to measure a lock's true cost.

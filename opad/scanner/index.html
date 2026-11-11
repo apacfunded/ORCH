@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OPAD Scanner — find Optimism coins worth calling</title>
 <meta name="description" content="OPAD scans Optimism coins on pump.fun, ranks the ones worth calling, and tracks your callouts.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%23ff1f3d%22/%3E%3Cpath d=%22M26 80 L50 18 L74 80 L60 80 L50 52 L40 80Z%22 fill=%22white%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600&family=Familjen+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#08090b;--p1:#0e1013;--p2:#14171b;--line:#1f242a;--line2:#2c333b;
@@ -25,7 +26,10 @@ button{cursor:pointer;border:0;background:none}
 
 /* top bar */
 .bar{display:flex;align-items:center;gap:16px;height:56px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--p1);position:sticky;top:0;z-index:20}
-.brand{display:flex;align-items:center;gap:10px;font:600 18px "Familjen Grotesk",sans-serif;letter-spacing:.04em}
+.brand{display:flex;align-items:center;gap:10px;font:600 22px Syne,sans-serif}
+.wm{display:inline-flex;align-items:baseline;font-family:Syne,sans-serif;font-weight:600;letter-spacing:-.01em;line-height:1}
+.wm .wa{height:.78em;width:auto;margin:0 .03em 0 .02em;align-self:center;transform:translateY(-.02em)}
+
 .logo{width:28px;height:28px;border-radius:50%;background:var(--red);display:grid;place-items:center;font:600 11px "Familjen Grotesk";color:#fff}
 .tag{font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:3px 9px}
 .live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--green)}
@@ -148,7 +152,7 @@ tbody tr.sel{background:var(--p2);box-shadow:inset 3px 0 0 var(--red)}
 <body>
 
 <header class="bar">
-  <a class="brand" href="../" aria-label="OPAD home"><span class="logo">OP</span>OPAD</a>
+  <a class="brand" href="../" aria-label="OPAD home"><span class="wm">OP<svg class="wa" viewBox="0 0 52 58" aria-hidden="true"><path d="M0 58 L26 0 L52 58 L38 58 L26 30 L14 58Z" fill="#ff1f3d"/></svg>D</span></a>
   <span class="tag">Optimism callout scanner</span>
   <span class="live"><span class="dot"></span>Scanning</span>
   <span class="sp"></span>

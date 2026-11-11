@@ -1,7 +1,8 @@
 // pump.fun creator-fee sharing (Pump Fees program) via the official SDK.
 import { PublicKey } from '@solana/web3.js';
-import * as P from '@pump-fun/pump-sdk';
-const pump = P.PUMP_SDK ? P : (P.default ?? P);
+import { createRequire } from 'node:module';
+// The SDK's ESM build is mis-packaged (no "type": "module"), so load its CommonJS build.
+const pump = createRequire(import.meta.url)('@pump-fun/pump-sdk');
 export const { PUMP_SDK, feeSharingConfigPda } = pump;
 
 export const NATIVE_MINT = new PublicKey('So11111111111111111111111111111111111111112');

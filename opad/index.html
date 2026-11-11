@@ -48,36 +48,47 @@ nav .wrap{display:flex;align-items:center;gap:20px;height:66px}
 @keyframes pulse{50%{opacity:.35}}
 
 /* hero */
-.hero{position:relative;padding:72px 0 0;overflow:hidden}
-.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;min-height:560px}
-.hero-glow{position:absolute;inset:auto 0 -200px 0;height:600px;background:radial-gradient(60% 50% at 70% 50%,rgba(255,31,61,.22),transparent 70%);pointer-events:none}
-.hero h1{font-size:clamp(46px,7vw,92px);margin:18px 0 16px}
+.hero{position:relative;padding:40px 0 0;overflow:hidden}
+.hero-glow{position:absolute;left:0;right:0;top:-160px;height:620px;background:radial-gradient(50% 50% at 50% 40%,rgba(255,31,61,.22),transparent 70%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr minmax(0,560px) 1fr;gap:28px;align-items:start;padding-bottom:8px}
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:28px}
+.hero h1{font-size:clamp(48px,6.6vw,88px);margin:20px 0 16px}
 .hero h1 em{font-style:normal;color:var(--red)}
-.hero p.sub{font-size:18px;color:var(--muted);max-width:440px}
-.hero .ctas{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
-.hero .meta{display:flex;gap:18px;margin-top:22px;font-size:13px;color:var(--dim);flex-wrap:wrap}
+.hero p.sub{font-size:18px;color:var(--muted);max-width:520px}
+.hero .ctas{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;justify-content:center}
+.hero .meta{display:flex;gap:18px;margin-top:22px;font-size:13px;color:var(--dim);flex-wrap:wrap;justify-content:center}
 .hero .meta b{color:var(--muted);font-weight:500}
 
-/* stage */
-.stage{position:relative;height:460px;perspective:1100px;display:grid;place-items:center}
-.floor{position:absolute;left:-10%;right:-10%;bottom:40px;height:260px;transform:rotateX(72deg);transform-origin:bottom;background:
- linear-gradient(to top,rgba(11,6,7,0),var(--bg) 95%),
- repeating-linear-gradient(90deg,rgba(255,31,61,.28) 0 1px,transparent 1px 48px),
- repeating-linear-gradient(0deg,rgba(255,31,61,.28) 0 1px,transparent 1px 48px);
- mask:linear-gradient(to top,#000 20%,transparent);-webkit-mask:linear-gradient(to top,#000 20%,transparent)}
-.coin3d{position:relative;width:240px;height:240px;transform-style:preserve-3d;animation:spin 9s linear infinite;z-index:2}
-.coin3d .face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:grid;place-items:center;
- background:radial-gradient(circle at 35% 30%,#ff7a8c,#ff1f3d 45%,#b40d26 100%);box-shadow:inset 0 0 0 10px rgba(0,0,0,.18),inset 0 0 40px rgba(0,0,0,.35)}
-.coin3d .face.back{transform:rotateY(180deg)}
-.coin3d .face span{font:600 72px Syne,sans-serif;color:#fff;letter-spacing:-.04em;text-shadow:0 4px 18px rgba(0,0,0,.4)}
-.coin3d .face .arrow{position:absolute;right:38px;top:42px;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:18px solid #fff;opacity:.9}
-.coin3d .rim{position:absolute;inset:0;border-radius:50%;transform:translateZ(-1px)}
-.rimseg{position:absolute;left:50%;top:50%;width:14px;height:240px;margin:-120px -7px;background:linear-gradient(90deg,#8d0c21,#ff5c72,#8d0c21);transform-origin:center}
-.shadow{position:absolute;bottom:62px;width:260px;height:36px;border-radius:50%;background:radial-gradient(rgba(255,31,61,.45),transparent 70%);filter:blur(6px);animation:breathe 9s linear infinite}
-@keyframes spin{from{transform:rotateY(0) rotateX(8deg)}to{transform:rotateY(360deg) rotateX(8deg)}}
-@keyframes breathe{0%,100%{transform:scaleX(1)}25%,75%{transform:scaleX(.5)}}
-.spark{position:absolute;left:50%;bottom:140px;padding:5px 9px;border-radius:999px;background:var(--surface2);border:1px solid var(--line2);font:500 12px "DM Mono",monospace;color:var(--ink);opacity:0;animation:fly 4.5s linear infinite;z-index:3;white-space:nowrap}
-@keyframes fly{0%{opacity:0;transform:translate(-50%,0) scale(.7)}12%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),-300px) scale(1)}}
+/* side stacks */
+.side{padding-top:36px}
+.side-k{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;color:var(--muted);margin-bottom:12px}
+.right .side-k{justify-content:flex-end}
+.stack{display:grid;gap:10px}
+.mc{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 14px 30px -18px rgba(0,0,0,.9);animation:bob 6s ease-in-out infinite,appear .5s var(--ease) both}
+.mc .av{width:36px;height:36px;border-radius:10px;font-size:14px}
+.mc>div:nth-child(2){min-width:0;flex:1}.mc .nm,.mc .sub2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc .nm{font-weight:600;font-size:14px;line-height:1.25}
+.mc .sub2{font:500 12px "DM Mono",monospace;color:var(--muted)}
+.mc .rt{margin-left:auto;text-align:right;flex:none}
+.mc .big{font:500 18px "DM Mono",monospace;line-height:1}
+.mc .cap{font-size:11.5px;color:var(--dim);white-space:nowrap}
+.left .mc:nth-child(1){rotate:-2deg}.left .mc:nth-child(2){rotate:1.5deg;margin-left:18px}.left .mc:nth-child(3){rotate:-1deg;margin-left:6px}.left .mc:nth-child(4){rotate:2deg;margin-left:24px;opacity:.6}
+.right .mc:nth-child(1){rotate:2deg}.right .mc:nth-child(2){rotate:-1.5deg;margin-right:18px}.right .mc:nth-child(3){rotate:1deg;margin-right:6px}.right .mc:nth-child(4){rotate:-2deg;margin-right:24px;opacity:.6}
+.mc:nth-child(2){animation-delay:-1.5s,0s}.mc:nth-child(3){animation-delay:-3s,0s}.mc:nth-child(4){animation-delay:-4.5s,0s}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -6px}}
+@keyframes appear{from{opacity:0;scale:.94}}
+@media (max-width:1000px){.links{display:none}}
+@media (max-width:1100px){
+  .hero-grid{grid-template-columns:1fr 1fr;grid-template-areas:"c c" "l r";gap:16px}
+  .center{grid-area:c}.left{grid-area:l}.right{grid-area:r}
+  .side{padding-top:20px}.mc:nth-child(n+4){display:none}
+}
+@media (max-width:640px){
+  .hero{padding-top:12px}.center{padding-top:20px}
+  .hero-grid{grid-template-columns:1fr;grid-template-areas:"c" "r" "l"}
+  .right .side-k{justify-content:flex-start}
+  .side .mc{rotate:0deg!important;margin:0!important}.mc:nth-child(n+3){display:none}
+}
 
 /* ticker strip */
 .strip{margin-top:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg2)}
@@ -185,18 +196,16 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media (max-width:980px){
-  .hero .wrap{grid-template-columns:1fr;min-height:0}.stage{height:380px;order:-1}
   .strip .wrap{grid-template-columns:1fr 1fr}.strip .cell:nth-child(2){border-right:0}.strip .cell:nth-child(1),.strip .cell:nth-child(2){border-bottom:1px solid var(--line)}
   .grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.launch,.opad{grid-template-columns:1fr}
 }
 @media (max-width:640px){
   .links{display:none}.nav-cta .btn-ghost{display:none}
-  .hero{padding-top:28px}.stage{height:320px}.coin3d{width:180px;height:180px}.rimseg{height:180px;margin:-90px -7px}.coin3d .face span{font-size:54px}
   .grid,.steps,.faq,.two,.strip .wrap{grid-template-columns:1fr}.strip .cell{border-right:0;border-bottom:1px solid var(--line)}
   .table{display:none}.cards{display:grid;gap:10px}
   .tabs{width:100%}.tabs button{flex:1;padding:0}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.spark{display:none}.coin3d{transform:rotateY(20deg) rotateX(8deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -218,27 +227,25 @@ footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-betw
 
 <header class="hero">
   <div class="hero-glow" aria-hidden="true"></div>
-  <div class="wrap">
-    <div>
+  <div class="wrap hero-grid">
+    <aside class="side left" aria-label="Just launched on Optimism">
+      <div class="side-k"><span class="dot"></span>Just launched on OP</div>
+      <div class="stack" id="sideL"></div>
+    </aside>
+    <div class="center">
       <span class="chip"><span class="dot"></span>Optimism is live on pump.fun</span>
       <h1>Launch on <em>Optimism.</em></h1>
-      <p class="sub">Every coin goes live on pump.fun. Pay in SOL. OPAD is the front door for OP coins: find them, launch them, track them.</p>
+      <p class="sub">Every coin goes live on pump.fun. Pay in SOL. OPAD is the front door for OP coins: find them, launch them, call them.</p>
       <div class="ctas">
         <a class="btn btn-red" href="#launch">Launch on pump.fun</a>
-        <a class="btn btn-ghost" href="#board">See OP coins</a>
+        <a class="btn btn-ghost" href="scanner/">Open the scanner</a>
       </div>
       <div class="meta"><span><b>No bridge.</b> No ETH.</span><span><b>No new wallet.</b> Your pump.fun one.</span><span><b>Callout scanner</b> built in.</span></div>
     </div>
-    <div class="stage" aria-hidden="true">
-      <div class="floor"></div>
-      <div class="coin3d" id="coin">
-        <div class="face"><span>OP</span><i class="arrow"></i></div>
-        <div class="face back"><span>OP</span><i class="arrow"></i></div>
-        <div class="rim" id="rim"></div>
-      </div>
-      <div class="shadow"></div>
-      <div id="sparks"></div>
-    </div>
+    <aside class="side right" aria-label="Top calls right now">
+      <div class="side-k" style="color:var(--sun)">◆ Top calls right now</div>
+      <div class="stack" id="sideR"></div>
+    </aside>
   </div>
 </header>
 
@@ -410,10 +417,17 @@ $("rows").innerHTML=ranked.map(({c,i},k)=>`<tr><td class="mono" style="color:var
 $("cards").innerHTML=ranked.map(({c,i},k)=>`<div class="card coin"><div class="top"><span class="mono" style="color:var(--dim)">${k+1}</span><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div class="nm">${c[0]}</div><div class="tk">$${c[1]}</div></div><span class="age ${c[4]>0?"up":"dn"}">${c[4]>0?"+":""}${c[4]}%</span></div>
  <div class="row"><span style="color:var(--muted)">Market cap</span><b>${fmt(c[2])}</b></div><div class="row"><span>${stat(c)}</span><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Trade</a></div></div>`).join("");
 
-/* 3D coin rim + sparks */
-const rim=$("rim");for(let i=0;i<36;i++){const s=document.createElement("div");s.className="rimseg";s.style.transform=`rotateZ(${i*5}deg) rotateY(90deg) translateZ(0)`;rim.appendChild(s)}
-const tk=["$SUNNY","$OPDOG","$HOPE","$DAWN","$PRIME","$FULL","$GVO","$MORN"];const sp=$("sparks");
-for(let i=0;i<8;i++){const d=document.createElement("div");d.className="spark";d.textContent=tk[i];d.style.setProperty("--dx",(i%2?1:-1)*(60+i*22)+"px");d.style.animationDelay=(i*.56)+"s";sp.appendChild(d)}
+/* hero side stacks (example data) */
+const fresh=[["Daybreak","DAWN"],["Hopium OP","HOPE"],["Morning Star","MORN"],["Optimist Prime","PRIME"],["Clear Skies","SKIES"],["Upward","UPW"],["Gm Optimism","GMOP"],["Red Sky","RSKY"],["Half Moon","HALF"],["Bullish Bird","BIRD"]];
+let fl=0;const sideL=$("sideL");
+function freshCard(){const [n,t]=fresh[fl%fresh.length];const mc=3.5+Math.random()*6,up=Math.round(5+Math.random()*120);fl++;
+  return `<div class="mc"><div class="av" style="background:${colors[fl%8]}">${n[0]}</div><div><div class="nm">${n}</div><div class="sub2">$${t} · ${Math.max(1,Math.round(Math.random()*40))}s</div></div><div class="rt"><div class="big">$${mc.toFixed(1)}K</div><div class="cap up">▲ ${up}%</div></div></div>`}
+sideL.innerHTML=[0,1,2,3].map(freshCard).join("");
+setInterval(()=>{sideL.insertAdjacentHTML("afterbegin",freshCard());sideL.lastElementChild.remove()},3800);
+const tops=[["Superchain Cat","SUPERCAT",33700,4,70],["Glass Half Full","FULL",48900,2,69],["Sunny","SUNNY",61800,0,68],["Bright Side","BRIGHT",19800,6,62]];
+function renderTops(){$("sideR").innerHTML=tops.map(([n,t,mc,i,sc])=>`<div class="mc"><div class="av" style="background:${colors[i%8]}">${n[0]}</div><div><div class="nm">${n}</div><div class="sub2">$${t} · ${fmt(mc)}</div></div><div class="rt"><div class="big" style="color:${sc>=70?"var(--red2)":"var(--sun)"}">${sc}</div><div class="cap">score</div></div></div>`).join("")}
+renderTops();
+setInterval(()=>{tops.forEach(r=>{r[2]=Math.round(r[2]*(1+(Math.random()-.45)*.03));r[4]=Math.max(40,Math.min(95,r[4]+Math.round((Math.random()-.5)*3)))});tops.sort((a,b)=>b[4]-a[4]);renderTops()},5000);
 let launched=1284,today=96;setInterval(()=>{launched++;today++;$("launched").textContent=launched.toLocaleString();$("today").textContent=today},4000);
 
 /* form */

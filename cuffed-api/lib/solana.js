@@ -3,15 +3,21 @@ export const RPC_URL = () => process.env.SOLANA_RPC_URL || 'https://api.mainnet-
 const RPCS = () => [process.env.SOLANA_RPC_URL, 'https://api.mainnet-beta.solana.com'].filter(Boolean);
 export const PUMP_PROGRAM = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 export const STREAMFLOW_PROGRAM = 'strmRqUCoQUgGUan5YhzUZa6KqdzwX5L6FpUxfmKg5m';
+const LIMITED = /too many requests|rate limit|429/i;
 export async function rpc(method, params) {
   let last;
-  for (const url of RPCS()) {
-    try {
-      const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) });
-      const j = await r.json();
-      if (j.error) throw new Error(`${method}: ${j.error.message}`);
-      return j.result;
-    } catch (e) { last = e; }
+  for (let attempt = 0; attempt < 4; attempt++) {
+    for (const url of RPCS()) {
+      try {
+        const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) });
+        if (r.status === 429) throw new Error(`${method}: 429 Too many requests`);
+        const j = await r.json();
+        if (j.error) throw new Error(`${method}: ${j.error.message}`);
+        return j.result;
+      } catch (e) { last = e; }
+    }
+    if (!LIMITED.test(String(last?.message))) break;
+    await new Promise((r) => setTimeout(r, 700 * (attempt + 1))); // public RPC is rate-limited: back off and retry
   }
   throw last;
 }

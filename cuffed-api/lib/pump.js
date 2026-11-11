@@ -1,5 +1,5 @@
 // pump.fun creator-fee sharing (Pump Fees program) via the official SDK.
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction, SystemProgram } from '@solana/web3.js';
 import pump from './pump-sdk.cjs';
 export const { PUMP_SDK, feeSharingConfigPda } = pump;
 
@@ -20,15 +20,34 @@ export function shareholders(creator) {
   ];
 }
 
-/** create_fee_sharing_config + update_fee_shares_v2 (locks the split forever). */
+export const PUMP_PROGRAM_ID = new PublicKey('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P');
+const ATA_PROGRAM = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+const ata = (owner, mint, prog = TOKEN_PROGRAM_ID) => PublicKey.findProgramAddressSync([owner.toBuffer(), prog.toBuffer(), mint.toBuffer()], ATA_PROGRAM)[0];
+
+/** collect_creator_fee_v2 (from pump's IDL): sweeps the dev buy's creator fee to the creator.
+ *  pump.fun refuses to migrate a coin to fee sharing while creator fees are unswept. */
+export function collectCreatorFeeIx(creator) {
+  const c = new PublicKey(creator);
+  const vault = PublicKey.findProgramAddressSync([Buffer.from('creator-vault'), c.toBuffer()], PUMP_PROGRAM_ID)[0];
+  const eventAuth = PublicKey.findProgramAddressSync([Buffer.from('__event_authority')], PUMP_PROGRAM_ID)[0];
+  const keys = [
+    [c, true], [ata(c, NATIVE_MINT), true], [vault, true], [ata(vault, NATIVE_MINT), true],
+    [NATIVE_MINT, false], [TOKEN_PROGRAM_ID, false], [ATA_PROGRAM, false], [SystemProgram.programId, false],
+    [eventAuth, false], [PUMP_PROGRAM_ID, false],
+  ].map(([pubkey, isWritable]) => ({ pubkey, isWritable, isSigner: false }));
+  return new TransactionInstruction({ programId: PUMP_PROGRAM_ID, keys, data: Buffer.from([207, 17, 138, 242, 4, 34, 19, 56]) });
+}
+
+/** collect fees -> create_fee_sharing_config -> update_fee_shares_v2 (locks the split forever). */
 export async function feeSharingIxs(creator, mint) {
   const c = new PublicKey(creator), m = new PublicKey(mint);
+  const collect = collectCreatorFeeIx(creator);
   const create = await PUMP_SDK.createFeeSharingConfig({ creator: c, mint: m, pool: null });
   const update = await PUMP_SDK.updateFeeSharesV2({
     authority: c, mint: m, currentShareholders: [c], newShareholders: shareholders(creator),
     quoteMint: NATIVE_MINT, quoteTokenProgram: TOKEN_PROGRAM_ID,
   });
-  return [create, update];
+  return [collect, create, update];
 }
 
 /** On-chain check: split is locked and the treasury holds at least its share. */

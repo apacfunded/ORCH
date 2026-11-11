@@ -61,7 +61,7 @@ export async function buildCuff({ creator, mint, streamId, days, mode, raw, deci
   let feeTx = null;
   if (!skipFees) {
     const ixs = [
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 360_000 }),
       ComputeBudgetProgram.setComputeUnitPrice({ microLamports: Number(process.env.PRIORITY_MICROLAMPORTS || 100_000) }),
       ...(await feeSharingIxs(creator, mint)),
     ];

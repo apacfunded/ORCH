@@ -35,12 +35,15 @@ export default wrap(async (req) => {
           let creator = String(req.query.creator || bc.creator.toBase58());
           if (req.query.holder === 'auto') {
             // Find a real wallet holding this coin (system-owned, has SOL) to measure a lock's true cost.
-            const largest = await rpc('getTokenLargestAccounts', [mint, { commitment: 'confirmed' }]);
-            for (const a of largest.value.slice(0, 20)) {
-              const ta = await rpc('getAccountInfo', [a.address, { encoding: 'jsonParsed' }]);
-              const owner = ta?.value?.data?.parsed?.info?.owner; if (!owner) continue;
-              const oi = await rpc('getAccountInfo', [owner, { encoding: 'base64' }]);
-              if (oi?.value && oi.value.owner === '11111111111111111111111111111111' && oi.value.lamports > 0.6e9) { creator = owner; break; }
+            // Recent signers of the coin's transactions who still hold it and have SOL.
+            const sigs = await rpc('getSignaturesForAddress', [mint, { limit: 40 }]);
+            const tried = new Set();
+            for (const sg of sigs.filter((x) => !x.err).slice(0, 25)) {
+              const t = await rpc('getTransaction', [sg.signature, { maxSupportedTransactionVersion: 0, encoding: 'json' }]).catch(() => null);
+              const who = t?.transaction?.message?.accountKeys?.[0]; if (!who || tried.has(who)) continue; tried.add(who);
+              const bal = await tokenBalance(who, mint).catch(() => ({ raw: 0n }));
+              const sol = (await rpc('getBalance', [who])).value;
+              if (bal.raw > 0n && sol > 0.6e9) { creator = who; break; }
             }
           }
           const bal = await tokenBalance(creator, mint);

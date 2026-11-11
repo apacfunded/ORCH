@@ -23,6 +23,24 @@ export default wrap(async (req) => {
         const c = await buildCuff({ creator: Keypair.generate().publicKey.toBase58(), mint: String(req.query.mint), streamId: Keypair.generate().publicKey.toBase58(),
           days: 30, mode: req.query.mode === 'cliff' ? 'cliff' : 'linear', raw: 1_000_000_000_000n, decimals: 6 });
         out.cuff = { sizes: c.sizes, amount: c.amount, unlockAt: c.unlockAt, streamflowFeePct: c.streamflowFeePct, hasFeeTx: !!c.feeTx };
+        if (req.query.sim) {
+          // Simulate (never send) with the coin's real creator, signatures skipped.
+          const { PublicKey } = await import('@solana/web3.js');
+          const { PUMP_SDK } = await import('../lib/pump.js');
+          const { connection } = await import('../lib/cuff.js');
+          const { tokenBalance } = await import('../lib/solana.js');
+          const P = (await import('../lib/pump-sdk.cjs')).default;
+          const mint = String(req.query.mint);
+          const bc = PUMP_SDK.decodeBondingCurve(await connection().getAccountInfo(P.bondingCurvePda(new PublicKey(mint))));
+          const creator = String(req.query.creator || bc.creator.toBase58());
+          const bal = await tokenBalance(creator, mint);
+          out.sim = { creator, curveCreator: bc.creator.toBase58(), complete: bc.complete, creatorBalance: bal.raw.toString() };
+          const raw = bal.raw > 0n ? bal.raw : 1_000_000_000n;
+          const real = await buildCuff({ creator, mint, streamId: Keypair.generate().publicKey.toBase58(), days: 30, mode: req.query.mode === 'cliff' ? 'cliff' : 'linear', raw, decimals: bal.decimals });
+          const simOne = async (b64) => { if (!b64) return null; const r = await rpc('simulateTransaction', [b64, { encoding: 'base64', sigVerify: false, replaceRecentBlockhash: true, commitment: 'confirmed' }]); return { err: r.value.err, units: r.value.unitsConsumed, logs: (r.value.logs || []).slice(-8) }; };
+          out.sim.fee = await simOne(real.feeTx).catch((e) => ({ error: e.message }));
+          out.sim.lock = await simOne(real.lockTx).catch((e) => ({ error: e.message }));
+        }
       } catch (e) { out.cuffError = String(e.stack || e.message).slice(0, 800); }
     }
   }

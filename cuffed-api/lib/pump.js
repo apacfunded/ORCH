@@ -38,16 +38,32 @@ export function collectCreatorFeeIx(creator) {
   return new TransactionInstruction({ programId: PUMP_PROGRAM_ID, keys, data: Buffer.from([207, 17, 138, 242, 4, 34, 19, 56]) });
 }
 
-/** collect fees -> create_fee_sharing_config -> update_fee_shares_v2 (locks the split forever). */
+/** sweep_creator_fee (from pump's IDL): newer trades leave the creator fee waiting on the curve;
+ *  this moves it into the creator vault. Must run before anything changes the creator. */
+export function sweepCreatorFeeIx(creator, mint) {
+  const c = new PublicKey(creator), m = new PublicKey(mint);
+  const pda = (seeds) => PublicKey.findProgramAddressSync(seeds, PUMP_PROGRAM_ID)[0];
+  const curve = pda([Buffer.from('bonding-curve'), m.toBuffer()]);
+  const vault = pda([Buffer.from('creator-vault'), c.toBuffer()]);
+  const keys = [
+    [c, true, true], [pda([Buffer.from('global')]), false], [m, false], [NATIVE_MINT, false], [TOKEN_PROGRAM_ID, false],
+    [ATA_PROGRAM, false], [SystemProgram.programId, false], [curve, true], [ata(curve, NATIVE_MINT), true],
+    [vault, true], [ata(vault, NATIVE_MINT), true], [pda([Buffer.from('__event_authority')]), false], [PUMP_PROGRAM_ID, false],
+  ].map(([pubkey, isWritable, isSigner = false]) => ({ pubkey, isWritable, isSigner }));
+  return new TransactionInstruction({ programId: PUMP_PROGRAM_ID, keys, data: Buffer.from([32, 246, 191, 52, 8, 201, 73, 186]) });
+}
+
+/** sweep -> collect fees -> create_fee_sharing_config -> update_fee_shares_v2 (locks the split forever). */
 export async function feeSharingIxs(creator, mint) {
   const c = new PublicKey(creator), m = new PublicKey(mint);
+  const sweep = sweepCreatorFeeIx(creator, mint);
   const collect = collectCreatorFeeIx(creator);
   const create = await PUMP_SDK.createFeeSharingConfig({ creator: c, mint: m, pool: null });
   const update = await PUMP_SDK.updateFeeSharesV2({
     authority: c, mint: m, currentShareholders: [c], newShareholders: shareholders(creator),
     quoteMint: NATIVE_MINT, quoteTokenProgram: TOKEN_PROGRAM_ID,
   });
-  return [collect, create, update];
+  return [sweep, collect, create, update];
 }
 
 /** On-chain check: split is locked and the treasury holds at least its share. */

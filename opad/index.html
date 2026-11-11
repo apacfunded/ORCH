@@ -3,325 +3,437 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OPAD Scanner — find Optimism coins worth calling</title>
-<meta name="description" content="OPAD scans Optimism coins on pump.fun, ranks the ones worth calling, and tracks your callouts.">
+<title>OPAD — the Optimism launchpad</title>
+<meta name="description" content="OPAD: launch Optimism coins on pump.fun. Pay in SOL.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#08090b;--p1:#0e1013;--p2:#14171b;--line:#1f242a;--line2:#2c333b;
-  --ink:#e9edf1;--muted:#8b949e;--dim:#5b636c;
-  --red:#ff1f3d;--red2:#ff5c72;--rs:rgba(255,31,61,.13);
-  --green:#3ddc97;--gs:rgba(61,220,151,.12);--amber:#f5b942;--as:rgba(245,185,66,.13);
+  --bg:#0b0607;--bg2:#120a0c;--surface:#160c0e;--surface2:#1f1114;--line:#2b1a1d;--line2:#3a2327;
+  --ink:#f7ecec;--muted:#a88c90;--dim:#6e585c;
+  --red:#ff1f3d;--red2:#ff5c72;--red-soft:rgba(255,31,61,.14);--sun:#ffb547;--sun-soft:rgba(255,181,71,.14);
+  --green:#2ee6a6;--green-soft:rgba(46,230,166,.12);
+  --r:18px;--ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font:400 14px/1.45 "IBM Plex Mono",ui-monospace,monospace;-webkit-font-smoothing:antialiased}
-h1,h2,h3,.sans{font-family:"Familjen Grotesk",system-ui,sans-serif;font-weight:600;letter-spacing:-.01em}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 "DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:Syne,sans-serif;font-weight:600;letter-spacing:-.025em;line-height:1.02}
 a{color:inherit;text-decoration:none}
-button,input,select{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
-:focus-visible{outline:2px solid var(--red2);outline-offset:2px;border-radius:6px}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.mono{font-family:"DM Mono",monospace,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+:focus-visible{outline:3px solid var(--red2);outline-offset:3px;border-radius:8px}
+::selection{background:var(--red);color:#fff}
 
-/* top bar */
-.bar{display:flex;align-items:center;gap:16px;height:56px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--p1);position:sticky;top:0;z-index:20}
-.brand{display:flex;align-items:center;gap:10px;font:600 18px "Familjen Grotesk",sans-serif;letter-spacing:.04em}
-.logo{width:28px;height:28px;border-radius:50%;background:var(--red);display:grid;place-items:center;font:600 11px "Familjen Grotesk";color:#fff}
-.tag{font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:3px 9px}
-.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--green)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--gs);animation:p 1.6s infinite}
-@keyframes p{50%{opacity:.35}}
-.bar .sp{flex:1}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:9px;font:600 14px "Familjen Grotesk",sans-serif;transition:background .2s,border-color .2s;white-space:nowrap}
-.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red2)}
-.btn-line{border:1px solid var(--line2)}.btn-line:hover{border-color:var(--muted);background:var(--p2)}
-.btn-sm{min-height:32px;padding:0 10px;font-size:13px;border-radius:7px}
+/* nav */
+nav{position:sticky;top:0;z-index:30;background:rgba(11,6,7,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:66px}
+.brand{display:flex;align-items:center;gap:10px;font:600 20px Syne,sans-serif;letter-spacing:.04em}
+.logo{width:34px;height:34px;flex:none}
+.links{display:flex;gap:2px;margin-left:8px}
+.links a{padding:9px 13px;border-radius:10px;color:var(--muted);font-weight:500;font-size:14.5px;transition:all .2s var(--ease)}
+.links a:hover{background:var(--surface2);color:var(--ink)}
+.nav-cta{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:12px;font-weight:600;font-size:15px;transition:all .22s var(--ease);white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 8px 24px -10px rgba(255,31,61,.7)}
+.btn-red:hover{background:var(--red2);box-shadow:0 10px 28px -8px rgba(255,31,61,.8)}
+.btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--muted);background:var(--surface2)}
+.btn-sm{min-height:36px;padding:0 12px;font-size:13px;border-radius:9px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;padding:6px 11px;border-radius:999px;background:var(--red-soft);color:var(--red2);border:1px solid rgba(255,31,61,.25)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-soft);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
 
-/* hero line */
-.intro{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;padding:22px 18px 18px;border-bottom:1px solid var(--line)}
-.intro h1{font-size:clamp(28px,3.6vw,44px);line-height:1.04}
-.intro h1 em{font-style:normal;color:var(--red)}
-.intro p{color:var(--muted);margin-top:8px;max-width:560px;font-size:13.5px}
-.diamond{border:1px solid var(--line2);border-radius:12px;padding:14px 16px;background:var(--p1);align-self:center}
-.diamond .k{font-size:12px;color:var(--amber);display:flex;gap:8px;align-items:center;margin-bottom:6px}
-.diamond p{font-size:13px;color:var(--muted)}
-.diamond b{color:var(--ink);font-weight:500}
+/* hero */
+.hero{position:relative;padding:72px 0 0;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;min-height:560px}
+.hero-glow{position:absolute;inset:auto 0 -200px 0;height:600px;background:radial-gradient(60% 50% at 70% 50%,rgba(255,31,61,.22),transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(46px,7vw,92px);margin:18px 0 16px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p.sub{font-size:18px;color:var(--muted);max-width:440px}
+.hero .ctas{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.hero .meta{display:flex;gap:18px;margin-top:22px;font-size:13px;color:var(--dim);flex-wrap:wrap}
+.hero .meta b{color:var(--muted);font-weight:500}
 
-/* layout */
-.app{display:grid;grid-template-columns:220px 1fr 340px;min-height:calc(100vh - 56px)}
-.pane{border-right:1px solid var(--line);min-width:0}
-.pane:last-child{border-right:0}
-.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+/* stage */
+.stage{position:relative;height:460px;perspective:1100px;display:grid;place-items:center}
+.floor{position:absolute;left:-10%;right:-10%;bottom:40px;height:260px;transform:rotateX(72deg);transform-origin:bottom;background:
+ linear-gradient(to top,rgba(11,6,7,0),var(--bg) 95%),
+ repeating-linear-gradient(90deg,rgba(255,31,61,.28) 0 1px,transparent 1px 48px),
+ repeating-linear-gradient(0deg,rgba(255,31,61,.28) 0 1px,transparent 1px 48px);
+ mask:linear-gradient(to top,#000 20%,transparent);-webkit-mask:linear-gradient(to top,#000 20%,transparent)}
+.coin3d{position:relative;width:240px;height:240px;transform-style:preserve-3d;animation:spin 9s linear infinite;z-index:2}
+.coin3d .face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:grid;place-items:center;
+ background:radial-gradient(circle at 35% 30%,#ff7a8c,#ff1f3d 45%,#b40d26 100%);box-shadow:inset 0 0 0 10px rgba(0,0,0,.18),inset 0 0 40px rgba(0,0,0,.35)}
+.coin3d .face.back{transform:rotateY(180deg)}
+.coin3d .face span{font:600 72px Syne,sans-serif;color:#fff;letter-spacing:-.04em;text-shadow:0 4px 18px rgba(0,0,0,.4)}
+.coin3d .face .arrow{position:absolute;right:38px;top:42px;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:18px solid #fff;opacity:.9}
+.coin3d .rim{position:absolute;inset:0;border-radius:50%;transform:translateZ(-1px)}
+.rimseg{position:absolute;left:50%;top:50%;width:14px;height:240px;margin:-120px -7px;background:linear-gradient(90deg,#8d0c21,#ff5c72,#8d0c21);transform-origin:center}
+.shadow{position:absolute;bottom:62px;width:260px;height:36px;border-radius:50%;background:radial-gradient(rgba(255,31,61,.45),transparent 70%);filter:blur(6px);animation:breathe 9s linear infinite}
+@keyframes spin{from{transform:rotateY(0) rotateX(8deg)}to{transform:rotateY(360deg) rotateX(8deg)}}
+@keyframes breathe{0%,100%{transform:scaleX(1)}25%,75%{transform:scaleX(.5)}}
+.spark{position:absolute;left:50%;bottom:140px;padding:5px 9px;border-radius:999px;background:var(--surface2);border:1px solid var(--line2);font:500 12px "DM Mono",monospace;color:var(--ink);opacity:0;animation:fly 4.5s linear infinite;z-index:3;white-space:nowrap}
+@keyframes fly{0%{opacity:0;transform:translate(-50%,0) scale(.7)}12%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),-300px) scale(1)}}
 
-/* filters */
-.filters{padding:14px;display:grid;gap:16px}
-.f label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
-.f label b{color:var(--ink);font-weight:500}
-input[type=range]{width:100%;accent-color:var(--red)}
-select,input[type=text]{width:100%;min-height:40px;background:var(--p2);border:1px solid var(--line2);border-radius:8px;padding:0 10px}
-input[type=text]:focus,select:focus{outline:none;border-color:var(--red)}
-.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);min-height:32px;cursor:pointer}
-.chk input{accent-color:var(--red);width:16px;height:16px}
-.legend{font-size:12px;color:var(--dim);line-height:1.6}
+/* ticker strip */
+.strip{margin-top:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg2)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.strip .cell{padding:18px 20px;border-right:1px solid var(--line)}
+.strip .cell:last-child{border-right:0}
+.strip .lbl{font-size:12.5px;color:var(--dim);font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.strip .val{font:500 24px "DM Mono",monospace;letter-spacing:-.02em}
+.strip .val small{font:500 13px "DM Sans";color:var(--green);margin-left:8px}
+
+/* sections */
+section{padding:84px 0 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:26px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(32px,4.4vw,54px)}
+.sec-head p{color:var(--muted);max-width:420px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;position:relative}
+.label{font-size:13px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+
+/* board */
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);padding:4px;border-radius:12px}
+.tabs button{min-height:40px;padding:0 14px;border-radius:9px;font-weight:500;font-size:14px;color:var(--muted);transition:all .2s var(--ease)}
+.tabs button[aria-selected=true]{background:var(--red);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.coin{display:flex;flex-direction:column;gap:12px;transition:transform .25s var(--ease),border-color .25s;animation:in .4s var(--ease) both}
+.coin:hover{transform:translateY(-3px);border-color:var(--line2)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.coin .top{display:flex;gap:12px;align-items:center}
+.av{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font:600 18px Syne,sans-serif;color:#fff;flex:none}
+.coin .nm{font-weight:600;font-size:16px}
+.coin .tk{font:500 13px "DM Mono",monospace;color:var(--muted)}
+.coin .age{margin-left:auto;font-size:12.5px;color:var(--dim)}
+.coin .row{display:flex;justify-content:space-between;font-size:14px}
+.coin .row b{font:500 14px "DM Mono",monospace}
+.prog{height:8px;background:var(--surface2);border-radius:999px;overflow:hidden}
+.prog span{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--red2));border-radius:999px;transition:width .6s var(--ease)}
+.prog.near span{background:linear-gradient(90deg,var(--sun),#ffd27a)}
+.pill{font-size:12px;padding:3px 9px;border-radius:999px;font-weight:500}
+.pill.g{background:var(--green-soft);color:var(--green)}.pill.b{background:var(--sun-soft);color:var(--sun)}.pill.r{background:var(--red-soft);color:var(--red2)}
+.demo{font-size:13px;color:var(--dim);margin-top:12px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step .n{font:500 13px "DM Mono",monospace;color:var(--red2);margin-bottom:26px}
+.step h3{font-size:21px;margin-bottom:8px}
+.step p{color:var(--muted);font-size:15px}
+
+/* launch */
+.launch{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+form{display:grid;gap:16px}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field .hint{font-size:13px;color:var(--muted);font-weight:400}
+input,textarea{font:inherit;font-size:16px;min-height:48px;padding:12px 14px;border-radius:11px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);width:100%;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
+textarea{min-height:88px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.drop{border:1.5px dashed var(--line2);border-radius:12px;padding:18px;text-align:center;color:var(--muted);font-size:14px;background:var(--bg2);cursor:pointer;transition:all .2s}
+.drop:hover{border-color:var(--red);color:var(--ink)}
+.err{font-size:13px;color:var(--red2);display:none}
+.field.bad input{border-color:var(--red)}
+.field.bad .err{display:block}
+.preview{display:flex;flex-direction:column;gap:14px}
+.pcard{border-radius:16px;background:var(--bg2);padding:18px;border:1px solid var(--line)}
+.pimg{width:64px;height:64px;border-radius:16px;background:var(--red);display:grid;place-items:center;color:#fff;font:600 24px Syne,sans-serif;background-size:cover;background-position:center;flex:none}
+.pname{font:600 22px Syne,sans-serif}.ptick{font:500 13px "DM Mono",monospace;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.cost{display:grid;gap:8px;font-size:14px}
+.cost div{display:flex;justify-content:space-between}
+.cost .t{font-weight:600;border-top:1px solid var(--line);padding-top:8px}
 
 /* table */
-.tablewrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th{font-weight:400;font-size:11.5px;color:var(--dim);text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
-th:nth-child(1),th:nth-child(2){text-align:left}
-td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-td:nth-child(1),td:nth-child(2){text-align:left}
-tbody tr{cursor:pointer;transition:background .15s}
-tbody tr:hover{background:var(--p1)}
-tbody tr.sel{background:var(--p2);box-shadow:inset 3px 0 0 var(--red)}
-.coin{display:flex;align-items:center;gap:10px}
-.av{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font:600 13px "Familjen Grotesk";color:#fff;flex:none}
-.coin .n{font:500 14px "Familjen Grotesk",sans-serif}
-.coin .t{font-size:12px;color:var(--muted)}
-.score{display:flex;align-items:center;gap:8px;justify-content:flex-end}
-.score .num{font-weight:500;width:26px;text-align:right}
-.meter{width:64px;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
-.meter span{display:block;height:100%;border-radius:999px}
-.up{color:var(--green)}.dn{color:var(--red2)}
-.flash-up{animation:fu .8s}.flash-dn{animation:fd .8s}
-@keyframes fu{from{color:var(--green)}}@keyframes fd{from{color:var(--red2)}}
-.pill{font-size:11.5px;padding:2px 8px;border-radius:999px}
-.pill.hot{background:var(--rs);color:var(--red2)}.pill.warm{background:var(--as);color:var(--amber)}.pill.cool{background:var(--line);color:var(--muted)}
-.empty{padding:40px 16px;text-align:center;color:var(--muted)}
-.note{font-size:12px;color:var(--dim);padding:10px 14px}
+.table{padding:0;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:12.5px;color:var(--dim);font-weight:500;padding:14px 18px;border-bottom:1px solid var(--line)}
+td{padding:13px 18px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--bg2)}
+.coincell{display:flex;align-items:center;gap:12px}
+.coincell .av{width:36px;height:36px;border-radius:10px;font-size:13px}
+.mini{width:90px;height:28px}
+.up{color:var(--green);font-weight:500}.dn{color:var(--red2);font-weight:500}
+.cards{display:none}
 
-/* detail */
-.detail{padding:14px;display:grid;gap:14px}
-.dhead{display:flex;gap:12px;align-items:center}
-.dhead .av{width:46px;height:46px;border-radius:12px;font-size:18px}
-.dhead h2{font-size:22px;line-height:1}
-.dhead .t{color:var(--muted);font-size:12.5px;margin-top:4px}
-.big{display:flex;align-items:baseline;gap:8px}
-.big .s{font:600 44px "Familjen Grotesk";line-height:1}
-.big .of{color:var(--dim)}
-.rows{display:grid;gap:8px}
-.rows div{display:grid;grid-template-columns:96px 1fr 28px;gap:10px;align-items:center;font-size:12.5px;color:var(--muted)}
-.rows .meter{width:100%}
-.rows b{color:var(--ink);font-weight:500;text-align:right}
-.why{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--p1);font-size:13px;color:var(--muted);display:grid;gap:6px}
-.why li{list-style:none;padding-left:16px;position:relative}
-.why li::before{content:"›";position:absolute;left:2px;color:var(--red2)}
-.cbox{border:1px dashed var(--line2);border-radius:10px;padding:12px;font-size:13px;white-space:pre-wrap;color:var(--ink);background:var(--p1)}
-.acts{display:flex;gap:8px;flex-wrap:wrap}
-.acts .btn{flex:1}
+/* opad coin */
+.opad{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.ca{display:flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:6px 6px 6px 14px}
+.ca code{font:500 14px "DM Mono",monospace;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{display:flex;height:12px;border-radius:999px;overflow:hidden;margin:12px 0}
+.bar span{display:block}
+.legend{font-size:14px;display:grid;gap:7px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}
 
-/* my callouts */
-.mine{border-top:1px solid var(--line)}
-.sumrow{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
-.sumrow div{padding:10px 14px;border-right:1px solid var(--line)}
-.sumrow div:last-child{border-right:0}
-.sumrow small{display:block;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
-.sumrow b{font-weight:500;font-size:16px}
-.cl{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px}
-.cl .x{margin-left:auto;font-weight:500}
-.cl button{color:var(--dim);min-width:32px;min-height:32px;border-radius:6px}
-.cl button:hover{color:var(--ink);background:var(--p2)}
+/* faq */
+.faq{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 20px}
+summary{list-style:none;min-height:58px;display:flex;align-items:center;justify-content:space-between;font-weight:600;cursor:pointer;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 22px "DM Mono",monospace;color:var(--red2);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);padding-bottom:18px;font-size:15px}
 
-/* log */
-.log{border-top:1px solid var(--line);background:var(--p1);height:150px;overflow:hidden;padding:8px 14px;font-size:12.5px;color:var(--muted)}
-.log div{padding:3px 0;animation:in .4s}
-.log time{color:var(--dim);margin-right:10px}
-.log .k{color:var(--ink)}
-@keyframes in{from{opacity:0;transform:translateY(-4px)}}
-
-.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:10px;font:600 14px "Familjen Grotesk";opacity:0;transition:all .25s;z-index:50;max-width:calc(100% - 40px)}
+footer{margin-top:84px;border-top:1px solid var(--line);padding:28px 0 40px}
+footer .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:var(--dim);font-size:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);background:var(--ink);color:var(--bg);padding:13px 18px;border-radius:12px;font-size:15px;font-weight:500;opacity:0;transition:all .25s var(--ease);z-index:50;max-width:calc(100% - 40px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-.fbtn{display:none!important}
-@media (max-width:1180px){.app{grid-template-columns:1fr 340px}.pane.fl{display:none}.fbtn{display:inline-flex!important}}
-@media (max-width:860px){
-  .intro{grid-template-columns:1fr}
-  .app{grid-template-columns:1fr}.pane{border-right:0;border-bottom:1px solid var(--line)}
-  .hide-m{display:none}
-  .bar .tag{display:none}
+@media (max-width:980px){
+  .hero .wrap{grid-template-columns:1fr;min-height:0}.stage{height:380px;order:-1}
+  .strip .wrap{grid-template-columns:1fr 1fr}.strip .cell:nth-child(2){border-right:0}.strip .cell:nth-child(1),.strip .cell:nth-child(2){border-bottom:1px solid var(--line)}
+  .grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.launch,.opad{grid-template-columns:1fr}
 }
-@media (max-width:480px){.bar a.btn-line,.bar .live{display:none}.bar{gap:10px;padding:0 12px}th,td{padding:9px 8px}td .meter{display:none}.coin .av{display:none}}
-.pane.fl.open{display:block;position:fixed;inset:56px 0 0 0;z-index:15;background:var(--bg);overflow:auto}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:640px){
+  .links{display:none}.nav-cta .btn-ghost{display:none}
+  .hero{padding-top:28px}.stage{height:320px}.coin3d{width:180px;height:180px}.rimseg{height:180px;margin:-90px -7px}.coin3d .face span{font-size:54px}
+  .grid,.steps,.faq,.two,.strip .wrap{grid-template-columns:1fr}.strip .cell{border-right:0;border-bottom:1px solid var(--line)}
+  .table{display:none}.cards{display:grid;gap:10px}
+  .tabs{width:100%}.tabs button{flex:1;padding:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.spark{display:none}.coin3d{transform:rotateY(20deg) rotateX(8deg)}}
 </style>
 </head>
 <body>
 
-<header class="bar">
-  <a class="brand" href="#" aria-label="OPAD Scanner home"><span class="logo">OP</span>OPAD</a>
-  <span class="tag">Optimism callout scanner</span>
-  <span class="live"><span class="dot"></span>Scanning</span>
-  <span class="sp"></span>
-  <button class="btn btn-line btn-sm fbtn" id="fToggle" type="button" aria-expanded="false">Filters</button>
-  <a class="btn btn-line btn-sm" href="#" aria-label="OPAD on X">𝕏</a>
-  <a class="btn btn-red btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Open pump.fun</a>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="logo" viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#ff1f3d"/><text x="17" y="22" text-anchor="middle" font-family="Syne,sans-serif" font-weight="600" font-size="15" fill="#fff">OP</text><path d="M24 7l3 5h-6z" fill="#fff"/></symbol>
+</defs></svg>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="brand" aria-label="OPAD home"><svg class="logo"><use href="#logo"/></svg>OPAD</a>
+    <div class="links"><a href="#board">Board</a><a href="#how">How it works</a><a href="#launch">Launch</a><a href="#top">Top coins</a><a href="#scanner">Scanner</a><a href="#faq">FAQ</a></div>
+    <div class="nav-cta">
+      <a class="btn btn-ghost" href="#" aria-label="OPAD on X">𝕏</a>
+      <a class="btn btn-red" href="https://pump.fun/create" target="_blank" rel="noopener">Launch on pump.fun</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip"><span class="dot"></span>Optimism is live on pump.fun</span>
+      <h1>Launch on <em>Optimism.</em></h1>
+      <p class="sub">Every coin goes live on pump.fun. Pay in SOL. OPAD is the front door for OP coins: find them, launch them, track them.</p>
+      <div class="ctas">
+        <a class="btn btn-red" href="#launch">Launch on pump.fun</a>
+        <a class="btn btn-ghost" href="#board">See OP coins</a>
+      </div>
+      <div class="meta"><span><b>No bridge.</b> No ETH.</span><span><b>No new wallet.</b> Your pump.fun one.</span><span><b>Callout scanner</b> built in.</span></div>
+    </div>
+    <div class="stage" aria-hidden="true">
+      <div class="floor"></div>
+      <div class="coin3d" id="coin">
+        <div class="face"><span>OP</span><i class="arrow"></i></div>
+        <div class="face back"><span>OP</span><i class="arrow"></i></div>
+        <div class="rim" id="rim"></div>
+      </div>
+      <div class="shadow"></div>
+      <div id="sparks"></div>
+    </div>
+  </div>
 </header>
 
-<section class="intro">
-  <div>
-    <h1>Find <em>Optimism</em> coins worth calling.</h1>
-    <p>OPAD scans every Optimism coin on pump.fun, gives each one a Call Score, writes your callout, and tracks how your calls do.</p>
+<div class="strip">
+  <div class="wrap">
+    <div class="cell"><div class="lbl"><span class="dot"></span>Launched today</div><div class="val" id="today">96</div></div>
+    <div class="cell"><div class="lbl">24h volume</div><div class="val">$2.41M<small>▲ 38%</small></div></div>
+    <div class="cell"><div class="lbl">Near graduation</div><div class="val">7</div></div>
+    <div class="cell"><div class="lbl">OP coins on pump.fun</div><div class="val" id="launched">1,284</div></div>
   </div>
-  <div class="diamond">
-    <div class="k">◆ Why call OP coins now</div>
-    <p>pump.fun's new <b>Diamond</b> callout rewards add multipliers for callouts on <b>higher market cap</b> coins and on <b>EVM and other non-Solana</b> coins. Optimism coins fit both.</p>
-  </div>
-</section>
+</div>
 
-<div class="app">
-  <aside class="pane fl" id="fPane" aria-label="Filters">
-    <div class="ph">Filters <button class="btn btn-sm btn-line fbtn" id="fClose" type="button">Done</button></div>
-    <div class="filters">
-      <div class="f"><label for="q">Search</label><input type="text" id="q" placeholder="Name or ticker" autocomplete="off"></div>
-      <div class="f"><label for="minMc">Min market cap <b id="minMcV">$5K</b></label><input type="range" id="minMc" min="0" max="100" step="5" value="5"></div>
-      <div class="f"><label for="maxAge">Max age <b id="maxAgeV">24h</b></label><input type="range" id="maxAge" min="1" max="72" value="24"></div>
-      <div class="f"><label for="minScore">Min Call Score <b id="minScoreV">0</b></label><input type="range" id="minScore" min="0" max="90" step="5" value="0"></div>
-      <div class="f"><label for="sort">Sort by</label>
-        <select id="sort"><option value="score">Call Score</option><option value="mc">Market cap</option><option value="ch">1h change</option><option value="age">Newest</option></select></div>
-      <label class="chk"><input type="checkbox" id="hideCalled"> Hide coins I've called</label>
-      <div class="legend">Call Score blends market cap (Diamond favors bigger coins), 1h momentum, holder growth and bonding-curve progress. It's OPAD's own estimate, not pump.fun's reward math.</div>
+<main class="wrap">
+  <section id="board">
+    <div class="sec-head"><h2>The Optimism board.</h2>
+      <div class="tabs" role="tablist" aria-label="Board filter">
+        <button role="tab" aria-selected="true" data-f="new">New</button>
+        <button role="tab" aria-selected="false" data-f="near">Near grad</button>
+        <button role="tab" aria-selected="false" data-f="top">Top</button>
+      </div>
     </div>
-  </aside>
+    <div class="grid" id="grid"></div>
+    <p class="demo">Example data until launch.</p>
+  </section>
 
-  <main class="pane" aria-label="Optimism coins">
-    <div class="ph"><span><span id="count">0</span> OP coins</span><span class="hide-m">Tap a row to see why</span></div>
-    <div class="tablewrap">
+  <section id="how">
+    <div class="sec-head"><h2>Four steps up.</h2><p>OPAD sets your coin up. pump.fun launches it on Optimism.</p></div>
+    <div class="steps">
+      <div class="card step"><div class="n">01</div><h3>Set it up</h3><p>Name, ticker and image on OPAD, with a live preview.</p></div>
+      <div class="card step"><div class="n">02</div><h3>Launch on pump.fun</h3><p>OPAD hands you to pump.fun, where the coin is created on Optimism. Pay in SOL.</p></div>
+      <div class="card step"><div class="n">03</div><h3>Get on the board</h3><p>Your coin shows on OPAD's Optimism board and trades on pump.fun.</p></div>
+      <div class="card step"><div class="n">04</div><h3>Graduate</h3><p>Fill the bonding curve and the coin graduates on pump.fun.</p></div>
+    </div>
+  </section>
+
+  <section id="launch">
+    <div class="sec-head"><h2>Launch a coin on OP.</h2><p>Set it up here, check the preview, then launch it on pump.fun.</p></div>
+    <div class="launch">
+      <div class="card">
+        <form id="lform" novalidate>
+          <div class="two">
+            <div class="field" id="f-name"><label for="fname">Coin name</label><input id="fname" maxlength="32" placeholder="Sunny" autocomplete="off"><span class="err">Add a name.</span></div>
+            <div class="field" id="f-tick"><label for="ftick">Ticker</label><input id="ftick" maxlength="10" placeholder="SUNNY" autocomplete="off"><span class="err">Add a ticker.</span></div>
+          </div>
+          <div class="field"><label for="fdesc">Description</label><textarea id="fdesc" maxlength="280" placeholder="What's the coin about?"></textarea></div>
+          <div class="field">
+            <label for="fimg">Image</label>
+            <label class="drop" for="fimg" id="dropLbl">Drop an image or tap to upload · PNG, JPG or GIF</label>
+            <input id="fimg" type="file" accept="image/*" hidden>
+          </div>
+          <div class="two">
+            <div class="field"><label for="fx">X link <span class="hint">(optional)</span></label><input id="fx" placeholder="https://x.com/…"></div>
+            <div class="field"><label for="fbuy">Dev buy (SOL)</label><input id="fbuy" type="number" min="0" step="0.1" value="0.5" inputmode="decimal"></div>
+          </div>
+          <button class="btn btn-red" type="submit" style="min-height:52px">Launch on pump.fun</button>
+          <p class="note">Opens pump.fun in a new tab. Pick Optimism there and paste your details. Your draft stays saved here.</p>
+        </form>
+      </div>
+      <div class="preview">
+        <div class="card">
+          <div class="label">Preview</div>
+          <div class="pcard">
+            <div style="display:flex;gap:12px;align-items:center"><div class="pimg" id="pimg">S</div><div><div class="pname" id="pname">Sunny</div><div class="ptick" id="ptick">$SUNNY · Optimism</div></div></div>
+            <p class="note" id="pdesc" style="margin-top:12px">Your description shows here.</p>
+            <div class="prog" style="margin:14px 0 6px"><span style="width:0"></span></div>
+            <div class="note">Bonding curve 0% · on pump.fun</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="label">Cost</div>
+          <div class="cost">
+            <div><span>Launch fee</span><span>Set by pump.fun</span></div>
+            <div><span>Dev buy</span><span id="cbuy" class="mono">0.5 SOL</span></div>
+            <div class="t"><span>You pay in</span><span>SOL</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="top">
+    <div class="sec-head"><h2>Top coins on Optimism.</h2><p>Ranked by market cap. Every row links to pump.fun.</p></div>
+    <div class="card table">
       <table>
-        <thead><tr><th>#</th><th>Coin</th><th>Call Score</th><th>Mkt cap</th><th>1h</th><th class="hide-m">Holders</th><th class="hide-m">Curve</th><th class="hide-m">Age</th></tr></thead>
+        <thead><tr><th>#</th><th>Coin</th><th>Market cap</th><th>24h vol</th><th>24h</th><th>Status</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
-      <div class="empty" id="empty" hidden>No coins match. Loosen a filter to see more.</div>
     </div>
-    <p class="note">Example data until the live feed is connected.</p>
-    <div class="log" id="log" aria-live="off"></div>
-  </main>
+    <div class="cards" id="cards"></div>
+    <p class="demo">Example data until launch.</p>
+  </section>
 
-  <aside class="pane" aria-label="Coin detail and your callouts">
-    <div class="ph">Coin</div>
-    <div class="detail" id="detail"></div>
-    <div class="mine">
-      <div class="ph">My callouts</div>
-      <div class="sumrow"><div><small>Calls</small><b id="sCalls">0</b></div><div><small>Avg</small><b id="sAvg">–</b></div><div><small>Best</small><b id="sBest">–</b></div></div>
-      <div id="mine"></div>
+  <section id="scanner">
+    <div class="sec-head"><h2>Call it before everyone else.</h2><p>The OPAD scanner ranks every Optimism coin on pump.fun so you know what to call next.</p></div>
+    <div class="opad">
+      <div class="card">
+        <div class="label"><span class="dot"></span>Top to call right now</div>
+        <div id="scanTop" style="display:grid;gap:10px"></div>
+        <p class="demo" style="margin-top:14px">Example data until launch. Call Score is OPAD's own estimate.</p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:14px">
+        <div class="label" style="color:var(--sun)">◆ Why call OP coins now</div>
+        <p style="color:var(--muted);font-size:15px">pump.fun's new <b style="color:var(--ink);font-weight:500">Diamond</b> callout rewards add multipliers for callouts on higher market cap coins and on EVM and other non-Solana coins. Optimism coins fit both.</p>
+        <ul style="list-style:none;display:grid;gap:8px;font-size:14px;color:var(--muted)">
+          <li>› Call Score on every OP coin</li><li>› Your callout written for you</li><li>› Track how every call does</li>
+        </ul>
+        <a class="btn btn-red" href="scanner/" style="margin-top:auto">Open the scanner</a>
+      </div>
     </div>
-  </aside>
-</div>
+  </section>
+
+  <section id="faq">
+    <div class="sec-head"><h2>Questions.</h2></div>
+    <div class="faq">
+      <details><summary>What is OPAD?</summary><p>The front door for Optimism coins. You set up your coin on OPAD and it launches on pump.fun's Optimism support.</p></details>
+      <details><summary>Do I need ETH or a new wallet?</summary><p>No. You launch through pump.fun and pay in SOL.</p></details>
+      <details><summary>Where does my coin trade?</summary><p>On pump.fun, under Optimism. OPAD lists it on the board and links straight to it.</p></details>
+      <details><summary>What happens at graduation?</summary><p>The coin graduates on pump.fun when its bonding curve fills, same as any pump.fun coin.</p></details>
+      <details><summary>What is the callout scanner?</summary><p>It ranks every Optimism coin on pump.fun with a Call Score, writes your callout for you, and tracks how your calls do.</p></details>
+      <details><summary>Why call Optimism coins?</summary><p>pump.fun's new Diamond callout rewards add multipliers for callouts on higher market cap coins and on EVM and other non-Solana coins. Optimism coins fit both.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand" style="font-size:17px"><svg class="logo" style="width:28px;height:28px"><use href="#logo"/></svg>OPAD</div>
+    <span>The Optimism launchpad · launches on pump.fun</span>
+    <div style="display:flex;gap:8px"><a class="btn btn-ghost btn-sm" href="#">𝕏</a><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a></div>
+  </div>
+</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const $=id=>document.getElementById(id);
-const colors=["#ff1f3d","#ff8a3d","#7a5cff","#3ddc97","#f5b942","#e0344a","#3b82f6","#ff5c72","#14b8a6","#a855f7"];
-/* name,ticker,mcap,ch1h,holders,holders1hAgo,ageMin,curve */
-let coins=[
- ["Sunny","SUNNY",61800,24,812,640,180,92],["Red Pill","REDPILL",54200,11,701,610,240,86],["Glass Half Full","FULL",48900,38,522,380,95,74],
- ["OP Dog","OPDOG",41100,-4,640,655,310,61],["Superchain Cat","SUPERCAT",33700,52,410,250,45,50],["Layer Two Lad","L2LAD",27400,-12,388,402,520,40],
- ["Bright Side","BRIGHT",19800,67,301,160,22,29],["Good Vibes Only","GVO",14200,9,212,190,12,21],["Morning Star","MORN",6300,140,88,30,4,9],
- ["Hopium OP","HOPE",7400,96,120,52,2,11],["Daybreak","DAWN",4100,31,41,22,1,6],["Optimist Prime","PRIME",9900,58,160,95,7,14],
- ["Silver Lining","LINING",23100,18,330,290,140,34],["Red Candle Up","RCU",12800,-21,190,215,380,19],["Sunrise Frog","SFROG",36500,29,470,360,70,55],
- ["Lucky OP","LUCK",8800,6,104,100,600,13]
-].map((c,i)=>({i,name:c[0],tick:c[1],mc:c[2],ch:c[3],h:c[4],h0:c[5],age:c[6],curve:c[7]}));
-
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function parts(c){
-  const mcS=clamp((Math.log10(c.mc)-3.6)/(5.0-3.6),0,1)*100;      /* ~$4K → 0, ~$100K → 100 */
-  const momS=clamp((c.ch+20)/120,0,1)*100;
-  const hg=(c.h-c.h0)/Math.max(c.h0,1);const holdS=clamp(hg/0.6,0,1)*100;
-  const curS=c.curve>=95?40:clamp(c.curve/85,0,1)*100;            /* about to graduate = less room */
-  return {mc:mcS,mom:momS,hold:holdS,curve:curS};
-}
-function score(c){const p=parts(c);return Math.round(p.mc*.35+p.mom*.25+p.hold*.2+p.curve*.2)}
-const fmt=n=>n>=1e6?"$"+(n/1e6).toFixed(2)+"M":n>=1000?"$"+(n/1000).toFixed(1)+"K":"$"+Math.round(n);
+const colors=["#ff1f3d","#ff8a3d","#7a3cff","#2ee6a6","#ffb547","#e0344a","#2563eb","#ff5c72"];
+/* name,ticker,mcap,vol,chg,curve%,age min */
+const coins=[
+ ["Sunny","SUNNY",61800,412000,212,92,180],["Red Pill","REDPILL",54200,288000,88,86,240],["Glass Half Full","FULL",48900,201000,64,74,95],
+ ["OP Dog","OPDOG",41100,176000,41,61,310],["Superchain Cat","SUPERCAT",33700,140000,29,50,45],["Layer Two Lad","L2LAD",27400,98000,-6,40,520],
+ ["Bright Side","BRIGHT",19800,77000,18,29,22],["Good Vibes Only","GVO",14200,51000,9,21,12],["Morning Star","MORN",6300,18000,15,9,4],
+ ["Hopium OP","HOPE",7400,22000,94,11,2],["Daybreak","DAWN",4100,9000,31,6,1],["Optimist Prime","PRIME",9900,30000,52,14,7]
+];
+const fmt=n=>"$"+(n>=1000?(n/1000).toFixed(1)+"K":n);
 const age=m=>m<60?m+"m":m<1440?Math.round(m/60)+"h":Math.round(m/1440)+"d";
-const tone=s=>s>=70?"var(--red)":s>=50?"var(--amber)":"var(--muted)";
-const label=s=>s>=70?'<span class="pill hot">Call it</span>':s>=50?'<span class="pill warm">Watch</span>':'<span class="pill cool">Early</span>';
-
-let mine=[];try{mine=JSON.parse(localStorage.getItem("opad_calls")||"[]")}catch(_){}
-const save=()=>{try{localStorage.setItem("opad_calls",JSON.stringify(mine))}catch(_){}};
-let sel=null;let prevMc={};
-
-function filtered(){
-  const q=$("q").value.trim().toLowerCase(),minMc=+$("minMc").value*1000,maxAge=+$("maxAge").value*60,minS=+$("minScore").value,hide=$("hideCalled").checked;
-  let l=coins.filter(c=>c.mc>=minMc&&c.age<=maxAge&&score(c)>=minS&&(!q||c.name.toLowerCase().includes(q)||c.tick.toLowerCase().includes(q))&&!(hide&&mine.some(m=>m.tick===c.tick)));
-  const s=$("sort").value;
-  l.sort((a,b)=>s==="mc"?b.mc-a.mc:s==="ch"?b.ch-a.ch:s==="age"?a.age-b.age:score(b)-score(a));
-  return l;
+const stat=c=>c[5]>=80?'<span class="pill b">Near graduation</span>':c[5]<10?'<span class="pill r">Just launched</span>':'<span class="pill g">On curve</span>';
+function renderGrid(f){
+  let list=coins.map((c,i)=>({c,i}));
+  if(f==="new")list.sort((a,b)=>a.c[6]-b.c[6]);
+  if(f==="near")list=list.filter(x=>x.c[5]>=60).sort((a,b)=>b.c[5]-a.c[5]);
+  if(f==="top")list.sort((a,b)=>b.c[2]-a.c[2]);
+  $("grid").innerHTML=list.slice(0,6).map(({c,i},k)=>`<div class="card coin" style="animation-delay:${k*50}ms">
+   <div class="top"><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div class="nm">${c[0]}</div><div class="tk">$${c[1]}</div></div><span class="age">${age(c[6])} ago</span></div>
+   <div class="row"><span style="color:var(--muted)">Market cap</span><b>${fmt(c[2])}</b></div>
+   <div class="prog ${c[5]>=80?"near":""}"><span style="width:${c[5]}%"></span></div>
+   <div class="row"><span>${stat(c)}</span><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Trade on pump.fun</a></div></div>`).join("");
 }
-function render(){
-  const l=filtered();$("count").textContent=l.length;$("empty").hidden=l.length>0;
-  if(!sel||!coins.includes(sel))sel=l[0]||coins[0];
-  $("rows").innerHTML=l.map((c,k)=>{const s=score(c),f=prevMc[c.tick]?(c.mc>prevMc[c.tick]?"flash-up":c.mc<prevMc[c.tick]?"flash-dn":""):"";
-    return `<tr data-t="${c.tick}" class="${c===sel?"sel":""}" tabindex="0" aria-label="${c.name}, Call Score ${s}">
-    <td style="color:var(--dim)">${k+1}</td>
-    <td><div class="coin"><div class="av" style="background:${colors[c.i%10]}">${c.name[0]}</div><div><div class="n">${c.name}</div><div class="t">$${c.tick}${mine.some(m=>m.tick===c.tick)?' · called':''}</div></div></div></td>
-    <td><div class="score"><span class="num" style="color:${tone(s)}">${s}</span><span class="meter"><span style="width:${s}%;background:${tone(s)}"></span></span></div></td>
-    <td class="${f}">${fmt(c.mc)}</td><td class="${c.ch>=0?"up":"dn"}">${c.ch>=0?"+":""}${c.ch}%</td>
-    <td class="hide-m">${c.h}</td><td class="hide-m">${c.curve}%</td><td class="hide-m" style="color:var(--muted)">${age(c.age)}</td></tr>`}).join("");
-  document.querySelectorAll("#rows tr").forEach(tr=>{const go=()=>{sel=coins.find(c=>c.tick===tr.dataset.t);render()};tr.onclick=go;tr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
-  renderDetail();renderMine();
-  coins.forEach(c=>prevMc[c.tick]=c.mc);
-}
-function why(c,p){
-  const w=[];
-  if(p.mc>=60)w.push(`${fmt(c.mc)} market cap: bigger coins get a Diamond boost.`);else w.push(`Still small at ${fmt(c.mc)}: more upside, smaller Diamond boost.`);
-  if(c.ch>=30)w.push(`Up ${c.ch}% in the last hour.`);else if(c.ch<0)w.push(`Down ${Math.abs(c.ch)}% in the last hour. Wait for a turn.`);
-  const g=c.h-c.h0;if(g>0)w.push(`+${g} holders in the last hour.`);
-  if(c.curve>=85)w.push(`Curve at ${c.curve}%: close to graduating.`);
-  w.push("Optimism coin: counts as non-Solana for Diamond.");
-  return w;
-}
-function calloutText(c){return `$${c.tick} on Optimism 🔴\n\n${fmt(c.mc)} mcap · ${c.h} holders · ${c.ch>=0?"+":""}${c.ch}% 1h\nCurve ${c.curve}%\n\nCalling it. Trade it on pump.fun.`}
-function renderDetail(){
-  const c=sel;if(!c){$("detail").innerHTML="";return}
-  const s=score(c),p=parts(c),called=mine.some(m=>m.tick===c.tick);
-  const row=(n,v)=>`<div><span>${n}</span><span class="meter"><span style="width:${Math.round(v)}%;background:${tone(v)}"></span></span><b>${Math.round(v)}</b></div>`;
-  $("detail").innerHTML=`<div class="dhead"><div class="av" style="background:${colors[c.i%10]}">${c.name[0]}</div><div><h2>${c.name}</h2><div class="t">$${c.tick} · Optimism · ${age(c.age)} old</div></div></div>
-   <div style="display:flex;justify-content:space-between;align-items:end"><div class="big"><span class="s" style="color:${tone(s)}">${s}</span><span class="of">/ 100 Call Score</span></div>${label(s)}</div>
-   <div class="rows">${row("Market cap",p.mc)}${row("Momentum",p.mom)}${row("Holders",p.hold)}${row("Curve",p.curve)}</div>
-   <ul class="why">${why(c,p).map(x=>`<li>${x}</li>`).join("")}</ul>
-   <div><div class="ph" style="padding:0 0 8px;border:0">Your callout</div><div class="cbox" id="ctext">${calloutText(c)}</div></div>
-   <div class="acts"><button class="btn btn-line" id="copyC" type="button">Copy callout</button><button class="btn ${called?"btn-line":"btn-red"}" id="trackC" type="button">${called?"Tracking":"Track this call"}</button></div>
-   <a class="btn btn-line" href="https://pump.fun" target="_blank" rel="noopener">Call it on pump.fun ↗</a>`;
-  $("copyC").onclick=()=>{navigator.clipboard.writeText(calloutText(c)).then(()=>toast("Callout copied.")).catch(()=>toast("Select the text above to copy it."))};
-  $("trackC").onclick=()=>{if(called){toast(`Already tracking $${c.tick}.`);return}mine.unshift({tick:c.tick,entry:c.mc,at:Date.now()});save();toast(`Tracking $${c.tick} from ${fmt(c.mc)}.`);render()};
-}
-function renderMine(){
-  const rows=mine.map(m=>{const c=coins.find(x=>x.tick===m.tick);const x=c?c.mc/m.entry:1;return{...m,x,c}});
-  $("sCalls").textContent=rows.length;
-  if(rows.length){const avg=rows.reduce((a,r)=>a+r.x,0)/rows.length,best=Math.max(...rows.map(r=>r.x));
-    $("sAvg").textContent=avg.toFixed(2)+"x";$("sAvg").className=avg>=1?"up":"dn";$("sBest").textContent=best.toFixed(2)+"x";$("sBest").className=best>=1?"up":"dn"}
-  else{$("sAvg").textContent="–";$("sBest").textContent="–";$("sAvg").className=$("sBest").className=""}
-  $("mine").innerHTML=rows.length?rows.map(r=>`<div class="cl"><div class="av" style="background:${r.c?colors[r.c.i%10]:"#333"};width:26px;height:26px;font-size:11px">${r.tick[0]}</div><div><div>$${r.tick}</div><div style="font-size:11.5px;color:var(--dim)">from ${fmt(r.entry)}</div></div><span class="x ${r.x>=1?"up":"dn"}">${r.x.toFixed(2)}x</span><button type="button" aria-label="Stop tracking $${r.tick}" data-rm="${r.tick}">✕</button></div>`).join("")
-   :`<p class="note" style="padding:14px">No calls yet. Pick a coin and hit "Track this call" to see how it does.</p>`;
-  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{mine=mine.filter(m=>m.tick!==b.dataset.rm);save();render()});
-}
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
+renderGrid("new");
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected","false"));b.setAttribute("aria-selected","true");renderGrid(b.dataset.f)});
 
-/* filters */
-const sync=()=>{$("minMcV").textContent="$"+$("minMc").value+"K";const a=+$("maxAge").value;$("maxAgeV").textContent=a>=72?"3d+":a+"h";$("minScoreV").textContent=$("minScore").value;render()};
-["q","minMc","maxAge","minScore","sort","hideCalled"].forEach(id=>$(id).addEventListener("input",sync));
-$("fToggle").onclick=()=>{$("fPane").classList.add("open");$("fToggle").setAttribute("aria-expanded","true")};
-$("fClose").onclick=()=>{$("fPane").classList.remove("open");$("fToggle").setAttribute("aria-expanded","false")};
+function spark(up){let p="",y=20;for(let i=0;i<=9;i++){y+=(up?-1:1)*(Math.random()*4-1);y=Math.max(3,Math.min(25,y));p+=(i?"L":"M")+(i*10)+" "+y.toFixed(1)}return `<svg class="mini" viewBox="0 0 90 28"><path d="${p}" fill="none" stroke="${up?'#2ee6a6':'#ff5c72'}" stroke-width="2"/></svg>`}
+const ranked=coins.map((c,i)=>({c,i})).sort((a,b)=>b.c[2]-a.c[2]).slice(0,8);
+$("rows").innerHTML=ranked.map(({c,i},k)=>`<tr><td class="mono" style="color:var(--dim)">${k+1}</td>
+ <td><div class="coincell"><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div style="font-weight:600">${c[0]}</div><div class="mono" style="font-size:13px;color:var(--muted)">$${c[1]}</div></div></div></td>
+ <td class="mono">${fmt(c[2])}</td><td class="mono">${fmt(c[3])}</td>
+ <td><div style="display:flex;align-items:center;gap:8px">${spark(c[4]>0)}<span class="${c[4]>0?"up":"dn"}">${c[4]>0?"+":""}${c[4]}%</span></div></td>
+ <td>${stat(c)}</td><td><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Trade</a></td></tr>`).join("");
+$("cards").innerHTML=ranked.map(({c,i},k)=>`<div class="card coin"><div class="top"><span class="mono" style="color:var(--dim)">${k+1}</span><div class="av" style="background:${colors[i%8]}">${c[0][0]}</div><div><div class="nm">${c[0]}</div><div class="tk">$${c[1]}</div></div><span class="age ${c[4]>0?"up":"dn"}">${c[4]>0?"+":""}${c[4]}%</span></div>
+ <div class="row"><span style="color:var(--muted)">Market cap</span><b>${fmt(c[2])}</b></div><div class="row"><span>${stat(c)}</span><a class="btn btn-ghost btn-sm" href="https://pump.fun" target="_blank" rel="noopener">Trade</a></div></div>`).join("");
 
-/* live log + ticks (example data) */
-const log=$("log");const t=()=>new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-function addLog(h){const d=document.createElement("div");d.innerHTML=`<time>${t()}</time>${h}`;log.prepend(d);while(log.children.length>8)log.lastChild.remove()}
-const fresh=[["Clear Skies","SKIES"],["Upward","UPW"],["Gm Optimism","GMOP"],["Red Sky","RSKY"],["Half Moon","HALF"],["Bullish Bird","BIRD"]];let fi=0;
-setInterval(()=>{
-  coins.forEach(c=>{const d=(Math.random()-.45)*0.06;c.mc=Math.max(2500,Math.round(c.mc*(1+d)));c.ch=Math.round(clamp(c.ch+d*100*.6,-60,400));if(Math.random()<.4)c.h+=Math.round(Math.random()*4);if(c.curve<100&&d>0)c.curve=Math.min(100,c.curve+1);c.age+=0});
-  const c=coins[Math.floor(Math.random()*coins.length)];const s=score(c);
-  if(s>=70&&Math.random()<.5)addLog(`<span class="k">$${c.tick}</span> hit Call Score ${s}`);
-  else if(c.curve>=90)addLog(`<span class="k">$${c.tick}</span> curve at ${c.curve}%`);
-  else addLog(`buy · <span class="k">$${c.tick}</span> · ${(Math.random()*2+.1).toFixed(2)} SOL`);
-  render();
-},2600);
-setInterval(()=>{const [n,tk]=fresh[fi%fresh.length];fi++;if(coins.some(c=>c.tick===tk))return;
-  coins.push({i:coins.length,name:n,tick:tk,mc:3800+Math.round(Math.random()*2000),ch:0,h:3,h0:1,age:0,curve:1});
-  addLog(`new coin · <span class="k">$${tk}</span> launched on Optimism`);render()},11000);
-setInterval(()=>coins.forEach(c=>c.age++),60000);
+/* 3D coin rim + sparks */
+const rim=$("rim");for(let i=0;i<36;i++){const s=document.createElement("div");s.className="rimseg";s.style.transform=`rotateZ(${i*5}deg) rotateY(90deg) translateZ(0)`;rim.appendChild(s)}
+const tk=["$SUNNY","$OPDOG","$HOPE","$DAWN","$PRIME","$FULL","$GVO","$MORN"];const sp=$("sparks");
+for(let i=0;i<8;i++){const d=document.createElement("div");d.className="spark";d.textContent=tk[i];d.style.setProperty("--dx",(i%2?1:-1)*(60+i*22)+"px");d.style.animationDelay=(i*.56)+"s";sp.appendChild(d)}
+let launched=1284,today=96;setInterval(()=>{launched++;today++;$("launched").textContent=launched.toLocaleString();$("today").textContent=today},4000);
 
-addLog("scanner started · watching Optimism on pump.fun");
-render();
+/* form */
+function upd(){const n=$("fname").value.trim()||"Sunny";const t=($("ftick").value.trim()||"SUNNY").toUpperCase();$("pname").textContent=n;$("ptick").textContent="$"+t+" · Optimism";if(!$("pimg").style.backgroundImage)$("pimg").textContent=n[0].toUpperCase();$("pdesc").textContent=$("fdesc").value.trim()||"Your description shows here.";const b=Math.max(0,parseFloat($("fbuy").value)||0);$("cbuy").textContent=b+" SOL";try{localStorage.setItem("opad_draft",JSON.stringify({n:$("fname").value,t:$("ftick").value,d:$("fdesc").value,x:$("fx").value,b:$("fbuy").value}))}catch(_){}}
+["fname","ftick","fdesc","fbuy","fx"].forEach(i=>$(i).addEventListener("input",upd));
+$("ftick").addEventListener("input",e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,""));
+["fname","ftick"].forEach(i=>$(i).addEventListener("input",e=>$("f-"+(i==="fname"?"name":"tick")).classList.remove("bad")));
+$("fimg").onchange=e=>{const f=e.target.files[0];if(!f)return;$("pimg").style.backgroundImage=`url(${URL.createObjectURL(f)})`;$("pimg").textContent="";$("dropLbl").textContent=f.name};
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),3200)}
+$("lform").onsubmit=e=>{e.preventDefault();let ok=true;if(!$("fname").value.trim()){$("f-name").classList.add("bad");ok=false}if(!$("ftick").value.trim()){$("f-tick").classList.add("bad");ok=false}if(!ok){toast("Add a name and ticker first.");($("fname").value.trim()?$("ftick"):$("fname")).focus();return}
+ upd();toast(`$${$("ftick").value} saved. Opening pump.fun…`);window.open("https://pump.fun/create","_blank","noopener")};
+try{const d=JSON.parse(localStorage.getItem("opad_draft")||"null");if(d){$("fname").value=d.n||"";$("ftick").value=d.t||"";$("fdesc").value=d.d||"";$("fx").value=d.x||"";if(d.b)$("fbuy").value=d.b;upd()}}catch(_){}
+
+/* scanner preview */
+const callScore=c=>{const mc=clamp01((Math.log10(c[2])-3.6)/1.4),mo=clamp01((c[4]+20)/120),cu=c[5]>=95?.4:clamp01(c[5]/85);return Math.round((mc*.45+mo*.3+cu*.25)*100)};
+function clamp01(v){return Math.max(0,Math.min(1,v))}
+$("scanTop").innerHTML=[[["Superchain Cat","SUPERCAT",33700],4,70],[["Glass Half Full","FULL",48900],2,69],[["Sunny","SUNNY",61800],0,68],[["Bright Side","BRIGHT",19800],6,62]].map(([c,i,s])=>`<div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:var(--bg2);border:1px solid var(--line)">
+ <div class="av" style="background:${colors[i%8]};width:40px;height:40px;border-radius:11px;font-size:15px">${c[0][0]}</div>
+ <div><div style="font-weight:600">${c[0]}</div><div class="mono" style="font-size:13px;color:var(--muted)">$${c[1]} · ${fmt(c[2])}</div></div>
+ <div style="margin-left:auto;text-align:right"><div class="mono" style="font-size:20px;font-weight:500;color:${s>=70?"var(--red2)":"var(--sun)"}">${s}</div><div style="font-size:12px;color:var(--dim)">Call Score</div></div></div>`).join("");
 </script>
 </body>
 </html>

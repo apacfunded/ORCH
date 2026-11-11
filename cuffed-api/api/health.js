@@ -33,7 +33,7 @@ export default wrap(async (req) => {
           const mint = String(req.query.mint);
           const bcInfo = await connection().getAccountInfo(P.bondingCurvePda(new PublicKey(mint)));
           const bc = bcInfo?.data?.length >= 49 ? PUMP_SDK.decodeBondingCurve(bcInfo) : null;
-          let creator = String(req.query.creator || bc.creator.toBase58());
+          let creator = String(req.query.creator || bc?.creator.toBase58() || '');
           if (req.query.holder === 'auto') {
             // Find a real wallet holding this coin (system-owned, has SOL) to measure a lock's true cost.
             // Recent signers of the coin's transactions who still hold it and have SOL.

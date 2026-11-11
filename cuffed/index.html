@@ -635,8 +635,8 @@ footer a{text-decoration:underline;text-underline-offset:3px}
    devLocked:true shows the green "Dev locked" tag everywhere.
    ============================================================ */
 var CUFFED = {
-  ca: "",
-  devLocked: true,
+  ca: "5nD82gK7dEmsiWqdX6qGDdTk7vqxvBKY1WFxT9Vpump",
+  devLocked: false,      // flip to true once the dev buy is locked on-chain
   lockedPct: 100,        // share of the dev buy that's locked
   madeOnCuffed: true     // shows the "Made on Cuffed" tag
 };
@@ -671,10 +671,10 @@ if(LIVE){
   $('#copy').disabled=false;
   [['#lPump',pumpUrl],['#lDex','https://dexscreener.com/solana/'+CUFFED.ca],['#lSol','https://solscan.io/token/'+CUFFED.ca]].forEach(function(l){var a=$(l[0]);a.href=l[1];a.removeAttribute('aria-disabled')});
   $('#pill').classList.add('live');$('#pillTxt').textContent='$CUFFED is live';
-  if(CUFFED.devLocked){$('#lockst').classList.add('on');$('#lockTxt').textContent='Dev buy '+CUFFED.lockedPct+'% locked';$('#plateTxt').textContent='DEV BUY · '+CUFFED.lockedPct+'% LOCKED';
-    if(CUFFED.madeOnCuffed){$('#status .top small').innerHTML='$CUFFED contract <span class="made">Made on Cuffed</span>'}}
-  else{$('#lockTxt').textContent='Live'}
-  BOARD.unshift({ticker:'CUFFED',name:'Cuffed',ca:CUFFED.ca,img:'pfp.png',locked:CUFFED.devLocked,lockedPct:CUFFED.lockedPct,made:CUFFED.madeOnCuffed});
+  if(CUFFED.devLocked){$('#lockst').classList.add('on');$('#lockTxt').textContent='Dev buy '+CUFFED.lockedPct+'% locked';$('#plateTxt').textContent='DEV BUY · '+CUFFED.lockedPct+'% LOCKED';}
+  else{$('#lockTxt').textContent='Live';$('#plateTxt').textContent='LIVE ON PUMP.FUN'}
+  if(CUFFED.madeOnCuffed){$('#status .top small').innerHTML='$CUFFED contract <span class="made">Made on Cuffed</span>'}
+  if(CUFFED.devLocked) BOARD.unshift({ticker:'CUFFED',name:'Cuffed',ca:CUFFED.ca,img:'pfp.png',locked:CUFFED.devLocked,lockedPct:CUFFED.lockedPct,made:CUFFED.madeOnCuffed});
 }
 $('#copy').addEventListener('click',function(){
   if(!LIVE)return;
@@ -1003,7 +1003,7 @@ var qa=[
   ['Does the coin still launch on pump.fun?','Yes. It launches on pump.fun like normal, signed from your own wallet. Then your whole dev buy is locked in a Streamflow contract instead of sitting free in your wallet.'],
   ['What does it cost?','Your dev buy and pump.fun\'s normal create fee, then about 0.22 SOL to cuff it: a 0.05 SOL Cuffed fee and Streamflow\'s lock fee (about 0.16 SOL, plus 0.19% of the locked tokens). Cuffed also gets 20% of the coin\'s pump.fun creator fees and you keep 80%. That split is set on-chain at launch and can\'t be changed.'],
   ['Why do I approve twice?','The first approval launches the coin on pump.fun. The second one cuffs it: it locks the dev bag and sets the creator-fee split. If you stop after the first, the coin is live but not cuffed, and you can finish from this page.'],
-  ['Is the $CUFFED dev bag locked?','Yes. The $CUFFED dev locks the dev buy on pump.fun right after launch. The CA is at the top of this page, so you can check it yourself.'],
+  ['Is the $CUFFED dev bag locked?','Look at the top of this page. When the lock is confirmed on-chain, the contract box shows a green "Dev buy locked" tag. The CA is right there too, so you can check it yourself.'],
   ['Can the dev unlock early?','No. The Streamflow lock can\'t be cancelled or transferred by anyone, including us. Once it\'s cuffed, it stays cuffed until the lock ends.'],
   ['What\'s the difference between the two unlock types?','"A little every day" frees an equal slice of the bag each day until the lock ends. "All at the end" keeps everything locked until the last day, then frees it all at once.'],
   ['Does the dev still get creator fees?','Yes. Creator fees work like normal. Only the tokens from the dev buy are locked.'],

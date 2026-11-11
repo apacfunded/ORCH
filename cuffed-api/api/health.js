@@ -3,12 +3,12 @@
 import { wrap } from '../lib/http.js';
 import { rpc } from '../lib/solana.js';
 import { list } from '../lib/store.js';
-import { buildCuff } from '../lib/cuff.js';
-import { TREASURY, TREASURY_BPS, LAUNCH_FEE_LAMPORTS } from '../lib/pump.js';
 export default wrap(async (req) => {
-  const out = { treasury: TREASURY(), creatorFeeShareBps: TREASURY_BPS(), launchFeeSol: LAUNCH_FEE_LAMPORTS() / 1e9, blob: false, rpc: false, rpcUrl: process.env.SOLANA_RPC_URL ? 'custom' : 'public' };
+  const out = { blob: false, rpc: false, rpcUrl: process.env.SOLANA_RPC_URL ? 'custom' : 'public' };
   try { await list('coins/'); out.blob = true; } catch (e) { out.blobError = e.message; }
   try { out.slot = await rpc('getSlot', []); out.rpc = true; } catch (e) { out.rpcError = e.message; }
+  try { const P = await import('../lib/pump.js'); Object.assign(out, { treasury: P.TREASURY(), creatorFeeShareBps: P.TREASURY_BPS(), launchFeeSol: P.LAUNCH_FEE_LAMPORTS() / 1e9, pumpSdk: typeof P.PUMP_SDK?.createFeeSharingConfig }); } catch (e) { out.pumpImportError = String(e.stack || e).slice(0, 600); }
+  try { const S = await import('@streamflow/stream'); out.streamflow = typeof S.SolanaStreamClient; } catch (e) { out.streamflowImportError = String(e.stack || e).slice(0, 600); }
   if (req.query.probe) {
     try {
       const r = await fetch('https://pumpportal.fun/api/trade-local', { method: 'POST', headers: { 'content-type': 'application/json' },
@@ -19,6 +19,7 @@ export default wrap(async (req) => {
     if (req.query.mint) {
       try {
         const { Keypair } = await import('@solana/web3.js');
+        const { buildCuff } = await import('../lib/cuff.js');
         const c = await buildCuff({ creator: Keypair.generate().publicKey.toBase58(), mint: String(req.query.mint), streamId: Keypair.generate().publicKey.toBase58(),
           days: 30, mode: req.query.mode === 'cliff' ? 'cliff' : 'linear', raw: 1_000_000_000_000n, decimals: 6 });
         out.cuff = { sizes: c.sizes, amount: c.amount, unlockAt: c.unlockAt, streamflowFeePct: c.streamflowFeePct, hasFeeTx: !!c.feeTx };

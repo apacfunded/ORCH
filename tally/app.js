@@ -361,6 +361,7 @@
   $('wallet-modal').addEventListener('click', e => { if (e.target.id === 'wallet-modal') closeModal(); });
   $('wallet-pill').onclick = () => { const h = !$('wallet-menu').hidden; $('wallet-menu').hidden = h; $('wallet-pill').setAttribute('aria-expanded', String(!h)); };
   $('disconnect').onclick = () => signOut(false);
+  document.querySelectorAll('.copy-ca').forEach(b => b.onclick = () => { const v = b.dataset.ca; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast('CA copied.'), () => toast(v)); });
   $('copy-addr').onclick = () => { navigator.clipboard?.writeText(wallet).then(() => toast('Address copied.'), () => toast(wallet)); $('wallet-menu').hidden = true; };
   $('refill').onclick = async () => { try { const r = await api('/api/refill', { method: 'POST' }); me.bal = r.bal; renderWallet(); calc(); toast('Added 10 play SOL.'); } catch (e) { toast(e.message); } };
 

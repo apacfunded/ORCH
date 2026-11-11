@@ -268,6 +268,7 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);border-color
 .pending .btn{min-height:46px}
 .tr .meta{font-size:13px;color:var(--muted);display:block;margin-top:4px}
 .tr .acts{display:flex;gap:6px}
+.st.pend{background:var(--s2);color:var(--muted)}
 .made{display:inline-flex;align-items:center;margin-left:8px;padding:3px 9px;border-radius:999px;background:var(--text);color:#000;font:700 10.5px var(--m);letter-spacing:.06em;text-transform:uppercase;vertical-align:middle}
 .status .top small .made{margin-left:10px}
 @media(max-width:520px){.kv{grid-template-columns:1fr 1fr}.kv div:last-child{grid-column:span 2}}
@@ -568,7 +569,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   <div class="wrap">
     <div class="sec-head">
       <div><div class="eyebrow">Live board</div><h2 class="display h2 split">Who's cuffed.</h2></div>
-      <p class="sub">Every coin here was checked on-chain before it was listed. Hit Lock to see its dev bag on Streamflow.</p>
+      <p class="sub">Coins made on Cuffed. A green tag means the dev buy lock is confirmed on-chain. Hit Lock to see it on Streamflow.</p>
     </div>
     <div class="tbl rv" id="tbl"></div>
   </div>
@@ -674,7 +675,7 @@ if(LIVE){
   if(CUFFED.devLocked){$('#lockst').classList.add('on');$('#lockTxt').textContent='Dev buy '+CUFFED.lockedPct+'% locked';$('#plateTxt').textContent='DEV BUY · '+CUFFED.lockedPct+'% LOCKED';}
   else{$('#lockTxt').textContent='Live';$('#plateTxt').textContent='LIVE ON PUMP.FUN'}
   if(CUFFED.madeOnCuffed){$('#status .top small').innerHTML='$CUFFED contract <span class="made">Made on Cuffed</span>'}
-  if(CUFFED.devLocked) BOARD.unshift({ticker:'CUFFED',name:'Cuffed',ca:CUFFED.ca,img:'pfp.png',locked:CUFFED.devLocked,lockedPct:CUFFED.lockedPct,made:CUFFED.madeOnCuffed});
+  BOARD.unshift({first:true,ticker:'CUFFED',name:'Cuffed',ca:CUFFED.ca,img:'pfp.png',locked:CUFFED.devLocked,lockedPct:CUFFED.lockedPct,made:CUFFED.madeOnCuffed});
 }
 $('#copy').addEventListener('click',function(){
   if(!LIVE)return;
@@ -882,9 +883,9 @@ function renderBoard(coins){
   tbl.innerHTML='<div class="tr th"><span>Coin</span><span class="h-s">Contract</span><span class="h-s">Dev bag</span><span></span></div>'+
   coins.map(function(c){var ca=c.mint||c.ca, sh=ca.slice(0,6)+'…'+ca.slice(-6);
     var until=c.unlockAt?(c.mode==='cliff'?'Unlocks '+fmtDate(c.unlockAt):'Fully free '+fmtDate(c.unlockAt)):'';
-    return '<div class="tr"><div class="tk"><img src="'+esc(c.image||c.img||'pfp.png')+'" alt="" loading="lazy"><div>$'+esc(c.ticker)+(c.made!==false?'<span class="made">Made on Cuffed</span>':'')+'<small>'+esc(c.name)+'</small></div></div>'+
+    return '<div class="tr"><div class="tk"><img src="'+esc(c.image||c.img||'pfp.png')+'" alt="" loading="lazy"><div>$'+esc(c.ticker)+(c.first?'<span class="made">First coin</span>':'')+(c.made!==false?'<span class="made">Made on Cuffed</span>':'')+'<small>'+esc(c.name)+'</small></div></div>'+
     '<code class="h-s">'+sh+'</code>'+
-    '<span class="h-s"><span class="st">● '+(c.lockedPct?'Dev buy '+Math.round(c.lockedPct)+'% locked':'Dev locked')+'</span>'+(until?'<span class="meta">'+until+'</span>':'')+'</span>'+
+    '<span class="h-s">'+(c.locked===false?'<span class="st pend">● Live · lock pending</span>':'<span class="st">● '+(c.lockedPct?'Dev buy '+Math.round(c.lockedPct)+'% locked':'Dev locked')+'</span>')+(until?'<span class="meta">'+until+'</span>':'')+'</span>'+
     '<span class="acts">'+(c.streamId?'<a class="go" href="https://app.streamflow.finance/contract/solana/mainnet/'+esc(c.streamId)+'" target="_blank" rel="noopener">Lock</a>':'')+
     '<a class="go" href="https://pump.fun/coin/'+esc(ca)+'" target="_blank" rel="noopener">View</a></span></div>'}).join('');
 }

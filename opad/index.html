@@ -446,7 +446,7 @@ const callScore=c=>{const mc=clamp01((Math.log10(c[2])-3.6)/1.4),mo=clamp01((c[4
 function clamp01(v){return Math.max(0,Math.min(1,v))}
 $("scanTop").innerHTML='<div class="empty-st" style="padding:26px 16px"><b>Nothing to call yet.</b>The top Optimism coins to call show up here once coins are live.</div>';
 /* MAIN COIN: fill these in and the coin shows up everywhere on the page */
-const MAIN={ca:"",name:"",ticker:"",img:""};
+const MAIN={ca:"51c7gRLBsb6u7GZMQY9wuUv6cXAHqSM4RHLpWzkYpump",name:"OPAD",ticker:"OPAD",img:"https://images.pump.fun/coin-image/51c7gRLBsb6u7GZMQY9wuUv6cXAHqSM4RHLpWzkYpump?variant=256x256&ipfs=bafkreib2cza7gyhtby3fdrku4stu24pzhh6ohin53pm3l2ssmezai7g55a&src=https%3A%2F%2Fipfs.io%2Fipfs%2Fbafkreib2cza7gyhtby3fdrku4stu24pzhh6ohin53pm3l2ssmezai7g55a&placeholder=none"};
 if(MAIN.ca){
   const link="https://pump.fun/coin/"+MAIN.ca, nm=MAIN.name||"Main coin", tk=(MAIN.ticker||"").toUpperCase();
   const av=(sz,r)=>MAIN.img?`<img src="${MAIN.img}" alt="" onerror="this.outerHTML='<div class=&quot;av&quot; style=&quot;background:var(--red);width:${sz}px;height:${sz}px;border-radius:${r}px&quot;>O</div>'" style="width:${sz}px;height:${sz}px;border-radius:${r}px;object-fit:cover;flex:none">`:`<div class="av" style="background:var(--red);width:${sz}px;height:${sz}px;border-radius:${r}px">${nm[0]}</div>`;

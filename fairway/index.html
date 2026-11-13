@@ -308,6 +308,22 @@ button.go{background:var(--lime);color:var(--ink);border-color:var(--lime)}
 .empty b{font:600 24px/1.1 var(--d);letter-spacing:-.03em}
 .empty p{color:var(--muted);max-width:380px}
 
+/* pinned coins */
+.pins{display:grid;gap:14px;margin-bottom:14px}
+.pin{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;padding:24px;border-radius:20px;border:1.5px solid transparent;background:linear-gradient(var(--s1),var(--s1)) padding-box,var(--grad) border-box}
+.pin>img{width:84px;height:84px;border-radius:22px;border:1px solid var(--line2);object-fit:cover}
+.pin h3{font:600 30px/1.1 var(--d);letter-spacing:-.04em;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pin h3 small{font:500 15px var(--m);color:var(--muted);letter-spacing:0}
+.pin .facts2{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pin .facts2 span{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(79,227,224,.12);color:var(--lime);font:600 13px var(--m);letter-spacing:.06em;text-transform:uppercase}
+.pin .facts2 span.soon{background:var(--s2);color:var(--muted)}
+.pin .facts2 svg{width:15px;height:15px}
+.pin .pca{display:flex;align-items:center;gap:8px;margin-top:12px;background:#000;border:1px solid var(--line);border-radius:12px;padding:5px 5px 5px 14px;max-width:560px}
+.pin .pca code{flex:1;min-width:0;font:500 13px var(--m);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pin .pca button{flex:none;min-height:38px;padding:0 14px;border-radius:9px;border:0;background:var(--text);color:#000;font-weight:600;font-size:13px;cursor:pointer}
+.pin .pacts{display:grid;gap:8px;min-width:170px}
+@media(max-width:820px){.pin{grid-template-columns:auto 1fr;padding:18px;gap:16px;align-items:start}.pin>img{width:60px;height:60px;border-radius:16px}.pin .pacts{grid-column:1/-1;grid-template-columns:1fr 1fr}.pin h3{font-size:24px}}
+
 /* vs */
 .vs{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:20px;overflow:hidden}
 .vs .card{padding:36px;border:0;border-radius:0;display:flex;flex-direction:column;min-height:380px}
@@ -383,7 +399,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   <div class="navlinks">
     <a class="t" href="#how">How it works</a>
     <a class="t" href="#launch">Launch</a>
-    <a class="t" href="#board">Board</a>
+    <a class="t" href="#board">Coins</a>
     <a class="t" href="#report">Fair report</a>
     <a class="xbtn" href="https://x.com/fairway_sol" target="_blank" rel="noopener" aria-label="Fairway on X, @fairway_sol"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.1-6.7L5.6 22H2.5l7.6-8.7L1.9 2h6.7l4.6 6.1L18.9 2zm-1.2 18h1.8L7.5 3.9H5.6L17.7 20z"/></svg></a>
     <a class="btn btn-w" href="#launch" id="navCta">Launch a coin</a>
@@ -518,9 +534,9 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 <section id="board">
   <div class="wrap">
     <div class="sec-head">
-      <div><div class="eyebrow">Live board</div><h2 class="display h2 rv">Fair launches.</h2></div>
+      <div><div class="eyebrow">Coins</div><h2 class="display h2 rv">Coins on Fairway.</h2></div>
       <div style="display:grid;gap:16px;justify-items:start">
-        <p class="sub">Coins launched on Fairway. Green means the launch stayed fair. Tap Report to see why.</p>
+        <p class="sub">Every coin launched on Fairway shows up here, with its dev buy and whether the dev is locked.</p>
         <div class="chips" role="group" aria-label="Filter coins" id="chips">
           <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
           <button class="chip" type="button" data-f="clean" aria-pressed="false">Fair</button>
@@ -528,6 +544,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         </div>
       </div>
     </div>
+    <div class="pins rv" id="pins"></div>
     <div class="tbl rv" id="tbl"></div>
   </div>
 </section>
@@ -596,6 +613,10 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 var FAIRWAY = {
   ca: ""                 // <- paste the real $FAIRWAY CA between the quotes
 };
+/* Coins pinned at the top of "Coins on Fairway". A coin with no ca shows as "launching soon". */
+var PINNED = [
+  { ca: FAIRWAY.ca, name: "Fairway", symbol: "FAIRWAY", image: "pfp.png", devBuy: "2 SOL", locked: "100%" }
+];
 
 (function(){
 var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -721,12 +742,25 @@ $('#res').addEventListener('click',function(e){
   if(e.target.closest('#resRetry')&&curMint)check(curMint,false)});
 resIdle();
 
+/* ===== pinned coins ===== */
+(function(){
+  var lock='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  $('#pins').innerHTML=PINNED.map(function(c){
+    var live=isAddr(c.ca);
+    return '<article class="pin"><img src="'+esc(c.image)+'" alt=""><div style="min-width:0"><h3>'+esc(c.name)+' <small>$'+esc(c.symbol)+'</small><span class="st '+(live?'low':'')+'">'+(live?'Live on pump.fun':'Launching soon')+'</span></h3>'
+      +(live?'<div class="facts2"><span>'+esc(c.devBuy)+' dev buy</span><span>'+lock+'Dev '+esc(c.locked)+' locked</span></div><div class="pca"><code>'+esc(c.ca)+'</code><button type="button" data-pinca="'+esc(c.ca)+'">Copy CA</button></div>'
+            :'<div class="facts2"><span class="soon">CA drops at launch</span></div>')
+      +'</div><div class="pacts">'+(live?'<a class="btn btn-w sm" href="'+pumpUrl(c.ca)+'" target="_blank" rel="noopener">Buy on pump.fun</a><a class="btn btn-g sm" href="https://dexscreener.com/solana/'+esc(c.ca)+'" target="_blank" rel="noopener">DexScreener</a>':'<a class="btn btn-g sm" href="https://x.com/fairway_sol" target="_blank" rel="noopener">Follow for the CA</a>')+'</div></article>'}).join('');
+  $('#pins').addEventListener('click',function(e){var b=e.target.closest('[data-pinca]');if(b)copyText(b.dataset.pinca,'CA copied.')});
+})();
+var PINSET={};PINNED.forEach(function(c){if(c.ca)PINSET[c.ca]=1});
+
 /* ===== board ===== */
 function ago(t){var s=Math.max(0,Date.now()/1000-t);return s<60?Math.floor(s)+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d'}
 function board(){
-  var list=COINS.filter(function(c){var r=DETAIL[c.mint]&&DETAIL[c.mint].report;return filt==='all'||(r&&(filt==='clean'?r.risk==='low':r.risk!=='low'))});
+  var list=COINS.filter(function(c){if(PINSET[c.mint])return false;var r=DETAIL[c.mint]&&DETAIL[c.mint].report;return filt==='all'||(r&&(filt==='clean'?r.risk==='low':r.risk!=='low'))});
   var t=$('#tbl');
-  if(!COINS.length){t.innerHTML='<div class="empty"><img src="pfp.png" alt=""><b>'+(listAt?'No coins yet':'Loading coins…')+'</b>'+(listAt?'<p>Launch the first coin on Fairway. It shows up here with its fair report as soon as it\'s live.</p><a class="btn btn-w sm" href="#launch">Launch a coin</a>':'')+'</div>';return}
+  if(!COINS.length){t.innerHTML='<div class="empty"><img src="pfp.png" alt=""><b>'+(listAt?'No coins yet':'Loading coins…')+'</b>'+(listAt?'<p>Launch a coin on Fairway. It shows up here as soon as it\'s live.</p><a class="btn btn-w sm" href="#launch">Launch a coin</a>':'')+'</div>';return}
   if(!list.length){t.innerHTML='<div class="empty"><b>Nothing here</b><p>No coins match this filter right now.</p></div>';return}
   t.innerHTML=list.slice(0,30).map(function(c){
     var r=DETAIL[c.mint]&&DETAIL[c.mint].report;

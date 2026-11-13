@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lil Flacko Spirit ($FLACKO)</title>
+<meta name="description" content="Lil Flacko Spirit — a little ruby with a beanie, white shades and zero interest in your chart. On pump.fun.">
+<meta property="og:title" content="Lil Flacko Spirit ($FLACKO)">
+<meta property="og:description" content="Too cold to care. A little ruby spirit on pump.fun.">
+<meta property="og:image" content="https://orch.lol/flacko/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/flacko/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bone:#f4f0ec; --paper:#fffaf6; --ink:#170a0b; --muted:#6b5557;
+  --ruby:#c8102e; --ruby-d:#8e0b20; --ruby-l:#ff5a6e; --beanie:#c9c6c2;
+  --line:3px solid var(--ink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bone);color:var(--ink);font:500 17px/1.55 "Work Sans",system-ui,sans-serif;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.display{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.9}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:var(--bone);border-bottom:var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);object-fit:cover;background:#fff}
+.brand span{font-family:Anton,sans-serif;font-size:24px;letter-spacing:.02em}
+.navlinks{display:flex;gap:6px;align-items:center}
+.navlinks a{text-decoration:none;font-weight:600;font-size:15px;padding:10px 14px;border-radius:999px;min-height:44px;display:inline-flex;align-items:center}
+.navlinks a:hover{background:var(--paper)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border:var(--line);border-radius:999px;background:var(--ruby);color:#fff;font:600 16px "Work Sans",sans-serif;text-decoration:none;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.btn.ghost{background:var(--paper);color:var(--ink)}
+.btn:focus-visible,.navlinks a:focus-visible,.ca button:focus-visible{outline:3px solid var(--ruby);outline-offset:3px}
+
+/* hero */
+.hero{position:relative;padding:56px 0 40px;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.tag{display:inline-block;background:var(--ink);color:var(--bone);font-weight:600;font-size:14px;padding:6px 14px;border-radius:999px;transform:rotate(-2deg);margin-bottom:18px}
+.hero h1{font-size:clamp(76px,12.5vw,176px)}
+.hero h1 .r{color:var(--ruby);-webkit-text-stroke:0}
+.hero h1 .o{color:transparent;-webkit-text-stroke:3px var(--ink)}
+.hero p.lead{font-size:20px;max-width:30ch;margin:22px 0 28px;color:var(--ink)}
+.ctas{display:flex;gap:14px;flex-wrap:wrap}
+.ca{margin-top:26px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);border:var(--line);border-radius:16px;padding:10px 10px 10px 16px;max-width:520px}
+.ca b{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ca code{font:600 15px ui-monospace,Menlo,monospace;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ca button{min-height:44px;padding:0 16px;border-radius:12px;border:2px solid var(--ink);background:var(--ink);color:var(--bone);font:600 14px "Work Sans";cursor:pointer}
+.ca button[disabled]{opacity:.45;cursor:not-allowed}
+
+/* stage */
+.stage{position:relative;aspect-ratio:1;max-width:520px;width:100%;justify-self:center}
+.sun{position:absolute;inset:6%;border-radius:50%;background:var(--ruby);border:var(--line);animation:spin 40s linear infinite;
+  background:repeating-conic-gradient(var(--ruby) 0 10deg,var(--ruby-d) 10deg 20deg)}
+.sun::after{content:"";position:absolute;inset:18%;border-radius:50%;background:#fff;border:var(--line)}
+.flacko{position:absolute;inset:8%;z-index:3;display:grid;place-items:center;animation:bob 3.6s ease-in-out infinite}
+.flacko img{width:66%;aspect-ratio:1;border-radius:50%;object-fit:cover}
+.shard{position:absolute;z-index:4;width:34px;height:42px;background:linear-gradient(135deg,var(--ruby-l),var(--ruby) 55%,var(--ruby-d));clip-path:polygon(50% 0,100% 38%,78% 100%,22% 100%,0 38%);border:0;animation:float 5s ease-in-out infinite}
+.shard.s1{top:6%;left:10%;transform:rotate(-14deg)}
+.shard.s2{top:16%;right:4%;width:24px;height:30px;animation-delay:-1.4s}
+.shard.s3{bottom:12%;left:2%;width:26px;height:32px;animation-delay:-2.6s}
+.shard.s4{bottom:4%;right:16%;animation-delay:-.7s}
+.sticker{position:absolute;z-index:5;background:var(--paper);border:var(--line);border-radius:14px;padding:8px 14px;font-weight:600;font-size:15px;box-shadow:4px 4px 0 var(--ink)}
+.sticker.a{top:4%;right:2%;transform:rotate(6deg)}
+.sticker.b{bottom:14%;left:-2%;transform:rotate(-7deg);background:var(--ink);color:var(--bone)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
+
+/* marquee */
+.marquee{background:var(--ink);color:var(--bone);border-block:var(--line);overflow:hidden;white-space:nowrap}
+.marquee .track{display:inline-flex;gap:36px;padding:16px 0;animation:mq 26s linear infinite}
+.marquee span{font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;display:inline-flex;align-items:center;gap:36px}
+.marquee span i{width:16px;height:20px;background:var(--ruby);clip-path:polygon(50% 0,100% 38%,78% 100%,22% 100%,0 38%);display:inline-block}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* sections */
+section{padding:88px 0}
+.kicker{font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--ruby);margin-bottom:12px}
+h2.display{font-size:clamp(48px,7vw,96px);margin-bottom:28px}
+
+.lore{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--paper);border:var(--line);border-radius:22px;padding:26px;box-shadow:6px 6px 0 var(--ink)}
+.card .n{font-family:Anton,sans-serif;font-size:56px;color:var(--ruby);line-height:1}
+.card h3{font-family:Anton,sans-serif;font-weight:400;font-size:30px;text-transform:uppercase;margin:10px 0 8px;letter-spacing:.01em}
+.card p{color:var(--muted)}
+.card:nth-child(2){transform:rotate(1.2deg)}
+.card:nth-child(3){transform:rotate(-1deg)}
+
+.quote{background:var(--ruby);color:#fff;border-block:var(--line)}
+.quote .wrap{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center}
+.quote img{width:200px;height:200px;border-radius:50%;border:var(--line);background:#fff;object-fit:cover;box-shadow:6px 6px 0 var(--ink)}
+.quote blockquote{font-family:Anton,sans-serif;font-size:clamp(40px,6vw,80px);line-height:.95;text-transform:uppercase}
+.quote cite{display:block;margin-top:16px;font:600 16px "Work Sans";font-style:normal;opacity:.9}
+
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border:var(--line);border-radius:22px;overflow:hidden;background:var(--paper)}
+.fact{padding:28px 24px;border-right:var(--line);min-width:0}
+.fact:last-child{border-right:0}
+.fact b{display:block;font-family:Anton,sans-serif;font-weight:400;font-size:44px;line-height:1}
+.fact span{font-size:15px;color:var(--muted)}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{border:var(--line);border-radius:20px;padding:22px;background:var(--bone);position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:-18px;left:18px;width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--bone);display:grid;place-items:center;font-family:Anton,sans-serif;font-size:20px}
+.step h3{font-weight:600;font-size:18px;margin:14px 0 6px}
+.step p{font-size:15px;color:var(--muted)}
+
+.final{text-align:center}
+.final h2{margin-bottom:24px}
+.final .ctas{justify-content:center}
+footer{border-top:var(--line);padding:28px 0;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr}
+  .stage{max-width:380px;order:-1}
+  .lore,.steps{grid-template-columns:1fr 1fr}
+  .facts{grid-template-columns:1fr 1fr}
+  .fact:nth-child(2){border-right:0}
+  .fact:nth-child(-n+2){border-bottom:var(--line)}
+  .quote .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
+}
+@media (max-width:560px){
+  .navlinks a.hide-sm{display:none}
+  .lore,.steps{grid-template-columns:1fr}
+  .card:nth-child(n){transform:none}
+  section{padding:64px 0}
+  .hero{padding-top:28px}
+  .hero p.lead{font-size:18px}
+  .quote img{width:150px;height:150px}
+  .marquee span{font-size:24px}
+  .fact{padding:20px 16px}
+  .fact b{font-size:30px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="/flacko/pfp.webp" alt=""><span>$FLACKO</span></a>
+    <div class="navlinks">
+      <a class="hide-sm" href="#lore">Lore</a>
+      <a class="hide-sm" href="#buy">How to buy</a>
+      <a class="btn" id="navBuy" href="https://pump.fun/profile/tuhozu" target="_blank" rel="noopener">Buy on pump.fun</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="tag">Now on pump.fun</span>
+      <h1 class="display">Lil <span class="r">Flacko</span><br><span class="o">Spirit</span></h1>
+      <p class="lead">A little ruby with a beanie, white shades and zero interest in your chart. Too cold to care.</p>
+      <div class="ctas">
+        <a class="btn" id="heroBuy" href="https://pump.fun/profile/tuhozu" target="_blank" rel="noopener">Buy $FLACKO</a>
+        <a class="btn ghost" href="#lore">Meet Flacko</a>
+      </div>
+      <div class="ca">
+        <b>CA</b>
+        <code id="caText">Dropping soon</code>
+        <button id="copyBtn" type="button" disabled>Copy</button>
+      </div>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="flacko"><img src="/flacko/pfp.webp" alt=""></div>
+      <i class="shard s1"></i><i class="shard s2"></i><i class="shard s3"></i><i class="shard s4"></i>
+      <div class="sticker a">unbothered</div>
+      <div class="sticker b">100% ruby</div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Lil Flacko Spirit <i></i> $FLACKO <i></i> Too cold to care <i></i> Shades on <i></i> Beanie low <i></i></span>
+    <span>Lil Flacko Spirit <i></i> $FLACKO <i></i> Too cold to care <i></i> Shades on <i></i> Beanie low <i></i></span>
+  </div>
+</div>
+
+<section id="lore">
+  <div class="wrap">
+    <p class="kicker">The lore</p>
+    <h2 class="display">Cut different.</h2>
+    <div class="lore">
+      <div class="card">
+        <div class="n">01</div>
+        <h3>Pure ruby</h3>
+        <p>Flacko is one solid gem, cut into a hundred faces. Every one catches the light and every one looks bored.</p>
+      </div>
+      <div class="card">
+        <div class="n">02</div>
+        <h3>Shades stay on</h3>
+        <p>White frames, day or night. Red candle, green candle, Flacko can't see it and doesn't want to.</p>
+      </div>
+      <div class="card">
+        <div class="n">03</div>
+        <h3>Beanie low</h3>
+        <p>Grey knit, pulled down. A gem this cold still needs a hat. The frown is part of the drip.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="quote">
+  <section>
+    <div class="wrap">
+      <img src="/flacko/pfp.webp" alt="Lil Flacko Spirit, a red crystal character in a grey beanie and white sunglasses">
+      <div>
+        <blockquote>"Don't talk to me<br>until we're green."</blockquote>
+        <cite>— Lil Flacko Spirit, probably</cite>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">The numbers</p>
+    <h2 class="display">Simple coin.</h2>
+    <div class="facts">
+      <div class="fact"><b>$FLACKO</b><span>Ticker</span></div>
+      <div class="fact"><b>1B</b><span>Total supply</span></div>
+      <div class="fact"><b>0%</b><span>Buy / sell tax</span></div>
+      <div class="fact"><b>SOL</b><span>Fair launch on pump.fun</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="buy" style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">How to buy</p>
+    <h2 class="display">Get the gem.</h2>
+    <div class="steps">
+      <div class="step"><h3>Get a wallet</h3><p>Download Phantom or any Solana wallet.</p></div>
+      <div class="step"><h3>Add SOL</h3><p>Buy SOL and send it to your wallet.</p></div>
+      <div class="step"><h3>Open pump.fun</h3><p>Paste the $FLACKO CA from this page.</p></div>
+      <div class="step"><h3>Buy and chill</h3><p>Swap SOL for $FLACKO. Shades on.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2 class="display">Stay <span style="color:var(--ruby)">cold.</span></h2>
+    <div class="ctas">
+      <a class="btn" id="footBuy" href="https://pump.fun/profile/tuhozu" target="_blank" rel="noopener">Buy $FLACKO</a>
+      <a class="btn ghost" href="#top">Back to top</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Lil Flacko Spirit · $FLACKO</span>
+    <span>A meme coin with no intrinsic value or promise of return. Not affiliated with any artist or brand.</span>
+  </div>
+</footer>
+
+<script>
+/* Set the CA here when the coin is live. */
+const CA = "";
+if (CA) {
+  const url = "https://pump.fun/coin/" + CA;
+  document.getElementById("caText").textContent = CA;
+  ["navBuy","heroBuy","footBuy"].forEach(id => document.getElementById(id).href = url);
+  const b = document.getElementById("copyBtn");
+  b.disabled = false;
+  b.onclick = async () => {
+    try { await navigator.clipboard.writeText(CA); b.textContent = "Copied"; }
+    catch { b.textContent = "Select & copy"; }
+    setTimeout(() => b.textContent = "Copy", 1600);
+  };
+}
+</script>
+</body>
+</html>

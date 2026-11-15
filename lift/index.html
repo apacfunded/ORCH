@@ -377,6 +377,15 @@ footer .brand{color:#fffaf1}
 .rv{text-align:right;font-family:var(--mono);font-size:15px;white-space:nowrap}.rv small{display:block;font-size:12.5px;color:var(--muted)}
 .fresh{margin-top:12px;font-size:14px;color:var(--ink2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .fresh .fd{color:var(--coral);animation:ping 2s infinite;border-radius:50%}
+.ca{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--sand);display:flex;gap:10px;align-items:center}
+.ca-l{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--glass)}
+.ca code{font-family:var(--mono);font-size:13.5px;color:var(--ink);word-break:break-all;line-height:1.4;user-select:all}
+.ca-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.ca-btns .btn{width:100%}
+.pairlist{display:grid;gap:18px}.pgroup>small{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--glass);margin-bottom:8px}
+.pchips{display:flex;flex-wrap:wrap;gap:8px}.pchip{min-height:44px;gap:8px;background:var(--cream);border:1px solid var(--line)}.pchip span{color:var(--muted);font-weight:500}
+.empty{text-align:center;padding:48px 20px;border-radius:24px;background:var(--cream);border:1px solid var(--line)}
+.empty h3{font-family:var(--serif);font-size:28px;margin:14px 0 6px}.empty p{color:var(--ink2);max-width:440px;margin:0 auto 18px}
+.empty svg{border-radius:50%}
 @media (max-width:600px){.hero-top{padding:24px 0 48px}.eyes{top:40%}}
 @media (prefers-reduced-motion:reduce){#ocean .rays{animation:none}}
 </style>
@@ -412,14 +421,15 @@ footer .brand{color:#fffaf1}
         <p class="lede">On Lift, every coin trades against a <b>stock</b> like NVIDIA or Tesla, not SOL. <b>When the stock goes up, your coin goes up with it</b>, on top of its own moves. And holders get paid in that stock.</p>
         <div class="ctas"><button class="btn btn-coral" data-launch>Launch a coin</button><a class="btn btn-cream" href="#coins">See the coins</a></div>
       </div>
-      <div class="toy catch" aria-label="Rising now">
-        <div class="catch-h"><h2>Rising now</h2><span class="livep"><span class="live"></span>Live</span></div>
-        <p>The coins climbing fastest right now. Tap one to see it.</p>
-        <div class="rise" id="rise"></div>
-        <div class="fresh" id="fresh"></div>
-        <button class="btn btn-coral" data-launch style="width:100%;margin-top:14px">Launch yours</button>
-        <p class="note" style="margin-top:10px">Example data until launch</p>
+      <div class="toy catch" aria-label="$LIFT is live">
+        <div class="catch-h"><h2>$LIFT is live</h2><span class="livep"><span class="live"></span>Live</span></div>
+        <p>The official Lift coin. Copy the address and dive in.</p>
+        <div class="ca"><span class="ca-l">CA</span><code id="ca">GkhknBXSfxZJWRBY3L4Cjh4M5TRSjZ11ftcgCmRtyc1E</code></div>
+        <button class="btn btn-teal" id="caCopy" style="width:100%;margin-top:10px">Copy address</button>
+        <div class="ca-btns"><a class="btn btn-coral" href="https://jup.ag/swap/SOL-GkhknBXSfxZJWRBY3L4Cjh4M5TRSjZ11ftcgCmRtyc1E" target="_blank" rel="noopener">Buy $LIFT</a><a class="btn btn-cream" href="https://dexscreener.com/solana/GkhknBXSfxZJWRBY3L4Cjh4M5TRSjZ11ftcgCmRtyc1E" target="_blank" rel="noopener">Chart</a></div>
+        <button class="btn btn-cream" data-launch style="width:100%;margin-top:10px">Launch your own coin</button>
       </div>
+      <div hidden aria-hidden="true"><div id="rise"></div><div id="fresh"></div></div>
       <div class="toy" hidden aria-hidden="true">
         <h2>Try it: move the stock</h2>
         <p>Slide the stock up or down and watch a coin ride it.</p>
@@ -450,18 +460,19 @@ footer .brand{color:#fffaf1}
 
 <section class="sec" id="stocks">
   <div class="wrap">
-    <div class="sec-head"><div><span class="eyebrow">Stocks</span><h2>Pick your tide.</h2><p>Every coin chooses one stock to ride. Tap a stock to see the coins floating on it.</p></div><span class="note">Example data until launch</span></div>
-    <div class="tides" id="tides"></div>
+    <div class="sec-head"><div><span class="eyebrow">Stocks</span><h2>Pick your tide.</h2><p>Every coin chooses one pair to ride. Tap one to launch a coin on it.</p></div></div>
+    <div class="pairlist" id="pairlist"></div>
+    <div class="tides" id="tides" hidden></div>
   </div>
 </section>
 
 <section class="sec" id="coins" style="padding-top:10px">
   <div class="wrap">
-    <div class="sec-head"><div><span class="eyebrow">Coins</span><h2>On the water now.</h2><p>Teal water is the stock. The coral line is the coin floating on it.</p></div>
-      <div class="tools"><label class="sr" for="q">Search coins</label><input id="q" placeholder="Search a name or ticker"><div class="seg" role="group" aria-label="Sort"><button aria-pressed="true" data-sort="trend">Hottest</button><button aria-pressed="false" data-sort="new">Newest</button><button aria-pressed="false" data-sort="mcap">Biggest</button></div></div></div>
-    <div class="cats" id="cats" role="group" aria-label="Filter"></div>
-    <div class="grid" id="grid"></div>
-    <p class="note" style="margin-top:16px">Example data until launch</p>
+    <div class="sec-head"><div><span class="eyebrow">Coins</span><h2>On the water.</h2><p>Every coin launched on Lift shows up here.</p></div>
+      <div class="tools" hidden><label class="sr" for="q">Search coins</label><input id="q" placeholder="Search a name or ticker"><div class="seg" role="group" aria-label="Sort"><button aria-pressed="true" data-sort="trend">Hottest</button><button aria-pressed="false" data-sort="new">Newest</button><button aria-pressed="false" data-sort="mcap">Biggest</button></div></div></div>
+    <div class="cats" id="cats" role="group" aria-label="Filter" hidden></div>
+    <div class="grid" id="grid" hidden></div>
+    <div class="empty"><svg width="64" height="64" aria-hidden="true"><use href="#boat"/></svg><h3>The water is clear. Be first.</h3><p>No coins have launched on Lift yet. Pick a pair and yours will be the first one on the water.</p><button class="btn btn-coral" data-launch>Launch a coin</button></div>
   </div>
 </section>
 
@@ -486,9 +497,9 @@ footer .brand{color:#fffaf1}
   <div class="wrap">
     <div class="sec-head"><div><span class="eyebrow">Payouts</span><h2>Hold a coin, get paid in its stock.</h2><p>Launch a reward coin and a small tax on every transfer is turned into the stock and shared with holders. Hold an NVDAx coin, collect NVDAx.</p></div></div>
     <div class="pay">
-      <div><div class="kpis"><div class="kpi"><small>Paid to holders</small><strong id="kPaid">$96.4K</strong></div><div class="kpi"><small>Wallets paid</small><strong>31,604</strong></div><div class="kpi"><small>Next payout in</small><strong id="kNext">14:02</strong></div></div>
+      <div><div hidden><strong id="kPaid"></strong><strong id="kNext"></strong></div>
         <div class="box"><h3>Your payouts</h3><div class="num" style="font-size:32px">$0.00</div><p style="margin:4px 0 16px">Connect a wallet to see what you've earned from every coin you hold.</p><button class="btn btn-teal" data-soon>Connect wallet</button></div></div>
-      <div class="log"><div class="log-h"><span class="live"></span>Latest payouts <span class="note" style="margin-left:auto">example data</span></div><div id="log"></div></div>
+      <div class="box"><h3>Payouts start with the first reward coin</h3><p>When a reward coin trades, its holders get paid in the stock it rides. Every payout will show up here as it happens.</p><div hidden id="log"></div></div>
     </div>
   </div>
 </section>
@@ -509,7 +520,7 @@ footer .brand{color:#fffaf1}
 </section>
 </main>
 
-<footer id="abyss"><div class="abyss-note" id="abyssNote">You went too deep.</div><div class="eyes" id="eyes"><div class="lid"></div></div><div class="wrap"><span class="brand"><svg><use href="#boat"/></svg>Lift</span><p>Coins on Lift are memecoins, not securities, and can go to zero. Launches run on stonk.fun. Not available to US persons. Not financial advice. Every number on this page is example data until launch.</p><span><a href="#">X</a> · <a href="#">Docs</a> · <a href="#">Terms</a></span></div></footer>
+<footer id="abyss"><div class="abyss-note" id="abyssNote">You went too deep.</div><div class="eyes" id="eyes"><div class="lid"></div></div><div class="wrap"><span class="brand"><svg><use href="#boat"/></svg>Lift</span><p>Coins on Lift are memecoins, not securities, and can go to zero. Launches run on stonk.fun. Not available to US persons. Not financial advice..</p><span><a href="#">X</a> · <a href="#">Docs</a> · <a href="#">Terms</a></span></div></footer>
 
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-label="Coin details" aria-hidden="true"><div class="d-head" id="dHead"></div><div class="d-body" id="dBody"></div></aside>
@@ -661,7 +672,7 @@ function renderFormula(){const p=PM[sel],c=coins.find(c=>c.s===sel);$('#f1l').te
 
 /* ===== tides ===== */
 let qf=null,cat='all',sort='trend',text='';
-const tideHTML=(p,on,attr='data-q')=>`<button class="tide" ${attr}="${p.s}" aria-pressed="${on}"><b>${dot(p.s)}${p.s}</b><span>${p.n}</span><div class="r"><span>$${p.px.toFixed(2)}</span>${pct(p.chg)}</div><div class="ct">${p.coins} coins riding</div><canvas data-w="${p.s}"></canvas></button>`;
+const tideHTML=(p,on,attr='data-q')=>attr==='data-pick'?`<button class="tide" ${attr}="${p.s}" aria-pressed="${on}"><b>${dot(p.s)}${p.s}</b><span>${p.n}</span></button>`:`<button class="tide" ${attr}="${p.s}" aria-pressed="${on}"><b>${dot(p.s)}${p.s}</b><span>${p.n}</span><div class="r"><span>$${p.px.toFixed(2)}</span>${pct(p.chg)}</div><div class="ct">${p.coins} coins riding</div><canvas data-w="${p.s}"></canvas></button>`;
 function renderTides(){$('#tides').innerHTML=PAIRS.map(p=>tideHTML(p,qf===p.s)).join('');$$('#tides canvas').forEach(cv=>water(cv,PM[cv.dataset.w].ss.slice(-40)))}
 $('#tides').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;qf=qf===b.dataset.q?null:b.dataset.q;cat='all';renderTides();renderCats();renderGrid();if(qf)$('#coins').scrollIntoView({behavior:reduced?'auto':'smooth'})});
 
@@ -765,8 +776,11 @@ function renderRise(){const top=[...coins].sort((a,b)=>b.chg-a.chg).slice(0,5),e
   el.innerHTML=top.map((c,i)=>`<button class="rrow${old[i]&&old[i]!==c.t?' moved':''}" data-coin="${esc(c.t)}"><span class="rk">${i+1}</span><span class="av" style="background:${c.bg}">${esc(c.n[0])}</span><span class="rn"><b>${esc(c.n)}</b><small>$${esc(c.t)} · rides ${c.s}</small></span><span class="rv">${pct(c.chg)}<small>${money(c.mcap)}</small></span></button>`).join('');el._r=top.map(c=>c.t);
   const sec=Math.max(1,Math.round((Date.now()-freshAt)/1000));if(!freshC||sec>14){freshC=coins[Math.random()*coins.length|0];freshAt=Date.now()}
   $('#fresh').innerHTML=`<span class="fd">●</span> New launch: <b>$${esc(freshC.t)}</b> on ${dot(freshC.s)}${freshC.s} · ${Math.max(1,Math.round((Date.now()-freshAt)/1000))}s ago`}
-$('#rise').addEventListener('click',e=>{const b=e.target.closest('[data-coin]');if(b)openCoin(b.dataset.coin)});
-renderRise();setInterval(renderRise,3000);
+$('#caCopy').addEventListener('click',()=>{const t=$('#ca').textContent;const done=()=>{$('#caCopy').textContent='Copied';toast('$LIFT address copied');setTimeout(()=>$('#caCopy').textContent='Copy address',1800)};if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,()=>{toast('Select the address and copy it')});else toast('Select the address and copy it')});
+
+/* ===== pair list ===== */
+$('#pairlist').innerHTML=CATS.map(([k,l])=>`<div class="pgroup"><small>${l}</small><div class="pchips">${PAIRS.filter(p=>p.cat===k).map(p=>`<button class="chip pchip" data-launch-pair="${esc(p.s)}">${dot(p.s)}<b>${esc(p.s)}</b><span>${esc(p.n)}</span></button>`).join('')}</div></div>`).join('');
+$('#pairlist').addEventListener('click',e=>{const b=e.target.closest('[data-launch-pair]');if(!b)return;const l=document.querySelector('[data-launch]');if(l)l.click();setTimeout(()=>{const o=document.querySelector(`#launch [data-pick="${b.dataset.launchPair}"]`);if(o)o.click()},60)});
 
 /* ===== DIVE: ocean ===== */
 (()=>{

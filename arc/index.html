@@ -8,7 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M14 48 Q32 4 50 48' stroke='white' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='41' cy='26' r='5' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="favicon.png">
+<meta property="og:image" content="https://arc.orch.lol/logo.png">
+<meta name="twitter:card" content="summary">
 <style>
 :root{
   --bg:#eef3f8;--surface:#ffffff;--text:#0c1626;--muted:#56657a;--line:#d8e1ec;
@@ -28,7 +30,7 @@ button,input,select{font:inherit;color:inherit}
 nav{position:sticky;top:0;z-index:20;background:rgba(238,243,248,.92);border-bottom:1px solid var(--line);backdrop-filter:saturate(1.2)}
 nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
 .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:20px;letter-spacing:-.02em}
-.logo svg{width:32px;height:32px}
+.logo img{width:32px;height:32px;border-radius:8px;display:block}
 .links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
 .links a:hover{color:var(--text)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:500;font-size:15px;cursor:pointer;transition:background .15s,border-color .15s}
@@ -141,7 +143,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <nav>
   <div class="wrap">
     <a class="logo" href="#top" aria-label="Arc home">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#2563eb"/><path d="M14 48 Q32 4 50 48" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="41" cy="26" r="5" fill="#fff"/></svg>
+      <img src="logo.png" alt="" width="32" height="32">
       Arc
     </a>
     <div class="links">

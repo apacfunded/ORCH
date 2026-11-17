@@ -120,19 +120,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .side hr{border:0;border-top:1px solid var(--line);margin:20px 0}
 .note{font-size:13px;color:var(--dim);margin-top:18px}
 
-/* live */
-.demo{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px dashed #3a3a3f;border-radius:6px;padding:4px 10px;margin-bottom:20px}
-.table{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.trow{display:grid;grid-template-columns:1fr 1.3fr;gap:24px;padding:16px 24px;border-top:1px solid var(--line);align-items:center}
-.trow:first-child{border-top:0}
-.coin{display:flex;align-items:center;gap:12px;min-width:0}
-.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:15px;background:var(--raised);border:1px solid var(--line);flex:none}
-.coin small{display:block;color:var(--muted);font-family:var(--mono);font-size:12px}
-.prog-top{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:8px}
-.prog-top b{font-weight:500;color:#fff}
-.bar{height:6px;border-radius:99px;background:#222225;overflow:hidden}
-.bar i{display:block;height:100%;background:#fff;border-radius:99px}
-
 /* faq */
 .faq{max-width:720px;margin:0 auto}
 details{border-bottom:1px solid var(--line)}
@@ -177,7 +164,6 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
     <div class="links">
       <a href="#how">How it works</a>
       <a href="#launch">Launch</a>
-      <a href="#live">Live coins</a>
       <a href="#faq">FAQ</a>
     </div>
     <div class="nav-r">
@@ -306,15 +292,6 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
   </div>
 </section>
 
-<section id="live">
-  <div class="wrap">
-    <h2>Live on Arc</h2>
-    <p class="sub" style="margin-bottom:16px">Every coin shows how close it is to its own graduation cap.</p>
-    <span class="demo">Example data until launch</span>
-    <div class="table" id="table"></div>
-  </div>
-</section>
-
 <section id="faq">
   <div class="wrap">
     <h2 class="center" style="margin-bottom:28px">Questions</h2>
@@ -423,13 +400,6 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
 
   function save(){try{localStorage.setItem('arc-draft',JSON.stringify({n:name.value,t:tick.value,d:dev.value,x:xl.value,v:val}))}catch(e){}}
   try{const s=JSON.parse(localStorage.getItem('arc-draft')||'null');if(s){name.value=s.n||'';tick.value=s.t||'';dev.value=s.d||'';xl.value=s.x||'';if(s.v>=MIN&&s.v<=MAX)val=s.v}}catch(e){}
-
-  /* example coins */
-  const coins=[['Moon Cat','MCAT',41000,25000],['Driftwood','DRIFT',58000,150000],['Pixel Pug','PUG',212000,400000],['Snowline','SNOW',69000,69000],['Low Orbit','ORBIT',33000,120000]];
-  $('table').innerHTML=coins.map(([n,t,mc,tg])=>{
-    const done=mc>=tg,p=Math.min(100,Math.round(mc/tg*100));
-    return `<div class="trow"><div class="coin"><div class="av">${t[0]}</div><div>${n}<small>$${t}</small></div></div>
-    <div><div class="prog-top"><span>${done?'Graduated at '+fmt(tg):fmt(mc)+' of '+fmt(tg)}</span><b>${done?'✓':p+'%'}</b></div><div class="bar"><i style="width:${p}%"></i></div></div></div>`}).join('');
 
   sum();sync();
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);

@@ -383,7 +383,7 @@ footer p{max-width:62ch}
   </div>
 
   <!-- TICKER -->
-  <div class="ticker" aria-label="Example fee activity">
+  <div class="ticker" aria-label="How Rakeback works">
     <div class="ticker-track" id="ticker"></div>
   </div>
 
@@ -420,7 +420,7 @@ footer p{max-width:62ch}
           <input id="q" type="search" placeholder="Search name or ticker" aria-label="Search coins">
         </label>
       </div>
-      <p class="note"><b>Example data until launch</b>Coins below are placeholders that show how the board will look.</p>
+      
       <div class="grid" id="grid"></div>
     </div>
   </section>
@@ -510,7 +510,7 @@ footer p{max-width:62ch}
         <div>
           <div class="eyebrow"><i></i>For holders</div>
           <h2>Hold $RAKE. Get paid hourly.</h2>
-          <p>Example numbers until launch. The bonding curve, liquidity pool and exchange wallets are left out of payouts.</p>
+          <p>The bonding curve, liquidity pool and exchange wallets are left out of payouts.</p>
         </div>
       </div>
       <div class="holders">
@@ -646,16 +646,8 @@ footer p{max-width:62ch}
   function rng(seed){ var s=seed%2147483647; if(s<=0)s+=2147483646; return function(){ s=s*16807%2147483647; return (s-1)/2147483646; }; }
 
   /* ---------- example coins ---------- */
-  var coins = [
-    {n:'Sunday Frog', t:'SFROG', mc:842000, ch:41.2, vol:2310, age:6, prog:100},
-    {n:'Desert Cat',  t:'DCAT',  mc:316000, ch:18.7, vol:1420, age:3, prog:100},
-    {n:'Paper Plane', t:'PLANE', mc:94000,  ch:-6.4, vol:890,  age:2, prog:71},
-    {n:'Night Owl',   t:'HOOT',  mc:61000,  ch:12.9, vol:640,  age:1.2, prog:52},
-    {n:'Tiny Rocket', t:'TINY',  mc:38500,  ch:64.1, vol:520,  age:.4, prog:33},
-    {n:'Gold Bean',   t:'BEAN',  mc:27200,  ch:-12.3,vol:310,  age:5, prog:24},
-    {n:'Cloud Pup',   t:'PUP',   mc:19800,  ch:8.8,  vol:205,  age:.2, prog:16},
-    {n:'Lucky Snail', t:'SNAIL', mc:11400,  ch:3.1,  vol:96,   age:.1, prog:8}
-  ];
+  /* Real coins go here as they launch: {n:'Name', t:'TICKER', mc:0, ch:0, vol:0, age:0, prog:0} */
+  var coins = [];
   function money(v){ return v>=1e6 ? '$'+(v/1e6).toFixed(2)+'M' : v>=1e3 ? '$'+(v/1e3).toFixed(1)+'K' : '$'+v; }
   function age(h){ return h<1 ? Math.round(h*60)+'m ago' : Math.round(h)+'h ago'; }
   function spark(c){
@@ -673,13 +665,13 @@ footer p{max-width:62ch}
     list.sort(tab==='new' ? function(a,b){return a.age-b.age;} : function(a,b){return b.vol-a.vol;});
     var g=$('grid');
     if(!list.length){
-      g.innerHTML='<div class="empty"><b style="color:var(--text);font-size:18px">No coins match that search</b><span>Try another name or ticker, or launch the coin yourself.</span><button class="btn btn-dark" type="button" data-launch>Launch a coin</button></div>';
+      g.innerHTML=coins.length?'<div class="empty"><b style="color:var(--text);font-size:18px">No coins match that search</b><span>Try another name or ticker, or launch the coin yourself.</span><button class="btn btn-dark" type="button" data-launch>Launch a coin</button></div>':'<div class="empty"><b style="color:var(--text);font-size:18px">No coins on the board yet</b><span>Launch the first one. Every trade on it pays $RAKE holders.</span><button class="btn btn-dark" type="button" data-launch>Launch a coin</button></div>';
       bindLaunch(); return;
     }
     g.innerHTML=list.map(function(c){
       var fees=(c.vol*0.01).toFixed(2), grad=c.prog>=100;
       return '<article class="coin">'+
-        '<div class="coin-top"><div class="av" data-t="'+c.t+'"></div><div><b>'+c.n+'</b><span>$'+c.t+' · '+age(c.age)+'</span></div><span class="badge'+(grad?' grad':'')+'">'+(grad?'Graduated':'Example')+'</span></div>'+
+        '<div class="coin-top"><div class="av" data-t="'+c.t+'"></div><div><b>'+c.n+'</b><span>$'+c.t+' · '+age(c.age)+'</span></div><span class="badge'+(grad?' grad':'')+'">'+(grad?'Graduated':'Live')+'</span></div>'+
         spark(c)+
         '<div class="coin-stats"><div><small>Market cap</small><strong class="num">'+money(c.mc)+'</strong></div><div><small>24h</small><strong class="num '+(c.ch>=0?'up':'dn')+'">'+(c.ch>=0?'+':'')+c.ch.toFixed(1)+'%</strong></div></div>'+
         '<div class="prog"><div class="prog-row"><span>Bonding curve</span><span class="num">'+c.prog+'%</span></div><div class="bar"><i data-w="'+c.prog+'"></i></div></div>'+
@@ -706,11 +698,11 @@ footer p{max-width:62ch}
 
   /* ---------- hero ring ---------- */
   var ring=$('ring'), N=8, R=window.innerWidth<620?210:250;
-  coins.slice(0,N).forEach(function(c,i){
+  [['YOUR COIN','1% fee'],['RAKE','to holders'],['YOUR COIN','pays holders'],['RAKE','0% team cut'],['YOUR COIN','1% fee'],['RAKE','to holders'],['YOUR COIN','pays holders'],['RAKE','0% team cut']].forEach(function(c,i){
     var d=document.createElement('div'); d.className='card';
     d.style.transform='rotateY('+(i*360/N)+'deg) translateZ('+R+'px)';
-    d.innerHTML='<div class="av" data-t="'+c.t+'"></div><b>$'+c.t+'</b><span>+'+(c.vol*0.01).toFixed(1)+' SOL</span>';
-    ring.appendChild(d); avEl(d.querySelector('.av'),c.t);
+    d.innerHTML='<div class="av" data-t="'+c[0]+i+'"></div><b>'+(c[0]==='RAKE'?'$RAKE':'Your coin')+'</b><span>'+c[1]+'</span>';
+    ring.appendChild(d); avEl(d.querySelector('.av'),c[0]+i); d.querySelector('.av').textContent=c[0].charAt(0);
   });
   /* fee drops falling into the orb */
   var stage=$('stage');
@@ -727,11 +719,8 @@ footer p{max-width:62ch}
   if(!reduce && Element.prototype.animate) setInterval(drop,260);
 
   /* ---------- ticker ---------- */
-  var tk=coins.map(function(c,i){
-    var buy=(0.3+((hash(c.t)%40)/10)).toFixed(2), fee=(buy*0.01).toFixed(3);
-    return '<span class="tick"><span class="av" data-t="'+c.t+'"></span><b>$'+c.t+'</b> '+(i%3===2?'sell':'buy')+' '+buy+' SOL <span class="g">+'+fee+' SOL to holders</span></span>';
-  }).join('');
-  $('ticker').innerHTML='<span class="tick"><b>Example activity</b></span>'+tk+'<span class="tick"><b>Example activity</b></span>'+tk;
+  var tk=['<b>1% fee</b> on every trade','<span class="g">100% to $RAKE holders</span>','<b>0%</b> team cut','Paid out in SOL','No staking, no claiming','Launch a coin, pay the holders','<b>Rakeback</b> is live'].map(function(t){ return '<span class="tick">'+t+'</span>'; }).join('<span class="tick">·</span>');
+  $('ticker').innerHTML=tk+'<span class="tick">·</span>'+tk+'<span class="tick">·</span>';
   $$('#ticker .av').forEach(function(el){ avEl(el,el.getAttribute('data-t')); el.style.fontSize='12px'; });
 
   /* ---------- pot, dial, feed ---------- */
@@ -741,8 +730,8 @@ footer p{max-width:62ch}
     var m=Math.floor(left/60), s=left%60;
     $('cd').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
     $('dial').style.strokeDashoffset=(C*(1-secs/3600)).toFixed(2);
-    $('pot').textContent=(secs*0.0091).toFixed(2);
-    $('paid').textContent=(paidBase+now.getHours()*31.2).toFixed(1);
+    $('pot').textContent='0.00';
+    $('paid').textContent='0.0';
   }
   tick(); setInterval(tick,1000);
   var wallets=['7xKp…e4Qd','Bn3v…9LtA','4mZc…Wq71','Hs8e…2RfN','9aTu…kV5b','Fq2d…8xYp','3LmB…tR6c','Dw9k…a1Ze','8nVs…J4hu','Kc5r…Pg3m'];
@@ -756,8 +745,7 @@ footer p{max-width:62ch}
     feed.insertBefore(li,feed.firstChild);
     while(feed.children.length>4) feed.removeChild(feed.lastChild);
   }
-  for(var i=0;i<4;i++) addPayout(true);
-  if(!reduce) setInterval(function(){ if(!document.hidden) addPayout(false); },3200);
+  feed.innerHTML='<li style="grid-template-columns:1fr;color:var(--muted)">Payouts show here as they go out.</li>';
 
   /* ---------- calculator ---------- */
   function fmt(v){ return v>=1000?v.toFixed(0):v>=100?v.toFixed(1):v>=1?v.toFixed(2):v.toFixed(3); }

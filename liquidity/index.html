@@ -177,6 +177,12 @@ h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;line-height:1.1;font-w
 .coin .right{text-align:right;font-size:13px;color:var(--muted)}
 .coin .right b{display:block;font-size:15px;color:var(--ink)}
 
+.coin.real{border-color:var(--accent);box-shadow:0 0 0 1px rgba(25,230,195,.25)}
+.coin .av img{width:44px;height:44px;border-radius:10px;display:block}
+.coin .first{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:#031513;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:2px}
+.coin a.mini{color:var(--accent);font-weight:600}
+[hidden]{display:none!important}
+
 /* faq */
 details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 20px;margin-bottom:10px}
 summary{cursor:pointer;min-height:56px;display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:16px;list-style:none}
@@ -211,7 +217,8 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
       <a href="#faq">FAQ</a>
     </div>
     <div class="nav-cta">
-      <a class="btn btn-primary" href="https://x.com/Liquidity_onSol" id="xlink" target="_blank" rel="noopener">Follow on X</a>
+      <a class="btn btn-ghost" href="https://x.com/Liquidity_onSol" id="xlink" target="_blank" rel="noopener">Follow on X</a>
+      <a class="btn btn-primary buy" href="#" target="_blank" rel="noopener" hidden>Buy $LIQ</a>
     </div>
   </div>
 </nav>
@@ -219,16 +226,22 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
 <header class="hero" id="top">
   <div class="wrap hero-grid">
     <div>
-      <span class="pill"><span class="dot"></span> $LIQ is live on pump.fun</span>
+      <span class="pill"><span class="dot"></span> <span id="pill-t">$LIQ launching on pump.fun</span></span>
       <h1 style="margin-top:18px">Launch at the market cap <em>you</em> choose.</h1>
       <p class="sub">pump.fun starts every coin at ~$4K. Liquidity lets you fill the pool first — open at $10K, $25K, $50K or anything you set — and pick where it graduates. Same one-click launch. Your curve.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="https://x.com/Liquidity_onSol" target="_blank" rel="noopener">Follow $LIQ on X</a>
+        <a class="btn btn-primary buy" href="#" target="_blank" rel="noopener" hidden>Buy $LIQ on pump.fun</a>
+        <a class="btn btn-primary nobuy" href="https://x.com/Liquidity_onSol" target="_blank" rel="noopener">Follow $LIQ on X</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
       <ul class="trust">
         <li>Built on Solana</li><li>Curve settings readable on-chain</li><li>LP locked at graduation</li><li>Creator fees, same claim flow</li>
       </ul>
+      <div class="ca" id="ca-box" hidden>
+        <span class="label">CA</span>
+        <code class="mono" id="ca"></code>
+        <button id="copy" type="button">Copy</button>
+      </div>
     </div>
 
     <div class="tank-card">
@@ -369,8 +382,8 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
 <section id="feed" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Filling now</h2>
-      <p>Example data until launch — shows what the live feed will look like.</p>
+      <h2>Newly created coins with Liquidity</h2>
+      <p>Every coin launched through Liquidity shows up here, newest first.</p>
     </div>
     <div class="feed" id="coins"></div>
   </div>
@@ -393,7 +406,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
     <div class="cta">
       <h2>Stop launching at $4K.</h2>
       <p>Set your pool, set your target, launch in a minute. $LIQ is live — platform launches open next.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn btn-primary" href="https://x.com/Liquidity_onSol" id="xlink2" target="_blank" rel="noopener">Follow on X</a></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn btn-primary buy" href="#" target="_blank" rel="noopener" hidden>Buy $LIQ</a><a class="btn btn-ghost" href="https://x.com/Liquidity_onSol" id="xlink2" target="_blank" rel="noopener">Follow on X</a></div>
     </div>
   </div>
 </section>
@@ -498,17 +511,35 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
   document.getElementById('xlink3').href=document.getElementById('xlink').href;
   document.getElementById('f-go').addEventListener('click', ()=>{ toast.textContent='Launching opens when $LIQ is live'; toast.classList.add('on'); setTimeout(()=>{toast.classList.remove('on'); toast.textContent='Copied';},1800); });
 
-  // ticker + demo feed
-  const demo = [
-    ['Glass Frog','FROG',10000,69000,.62],['Night Shift','SHIFT',25000,100000,.31],['Deep End','DEEP',50000,150000,.12],
-    ['Sodawater','SODA',10000,69000,.88],['Tidepool','TIDE',25000,100000,.47],['Ballast','BLST',15000,80000,.05]
+  // ===== $LIQ contract address — paste the CA between the quotes after launch =====
+  const LIQ_CA = "";
+  // ================================================================================
+
+  const buyUrl = LIQ_CA ? 'https://pump.fun/coin/' + LIQ_CA : '';
+  if (LIQ_CA) {
+    document.querySelectorAll('.buy').forEach(a=>{ a.href = buyUrl; a.hidden = false; });
+    document.querySelectorAll('.nobuy').forEach(a=>a.hidden = true);
+    document.getElementById('ca').textContent = LIQ_CA;
+    document.getElementById('ca-box').hidden = false;
+    document.getElementById('pill-t').textContent = '$LIQ is live on pump.fun';
+    document.getElementById('copy').addEventListener('click', ()=>{
+      navigator.clipboard && navigator.clipboard.writeText(LIQ_CA).then(()=>{ toast.textContent='Copied'; toast.classList.add('on'); setTimeout(()=>toast.classList.remove('on'),1400); });
+    });
+  }
+
+  // newly created coins — newest first; $LIQ is coin #1
+  const coins = [
+    { name:'Liquidity', ticker:'LIQ', img:'pfp.png', first:true, ca:LIQ_CA }
   ];
   const tk = document.getElementById('ticker');
   let html='';
-  for(let r=0;r<2;r++) demo.forEach(d=>{ html += `<span><b>$${d[1]}</b> opened at ${fmtK(d[2])} · ${(d[4]*100)|0}% to ${fmtK(d[3])}</span>`; });
+  for(let r=0;r<8;r++) coins.forEach(c=>{ html += `<span><b>$${c.ticker}</b> ${c.first?'· first coin created on Liquidity':''} · ${c.ca?'live on pump.fun':'launching now'}</span>`; });
   tk.innerHTML = html;
   const feed = document.getElementById('coins');
-  feed.innerHTML = demo.map(d=>`<div class="coin"><div class="av">${d[1][0]}</div><div><div class="nm">${d[0]} <span class="meta">$${d[1]}</span></div><div class="meta">Opened ${fmtK(d[2])} → graduates ${fmtK(d[3])}</div><div class="bar"><i style="width:${d[4]*100}%"></i></div></div><div class="right"><b>${Math.round(d[4]*100)}%</b>filled</div></div>`).join('');
+  feed.innerHTML = coins.map(c=>{
+    const link = c.ca ? `<a class="mini" href="https://pump.fun/coin/${c.ca}" target="_blank" rel="noopener">View on pump.fun →</a>` : 'Launching on pump.fun';
+    return `<div class="coin${c.first?' real':''}"><div class="av">${c.img?`<img src="${c.img}" alt="">`:c.ticker[0]}</div><div><div class="nm">${c.name} <span class="meta">$${c.ticker}</span>${c.first?'<span class="first">#1 · First coin</span>':''}</div><div class="meta">${c.ca?`<span class="mono">${c.ca.slice(0,4)}…${c.ca.slice(-4)}</span> · `:''}${link}</div></div><div class="right"><b>${c.ca?'Live':'Soon'}</b>status</div></div>`;
+  }).join('');
 })();
 </script>
 </body>

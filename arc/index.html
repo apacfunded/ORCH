@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#000000">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Arc — pick where your coin graduates</title>
 <meta name="description" content="Arc is a pump.fun launchpad where you choose the market cap your coin graduates at.">
@@ -13,9 +14,9 @@
 <meta name="twitter:card" content="summary">
 <style>
 :root{
-  --bg:#eef3f8;--surface:#ffffff;--text:#0c1626;--muted:#56657a;--line:#d8e1ec;
-  --accent:#2563eb;--accent-ink:#ffffff;--accent-soft:#dbe7fd;--live:#10b981;
-  --r:14px;--shadow:0 1px 2px rgba(12,22,38,.06),0 8px 24px rgba(12,22,38,.06);
+  --bg:#000000;--surface:#0c0c0d;--text:#ffffff;--muted:#9b9ba1;--line:#232326;
+  --accent:#ffffff;--accent-ink:#000000;--accent-soft:#1a1a1c;--live:#ffffff;
+  --r:14px;--shadow:none;
   --mono:'Geist Mono',ui-monospace,monospace;--sans:'Sora',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -27,25 +28,25 @@ a{color:inherit;text-decoration:none}
 button,input,select{font:inherit;color:inherit}
 
 /* nav */
-nav{position:sticky;top:0;z-index:20;background:rgba(238,243,248,.92);border-bottom:1px solid var(--line);backdrop-filter:saturate(1.2)}
+nav{position:sticky;top:0;z-index:20;background:rgba(0,0,0,.88);border-bottom:1px solid var(--line);backdrop-filter:saturate(1.2)}
 nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
 .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:20px;letter-spacing:-.02em}
-.logo img{width:32px;height:32px;border-radius:8px;display:block}
+.logo img{width:36px;height:36px;border-radius:8px;display:block;border:1px solid var(--line)}
 .links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
 .links a:hover{color:var(--text)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:500;font-size:15px;cursor:pointer;transition:background .15s,border-color .15s}
-.btn:hover{border-color:#b9c7d8}
+.btn:hover{border-color:#4a4a50}
 .xbtn{width:44px;padding:0}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{background:#1d4fd0}
+.btn.primary:hover{background:#d9d9dc}
 .btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* hero */
 .hero{padding:72px 0 40px}
 .hero-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:6px 12px;border-radius:999px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;color:#fff;background:#141416;border:1px solid var(--line);padding:6px 12px;border-radius:999px}
 h1{font-size:clamp(40px,6vw,64px);line-height:1.04;letter-spacing:-.035em;font-weight:600;margin:20px 0 18px}
-h1 em{font-style:normal;color:var(--accent)}
+h1 em{font-style:normal;color:#8e8e94}
 .lede{font-size:18px;color:var(--muted);max-width:30em}
 .cta-row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
 
@@ -57,7 +58,7 @@ h1 em{font-style:normal;color:var(--accent)}
 #curve{width:100%;height:auto;display:block;touch-action:none;cursor:grab;user-select:none}
 #curve.dragging{cursor:grabbing}
 .curve-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.stat{background:var(--bg);border-radius:10px;padding:10px 12px}
+.stat{background:#141416;border-radius:10px;padding:10px 12px}
 .stat b{display:block;font-family:var(--mono);font-weight:500;font-size:15px}
 .stat span{font-size:12px;color:var(--muted)}
 .hint{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
@@ -85,9 +86,9 @@ h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;font-weight:600;line-hei
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:var(--shadow)}
 .field{margin-bottom:18px}
 .field label{display:block;font-size:14px;font-weight:500;margin-bottom:6px}
-.field input,.field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;background:var(--bg)}
+.field input,.field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;background:#000}
 .field .help{font-size:13px;color:var(--muted);margin-top:6px}
-.field .err{font-size:13px;color:#c2410c;margin-top:6px;display:none}
+.field .err{font-size:13px;color:#ff8a8a;margin-top:6px;display:none}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 input[type=range]{width:100%;accent-color:var(--accent);min-height:44px;padding:0;background:none;border:0}
 .range-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;color:var(--muted)}
@@ -96,19 +97,19 @@ input[type=range]{width:100%;accent-color:var(--accent);min-height:44px;padding:
 .summary dd{font-family:var(--mono);text-align:right}
 .summary hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .note{font-size:13px;color:var(--muted);margin-top:14px}
-.toast{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);color:#1e3a8a;font-size:14px;display:none}
+.toast{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);color:#fff;border:1px solid var(--line);font-size:14px;display:none}
 
 /* live table */
 .table{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .trow{display:grid;grid-template-columns:2fr 1fr 1fr 1.6fr;gap:12px;padding:14px 20px;border-top:1px solid var(--line);align-items:center;font-size:15px}
-.trow.head{border-top:0;font-size:13px;color:var(--muted);background:var(--bg)}
+.trow.head{border-top:0;font-size:13px;color:var(--muted);background:#141416}
 .coin{display:flex;align-items:center;gap:12px}
-.av{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:600;color:#fff;font-size:14px;flex:none}
+.av{border:1px solid var(--line);width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:600;color:#fff;font-size:14px;flex:none}
 .coin small{display:block;color:var(--muted);font-family:var(--mono);font-size:12px}
-.bar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
+.bar{height:8px;border-radius:99px;background:#1c1c1f;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
 .prog{display:grid;gap:4px;font-family:var(--mono);font-size:12px;color:var(--muted)}
-.done{color:var(--live)}
+.done{color:#fff;font-weight:500}
 .demo{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:4px 8px;margin-bottom:16px}
 
 /* faq */
@@ -178,25 +179,25 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <svg id="curve" viewBox="0 0 560 320" role="slider" aria-label="Graduation market cap" aria-valuemin="20000" aria-valuemax="500000" tabindex="0">
         <defs>
           <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#2563eb" stop-opacity=".18"/>
-            <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".14"/>
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
           </linearGradient>
         </defs>
         <g id="grid"></g>
         <path id="area" fill="url(#fill)"/>
-        <path id="ghost" fill="none" stroke="#b9c7d8" stroke-width="2" stroke-dasharray="4 6"/>
-        <path id="line" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
-        <line id="drop" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 5"/>
+        <path id="ghost" fill="none" stroke="#3a3a3f" stroke-width="2" stroke-dasharray="4 6"/>
+        <path id="line" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+        <line id="drop" stroke="#6b6b72" stroke-width="1.5" stroke-dasharray="3 5"/>
         <g id="knob">
-          <circle r="22" fill="#2563eb" fill-opacity=".12"/>
-          <circle r="11" fill="#fff" stroke="#2563eb" stroke-width="3"/>
+          <circle r="22" fill="#ffffff" fill-opacity=".12"/>
+          <circle r="11" fill="#000" stroke="#fff" stroke-width="3"/>
         </g>
         <g id="flag">
-          <rect x="-46" y="-40" width="92" height="26" rx="7" fill="#0c1626"/>
-          <text y="-22" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#fff">GRADUATE</text>
+          <rect x="-46" y="-40" width="92" height="26" rx="7" fill="#ffffff"/>
+          <text y="-22" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#000">GRADUATE</text>
         </g>
-        <text x="24" y="306" font-family="Geist Mono, monospace" font-size="12" fill="#56657a">launch</text>
-        <text x="536" y="306" text-anchor="end" font-family="Geist Mono, monospace" font-size="12" fill="#56657a">$500K</text>
+        <text x="24" y="306" font-family="Geist Mono, monospace" font-size="12" fill="#9b9ba1">launch</text>
+        <text x="536" y="306" text-anchor="end" font-family="Geist Mono, monospace" font-size="12" fill="#9b9ba1">$500K</text>
       </svg>
       <div class="curve-foot">
         <div class="stat"><b id="sSol">~85 SOL</b><span>to graduate</span></div>
@@ -332,7 +333,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   const $=id=>document.getElementById(id);
   const svg=$('curve');
   // grid
-  let g='';for(let i=0;i<=4;i++){const y=TOP+i*(BOT-TOP)/4;g+=`<line x1="${PADL}" x2="${W-PADR}" y1="${y}" y2="${y}" stroke="#eef3f8" stroke-width="1"/>`}
+  let g='';for(let i=0;i<=4;i++){const y=TOP+i*(BOT-TOP)/4;g+=`<line x1="${PADL}" x2="${W-PADR}" y1="${y}" y2="${y}" stroke="#161618" stroke-width="1"/>`}
   $('grid').innerHTML=g;
   // ghost full curve
   let d='';for(let x=PADL;x<=W-PADR;x+=4){d+=(x===PADL?'M':'L')+x+' '+yAt(x).toFixed(1)}
@@ -393,11 +394,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
   // example table
   const coins=[
-    ['Moon Cat','MCAT','#2563eb',41000,25000],
-    ['Driftwood','DRIFT','#0ea5e9',58000,150000],
-    ['Pixel Pug','PUG','#7c3aed',212000,400000],
-    ['Snowline','SNOW','#0891b2',69000,69000],
-    ['Low Orbit','ORBIT','#1d4ed8',33000,120000],
+    ['Moon Cat','MCAT','#1c1c1f',41000,25000],
+    ['Driftwood','DRIFT','#1c1c1f',58000,150000],
+    ['Pixel Pug','PUG','#1c1c1f',212000,400000],
+    ['Snowline','SNOW','#1c1c1f',69000,69000],
+    ['Low Orbit','ORBIT','#1c1c1f',33000,120000],
   ];
   $('table').insertAdjacentHTML('beforeend',coins.map(([n,t,c,mc,tg])=>{
     const p=Math.min(100,Math.round(mc/tg*100)),done=mc>=tg;

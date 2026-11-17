@@ -211,8 +211,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
       <a href="#faq">FAQ</a>
     </div>
     <div class="nav-cta">
-      <a class="btn btn-ghost" href="https://x.com/Liquidity_onSol" id="xlink" target="_blank" rel="noopener">X</a>
-      <a class="btn btn-primary" href="https://pump.fun/coin/FqSGi3tFDrpf639a2hsoQxuMHbphYew9rcemo1iQpump" target="_blank" rel="noopener">Buy $LIQ</a>
+      <a class="btn btn-primary" href="https://x.com/Liquidity_onSol" id="xlink" target="_blank" rel="noopener">Follow on X</a>
     </div>
   </div>
 </nav>
@@ -224,17 +223,12 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
       <h1 style="margin-top:18px">Launch at the market cap <em>you</em> choose.</h1>
       <p class="sub">pump.fun starts every coin at ~$4K. Liquidity lets you fill the pool first — open at $10K, $25K, $50K or anything you set — and pick where it graduates. Same one-click launch. Your curve.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="https://pump.fun/coin/FqSGi3tFDrpf639a2hsoQxuMHbphYew9rcemo1iQpump" target="_blank" rel="noopener">Buy $LIQ on pump.fun</a>
+        <a class="btn btn-primary" href="https://x.com/Liquidity_onSol" target="_blank" rel="noopener">Follow $LIQ on X</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
       <ul class="trust">
         <li>Built on Solana</li><li>Curve settings readable on-chain</li><li>LP locked at graduation</li><li>Creator fees, same claim flow</li>
       </ul>
-      <div class="ca">
-        <span class="label">CA</span>
-        <code class="mono" id="ca">FqSGi3tFDrpf639a2hsoQxuMHbphYew9rcemo1iQpump</code>
-        <button id="copy" type="button">Copy</button>
-      </div>
     </div>
 
     <div class="tank-card">
@@ -399,7 +393,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
     <div class="cta">
       <h2>Stop launching at $4K.</h2>
       <p>Set your pool, set your target, launch in a minute. $LIQ is live — platform launches open next.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn btn-primary" href="https://pump.fun/coin/FqSGi3tFDrpf639a2hsoQxuMHbphYew9rcemo1iQpump" target="_blank" rel="noopener">Buy $LIQ</a><a class="btn btn-ghost" href="https://x.com/Liquidity_onSol" id="xlink2" target="_blank" rel="noopener">Follow on X</a></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn btn-primary" href="https://x.com/Liquidity_onSol" id="xlink2" target="_blank" rel="noopener">Follow on X</a></div>
     </div>
   </div>
 </section>
@@ -500,12 +494,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:13px}
   document.querySelectorAll('#preset-row button').forEach(b=>b.addEventListener('click', ()=>{ sStart.value=b.dataset.s; sGrad.value=b.dataset.g; update(); }));
   update();
 
-  // copy CA
   const toast = document.getElementById('toast');
-  document.getElementById('copy').addEventListener('click', ()=>{
-    const txt = document.getElementById('ca').textContent.trim();
-    navigator.clipboard && navigator.clipboard.writeText(txt).then(()=>{ toast.classList.add('on'); setTimeout(()=>toast.classList.remove('on'),1400); });
-  });
   document.getElementById('xlink3').href=document.getElementById('xlink').href;
   document.getElementById('f-go').addEventListener('click', ()=>{ toast.textContent='Launching opens when $LIQ is live'; toast.classList.add('on'); setTimeout(()=>{toast.classList.remove('on'); toast.textContent='Copied';},1800); });
 

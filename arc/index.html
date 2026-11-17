@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arc — pick where your coin graduates</title>
+<meta name="description" content="Arc is a pump.fun launchpad where you choose the market cap your coin graduates at.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M14 48 Q32 4 50 48' stroke='white' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='41' cy='26' r='5' fill='white'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#eef3f8;--surface:#ffffff;--text:#0c1626;--muted:#56657a;--line:#d8e1ec;
+  --accent:#2563eb;--accent-ink:#ffffff;--accent-soft:#dbe7fd;--live:#10b981;
+  --r:14px;--shadow:0 1px 2px rgba(12,22,38,.06),0 8px 24px rgba(12,22,38,.06);
+  --mono:'Geist Mono',ui-monospace,monospace;--sans:'Sora',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.mono{font-family:var(--mono)}
+button,input,select{font:inherit;color:inherit}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(238,243,248,.92);border-bottom:1px solid var(--line);backdrop-filter:saturate(1.2)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:20px;letter-spacing:-.02em}
+.logo svg{width:32px;height:32px}
+.links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
+.links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:500;font-size:15px;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{border-color:#b9c7d8}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:#1d4fd0}
+.btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* hero */
+.hero{padding:72px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);padding:6px 12px;border-radius:999px}
+h1{font-size:clamp(40px,6vw,64px);line-height:1.04;letter-spacing:-.035em;font-weight:600;margin:20px 0 18px}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:18px;color:var(--muted);max-width:30em}
+.cta-row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+
+/* curve card */
+.curve-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:20px}
+.curve-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+.curve-head .label{font-size:13px;color:var(--muted)}
+.grad-val{font-family:var(--mono);font-size:32px;font-weight:500;letter-spacing:-.02em}
+#curve{width:100%;height:auto;display:block;touch-action:none;cursor:grab;user-select:none}
+#curve.dragging{cursor:grabbing}
+.curve-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:var(--bg);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-family:var(--mono);font-weight:500;font-size:15px}
+.stat span{font-size:12px;color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
+
+/* sections */
+section{padding:72px 0}
+h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;font-weight:600;line-height:1.1;margin-bottom:12px}
+.sub{color:var(--muted);max-width:36em;margin-bottom:36px}
+.rows{display:grid;gap:16px}
+.row{display:grid;grid-template-columns:72px 1fr;gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.row .n{font-family:var(--mono);font-size:28px;color:var(--accent)}
+.row h3{font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.row p{color:var(--muted)}
+
+/* presets */
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.preset{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;text-align:left;cursor:pointer;transition:border-color .15s}
+.preset:hover{border-color:var(--accent)}
+.preset b{display:block;font-family:var(--mono);font-size:22px;font-weight:500;margin:6px 0}
+.preset .tag{font-size:12px;color:var(--accent);font-family:var(--mono)}
+.preset p{font-size:14px;color:var(--muted)}
+
+/* launch */
+.launch{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:var(--shadow)}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:14px;font-weight:500;margin-bottom:6px}
+.field input,.field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;background:var(--bg)}
+.field .help{font-size:13px;color:var(--muted);margin-top:6px}
+.field .err{font-size:13px;color:#c2410c;margin-top:6px;display:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=range]{width:100%;accent-color:var(--accent);min-height:44px;padding:0;background:none;border:0}
+.range-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.summary dl{display:grid;grid-template-columns:1fr auto;gap:10px 16px;font-size:15px}
+.summary dt{color:var(--muted)}
+.summary dd{font-family:var(--mono);text-align:right}
+.summary hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+.toast{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);color:#1e3a8a;font-size:14px;display:none}
+
+/* live table */
+.table{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.trow{display:grid;grid-template-columns:2fr 1fr 1fr 1.6fr;gap:12px;padding:14px 20px;border-top:1px solid var(--line);align-items:center;font-size:15px}
+.trow.head{border-top:0;font-size:13px;color:var(--muted);background:var(--bg)}
+.coin{display:flex;align-items:center;gap:12px}
+.av{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:600;color:#fff;font-size:14px;flex:none}
+.coin small{display:block;color:var(--muted);font-family:var(--mono);font-size:12px}
+.bar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.prog{display:grid;gap:4px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.done{color:var(--live)}
+.demo{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:4px 8px;margin-bottom:16px}
+
+/* faq */
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px}
+summary{list-style:none;cursor:pointer;padding:18px 20px;font-weight:500;display:flex;justify-content:space-between;gap:12px;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);color:var(--accent)}
+details[open] summary::after{content:"–"}
+details p{padding:0 20px 18px;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .hero-grid,.launch{grid-template-columns:1fr}
+  .presets{grid-template-columns:1fr 1fr}
+  .links{display:none}
+  .hero{padding-top:40px}
+}
+@media (max-width:560px){
+  .trow{grid-template-columns:1.6fr 1fr;}
+  .trow .hide-s{display:none}
+  .row{grid-template-columns:1fr;gap:8px}
+  .two{grid-template-columns:1fr}
+  .presets{grid-template-columns:1fr}
+  section{padding:56px 0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Arc home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#2563eb"/><path d="M14 48 Q32 4 50 48" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="41" cy="26" r="5" fill="#fff"/></svg>
+      Arc
+    </a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#launch">Launch</a>
+      <a href="#live">Live coins</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn primary" href="#launch">Launch a coin</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">● Launchpad on pump.fun</span>
+      <h1>You pick where your coin <em>graduates.</em></h1>
+      <p class="lede">On pump.fun every coin graduates at the same market cap. On Arc, you set it. Graduate early for a quick run, or late for a longer climb.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="#launch">Launch a coin</a>
+        <a class="btn" href="#how">See how it works</a>
+      </div>
+    </div>
+
+    <div class="curve-card" aria-label="Interactive bonding curve">
+      <div class="curve-head">
+        <span class="label">Graduates at</span>
+        <span class="grad-val" id="heroVal">$69K</span>
+      </div>
+      <svg id="curve" viewBox="0 0 560 320" role="slider" aria-label="Graduation market cap" aria-valuemin="20000" aria-valuemax="500000" tabindex="0">
+        <defs>
+          <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2563eb" stop-opacity=".18"/>
+            <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g id="grid"></g>
+        <path id="area" fill="url(#fill)"/>
+        <path id="ghost" fill="none" stroke="#b9c7d8" stroke-width="2" stroke-dasharray="4 6"/>
+        <path id="line" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+        <line id="drop" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 5"/>
+        <g id="knob">
+          <circle r="22" fill="#2563eb" fill-opacity=".12"/>
+          <circle r="11" fill="#fff" stroke="#2563eb" stroke-width="3"/>
+        </g>
+        <g id="flag">
+          <rect x="-46" y="-40" width="92" height="26" rx="7" fill="#0c1626"/>
+          <text y="-22" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#fff">GRADUATE</text>
+        </g>
+        <text x="24" y="306" font-family="Geist Mono, monospace" font-size="12" fill="#56657a">launch</text>
+        <text x="536" y="306" text-anchor="end" font-family="Geist Mono, monospace" font-size="12" fill="#56657a">$500K</text>
+      </svg>
+      <div class="curve-foot">
+        <div class="stat"><b id="sSol">~85 SOL</b><span>to graduate</span></div>
+        <div class="stat"><b id="sPace">Standard</b><span>pace</span></div>
+        <div class="stat"><b>pump.fun</b><span>default: $69K</span></div>
+      </div>
+      <p class="hint">Drag the dot to set your graduation market cap</p>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="sub">Arc launches your coin on pump.fun with one change: you choose the finish line.</p>
+    <div class="rows">
+      <div class="row"><div class="n">01</div><div><h3>Set your graduation cap</h3><p>Pick any market cap from $20K to $500K. That's where your coin leaves the bonding curve and moves to a real pool.</p></div></div>
+      <div class="row"><div class="n">02</div><div><h3>Launch through pump.fun</h3><p>Your coin goes live on pump.fun like normal. Same chart, same trading, same tools everyone already uses.</p></div></div>
+      <div class="row"><div class="n">03</div><div><h3>Graduate on your terms</h3><p>When buys hit your number, the coin migrates. Everyone can see the target on the coin's Arc page from the first trade.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <h2>Pick a pace</h2>
+    <p class="sub">Start from a preset, then fine-tune it below.</p>
+    <div class="presets">
+      <button class="preset" data-v="25000"><span class="tag">SPRINT</span><b>$25K</b><p>Graduates fast. Good for hype launches.</p></button>
+      <button class="preset" data-v="69000"><span class="tag">STANDARD</span><b>$69K</b><p>Same as pump.fun today.</p></button>
+      <button class="preset" data-v="150000"><span class="tag">CLIMB</span><b>$150K</b><p>More room on the curve before migrating.</p></button>
+      <button class="preset" data-v="400000"><span class="tag">SUMMIT</span><b>$400K</b><p>A long curve for coins with a big community.</p></button>
+    </div>
+  </div>
+</section>
+
+<section id="launch" style="padding-top:0">
+  <div class="wrap">
+    <h2>Launch a coin</h2>
+    <p class="sub">Fill in the basics and set where it graduates.</p>
+    <div class="launch">
+      <form class="panel" id="form" novalidate>
+        <div class="two">
+          <div class="field">
+            <label for="name">Coin name</label>
+            <input id="name" placeholder="e.g. Moon Cat" autocomplete="off">
+            <div class="err" id="nameErr">Add a name for your coin.</div>
+          </div>
+          <div class="field">
+            <label for="ticker">Ticker</label>
+            <input id="ticker" placeholder="e.g. MCAT" maxlength="10" autocomplete="off">
+            <div class="err" id="tickErr">Add a ticker, up to 10 letters.</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="grad">Graduation market cap</label>
+          <input type="range" id="grad" min="20000" max="500000" step="1000" value="69000">
+          <div class="range-row"><span>$20K</span><span id="gradOut">$69K</span><span>$500K</span></div>
+        </div>
+        <div class="field">
+          <label for="dev">Dev buy (SOL)</label>
+          <input id="dev" type="number" min="0" step="0.1" value="1" inputmode="decimal">
+          <div class="help">Optional. Buys at launch from your wallet.</div>
+        </div>
+        <div class="field">
+          <label for="x">X link</label>
+          <input id="x" placeholder="https://x.com/yourcoin" autocomplete="off">
+        </div>
+        <button class="btn primary" type="submit" style="width:100%">Launch on pump.fun</button>
+        <div class="toast" id="toast">Launching opens when $ARC goes live. Your settings are saved on this device.</div>
+      </form>
+
+      <aside class="panel summary">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:16px">Your launch</h3>
+        <dl>
+          <dt>Coin</dt><dd id="sumName">—</dd>
+          <dt>Graduates at</dt><dd id="sumGrad">$69K</dd>
+          <dt>SOL to graduate</dt><dd id="sumSol">~85 SOL</dd>
+          <dt>Pace</dt><dd id="sumPace">Standard</dd>
+          <dt>Dev buy</dt><dd id="sumDev">1 SOL</dd>
+        </dl>
+        <hr>
+        <dl>
+          <dt>Launch fee</dt><dd>Free</dd>
+          <dt>Network</dt><dd>Solana</dd>
+        </dl>
+        <p class="note">SOL estimates are rough and depend on the SOL price.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="live" style="padding-top:0">
+  <div class="wrap">
+    <h2>Live on Arc</h2>
+    <span class="demo">Example data until launch</span>
+    <div class="table" id="table">
+      <div class="trow head"><span>Coin</span><span>Market cap</span><span class="hide-s">Target</span><span class="hide-s">Progress</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:0">
+  <div class="wrap" style="max-width:760px">
+    <h2>FAQ</h2>
+    <details><summary>What does "graduate" mean?</summary><p>A new pump.fun coin trades on a bonding curve. When it reaches its target market cap, it graduates and moves to a regular liquidity pool.</p></details>
+    <details><summary>Why choose my own graduation cap?</summary><p>A low cap gets you off the curve fast. A high cap keeps the coin on the curve longer, so early buyers get more room before migration.</p></details>
+    <details><summary>Can I change the cap after launch?</summary><p>No. The target is locked when the coin launches, so holders always know where the finish line is.</p></details>
+    <details><summary>Is my coin still on pump.fun?</summary><p>Yes. Arc launches through pump.fun, so your coin shows up there with its normal page and chart.</p></details>
+    <details><summary>What is $ARC?</summary><p>$ARC is the Arc platform coin, launched on Arc itself.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Arc · arc.orch.lol</span>
+    <span>Not financial advice. Memecoins are risky.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const MIN=20000,MAX=500000,W=560,H=320,PADL=24,PADR=24,TOP=40,BOT=282;
+  const fmt=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+Math.round(v/1000)+'K';
+  // ~85 SOL graduates at $69K on pump.fun; scale roughly with cap
+  const sol=v=>'~'+Math.max(10,Math.round(85*Math.pow(v/69000,0.62)))+' SOL';
+  const pace=v=>v<45000?'Sprint':v<100000?'Standard':v<250000?'Climb':'Summit';
+  const xOf=v=>PADL+(Math.log(v/MIN)/Math.log(MAX/MIN))*(W-PADL-PADR);
+  const vOf=x=>MIN*Math.pow(MAX/MIN,Math.min(1,Math.max(0,(x-PADL)/(W-PADL-PADR))));
+  const yAt=x=>{const t=(x-PADL)/(W-PADL-PADR);return BOT-(BOT-TOP)*Math.pow(t,1.8)};
+  let val=69000;
+
+  const $=id=>document.getElementById(id);
+  const svg=$('curve');
+  // grid
+  let g='';for(let i=0;i<=4;i++){const y=TOP+i*(BOT-TOP)/4;g+=`<line x1="${PADL}" x2="${W-PADR}" y1="${y}" y2="${y}" stroke="#eef3f8" stroke-width="1"/>`}
+  $('grid').innerHTML=g;
+  // ghost full curve
+  let d='';for(let x=PADL;x<=W-PADR;x+=4){d+=(x===PADL?'M':'L')+x+' '+yAt(x).toFixed(1)}
+  $('ghost').setAttribute('d',d);
+
+  function draw(){
+    const gx=xOf(val);let p='';
+    for(let x=PADL;x<=gx;x+=3){p+=(x===PADL?'M':'L')+x+' '+yAt(x).toFixed(1)}
+    p+='L'+gx+' '+yAt(gx).toFixed(1);
+    $('line').setAttribute('d',p);
+    $('area').setAttribute('d',p+`L${gx} ${BOT}L${PADL} ${BOT}Z`);
+    const gy=yAt(gx);
+    $('knob').setAttribute('transform',`translate(${gx},${gy})`);
+    const fx=Math.min(W-52,Math.max(52,gx));
+    $('flag').setAttribute('transform',`translate(${fx},${Math.max(46,gy-8)})`);
+    const dl=$('drop');dl.setAttribute('x1',gx);dl.setAttribute('x2',gx);dl.setAttribute('y1',gy);dl.setAttribute('y2',BOT);
+    svg.setAttribute('aria-valuenow',val);svg.setAttribute('aria-valuetext',fmt(val));
+    $('heroVal').textContent=fmt(val);$('sSol').textContent=sol(val);$('sPace').textContent=pace(val);
+    $('grad').value=val;$('gradOut').textContent=fmt(val);
+    $('sumGrad').textContent=fmt(val);$('sumSol').textContent=sol(val);$('sumPace').textContent=pace(val);
+  }
+  function setVal(v){val=Math.round(Math.min(MAX,Math.max(MIN,v))/1000)*1000;draw();save()}
+
+  function toSvgX(e){const r=svg.getBoundingClientRect();return (e.clientX-r.left)*W/r.width}
+  let drag=false;
+  svg.addEventListener('pointerdown',e=>{drag=true;svg.classList.add('dragging');svg.setPointerCapture(e.pointerId);setVal(vOf(toSvgX(e)))});
+  svg.addEventListener('pointermove',e=>{if(drag)setVal(vOf(toSvgX(e)))});
+  svg.addEventListener('pointerup',()=>{drag=false;svg.classList.remove('dragging')});
+  svg.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowUp'){setVal(val*1.06);e.preventDefault()}
+    if(e.key==='ArrowLeft'||e.key==='ArrowDown'){setVal(val/1.06);e.preventDefault()}
+  });
+  $('grad').addEventListener('input',e=>setVal(+e.target.value));
+  document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{setVal(+b.dataset.v);$('launch').scrollIntoView()}));
+
+  // form
+  const name=$('name'),tick=$('ticker'),dev=$('dev');
+  function sum(){
+    const n=name.value.trim(),t=tick.value.trim().toUpperCase();
+    $('sumName').textContent=n||t?(n||'—')+(t?' ($'+t+')':''):'—';
+    const dv=parseFloat(dev.value);$('sumDev').textContent=(dv>0?dv:0)+' SOL';
+  }
+  tick.addEventListener('input',()=>{tick.value=tick.value.replace(/[^a-z0-9]/gi,'').toUpperCase();$('tickErr').style.display='none';sum();save()});
+  name.addEventListener('input',()=>{$('nameErr').style.display='none';sum();save()});
+  dev.addEventListener('input',()=>{sum();save()});
+  name.addEventListener('blur',()=>{if(!name.value.trim())$('nameErr').style.display='block'});
+  tick.addEventListener('blur',()=>{if(!tick.value.trim())$('tickErr').style.display='block'});
+  $('form').addEventListener('submit',e=>{
+    e.preventDefault();
+    let ok=true;
+    if(!name.value.trim()){$('nameErr').style.display='block';ok=false}
+    if(!tick.value.trim()){$('tickErr').style.display='block';ok=false}
+    if(ok){$('toast').style.display='block';save()}
+  });
+
+  function save(){try{localStorage.setItem('arc-draft',JSON.stringify({n:name.value,t:tick.value,d:dev.value,x:$('x').value,v:val}))}catch(e){}}
+  try{const s=JSON.parse(localStorage.getItem('arc-draft')||'null');if(s){name.value=s.n||'';tick.value=s.t||'';dev.value=s.d||'1';$('x').value=s.x||'';if(s.v)val=s.v}}catch(e){}
+
+  // example table
+  const coins=[
+    ['Moon Cat','MCAT','#2563eb',41000,25000],
+    ['Driftwood','DRIFT','#0ea5e9',58000,150000],
+    ['Pixel Pug','PUG','#7c3aed',212000,400000],
+    ['Snowline','SNOW','#0891b2',69000,69000],
+    ['Low Orbit','ORBIT','#1d4ed8',33000,120000],
+  ];
+  $('table').insertAdjacentHTML('beforeend',coins.map(([n,t,c,mc,tg])=>{
+    const p=Math.min(100,Math.round(mc/tg*100)),done=mc>=tg;
+    return `<div class="trow"><div class="coin"><div class="av" style="background:${c}">${t[0]}</div><div>${n}<small>$${t}</small></div></div>
+      <span class="mono">${fmt(mc)}</span><span class="mono hide-s">${fmt(tg)}</span>
+      <div class="prog hide-s"><div class="bar"><i style="width:${p}%"></i></div><span class="${done?'done':''}">${done?'Graduated':p+'%'}</span></div></div>`}).join(''));
+
+  sum();draw();
+})();
+</script>
+</body>
+</html>

@@ -67,6 +67,21 @@ h1{font-size:clamp(38px,6.6vw,72px);line-height:1.04;letter-spacing:-.04em;font-
 .p-stats b{display:block;font-family:var(--mono);font-weight:500;font-size:17px;color:#fff}
 .hint{font-size:13px;color:var(--dim);margin-top:14px;text-align:center}
 
+
+/* contract address */
+.ca{display:none;margin:32px auto 0;max-width:640px;border:1px solid #3a3a3f;border-radius:16px;background:var(--surface);padding:16px;text-align:left}
+.ca.on{display:block}
+.ca-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.ca-top img{width:44px;height:44px;border-radius:11px;border:1px solid var(--line);flex:none}
+.ca-top b{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px}
+.ca-top b i{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.15)}
+.ca-top span{display:block;font-size:14px;color:var(--muted)}
+.ca-row{display:flex;align-items:center;gap:8px;background:#000;border:1px solid var(--line);border-radius:10px;padding:4px 4px 4px 14px}
+.ca-row small{font-family:var(--mono);font-size:12px;color:var(--dim);flex:none}
+.ca-row code{font-family:var(--mono);font-size:14px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ca-row .btn{min-height:40px;padding:0 14px;font-size:14px;white-space:nowrap;flex:none}
+@media (max-width:560px){.ca-row{flex-wrap:wrap;padding:12px}.ca-row code{flex-basis:calc(100% - 30px);font-size:13px}.ca-row .btn{flex:1}}
+
 /* sections */
 section{padding:88px 0;border-top:1px solid var(--line)}
 h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;font-weight:600;line-height:1.1;margin-bottom:12px}
@@ -178,6 +193,11 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
     <span class="eyebrow">A launchpad on pump.fun</span>
     <h1>Pick where your coin graduates.</h1>
     <p class="lede">Every pump.fun coin graduates at the same market cap. With Arc, you choose yours. Try it below.</p>
+
+    <div class="ca" id="ca">
+      <div class="ca-top"><img src="logo.png" alt=""><div><b><i></i>$ARC is live on pump.fun</b><span>The official Arc token, and the first coin ever launched on Arc.</span></div></div>
+      <div class="ca-row"><small>CA</small><code id="caText"></code><button class="btn" id="caCopy" type="button">Copy</button><a class="btn primary" id="caBuy" target="_blank" rel="noopener">Buy $ARC</a></div>
+    </div>
 
     <div class="picker">
       <div class="p-top">
@@ -300,7 +320,7 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
       <details><summary>Should I pick a low or high cap?</summary><p>A low cap gets you off the curve quickly. A high cap keeps the coin on the curve longer, which gives early buyers more room before it migrates. There's no right answer, it depends on your coin.</p></details>
       <details><summary>Can I change the cap after launch?</summary><p>No. It's locked at launch, so holders always know where the finish line is.</p></details>
       <details><summary>Is my coin still on pump.fun?</summary><p>Yes. Arc launches through pump.fun, so your coin has its normal pump.fun page and chart.</p></details>
-      <details><summary>What is $ARC?</summary><p>$ARC is Arc's own coin, launched on Arc.</p></details>
+      <details><summary>What is $ARC?</summary><p>$ARC is the official Arc token. It was the first coin ever launched on Arc.</p></details>
     </div>
   </div>
 </section>
@@ -400,6 +420,14 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
 
   function save(){try{localStorage.setItem('arc-draft',JSON.stringify({n:name.value,t:tick.value,d:dev.value,x:xl.value,v:val}))}catch(e){}}
   try{const s=JSON.parse(localStorage.getItem('arc-draft')||'null');if(s){name.value=s.n||'';tick.value=s.t||'';dev.value=s.d||'';xl.value=s.x||'';if(s.v>=MIN&&s.v<=MAX)val=s.v}}catch(e){}
+
+
+  /* official $ARC contract address — paste it between the quotes */
+  const CA='';
+  if(CA){
+    $('ca').classList.add('on');$('caText').textContent=CA;$('caBuy').href='https://pump.fun/coin/'+CA;
+    $('caCopy').addEventListener('click',()=>{navigator.clipboard.writeText(CA).then(()=>{$('caCopy').textContent='Copied';setTimeout(()=>$('caCopy').textContent='Copy',1500)})});
+  }
 
   sum();sync();
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);

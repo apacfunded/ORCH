@@ -58,7 +58,7 @@ h1{font-size:clamp(38px,6.6vw,72px);line-height:1.04;letter-spacing:-.04em;font-
 .chip:hover{border-color:#4a4a50;color:#fff}
 .chip[aria-pressed=true]{background:#fff;border-color:#fff;color:#000;font-weight:500}
 .chip span{font-family:var(--mono);margin-left:6px;opacity:.7}
-#curve{width:100%;display:block;margin-top:16px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#curve{width:100%;display:block;overflow:visible;margin-top:16px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 #curve.dragging{cursor:grabbing}
 #curve text{font-family:var(--mono);font-size:12px}
 .p-bot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
@@ -332,12 +332,12 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
   let val=DEF;
 
   /* curve — drawn at real pixel size so labels stay readable on phones */
-  const svg=$('curve');let W=0,H=0,L=16,R=16,TOP=58,BOT=0;
+  const svg=$('curve');let W=0,H=0,L=26,R=16,TOP=58,BOT=0;
   const xOf=v=>L+tOf(v)*(W-L-R);
   const yAt=x=>{const t=(x-L)/(W-L-R);return BOT-(BOT-TOP)*Math.pow(t,1.7)};
   function path(to){let d='';for(let x=L;x<to;x+=3)d+=(d?'L':'M')+x.toFixed(1)+' '+yAt(x).toFixed(1);return d+'L'+to.toFixed(1)+' '+yAt(to).toFixed(1)}
   function draw(){
-    W=svg.clientWidth||720;H=W<520?230:300;BOT=H-34;
+    W=svg.clientWidth||720;H=W<520?230:300;BOT=H-44;
     svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.height=H+'px';
     const gx=xOf(val),gy=yAt(gx),p=path(gx);
     const ticks=[[MIN,'start'],[DEF,'middle'],[150000,'middle'],[MAX,'end']];
@@ -345,7 +345,7 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
     svg.innerHTML=
       `<defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`+
       `<line x1="${L}" x2="${W-R}" y1="${BOT}" y2="${BOT}" stroke="#222225"/>`+
-      ticks.map(([v,a])=>`<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${BOT}" y2="${BOT+5}" stroke="#3a3a3f"/><text x="${xOf(v)}" y="${BOT+22}" text-anchor="${a}" fill="${v===DEF?'#9b9ba1':'#6b6b72'}">${fmt(v)}</text>`).join('')+
+      ticks.map(([v,a])=>`<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${BOT}" y2="${BOT+5}" stroke="#3a3a3f"/><text x="${xOf(v)}" y="${BOT+34}" text-anchor="${a}" fill="${v===DEF?'#9b9ba1':'#6b6b72'}">${fmt(v)}</text>`).join('')+
       `<path d="${path(W-R)}" fill="none" stroke="#333338" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"/>`+
       `<path d="${p}L${gx} ${BOT}L${L} ${BOT}Z" fill="url(#fl)"/>`+
       `<path d="${p}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`+

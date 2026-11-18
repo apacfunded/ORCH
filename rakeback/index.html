@@ -132,6 +132,9 @@ section{padding:88px 0 0}
 .featured .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .featured .chip{border:1px solid #333;border-radius:999px;padding:4px 12px;font-size:13px;color:#d9d9d4}
 .featured .chip.on{border-color:#1e6e52;color:#5fe0b2}
+.featured .chip.ca{background:transparent;cursor:pointer;font:inherit;font-size:13px;min-height:32px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.featured .chip.ca:hover{border-color:#5fe0b2;color:#fff}
+.featured .chip.ca span{font-family:var(--body);color:#5fe0b2;margin-left:6px}
 .featured .btn{background:#fff;color:var(--text)}
 .featured > *{position:relative;z-index:1}
 .featured::after{content:"";z-index:0;position:absolute;right:-80px;top:-80px;width:260px;height:260px;border-radius:50%;border:1px solid #2a2a2a;box-shadow:0 0 0 40px rgba(255,255,255,.015),0 0 0 80px rgba(255,255,255,.012)}
@@ -360,7 +363,7 @@ footer p{max-width:62ch}
     <div class="bg-grid" aria-hidden="true"></div>
     <div class="wrap hero-grid">
       <div>
-        <div class="status"><span class="tag">New</span><span class="pulse"></span>$RAKE launching soon on pump.fun</div>
+        <a class="status" href="https://pump.fun/coin/8DieFc9mZFS2YPVGVuZTNSj2G32urThGGfii996Cpump" target="_blank" rel="noopener" style="text-decoration:none"><span class="tag">Live</span><span class="pulse"></span>$RAKE is live on pump.fun</a>
         <h1>The launchpad that pays <span class="soft">its holders</span> every fee.</h1>
         <p class="lede">Launch a coin in seconds. Every trade on a Rakeback coin pays a 1% fee, and all of it goes to $RAKE holders in SOL. The team keeps nothing off the top.</p>
         <button class="launch-big" type="button" data-launch>
@@ -404,9 +407,9 @@ footer p{max-width:62ch}
         <div>
           <h3>Rakeback <span style="color:#8a8a84">$RAKE</span></h3>
           <p>The main coin. Holders receive the 1% fee from every coin on this board.</p>
-          <div class="meta"><span class="chip on">Launching soon</span><span class="chip">CA posted here at launch</span></div>
+          <div class="meta"><span class="chip on">Live on pump.fun</span><button class="chip ca" type="button" id="ca-btn" data-ca="8DieFc9mZFS2YPVGVuZTNSj2G32urThGGfii996Cpump" title="Copy contract address">CA: 8DieFc…6Cpump <span id="ca-msg">Copy</span></button></div>
         </div>
-        <a class="btn" href="#holders">See holder payouts</a>
+        <a class="btn" href="https://pump.fun/coin/8DieFc9mZFS2YPVGVuZTNSj2G32urThGGfii996Cpump" target="_blank" rel="noopener">Buy $RAKE</a>
       </div>
 
       <div class="toolbar">
@@ -562,7 +565,7 @@ footer p{max-width:62ch}
         <details><summary>How does the team make money?</summary><p>By holding $RAKE like everyone else. The team wallet receives its share of each payout and nothing more.</p></details>
         <details><summary>Do I need to stake or claim?</summary><p>No. Keep $RAKE in your wallet and payouts arrive in SOL on their own.</p></details>
         <details><summary>What do creators get?</summary><p>Creators launch for free, keep their own pump.fun creator fees and get listed on the Rakeback board.</p></details>
-        <details><summary>Where is the $RAKE contract address?</summary><p>$RAKE has not launched yet. The CA will be posted on this page when it does. Any coin using the name before then is not ours.</p></details>
+        <details><summary>Where is the $RAKE contract address?</summary><p>The only official $RAKE contract address is <code style="word-break:break-all">8DieFc9mZFS2YPVGVuZTNSj2G32urThGGfii996Cpump</code>. Any other coin using the name is not ours.</p></details>
       </div>
 
       <div class="band rise">
@@ -719,7 +722,7 @@ footer p{max-width:62ch}
   if(!reduce && Element.prototype.animate) setInterval(drop,260);
 
   /* ---------- ticker ---------- */
-  var tk=['<b>1% fee</b> on every trade','<span class="g">100% to $RAKE holders</span>','<b>0%</b> team cut','Paid out in SOL','No staking, no claiming','Launch a coin, pay the holders','<b>Rakeback</b> is live'].map(function(t){ return '<span class="tick">'+t+'</span>'; }).join('<span class="tick">·</span>');
+  var tk=['<b>1% fee</b> on every trade','<span class="g">100% to $RAKE holders</span>','<b>0%</b> team cut','Paid out in SOL','No staking, no claiming','Launch a coin, pay the holders','<b>$RAKE</b> is live'].map(function(t){ return '<span class="tick">'+t+'</span>'; }).join('<span class="tick">·</span>');
   $('ticker').innerHTML=tk+'<span class="tick">·</span>'+tk+'<span class="tick">·</span>';
   $$('#ticker .av').forEach(function(el){ avEl(el,el.getAttribute('data-t')); el.style.fontSize='12px'; });
 
@@ -746,6 +749,14 @@ footer p{max-width:62ch}
     while(feed.children.length>4) feed.removeChild(feed.lastChild);
   }
   feed.innerHTML='<li style="grid-template-columns:1fr;color:var(--muted)">Payouts show here as they go out.</li>';
+
+  /* ---------- copy CA ---------- */
+  var cb=$('ca-btn');
+  if(cb) cb.addEventListener('click',function(){
+    var ca=cb.getAttribute('data-ca');
+    function done(){ $('ca-msg').textContent='Copied'; setTimeout(function(){ $('ca-msg').textContent='Copy'; },1600); }
+    try{ navigator.clipboard.writeText(ca).then(done,function(){ $('ca-msg').textContent='Copy failed'; }); }catch(e){ $('ca-msg').textContent='Copy failed'; }
+  });
 
   /* ---------- calculator ---------- */
   function fmt(v){ return v>=1000?v.toFixed(0):v>=100?v.toFixed(1):v>=1?v.toFixed(2):v.toFixed(3); }

@@ -423,7 +423,7 @@ footer a{color:var(--muted)}footer a:hover{color:#fff}
 
 
   /* official $ARC contract address — paste it between the quotes */
-  const CA='';
+  const CA='2iLSYFidRKmk5ubLEVFrR5vQheGFkqNB1DBvM5hzpump';
   if(CA){
     $('ca').classList.add('on');$('caText').textContent=CA;$('caBuy').href='https://pump.fun/coin/'+CA;
     $('caCopy').addEventListener('click',()=>{navigator.clipboard.writeText(CA).then(()=>{$('caCopy').textContent='Copied';setTimeout(()=>$('caCopy').textContent='Copy',1500)})});

@@ -78,7 +78,12 @@ a{color:inherit;text-decoration:none}
 .greet h1{font:400 40px/1.15 var(--serif);letter-spacing:-.01em}
 .greet h1 .spark{display:inline-block;width:34px;height:34px;vertical-align:-4px;margin-right:10px}
 .composer{max-width:720px;margin:0 auto;background:var(--surface);border:1px solid var(--line2);border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 10px}
-.composer textarea{width:100%;border:0;resize:none;outline:none;font:400 17px/1.5 var(--sans);min-height:56px;background:transparent}
+.ta-wrap{position:relative}
+.composer textarea{width:100%;border:0;resize:none;outline:none;font:400 17px/1.5 var(--sans);min-height:56px;background:transparent;position:relative;z-index:1}
+.ph{position:absolute;left:0;top:0;right:0;font:400 17px/1.5 var(--sans);color:var(--dim);pointer-events:none;transition:opacity .35s,transform .35s;white-space:pre-wrap}
+.ph.out{opacity:0;transform:translateY(-6px)}
+.ph.in{opacity:0;transform:translateY(6px);transition:none}
+.ph.hide{opacity:0!important}
 .composer textarea::placeholder{color:var(--dim)}
 .comp-row{display:flex;align-items:center;gap:8px;margin-top:6px}
 .chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;color:var(--muted)}
@@ -365,7 +370,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <form class="composer" id="composer">
         <label for="idea" class="sr">Describe a coin to launch</label>
-        <textarea id="idea" rows="2" placeholder="Describe your coin and Claude names it. Try: a dog that buys back its own coin"></textarea>
+        <div class="ta-wrap"><textarea id="idea" rows="2" aria-describedby="ph"></textarea><div class="ph" id="ph" aria-hidden="true"></div></div>
         <div class="comp-row">
           <a class="chip" href="#create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Add image</a>
           <button type="button" class="chip" id="pickModel"><span class="agent" style="background:none;padding:0"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></span><span id="pickModelLbl">Pick a Claude model</span></button>
@@ -628,10 +633,40 @@ function esc(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&l
 const h = new Date().getHours();
 $('#hello').textContent = h<5 ? 'Up late? Launch something' : h<12 ? 'Good morning' : h<18 ? 'Good afternoon' : 'Good evening';
 
-// ideas
-const IDEAS = ['A dog that buys back its own coin','A coin whose agent tweets the chart','Burn half of every fee','Airdrop to holders over 7 days'];
-$('#ideas').innerHTML = IDEAS.map(i=>`<button type="button">${i}</button>`).join('');
-$$('#ideas button').forEach(b => b.onclick = () => { $('#idea').value = b.textContent; $('#idea').focus(); });
+// ideas: rotating placeholder + rotating chips, like the Claude composer
+const PROMPTS = [
+  'A dog that buys back its own coin',
+  'A coin whose agent tweets the chart every hour',
+  'Burn half of every creator fee',
+  'Airdrop SOL to anyone holding 7 days',
+  'A cat that only trades on weekends',
+  'An agent that replies to every holder on X',
+  'A coin that locks the dev bag for 30 days',
+  'A frog that learned the protocol',
+  'A coin whose agent writes a haiku per candle',
+  'Fees pay a cat shelter, agent posts the receipts',
+  'An agent that buys the dip, then explains why',
+  'A sleepy coin that wakes up when volume spikes',
+];
+const IDEAS = PROMPTS.slice();
+let pi = 0, phTimer = null;
+const ph = $('#ph'), ta = $('#idea');
+function setPh(t){ ph.classList.add('out'); setTimeout(()=>{ ph.textContent = t; ph.classList.remove('out'); ph.classList.add('in'); requestAnimationFrame(()=>requestAnimationFrame(()=>ph.classList.remove('in'))); }, 350); }
+function phTick(){ if (ta.value) return; pi = (pi+1) % PROMPTS.length; setPh(PROMPTS[pi]); }
+ph.textContent = PROMPTS[0];
+if (!reduce) phTimer = setInterval(phTick, 3200);
+const syncPh = () => ph.classList.toggle('hide', !!ta.value);
+ta.addEventListener('input', syncPh); ta.addEventListener('focus', syncPh); ta.addEventListener('blur', syncPh);
+let ideaOff = 0;
+function renderIdeas(){
+  const pick = [0,1,2,3].map(i => IDEAS[(ideaOff+i) % IDEAS.length]);
+  $('#ideas').innerHTML = pick.map(i=>`<button type="button">${esc(i)}</button>`).join('');
+  $$('#ideas button').forEach(b => b.onclick = () => { ta.value = b.textContent; syncPh(); ta.focus(); });
+  ideaOff = (ideaOff + 4) % IDEAS.length;
+}
+renderIdeas();
+if (!reduce) setInterval(() => { if (!ta.value && document.activeElement !== ta) { $('#ideas').style.opacity = 0; setTimeout(()=>{ renderIdeas(); $('#ideas').style.opacity = 1; }, 250); } }, 9000);
+$('#ideas').style.transition = 'opacity .25s';
 $('#composer').onsubmit = async e => {
   e.preventDefault(); const v = $('#idea').value.trim();
   if (!v){ location.hash = 'create'; setTimeout(()=>$('#cName').focus(),50); return; }

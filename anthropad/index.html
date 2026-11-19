@@ -632,7 +632,7 @@ const coins = SEED.map(([name,ticker,tier,rel,mcap,desc,agent]) => {
 const byT = t => coins.find(c => c.ticker===t);
 let filter = 'trending', query = '';
 let wallet = null, provider = null;
-const MAIN_CA = 'EoqoJXZXv7Cpt8N57iuBrD7rKuKf3vsSMkeEnZ8Qpump'; // $ANTHROPAD contract address goes here
+const MAIN_CA = '4UtabVqexhcNBvt8JFpz9MNfuJzBYCDFpJbpJMAXpump'; // $ANTHROPAD contract address goes here
 (function(){ if (!MAIN_CA) return; const v=document.getElementById('caVal'); v.textContent = MAIN_CA; v.title = MAIN_CA;
   const c=document.getElementById('caCopy'), b=document.getElementById('caBuy'); c.hidden=false; b.hidden=false; b.href='https://pump.fun/coin/'+MAIN_CA;
   c.onclick=()=>{ navigator.clipboard?.writeText(MAIN_CA).then(()=>{ c.textContent='Copied'; setTimeout(()=>c.textContent='Copy CA',1500); }); }; })();

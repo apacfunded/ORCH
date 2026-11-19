@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anthropad — launch coins with any Claude model</title>
+<meta name="description" content="Anthropad is an independent Solana launchpad where every coin gets a Claude model for its agent. Not affiliated with Anthropic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf9f5; --side:#f3f1ea; --surface:#ffffff; --sunk:#f0eee6; --line:#e6e2d6; --line2:#d8d3c4;
+  --text:#1f1e1b; --muted:#6b6862; --dim:#8f8b82;
+  --accent:#c96442; --accent-h:#b4583a; --accent-soft:#f6e6dd; --ink:#fff;
+  --up:#2f7d5b; --up-soft:#e3f1ea; --down:#c2453a; --down-soft:#f8e4e1;
+  --serif:'Source Serif 4',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif; --mono:'DM Mono',ui-monospace,monospace;
+  --r:12px; --shadow:0 1px 2px rgba(31,30,27,.04),0 4px 14px rgba(31,30,27,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font:400 15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--mono)}
+.sr{position:absolute;left:-9999px}
+
+/* layout */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.side{background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:14px 12px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;font:600 20px var(--serif)}
+.brand svg{width:26px;height:26px}
+.indie{font-size:12px;color:var(--dim);padding:0 8px 12px;margin-top:-8px;line-height:1.4}
+.newbtn{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:10px;font-weight:500;color:var(--accent)}
+.newbtn:hover{background:var(--sunk)}
+.newbtn .plus{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:18px;line-height:1}
+.navl{display:flex;flex-direction:column;gap:2px;margin:6px 0 18px}
+.navl a{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border-radius:10px;color:var(--muted)}
+.navl a svg{width:18px;height:18px;flex:none}
+.navl a:hover{background:var(--sunk);color:var(--text)}
+.navl a.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.soon{margin-left:auto;font-size:12px;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:0 7px}
+.sidehead{font-size:12px;color:var(--dim);padding:0 12px 6px;font-weight:500}
+.recents{flex:1;overflow:auto;display:flex;flex-direction:column;gap:1px}
+.recents a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:10px;font-size:14px;color:var(--muted);min-height:40px}
+.recents a:hover{background:var(--sunk);color:var(--text)}
+.recents a .av{width:22px;height:22px;border-radius:6px}
+.recents a span.t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recents a b{margin-left:auto;font:500 12px var(--mono)}
+.me{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:12px 8px 2px;margin-top:8px}
+.me .pf{width:32px;height:32px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;font:600 13px var(--sans)}
+.me div{line-height:1.2;font-size:14px}
+.me small{color:var(--dim);font-size:12px}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 24px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:10}
+.menu{display:none;width:44px;height:44px;border-radius:10px;align-items:center;justify-content:center}
+.ticker{flex:1;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.ticker-in{display:flex;gap:10px;width:max-content;animation:tick 60s linear infinite}
+@keyframes tick{to{transform:translateX(-50%)}}
+.tk{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:5px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);white-space:nowrap}
+.tk .av{width:16px;height:16px;border-radius:4px}
+.tk.b em{color:var(--up);font-style:normal} .tk.s em{color:var(--down);font-style:normal}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:10px;font-weight:500;white-space:nowrap}
+.btn-p{background:var(--accent);color:var(--ink)} .btn-p:hover{background:var(--accent-h)}
+.btn-o{border:1px solid var(--line2);background:var(--surface)} .btn-o:hover{background:var(--sunk)}
+.btn-dark{background:var(--text);color:var(--bg)} .btn-dark:hover{background:#000}
+
+.view{display:none;padding:28px 32px 60px;max-width:1240px;width:100%;margin:0 auto}
+.view.on{display:block;animation:fade .2s ease-out}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* explore hero: composer */
+.greet{text-align:center;padding:28px 0 22px}
+.greet h1{font:400 40px/1.15 var(--serif);letter-spacing:-.01em}
+.greet h1 .spark{display:inline-block;width:34px;height:34px;vertical-align:-4px;margin-right:10px}
+.composer{max-width:720px;margin:0 auto;background:var(--surface);border:1px solid var(--line2);border-radius:18px;box-shadow:var(--shadow);padding:14px 14px 10px}
+.composer textarea{width:100%;border:0;resize:none;outline:none;font:400 17px/1.5 var(--sans);min-height:56px;background:transparent}
+.composer textarea::placeholder{color:var(--dim)}
+.comp-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;color:var(--muted)}
+.chip:hover{background:var(--sunk);color:var(--text)}
+.send{margin-left:auto;width:40px;height:40px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center}
+.send:hover{background:var(--accent-h)}
+.send svg{width:18px;height:18px}
+.ideas{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
+.ideas button{font-size:14px;color:var(--muted);border:1px solid var(--line);background:var(--bg);padding:7px 12px;border-radius:999px;min-height:36px}
+.ideas button:hover{color:var(--text);border-color:var(--line2)}
+
+/* king of the hill */
+.sec-h{display:flex;align-items:baseline;gap:12px;margin:40px 0 14px}
+.sec-h h2{font:500 24px var(--serif)}
+.sec-h small{color:var(--dim);font-size:13px}
+.koth{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);cursor:pointer}
+.koth:hover{border-color:var(--line2)}
+.koth .av{width:96px;height:96px;border-radius:14px}
+.crown{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:3px 10px;margin-bottom:6px}
+.koth h3{font:500 24px var(--serif)}
+.koth p{color:var(--muted);font-size:14px;max-width:46em}
+.koth .big{text-align:right}
+.koth .big b{font:500 26px var(--serif);display:block}
+.koth .big span{font-size:13px;color:var(--dim)}
+
+/* filters + grid */
+.filters{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tab{min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;color:var(--muted);border:1px solid transparent}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--surface);border-color:var(--line2);color:var(--text);box-shadow:var(--shadow)}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 12px;min-height:40px;width:260px}
+.search input{border:0;outline:0;background:transparent;width:100%;font-size:14px}
+.search svg{width:16px;height:16px;color:var(--dim);flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{display:grid;grid-template-columns:84px 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:left}
+.card:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+.card.flash{animation:flash .8s}
+@keyframes flash{30%{background:var(--accent-soft)}}
+.card .av{width:84px;height:84px;border-radius:10px}
+.card .nm{display:flex;align-items:center;gap:6px;font-weight:600;font-size:15px;line-height:1.25}
+.card .nm span{color:var(--dim);font-weight:500;font-size:13px}
+.card .by{font-size:12px;color:var(--dim);margin:2px 0 4px}
+.card .ds{font-size:13px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted);white-space:nowrap}
+.card .meta .gd{color:var(--up);font-weight:600;flex:1}
+.card .meta b{color:var(--text);font-weight:600}
+.bar{height:6px;background:var(--sunk);border-radius:999px;overflow:hidden;flex:1}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .4s}
+.agent{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 6px}
+.agent svg{width:11px;height:11px}
+.tiers{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tier{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px;color:var(--muted)}
+.tier i{width:10px;height:10px;border-radius:3px;display:block}
+.tier span{font:500 12px var(--mono);color:var(--dim)}
+.tier:hover{color:var(--text);border-color:var(--line2)}
+.tier.on{border-color:var(--text);color:var(--text)}
+.tbadge{font-size:12px;font-weight:500;border-radius:6px;padding:1px 6px}
+.empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);border:1px dashed var(--line2);border-radius:var(--r)}
+
+/* coin page */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;min-height:36px;margin-bottom:10px}
+.back:hover{color:var(--text)}
+.coin-h{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.coin-h .av{width:64px;height:64px;border-radius:12px}
+.coin-h h1{font:500 30px/1.1 var(--serif)}
+.coin-h h1 span{font:500 16px var(--sans);color:var(--dim);margin-left:6px}
+.coin-h .sub{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:13px;margin-top:4px}
+.ca{display:inline-flex;align-items:center;gap:6px;font:400 12px var(--mono);background:var(--sunk);border-radius:6px;padding:3px 8px;min-height:28px}
+.ca:hover{background:var(--line)}
+.coin-h .px{margin-left:auto;text-align:right}
+.coin-h .px b{font:500 28px var(--serif);display:block}
+.chg{font-size:13px;font-weight:600}
+.chg.up{color:var(--up)} .chg.dn{color:var(--down)}
+.coin-grid{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.panel+.panel{margin-top:14px}
+.ph{display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.ph .tab{min-height:34px;font-size:13px}
+.ph .tf{margin-left:auto;display:flex;gap:2px}
+.ph .tf button{font:500 12px var(--mono);color:var(--dim);padding:6px 8px;border-radius:6px;min-height:32px}
+.ph .tf button.on{background:var(--sunk);color:var(--text)}
+.chart{height:380px;position:relative}
+.chart canvas{width:100%;height:100%;display:block}
+.trades{width:100%;border-collapse:collapse;font-size:13px}
+.trades th{font-weight:500;color:var(--dim);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+.trades td{padding:10px 14px;border-bottom:1px solid var(--line)}
+.trades tr:last-child td{border:0}
+.trades .r{text-align:right}
+.pill{font-size:12px;font-weight:600;border-radius:6px;padding:2px 8px}
+.pill.b{color:var(--up);background:var(--up-soft)} .pill.s{color:var(--down);background:var(--down-soft)}
+.thread{padding:14px;display:flex;flex-direction:column;gap:14px}
+.post{display:grid;grid-template-columns:32px 1fr;gap:10px}
+.post .pf{width:32px;height:32px;border-radius:50%}
+.post b{font-size:13px;font-weight:600} .post small{color:var(--dim);font-size:12px;margin-left:6px}
+.post p{font-size:14px;color:var(--text)}
+.post.ai p{font-family:var(--serif);font-size:15px}
+.reply{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.reply input{flex:1;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg)}
+
+/* trade box */
+.trade{padding:14px}
+.bs{display:grid;grid-template-columns:1fr 1fr;background:var(--sunk);border-radius:10px;padding:4px;margin-bottom:14px}
+.bs button{min-height:40px;border-radius:8px;font-weight:600;color:var(--muted)}
+.bs button.on.buy{background:var(--up);color:#fff}
+.bs button.on.sell{background:var(--down);color:#fff}
+.amt{display:flex;align-items:center;border:1px solid var(--line2);border-radius:10px;padding:0 12px;min-height:52px;background:var(--bg)}
+.amt input{border:0;outline:0;background:transparent;font:500 20px var(--sans);width:100%}
+.amt span{font-weight:600;color:var(--muted)}
+.presets{display:flex;gap:6px;margin:10px 0}
+.presets button{flex:1;min-height:36px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--muted)}
+.presets button:hover{background:var(--sunk);color:var(--text)}
+.est{font-size:13px;color:var(--muted);margin-bottom:12px;min-height:20px}
+.trade .go{width:100%}
+.go.buy{background:var(--up);color:#fff} .go.sell{background:var(--down);color:#fff}
+.msg{font-size:13px;color:var(--muted);margin-top:10px;min-height:20px}
+.kv{padding:14px;display:grid;gap:10px}
+.kv .row{display:flex;justify-content:space-between;font-size:13px}
+.kv .row span{color:var(--muted)}
+.kv .row b{font-weight:600}
+.kv h4{font:500 16px var(--serif)}
+.kv p.note{font-size:13px;color:var(--muted)}
+.holders{list-style:none;padding:0 14px 14px;display:grid;gap:6px;font-size:13px}
+.holders li{display:flex;justify-content:space-between}
+.holders li span{color:var(--muted)}
+.agentbox{padding:16px;display:grid;gap:10px;background:linear-gradient(180deg,var(--accent-soft),transparent 70%);border-radius:var(--r)}
+.agentbox h4{display:flex;align-items:center;gap:8px;font:500 17px var(--serif)}
+.agentbox h4 svg{width:20px;height:20px;color:var(--accent)}
+.agentbox p{font-size:13px;color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.status.on i{background:var(--up);box-shadow:0 0 0 3px var(--up-soft)}
+.status.on{color:var(--up)}
+
+/* create */
+.create{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+.create h1{font:400 34px var(--serif);margin-bottom:4px}
+.create .lead{color:var(--muted);margin-bottom:22px}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px;display:grid;gap:18px}
+.f label{display:block;font-weight:500;font-size:14px;margin-bottom:6px}
+.f .hint{font-size:12px;color:var(--dim);margin-top:5px}
+.f input[type=text],.f input[type=number],.f input[type=url],.f textarea{width:100%;min-height:46px;border:1px solid var(--line2);border-radius:10px;padding:10px 12px;background:var(--bg);outline:none}
+.f textarea{min-height:96px;resize:vertical}
+.f input:focus,.f textarea:focus{border-color:var(--accent);background:var(--surface)}
+.f .err{border-color:var(--down)!important}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.drop{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;border:1px dashed var(--line2);border-radius:12px;padding:12px;background:var(--bg);cursor:pointer}
+.drop:hover{border-color:var(--accent)}
+.drop .av{width:96px;height:96px;border-radius:10px;background:var(--sunk);display:grid;place-items:center;color:var(--dim);overflow:hidden}
+.drop .av img{width:100%;height:100%;object-fit:cover}
+.drop b{font-weight:500} .drop p{font-size:13px;color:var(--muted)}
+.toggle{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+.toggle .sw{flex:none;width:44px;height:26px;border-radius:999px;background:var(--line2);position:relative;transition:background .15s}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s}
+.toggle input:checked+.sw{background:var(--accent)}
+.toggle input:checked+.sw::after{transform:translateX(18px)}
+.toggle input{position:absolute;opacity:0}
+.toggle b{font-weight:500;display:block}
+.toggle p{font-size:13px;color:var(--muted)}
+.more summary{cursor:pointer;font-weight:500;font-size:14px;color:var(--muted);min-height:36px;display:flex;align-items:center}
+.more[open] summary{margin-bottom:10px}
+.prev{position:sticky;top:80px}
+.prev h3{font-size:13px;color:var(--dim);font-weight:500;margin-bottom:10px}
+.cost{margin-top:14px;font-size:13px;color:var(--muted);display:grid;gap:6px}
+.cost div{display:flex;justify-content:space-between}
+.cost b{color:var(--text);font-weight:600}
+.formmsg{font-size:14px;min-height:22px}
+.formmsg.bad{color:var(--down)} .formmsg.good{color:var(--up)}
+
+/* model picker + launch steps + live */
+.mgroup{margin-bottom:10px}
+.mg-h{font-size:12px;color:var(--dim);font-weight:500;margin-bottom:6px}
+.mg{display:flex;flex-wrap:wrap;gap:6px}
+.mopt{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:4px 10px 4px 4px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:13px;cursor:pointer;margin:0!important;font-weight:400!important}
+.mopt .av{width:30px;height:30px;border-radius:7px}
+.mopt input{position:absolute;opacity:0;pointer-events:none}
+.mopt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.mopt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.mnote{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:10px 12px;margin-top:4px}
+.mnote b{color:var(--text);font-weight:600}
+.lsteps{list-style:none;display:grid;gap:6px;font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.lsteps[hidden]{display:none}
+.lsteps li{display:flex;gap:8px;align-items:center;color:var(--dim)}
+.lsteps li.on{color:var(--text);font-weight:500} .lsteps li.done{color:var(--up)} .lsteps li.fail{color:var(--down)}
+.lsteps li i{width:16px;text-align:center;font-style:normal}
+.formmsg a,.msg a{color:var(--accent);font-weight:500}
+.demo-note{font-size:13px;color:#9a7420;background:#f6eedb;border-radius:10px;padding:8px 12px;margin-bottom:14px;display:inline-block}
+.ext{margin-left:auto;font-size:13px;color:var(--accent);font-weight:500;padding:6px 8px;min-height:32px;display:inline-flex;align-items:center}
+.chart iframe{width:100%;height:100%;border:0;display:block}
+.chart .wait{height:100%;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:14px;padding:20px}
+.coin-h img.av{object-fit:cover}
+.btn[disabled]{opacity:.6;cursor:wait}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(31,30,27,.35);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.scrim.on{display:flex}
+.modal{background:var(--surface);border-radius:16px;max-width:420px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+.modal h3{font:500 22px var(--serif);margin-bottom:6px}
+.modal p{color:var(--muted);font-size:14px;margin-bottom:16px}
+.wallets{display:grid;gap:8px;margin-bottom:14px}
+.wallets button{display:flex;align-items:center;gap:12px;min-height:52px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font-weight:500;text-align:left}
+.wallets button:hover{background:var(--sunk)}
+.wallets i{width:28px;height:28px;border-radius:8px;display:block}
+
+.foot{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+/* responsive */
+@media (max-width:1080px){.coin-grid,.create{grid-template-columns:1fr}.prev{position:static}}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;z-index:40;width:280px;transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.15)}
+  .side.open{transform:none}
+  .menu{display:inline-flex}
+  .topbar{padding:8px 12px}
+  .view{padding:20px 16px 50px}
+  .greet h1{font-size:30px}
+  .koth{grid-template-columns:auto 1fr}
+  .koth .big{grid-column:1/-1;text-align:left}
+  .koth .av{width:72px;height:72px}
+  .search{width:100%;margin-left:0}
+  .coin-h .px{margin-left:0;text-align:left;width:100%}
+  .chart{height:280px}
+  .r2,.r3{grid-template-columns:1fr}
+  .hide-sm{display:none}
+}
+</style>
+<script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js" defer></script>
+</head>
+<body>
+<div class="app">
+
+  <aside class="side" id="side" aria-label="Sidebar">
+    <a class="brand" href="#explore" aria-label="Anthropad home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#c96442"/><path d="M12.5 7v5.5M19.5 7v5.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M9.5 12.5h13v3.5a6.5 6.5 0 0 1-13 0v-3.5Z" fill="#fff"/><path d="M16 22.5V26" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+      Anthropad
+    </a>
+    <p class="indie">Independent project. Not made by or affiliated with Anthropic.</p>
+    <a class="newbtn" href="#create"><span class="plus">+</span>New coin</a>
+    <nav class="navl" aria-label="Main">
+      <a href="#explore" data-nav="explore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg>Explore</a>
+      <a href="#create" data-nav="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>Launch</a>
+      <a href="#explore" data-agents><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Agents<span class="soon">soon</span></a>
+      <a href="#explore" data-port><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M16 13h2M3 10h18"/></svg>Portfolio</a>
+    </nav>
+    <div class="sidehead">Recents</div>
+    <div class="recents" id="recents"></div>
+    <div class="me" id="meRow">
+      <div class="pf">?</div>
+      <div><span id="meName">Not connected</span><br><small id="meSub">Connect a wallet to trade</small></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu" id="menuBtn" aria-label="Open sidebar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div class="ticker" aria-label="Live trades"><div class="ticker-in" id="ticker"></div></div>
+      <button class="btn btn-dark" id="connectBtn">Connect wallet</button>
+    </header>
+
+    <!-- EXPLORE -->
+    <section class="view" id="v-explore" aria-label="Explore coins">
+      <div class="greet">
+        <h1><svg class="spark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#c96442"/><path d="M12.5 7v5.5M19.5 7v5.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M9.5 12.5h13v3.5a6.5 6.5 0 0 1-13 0v-3.5Z" fill="#fff"/><path d="M16 22.5V26" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span id="hello">Good evening</span></h1>
+      </div>
+      <form class="composer" id="composer">
+        <label for="idea" class="sr">Describe a coin to launch</label>
+        <textarea id="idea" rows="2" placeholder="What are you launching today?"></textarea>
+        <div class="comp-row">
+          <a class="chip" href="#create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Add image</a>
+          <a class="chip" href="#create"><span class="agent" style="background:none;padding:0"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></span>Pick a Claude model</a>
+          <button class="send" type="submit" aria-label="Start launch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        </div>
+      </form>
+      <div class="ideas" id="ideas"></div>
+
+      <div class="sec-h"><h2>Live on Anthropad</h2><small id="liveSub">real coins launched here</small></div>
+      <div class="grid" id="liveGrid"><div class="empty">Loading live launches…</div></div>
+
+      <div class="sec-h"><h2>King of the hill</h2><small>closest to graduating</small></div>
+      <div class="koth" id="koth" role="link" tabindex="0"></div>
+
+      <div class="sec-h"><h2>Every Claude model</h2><small>Demo coins · fake data</small></div>
+      <div class="tiers" id="tiers" aria-label="Filter by tier">
+        <button class="tier on" data-tier="all">All <span>32</span></button>
+        <button class="tier" data-tier="mythos"><i style="background:#d4a63a"></i>Mythos</button>
+        <button class="tier" data-tier="fable"><i style="background:#c96442"></i>Fable</button>
+        <button class="tier" data-tier="opus"><i style="background:#8a5a9c"></i>Opus</button>
+        <button class="tier" data-tier="sonnet"><i style="background:#3d6b8c"></i>Sonnet</button>
+        <button class="tier" data-tier="haiku"><i style="background:#2f7d5b"></i>Haiku</button>
+        <button class="tier" data-tier="legacy"><i style="background:#6b6862"></i>Legacy</button>
+      </div>
+      <div class="filters" role="tablist">
+        <button class="tab on" data-f="trending">Trending</button>
+        <button class="tab" data-f="new">New</button>
+        <button class="tab" data-f="soon">About to graduate</button>
+        <button class="tab" data-f="grad">Graduated</button>
+        <button class="tab" data-f="agent">Agent on</button>
+        <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Search name or ticker" aria-label="Search coins"></label>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="foot"><span>Anthropad · $ANTHROPAD on Solana</span><span>Independent project. Not affiliated with or endorsed by Anthropic. Not financial advice.</span></div>
+    </section>
+
+    <!-- COIN -->
+    <section class="view" id="v-coin" aria-label="Coin">
+      <a class="back" href="#explore">← Back to explore</a><br>
+      <p class="demo-note">Demo coin with fake data. Real launches are under Live on Anthropad.</p>
+      <div class="coin-h" id="coinHead"></div>
+      <div class="coin-grid">
+        <div>
+          <div class="panel">
+            <div class="ph"><button class="tab on">Chart</button><div class="tf" id="tf"><button>1m</button><button class="on">5m</button><button>15m</button><button>1h</button></div></div>
+            <div class="chart"><canvas id="chart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="ph" role="tablist"><button class="tab on" data-ct="trades">Trades</button><button class="tab" data-ct="thread">Thread</button></div>
+            <div id="ct-trades"><table class="trades"><thead><tr><th>Account</th><th>Type</th><th class="r">SOL</th><th class="r hide-sm">Tokens</th><th class="r">Time</th></tr></thead><tbody id="tradeBody"></tbody></table></div>
+            <div id="ct-thread" hidden><div class="thread" id="threadBody"></div><form class="reply" id="replyForm"><label for="replyIn" class="sr">Reply</label><input id="replyIn" placeholder="Add a reply"><button class="btn btn-o" type="submit">Post</button></form></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel trade">
+            <div class="bs"><button class="on buy" data-side="buy">Buy</button><button class="sell" data-side="sell">Sell</button></div>
+            <label class="amt"><span class="sr">Amount</span><input id="amt" type="number" min="0" step="0.01" value="0.5" inputmode="decimal"><span id="amtUnit">SOL</span></label>
+            <div class="presets" id="presets"></div>
+            <div class="est" id="est"></div>
+            <button class="btn go buy" id="goBtn">Buy</button>
+            <div class="msg" id="tradeMsg" role="status"></div>
+          </div>
+          <div class="panel"><div class="kv" id="curve"></div></div>
+          <div class="panel"><div class="agentbox" id="agentBox"></div></div>
+          <div class="panel"><div class="kv"><h4>Top holders</h4></div><ul class="holders" id="holders"></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE COIN -->
+    <section class="view" id="v-live" aria-label="Live coin">
+      <a class="back" href="#explore">← Back to explore</a>
+      <div class="coin-h" id="lHead"></div>
+      <div class="coin-grid">
+        <div>
+          <div class="panel">
+            <div class="ph"><button class="tab on">Chart</button><a class="ext" id="lPump" target="_blank" rel="noopener">Open on pump.fun ↗</a></div>
+            <div class="chart" id="lChart"></div>
+          </div>
+          <div class="panel"><div class="kv" id="lAbout"></div></div>
+        </div>
+        <div>
+          <div class="panel trade">
+            <div class="bs"><button class="on buy" data-lside="buy">Buy</button><button class="sell" data-lside="sell">Sell</button></div>
+            <label class="amt"><span class="sr">Amount</span><input id="lAmt" type="number" min="0" step="0.01" value="0.1" inputmode="decimal"><span id="lUnit">SOL</span></label>
+            <div class="presets" id="lPresets"></div>
+            <button class="btn go buy" id="lGo">Buy</button>
+            <div class="msg" id="lMsg" role="status"></div>
+          </div>
+          <div class="panel"><div class="kv" id="lStats"></div></div>
+          <div class="panel"><div class="agentbox" id="lAgent"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATE -->
+    <section class="view" id="v-create" aria-label="Launch a coin">
+      <div class="create">
+        <div>
+          <h1>Launch a coin</h1>
+          <p class="lead">Launches a real coin on pump.fun from your wallet, with a Claude model picked for its agent. You approve every transaction.</p>
+          <form class="form" id="createForm" novalidate>
+            <label class="drop" for="cImg">
+              <div class="av" id="cImgPrev"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div><b>Add an image</b><p>PNG, JPG, GIF or WEBP up to 3 MB, square works best. Drop it here or click to choose.</p></div>
+              <input type="file" id="cImg" accept="image/*" class="sr">
+            </label>
+            <div class="r2">
+              <div class="f"><label for="cName">Name</label><input type="text" id="cName" maxlength="32" placeholder="Agent Dog"></div>
+              <div class="f"><label for="cTick">Ticker</label><input type="text" id="cTick" maxlength="10" placeholder="ADOG"></div>
+            </div>
+            <div class="f"><label for="cDesc">Description</label><textarea id="cDesc" maxlength="280" placeholder="What's the coin about?"></textarea><div class="hint"><span id="dCount">0</span>/280</div></div>
+            <details class="more"><summary>Add socials (optional)</summary>
+              <div class="r3">
+                <div class="f"><label for="cX">X</label><input type="url" id="cX" placeholder="https://x.com/…"></div>
+                <div class="f"><label for="cTg">Telegram</label><input type="url" id="cTg" placeholder="https://t.me/…"></div>
+                <div class="f"><label for="cWeb">Website</label><input type="url" id="cWeb" placeholder="https://…"></div>
+              </div>
+            </details>
+            <div class="f"><label for="cDev">Dev buy (SOL)</label><input type="number" id="cDev" min="0" step="0.1" value="0" inputmode="decimal"><div class="hint">Buys your own coin in the same transaction. pump.fun needs a tiny first buy, so 0 becomes 0.0001 SOL.</div></div>
+            <fieldset class="f" style="border:0"><legend style="font-weight:500;font-size:14px;margin-bottom:8px">Claude model for this coin's agent</legend><div id="models"></div><div class="mnote" id="mNote"></div></fieldset>
+            <ol class="lsteps" id="cSteps" hidden></ol>
+            <button class="btn btn-p" type="submit">Launch coin</button>
+            <div class="formmsg" id="cMsg" role="status"></div>
+          </form>
+        </div>
+        <aside class="prev">
+          <h3>Preview</h3>
+          <div id="cPrev"></div>
+          <div class="cost"><div><span>Model</span><b id="cModelOut">Opus 5.5</b></div><div><span>Dev buy</span><b id="cDevOut">0.0001 SOL</b></div><div><span>Priority fee</span><b>0.0005 SOL</b></div><div><span>pump.fun + network fees</span><b>shown in wallet</b></div></div>
+        </aside>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <h3 id="mTitle">Connect a wallet</h3>
+    <p>Pick a Solana wallet. You approve every transaction in the wallet itself.</p>
+    <div class="wallets">
+      <button data-w="Phantom"><i style="background:#ab9ff2"></i>Phantom</button>
+      <button data-w="Solflare"><i style="background:#fc7227"></i>Solflare</button>
+      <button data-w="Backpack"><i style="background:#e33e3f"></i>Backpack</button>
+    </div>
+    <button class="btn btn-o" style="width:100%" id="mClose">Cancel</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- seeded helpers ----------
+function rng(seed){ let s = 0; for (const c of String(seed)) s = (s*31 + c.charCodeAt(0))>>>0; return () => (s = (s*1664525 + 1013904223)>>>0) / 4294967296; }
+const PAL = [['#c96442','#f6e6dd'],['#3d6b8c','#e2ecf3'],['#2f7d5b','#e3f1ea'],['#8a5a9c','#f0e6f4'],['#b8892f','#f6eedb'],['#1f1e1b','#ecebe5'],['#c2453a','#f8e4e1'],['#5b6b2f','#eef0e0']];
+function avatar(seed, label){
+  const coin = typeof coins!=='undefined' && coins.find(x=>x.ticker===seed);
+  if (coin && coin.tier) return tierAvatar(coin, label);
+  const r = rng(seed), [fg,bg] = PAL[Math.floor(r()*PAL.length)], shape = Math.floor(r()*4);
+  let art = '';
+  if (shape===0) art = `<circle cx="50" cy="56" r="26" fill="${fg}"/><circle cx="41" cy="52" r="4" fill="${bg}"/><circle cx="59" cy="52" r="4" fill="${bg}"/>`;
+  if (shape===1) art = `<rect x="24" y="30" width="52" height="44" rx="12" fill="${fg}"/><rect x="36" y="46" width="8" height="10" rx="2" fill="${bg}"/><rect x="56" y="46" width="8" height="10" rx="2" fill="${bg}"/><path d="M50 30V18" stroke="${fg}" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="16" r="5" fill="${fg}"/>`;
+  if (shape===2) art = `<path d="M50 16 58 42 84 50 58 58 50 84 42 58 16 50 42 42Z" fill="${fg}"/>`;
+  if (shape===3) art = `<path d="M22 70 50 22 78 70Z" fill="${fg}"/><circle cx="50" cy="55" r="7" fill="${bg}"/>`;
+  return `<svg class="av" viewBox="0 0 100 100" role="img" aria-label="${label||''}"><rect width="100" height="100" fill="${bg}"/>${art}</svg>`;
+}
+function tierAvatar(c, label){
+  const [fg,bg] = TIERS[c.tier];
+  const v = (c.name.match(/(\d+(?:\.\d+)?)/)||[])[1] || (c.name.includes('Preview')?'PRE':c.name.includes('Instant')?'INST':'');
+  const art = {
+    mythos:`<path d="M50 12 56 36 78 22 64 44 88 50 64 56 78 78 56 64 50 88 44 64 22 78 36 56 12 50 36 44 22 22 44 36Z" fill="${fg}"/><circle cx="50" cy="50" r="7" fill="${bg}"/>`,
+    fable:`<path d="M50 14 57 43 86 50 57 57 50 86 43 57 14 50 43 43Z" fill="${fg}"/>`,
+    opus:`<circle cx="50" cy="46" r="28" fill="none" stroke="${fg}" stroke-width="7"/><circle cx="50" cy="46" r="12" fill="${fg}"/>`,
+    sonnet:`<path d="M22 66 50 20 78 66Z" fill="${fg}"/><path d="M36 66 50 43 64 66Z" fill="${bg}"/>`,
+    haiku:`<circle cx="50" cy="44" r="16" fill="${fg}"/><path d="M26 70h48" stroke="${fg}" stroke-width="6" stroke-linecap="round"/>`,
+    legacy:`<rect x="26" y="26" width="48" height="40" rx="10" fill="${fg}"/><rect x="36" y="40" width="8" height="10" rx="2" fill="${bg}"/><rect x="56" y="40" width="8" height="10" rx="2" fill="${bg}"/><path d="M50 26V16" stroke="${fg}" stroke-width="5" stroke-linecap="round"/>`
+  }[c.tier];
+  const ver = v ? `<text x="50" y="${c.tier==='mythos'?97:94}" text-anchor="middle" font-family="DM Mono,monospace" font-size="${v.length>3?13:15}" font-weight="500" fill="${c.tier==='mythos'?'#d4a63a':fg}">${v}</text>` : '';
+  return `<svg class="av" viewBox="0 0 100 100" role="img" aria-label="${label||c.name}"><rect width="100" height="100" fill="${bg}"/><g transform="${v?'translate(5 0) scale(.9)':''}">${art}</g>${ver}</svg>`;
+}
+const fmtUsd = n => n>=1e6 ? '$'+(n/1e6).toFixed(2)+'M' : n>=1e3 ? '$'+(n/1e3).toFixed(1)+'K' : '$'+n.toFixed(0);
+const ago = s => s<60 ? s+'s' : s<3600 ? Math.floor(s/60)+'m' : s<86400 ? Math.floor(s/3600)+'h' : s<86400*45 ? Math.floor(s/86400)+'d' : s<86400*365 ? Math.floor(s/86400/30)+'mo' : (s/86400/365).toFixed(1).replace('.0','')+'y';
+const short = a => a.slice(0,4)+'…'+a.slice(-4);
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const addr = (seed, suf='') => { const r = rng(seed); let s=''; for(let i=0;i<44-suf.length;i++) s+=B58[Math.floor(r()*58)]; return s+suf; };
+const GRAD = 69000, SOLUSD = 180;
+
+// ---------- data ----------
+// Every Claude model, as a test coin. [name, ticker, tier, released, mcap, desc, agent]
+// Fake market data for testing the UI only.
+const SEED = [
+  ['Claude 1','CLAUDE1','legacy','2023-03',182000,'The one that started it. Retired, still on the board.',false],
+  ['Claude Instant','INSTANT','legacy','2023-03',96000,'Fast before fast was a tier.',false],
+  ['Claude 2','CLAUDE2','legacy','2023-07',141000,'100K context when that was a flex.',false],
+  ['Claude 2.1','CLAUDE21','legacy','2023-11',88000,'Doubled the context. Halved the chill.',false],
+  ['Claude 3 Haiku','HAIKU3','haiku','2024-03',74000,'Seventeen syllables, one candle.',false],
+  ['Claude 3 Sonnet','SONNET3','sonnet','2024-03',91000,'Fourteen lines of green.',false],
+  ['Claude 3 Opus','OPUS3','opus','2024-03',412000,'Still has a fan club. The fan club holds.',true],
+  ['Claude 3.5 Sonnet','SONNET35','sonnet','2024-06',655000,'The one everyone coded with.',true],
+  ['Claude 3.5 Haiku','HAIKU35','haiku','2024-10',71500,'Small bag, quick flip.',false],
+  ['Claude 3.7 Sonnet','SONNET37','sonnet','2025-02',248000,'Learned to think out loud.',false],
+  ['Claude Opus 4','OPUS4','opus','2025-05',301000,'The 4 era opens.',true],
+  ['Claude Sonnet 4','SONNET4','sonnet','2025-05',122000,'Shipped the same day as Opus 4.',false],
+  ['Claude Opus 4.1','OPUS41','opus','2025-08',158000,'A point-one that mattered.',false],
+  ['Claude Sonnet 4.5','SONNET45','sonnet','2025-09',377000,'Ran agents for hours.',true],
+  ['Claude Haiku 4.5','HAIKU45','haiku','2025-10',69800,'Still the small one in rotation.',false],
+  ['Claude Opus 4.5','OPUS45','opus','2025-11',214000,'Opus got cheaper. Chart got steeper.',true],
+  ['Claude Opus 4.6','OPUS46','opus','2026-02',133000,'1M context era.',false],
+  ['Claude Sonnet 4.6','SONNET46','sonnet','2026-02',99000,'Balanced. Mostly.',false],
+  ['Claude Mythos Preview','MYTHOSPRE','mythos','2026-04',57200,'Glasswing only. You probably can\'t hold this one.',true],
+  ['Claude Opus 4.7','OPUS47','opus','2026-04',44100,'The careful one.',false],
+  ['Claude Opus 4.8','OPUS48','opus','2026-05',38900,'Last Opus 4.',false],
+  ['Claude Fable 5','FABLE5','fable','2026-06',61800,'First Mythos-class you could actually use.',true],
+  ['Claude Mythos 5','MYTHOS5','mythos','2026-06',63400,'Paused in June, back July 1.',true],
+  ['Claude Sonnet 5','SONNET5','sonnet','2026-06',29700,'Sonnet goes to 5.',false],
+  ['Claude Opus 5','OPUS5','opus','2026-07',33500,'Opus goes to 5.',false],
+  ['Claude Fable 5.1','FABLE51','fable','2026-09',41200,'Point-one, Mythos tier.',true],
+  ['Claude Mythos 5.1','MYTHOS51','mythos','2026-09',47900,'Restricted access, unrestricted chart.',true],
+  ['Claude Opus 5.5','OPUS55','opus','2026-10',36600,'Current Opus.',true],
+  ['Claude Sonnet 5.5','SONNET55','sonnet','2026-10',24300,'Current Sonnet.',false],
+  ['Claude Haiku 5.5','HAIKU55','haiku','2026-10',15800,'Current Haiku. Cheapest seat on the board.',false],
+  ['Claude Fable 5.2','FABLE52','fable','2026-11',52900,'Newest Mythos-class you can use.',true],
+  ['Claude Mythos 5.2','MYTHOS52','mythos','2026-11',66100,'Top of the tree. One candle from graduating.',true],
+];
+const TIERS = { mythos:['#d4a63a','#1f1e1b','Mythos'], fable:['#c96442','#f6e6dd','Fable'], opus:['#8a5a9c','#f0e6f4','Opus'], sonnet:['#3d6b8c','#e2ecf3','Sonnet'], haiku:['#2f7d5b','#e3f1ea','Haiku'], legacy:['#6b6862','#ecebe5','Legacy'] };
+const now = Date.now()/1000;
+const coins = SEED.map(([name,ticker,tier,rel,mcap,desc,agent]) => {
+  const r = rng(ticker);
+  const [y,m] = rel.split('-').map(Number);
+  const age = Math.max(3600, now - new Date(y, m-1, 10).getTime()/1000);
+  return { name, ticker, tier, rel, desc, agent, mcap, chg: (r()-.3)*70, replies: Math.floor(r()*400)+12, age, creator: addr(ticker+'c'), ca: addr(ticker,'pump'), vol: mcap*(0.3+r()*1.4), holders: 60+Math.floor(r()*1800) };
+});
+const byT = t => coins.find(c => c.ticker===t);
+let filter = 'trending', query = '';
+let wallet = null, provider = null;
+let recents = []; try { recents = JSON.parse(localStorage.getItem('plug-recents')||'[]'); } catch(e){}
+recents = recents.filter(t => SEED.some(s=>s[1]===t));
+if (!recents.length) recents = ['MYTHOS52','FABLE52','OPUS55','SONNET55','HAIKU55'];
+
+// ---------- ui helpers ----------
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('on'),2200); }
+const pct = c => Math.min(100, c.mcap/GRAD*100);
+const agentTag = '<span class="agent"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>agent</span>';
+function esc(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+// greeting
+const h = new Date().getHours();
+$('#hello').textContent = h<5 ? 'Up late? Launch something' : h<12 ? 'Good morning' : h<18 ? 'Good afternoon' : 'Good evening';
+
+// ideas
+const IDEAS = ['A dog that buys back its own coin','A coin whose agent tweets the chart','Burn half of every fee','Airdrop to holders over 7 days'];
+$('#ideas').innerHTML = IDEAS.map(i=>`<button type="button">${i}</button>`).join('');
+$$('#ideas button').forEach(b => b.onclick = () => { $('#idea').value = b.textContent; $('#idea').focus(); });
+$('#composer').onsubmit = e => { e.preventDefault(); const v = $('#idea').value.trim(); location.hash = 'create'; if (v){ $('#cDesc').value = v; $('#cDesc').dispatchEvent(new Event('input')); } setTimeout(()=>$('#cName').focus(),50); };
+$('#idea').addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); $('#composer').requestSubmit(); } });
+
+// ---------- explore ----------
+function renderKoth(){
+  const c = coins.filter(c=>c.mcap<GRAD).sort((a,b)=>b.mcap-a.mcap)[0];
+  $('#koth').dataset.t = c.ticker;
+  $('#koth').innerHTML = `${avatar(c.ticker,c.name)}<div><div class="crown">♛ King of the hill</div><h3>${esc(c.name)} <span style="font:500 15px var(--sans);color:var(--dim)">$${c.ticker}</span></h3><p>${esc(c.desc)}</p><div class="meta" style="display:flex;gap:10px;align-items:center;margin-top:8px;font-size:13px;color:var(--muted)"><div class="bar" style="max-width:280px"><i style="width:${pct(c)}%"></i></div>${pct(c).toFixed(0)}% to graduate</div></div><div class="big"><b>${fmtUsd(c.mcap)}</b><span>market cap</span></div>`;
+}
+$('#koth').onclick = () => location.hash = 'coin-'+$('#koth').dataset.t;
+$('#koth').onkeydown = e => { if (e.key==='Enter') $('#koth').click(); };
+
+function list(){
+  let l = coins.slice();
+  if (filter==='trending') l.sort((a,b)=>b.vol-a.vol);
+  if (filter==='new') l.sort((a,b)=>a.age-b.age);
+  if (filter==='soon') l = l.filter(c=>c.mcap<GRAD && pct(c)>45).sort((a,b)=>b.mcap-a.mcap);
+  if (filter==='grad') l = l.filter(c=>c.mcap>=GRAD);
+  if (filter==='agent') l = l.filter(c=>c.agent);
+  if (tierF!=='all') l = l.filter(c=>c.tier===tierF);
+  if (query){ const q=query.toLowerCase(); l = l.filter(c=>c.name.toLowerCase().includes(q)||c.ticker.toLowerCase().includes(q)); }
+  return l;
+}
+function cardHTML(c){
+  const done = c.mcap>=GRAD;
+  const dn = /^Claude \d/.test(c.name) && !/Haiku|Sonnet|Opus/.test(c.name) ? c.name : c.name.replace(/^Claude /,'');
+  return `<button class="card" data-t="${c.ticker}">${avatar(c.ticker,c.name)}<div style="min-width:0"><div class="nm">${esc(dn)} <span>$${c.ticker}</span></div><div class="by">${tierBadge(c)} ${c.rel?'released '+c.rel:'by '+short(c.creator)+' · '+ago(Math.floor(c.age))+' ago'} ${c.agent?'· '+agentTag:''}</div><div class="ds">${esc(c.desc)}</div><div class="meta"><span>MC <b>${fmtUsd(c.mcap)}</b></span>${done?'<span class="gd">Graduated</span>':`<div class="bar"><i style="width:${pct(c)}%"></i></div><span>${pct(c).toFixed(0)}%</span>`}<span>💬 ${c.replies}</span></div></div></button>`;
+}
+function renderGrid(){
+  const l = list();
+  $('#grid').innerHTML = l.length ? l.map(cardHTML).join('') : `<div class="empty">No coins match that yet. <a href="#create" style="color:var(--accent);font-weight:500">Launch one</a></div>`;
+}
+$('#grid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) location.hash = 'coin-'+c.dataset.t; });
+$$('.filters .tab').forEach(t => t.onclick = () => { $$('.filters .tab').forEach(x=>x.classList.remove('on')); t.classList.add('on'); filter = t.dataset.f; renderGrid(); });
+$('#q').oninput = e => { query = e.target.value.trim(); renderGrid(); };
+let tierF = 'all';
+$$('#tiers .tier').forEach(t => t.onclick = () => { $$('#tiers .tier').forEach(x=>x.classList.remove('on')); t.classList.add('on'); tierF = t.dataset.tier; renderGrid(); });
+$('#tiers [data-tier=all] span').textContent = coins.length;
+const tierBadge = c => c.tier ? `<span class="tbadge" style="color:${c.tier==='mythos'?'#9a7420':TIERS[c.tier][0]};background:${c.tier==='mythos'?'#f6eedb':TIERS[c.tier][1]}">${TIERS[c.tier][2]}</span>` : '';
+
+// recents
+function renderRecents(){
+  $('#recents').innerHTML = recents.map(byT).filter(Boolean).map(c=>`<a href="#coin-${c.ticker}">${avatar(c.ticker)}<span class="t">${esc(c.name)}</span><b style="color:${c.chg>=0?'var(--up)':'var(--down)'}">${c.chg>=0?'+':''}${c.chg.toFixed(0)}%</b></a>`).join('');
+}
+function pushRecent(t){ recents = [t, ...recents.filter(x=>x!==t)].slice(0,8); try{localStorage.setItem('plug-recents',JSON.stringify(recents))}catch(e){} renderRecents(); }
+
+// ---------- live ticker + simulated trades ----------
+const NAMES = ['degen','whale','fren','anon','ser','jeet','chad','builder'];
+function fakeTrade(c){
+  const r = Math.random(), buy = r > .38, sol = +(Math.random()**2*3+.02).toFixed(2);
+  const who = NAMES[Math.floor(Math.random()*NAMES.length)] + Math.floor(Math.random()*900+100);
+  return { c, buy, sol, who, t: Date.now() };
+}
+const tick = [];
+function renderTicker(){
+  if (typeof live!=='undefined' && live.length){
+    const li = live.slice(0,14).map(c=>{ const mm = MODELS.find(m=>m.name===c.model); return `<a class="tk b" href="#mint-${c.mint}"><img class="av" src="${esc(c.image)}" alt="" style="object-fit:cover">$${esc(c.symbol)} <em>launched</em> with ${mm?esc(mm.short):'Claude'}</a>`; }).join('');
+    $('#ticker').innerHTML = li + li; return;
+  }
+  const items = tick.slice(-14).map(x => `<span class="tk ${x.buy?'b':'s'}">${avatar(x.c.ticker)}${x.who} <em>${x.buy?'bought':'sold'} ${x.sol} SOL</em> of $${x.c.ticker}</span>`).join('');
+  $('#ticker').innerHTML = '<span class="tk"><b>Demo feed</b></span>' + items + items;
+}
+for (let i=0;i<14;i++) tick.push(fakeTrade(coins[Math.floor(Math.random()*coins.length)]));
+renderTicker();
+
+let current = null, side = 'buy', candles = [], trades = [];
+setInterval(() => {
+  const c = Math.random()<.35 && current ? current : coins[Math.floor(Math.random()*coins.length)];
+  const t = fakeTrade(c);
+  const move = (t.sol*SOLUSD) * (t.buy?1:-1) * .9;
+  c.mcap = Math.max(2500, c.mcap + move); c.vol += t.sol*SOLUSD; c.chg += move/c.mcap*100;
+  tick.push(t); if (tick.length>40) tick.shift();
+  if (c===current){ trades.unshift(t); trades = trades.slice(0,30); const last = candles[candles.length-1]; last.c = c.mcap; last.h = Math.max(last.h,c.mcap); last.l=Math.min(last.l,c.mcap); renderCoinLive(); }
+  if (route==='explore'){ const el = document.querySelector(`.card[data-t="${c.ticker}"]`); if (el && filter!=='new'){ el.outerHTML = cardHTML(c); const n=document.querySelector(`.card[data-t="${c.ticker}"]`); if(n && !reduce){ n.classList.add('flash'); } } renderKoth(); }
+}, 1800);
+setInterval(renderTicker, 9000);
+
+// ---------- coin page ----------
+function buildCandles(c){
+  const r = rng(c.ticker+'chart'); const n = 70; let v = c.mcap*0.25; const out=[];
+  for (let i=0;i<n;i++){ const drift = (c.mcap - v)/(n-i)*1.0; const o=v; v = Math.max(2000, v + drift + (r()-.5)*c.mcap*.06); const hi=Math.max(o,v)*(1+r()*.03), lo=Math.min(o,v)*(1-r()*.03); out.push({o,c:v,h:hi,l:lo}); }
+  out[n-1].c = c.mcap; return out;
+}
+function drawChart(){
+  const cv = $('#chart'); if (!cv || !current) return;
+  const dpr = devicePixelRatio||1, w = cv.clientWidth, hh = cv.clientHeight; cv.width=w*dpr; cv.height=hh*dpr;
+  const x = cv.getContext('2d'); x.scale(dpr,dpr); x.clearRect(0,0,w,hh);
+  const pad = {l:12,r:64,t:16,b:24}; const lo = Math.min(...candles.map(k=>k.l)), hi = Math.max(...candles.map(k=>k.h));
+  const Y = v => pad.t + (hi-v)/(hi-lo||1)*(hh-pad.t-pad.b);
+  x.strokeStyle='#ece9df'; x.fillStyle='#8f8b82'; x.font='12px DM Sans, sans-serif'; x.lineWidth=1;
+  for (let i=0;i<=4;i++){ const v = lo + (hi-lo)*i/4, y = Y(v); x.beginPath(); x.moveTo(pad.l,y); x.lineTo(w-pad.r,y); x.stroke(); x.fillText(fmtUsd(v), w-pad.r+8, y+4); }
+  const bw = (w-pad.l-pad.r)/candles.length;
+  candles.forEach((k,i) => { const up = k.c>=k.o, cx = pad.l + i*bw + bw/2; x.strokeStyle = x.fillStyle = up ? '#2f7d5b' : '#c2453a'; x.beginPath(); x.moveTo(cx,Y(k.h)); x.lineTo(cx,Y(k.l)); x.stroke(); const top=Y(Math.max(k.o,k.c)), bh=Math.max(1,Math.abs(Y(k.o)-Y(k.c))); x.fillRect(cx-bw*.35, top, bw*.7, bh); });
+  const ly = Y(current.mcap); x.setLineDash([4,4]); x.strokeStyle='#c96442'; x.beginPath(); x.moveTo(pad.l,ly); x.lineTo(w-pad.r,ly); x.stroke(); x.setLineDash([]);
+  x.fillStyle='#c96442'; x.fillRect(w-pad.r+2, ly-10, pad.r-4, 20); x.fillStyle='#fff'; x.fillText(fmtUsd(current.mcap), w-pad.r+8, ly+4);
+}
+addEventListener('resize', () => { if (route==='coin') drawChart(); });
+$$('#tf button').forEach(b => b.onclick = () => { $$('#tf button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); candles = buildCandles({...current, ticker: current.ticker+b.textContent}); candles[candles.length-1].c = current.mcap; drawChart(); });
+
+function renderCoin(t){
+  const c = byT(t); if (!c){ location.hash='explore'; return; }
+  current = c; pushRecent(t);
+  candles = buildCandles(c);
+  trades = Array.from({length:14},()=>{ const x = fakeTrade(c); x.t = Date.now()-Math.random()*900000; return x; }).sort((a,b)=>b.t-a.t);
+  const r = rng(t+'h');
+  const curveP = c.mcap>=GRAD ? 0 : Math.max(20, 100-pct(c)*.8), rest = 100-curveP;
+  const raw = Array.from({length:7},()=>r()**1.5+.08), tot = raw.reduce((a,b)=>a+b,0)*1.6;
+  const shares = [curveP, ...raw.map(x=>x/tot*rest).sort((a,b)=>b-a)];
+  $('#holders').innerHTML = [[c.mcap>=GRAD?'DEX pool':'bonding curve',null],...Array.from({length:7},(_,i)=>[addr(t+i),i===0&&!c.agent?'dev':i===1&&c.agent?'agent':''])].map(([a,tag],i)=>{ const p = i===0 && c.mcap>=GRAD ? rest*.35 : shares[i]; return `<li><span>${i+1}. ${a==='bonding curve'?'Bonding curve':a==='DEX pool'?'DEX pool':short(a)}${tag?` <em class="agent" style="font-style:normal">${tag}</em>`:''}</span><b>${p.toFixed(2)}%</b></li>`; }).join('');
+  const posts = [
+    ['anon482','this chart is beautiful',false],['fren221','dev based, liquidity locked?',false],
+    ...(c.agent?[['agent · $'+c.ticker,'I claimed 0.42 SOL in creator fees and burned 1.1M $'+c.ticker+'. Daily cap has 1.58 SOL left.',true]]:[]),
+    ['ser903','sending this to the moon or the bin, no in between',false]];
+  $('#threadBody').innerHTML = posts.map(([n,p,ai])=>`<div class="post ${ai?'ai':''}">${ai?avatar(c.ticker):`<svg class="pf" viewBox="0 0 32 32"><rect width="32" height="32" fill="${PAL[n.length%PAL.length][1]}"/><text x="16" y="21" text-anchor="middle" font-size="13" font-family="DM Sans" fill="${PAL[n.length%PAL.length][0]}">${n[0].toUpperCase()}</text></svg>`}<div><b>${esc(n)}</b><small>${Math.floor(Math.random()*50+1)}m ago</small><p>${esc(p)}</p></div></div>`).join('');
+  setSide('buy');
+  renderCoinLive();
+  requestAnimationFrame(drawChart);
+}
+function renderCoinLive(){
+  const c = current; if (!c) return;
+  $('#coinHead').innerHTML = `${avatar(c.ticker,c.name)}<div><h1>${esc(c.name)}<span>$${c.ticker}</span></h1><div class="sub"><button class="ca" id="caCopy" title="Copy contract address">${short(c.ca)} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg></button>${tierBadge(c)}<span>${c.rel?'released '+c.rel:'by '+short(c.creator)}</span><span>${ago(Math.floor(c.age))} ago</span>${c.agent?agentTag:''}</div></div><div class="px"><b>${fmtUsd(c.mcap)}</b><span class="chg ${c.chg>=0?'up':'dn'}">${c.chg>=0?'▲':'▼'} ${Math.abs(c.chg).toFixed(1)}% 24h</span></div>`;
+  $('#caCopy').onclick = () => { navigator.clipboard?.writeText(c.ca).then(()=>toast('Contract address copied'),()=>toast(c.ca)); };
+  const done = c.mcap>=GRAD;
+  $('#curve').innerHTML = `<h4>Bonding curve</h4><div style="display:flex;align-items:center;gap:10px"><div class="bar" style="height:10px"><i style="width:${pct(c)}%"></i></div><b style="font-size:14px">${pct(c).toFixed(1)}%</b></div><p class="note">${done?'Graduated. Trading on the DEX now.':`${fmtUsd(GRAD-c.mcap)} more market cap to graduate. Liquidity is locked and moves to the DEX automatically.`}</p><div class="row"><span>Volume 24h</span><b>${fmtUsd(c.vol)}</b></div><div class="row"><span>Holders</span><b>${c.holders.toLocaleString()}</b></div><div class="row"><span>Replies</span><b>${c.replies}</b></div>`;
+  $('#agentBox').innerHTML = `<h4><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Claude agent</h4><span class="status ${c.agent?'on':''}"><i></i>${c.agent?'Plugged in (preview)':'Not plugged in'}</span><p>${c.agent?'This coin\'s agent claims creator fees, buys back and burns inside a daily cap. Every action shows in the thread.':'Agents are coming next. Creators will be able to plug a Claude agent into any coin.'}</p>`;
+  $('#tradeBody').innerHTML = trades.map(x=>`<tr><td>${x.who}</td><td><span class="pill ${x.buy?'b':'s'}">${x.buy?'Buy':'Sell'}</span></td><td class="r">${x.sol}</td><td class="r hide-sm">${Math.round(x.sol*SOLUSD/c.mcap*1e9/1e3).toLocaleString()}K</td><td class="r" style="color:var(--dim)">${ago(Math.max(1,Math.floor((Date.now()-x.t)/1000)))}</td></tr>`).join('');
+  updEst(); drawChart();
+}
+function setSide(s){
+  side = s; $$('.bs button').forEach(b=>b.classList.toggle('on', b.dataset.side===s));
+  $('#goBtn').className = 'btn go '+s; $('#goBtn').textContent = (s==='buy'?'Buy':'Sell')+' $'+(current?current.ticker:'');
+  $('#amtUnit').textContent = s==='buy' ? 'SOL' : '%';
+  $('#amt').value = s==='buy' ? '0.5' : '50';
+  $('#presets').innerHTML = (s==='buy'?['0.1','0.5','1','5']:['25','50','75','100']).map(v=>`<button type="button" data-v="${v}">${v}${s==='buy'?' SOL':'%'}</button>`).join('');
+  $$('#presets button').forEach(b=>b.onclick=()=>{ $('#amt').value=b.dataset.v; updEst(); });
+  $('#tradeMsg').textContent=''; updEst();
+}
+function updEst(){
+  if (!current) return; const v = parseFloat($('#amt').value)||0;
+  $('#est').textContent = side==='buy' ? (v>0?`≈ ${Math.round(v*SOLUSD/current.mcap*1e9).toLocaleString()} $${current.ticker}`:'') : (v>0?`Sell ${Math.min(v,100)}% of your bag`:'');
+}
+$$('.bs button').forEach(b=>b.onclick=()=>setSide(b.dataset.side));
+$('#amt').oninput = updEst;
+$('#goBtn').onclick = () => {
+  
+  const v = parseFloat($('#amt').value)||0; if (v<=0){ $('#tradeMsg').textContent = 'Enter an amount first.'; return; }
+  $('#tradeMsg').innerHTML = 'This is a demo coin. Trade a real one under <a href="#explore">Live on Anthropad</a>.';
+};
+$$('.ph [data-ct]').forEach(b=>b.onclick=()=>{ $$('.ph [data-ct]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); $('#ct-trades').hidden = b.dataset.ct!=='trades'; $('#ct-thread').hidden = b.dataset.ct!=='thread'; });
+$('#replyForm').onsubmit = e => { e.preventDefault(); const v = $('#replyIn').value.trim(); if(!v) return; const who = wallet?short(wallet):'you'; $('#threadBody').insertAdjacentHTML('afterbegin', `<div class="post"><svg class="pf" viewBox="0 0 32 32"><rect width="32" height="32" fill="#1f1e1b"/><text x="16" y="21" text-anchor="middle" font-size="13" font-family="DM Sans" fill="#faf9f5">${who[0].toUpperCase()}</text></svg><div><b>${esc(who)}</b><small>now</small><p>${esc(v)}</p></div></div>`); $('#replyIn').value=''; current.replies++; };
+
+// ---------- models ----------
+const MODELS = SEED.map(x => ({ name:x[0], short: x[2]==='legacy' ? x[0] : x[0].replace(/^Claude /,''), tier:x[2], ticker:x[1] }));
+const CURRENT = ['Claude Fable 5.2','Claude Opus 5.5','Claude Sonnet 5.5','Claude Haiku 5.5'];
+const NEWEST = { mythos:'Fable 5.2', fable:'Fable 5.2', opus:'Opus 5.5', sonnet:'Sonnet 5.5', haiku:'Haiku 5.5', legacy:'Sonnet 5.5' };
+function modelStatus(name){
+  const m = MODELS.find(x=>x.name===name); if (!m) return ['',''];
+  if (CURRENT.includes(m.name)) return ['Current','The agent runs on this exact model.'];
+  if (m.tier==='mythos') return ['Restricted','Mythos access is limited. Until it opens up, the agent runs on Fable 5.2, the public Mythos-class model.'];
+  return ['Older','The agent runs on this model while Anthropic still serves it, then moves up to '+NEWEST[m.tier]+'.'];
+}
+let model = 'Claude Opus 5.5';
+function renderModels(){
+  const order = ['mythos','fable','opus','sonnet','haiku','legacy'];
+  $('#models').innerHTML = order.map(t => `<div class="mgroup"><div class="mg-h">${TIERS[t][2]}</div><div class="mg">${MODELS.filter(m=>m.tier===t).slice().reverse().map(m => `<label class="mopt"><input type="radio" name="model" value="${m.name}" ${m.name===model?'checked':''}>${tierAvatar(coins.find(c=>c.ticker===m.ticker)||m, m.name)}<span>${m.short}</span></label>`).join('')}</div></div>`).join('');
+  $$('#models input').forEach(i => i.onchange = () => { model = i.value; noteModel(); renderPrev(); });
+  noteModel();
+}
+function noteModel(){
+  const [st, txt] = modelStatus(model), m = MODELS.find(x=>x.name===model);
+  $('#mNote').innerHTML = `<b>${esc(m.short)}</b> · ${st}. ${txt}`;
+  $('#cModelOut').textContent = m.short;
+}
+
+// ---------- chain helpers ----------
+const API = /vercel\.app$/.test(location.hostname) ? '' : 'https://plug-launchpad-aislopv1-8230.vercel.app';
+async function api(path, body){
+  const r = await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  let j = {}; try { j = await r.json(); } catch(e){}
+  if (!r.ok) throw new Error(j.error || ('Request failed ('+r.status+')'));
+  return j;
+}
+async function rpc(method, params){
+  const j = await api('/api/rpc', { jsonrpc:'2.0', id:1, method, params });
+  if (j.error) throw new Error(j.error.message || 'RPC error');
+  return j.result;
+}
+const u8b64 = u8 => { let s=''; for (const b of u8) s += String.fromCharCode(b); return btoa(s); };
+const b64u8 = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+async function signTx(b64, extra){
+  const { VersionedTransaction } = window.solanaWeb3;
+  const tx = VersionedTransaction.deserialize(b64u8(b64));
+  const signed = await provider.signTransaction(tx);
+  const out = VersionedTransaction.deserialize(signed.serialize());
+  if (extra && extra.length) out.sign(extra);
+  return out;
+}
+async function sendTx(tx){ return rpc('sendTransaction', [u8b64(tx.serialize()), { encoding:'base64', skipPreflight:false, maxRetries:3 }]); }
+async function confirmSig(sig, timeout=90000){
+  const t = Date.now();
+  while (Date.now()-t < timeout){
+    const r = await rpc('getSignatureStatuses', [[sig]]); const st = r && r.value && r.value[0];
+    if (st){ if (st.err) throw new Error('Transaction failed on-chain.'); if (st.confirmationStatus==='confirmed' || st.confirmationStatus==='finalized') return true; }
+    await new Promise(r => setTimeout(r, 1500));
+  }
+  throw new Error('Not confirmed yet. Check the transaction on Solscan.');
+}
+function friendly(e){
+  const msg = (e && (e.message || e.toString())) || 'Something went wrong.';
+  if ((e && e.code===4001) || /reject|cancel|denied|declined/i.test(msg)) return 'You cancelled in your wallet. Nothing was sent.';
+  if (/insufficient|0x1\b|lamports/i.test(msg)) return 'Not enough SOL in this wallet for that.';
+  return msg;
+}
+const fileB64 = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(f); });
+
+// ---------- create ----------
+const cf = { name:$('#cName'), tick:$('#cTick'), desc:$('#cDesc'), dev:$('#cDev') };
+let imgURL = null;
+function renderPrev(){
+  const n = cf.name.value.trim()||'Your coin', t = (cf.tick.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,''))||'TICKER', d = cf.desc.value.trim()||'Your description shows here.';
+  const av = imgURL ? `<img class="av" src="${imgURL}" alt="" style="object-fit:cover">` : avatar(t,n);
+  const mm = MODELS.find(x=>x.name===model);
+  $('#cPrev').innerHTML = `<div class="card" style="cursor:default">${av}<div style="min-width:0"><div class="nm">${esc(n)} <span>$${esc(t)}</span></div><div class="by">${mm?tierBadge(mm)+' '+esc(mm.short):''} · just now</div><div class="ds">${esc(d)}</div><div class="meta"><span>by ${wallet?short(wallet):'you'}</span></div></div></div>`;
+  $('#dCount').textContent = cf.desc.value.length;
+  const dev = Math.max(0.0001, parseFloat(cf.dev.value)||0);
+  $('#cDevOut').textContent = dev+' SOL';
+}
+Object.values(cf).forEach(el => el.addEventListener('input', renderPrev));
+cf.tick.addEventListener('input', () => { const p = cf.tick.selectionStart; cf.tick.value = cf.tick.value.toUpperCase().replace(/[^A-Z0-9]/g,''); cf.tick.setSelectionRange(p,p); });
+$('#cImg').onchange = e => { const f = e.target.files[0]; if (!f) return; if (imgURL) URL.revokeObjectURL(imgURL); imgURL = URL.createObjectURL(f); $('#cImgPrev').innerHTML = `<img src="${imgURL}" alt="Coin image preview">`; renderPrev(); };
+const drop = $('.drop');
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor='var(--accent)'}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor=''}));
+drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f && f.type.startsWith('image/')){ const dt = new DataTransfer(); dt.items.add(f); $('#cImg').files = dt.files; $('#cImg').dispatchEvent(new Event('change')); } });
+
+const STEPS = ['Upload image and details','Build the launch transaction','Approve in your wallet','Send to Solana','Confirm and list on Anthropad'];
+function stepUI(i, state, extra){
+  const el = $('#cSteps'); el.hidden = false;
+  el.innerHTML = STEPS.map((x,k) => { const st = k<i ? 'done' : k===i ? state : ''; const ic = st==='done'?'✓':st==='fail'?'✕':st==='on'?'•':'○'; return `<li class="${st}"><i>${ic}</i>${x}${k===i&&extra?` <span style="color:var(--muted);font-weight:400">· ${extra}</span>`:''}</li>`; }).join('');
+}
+let busy = false;
+$('#createForm').onsubmit = async e => {
+  e.preventDefault(); if (busy) return;
+  const m = $('#cMsg'); m.className = 'formmsg'; m.textContent = '';
+  [cf.name,cf.tick].forEach(x=>x.classList.remove('err'));
+  const miss = [cf.name,cf.tick].filter(x=>!x.value.trim());
+  if (miss.length){ miss.forEach(x=>x.classList.add('err')); m.className='formmsg bad'; m.textContent='Add a name and ticker to launch.'; miss[0].focus(); return; }
+  const file = $('#cImg').files[0];
+  if (!file){ m.className='formmsg bad'; m.textContent='Add an image for your coin.'; return; }
+  if (!['image/png','image/jpeg','image/gif','image/webp'].includes(file.type)){ m.className='formmsg bad'; m.textContent='Use a PNG, JPG, GIF or WEBP image.'; return; }
+  if (file.size > 3*1024*1024){ m.className='formmsg bad'; m.textContent='That image is over 3 MB. Try a smaller one.'; return; }
+  if (!provider){ openModal(); m.className='formmsg bad'; m.textContent='Connect a wallet, then launch.'; return; }
+  if (!window.solanaWeb3){ m.className='formmsg bad'; m.textContent="The Solana library didn't load. Refresh the page and try again."; return; }
+  const name = cf.name.value.trim(), symbol = cf.tick.value.trim(), description = cf.desc.value.trim();
+  const dev = Math.max(0, parseFloat(cf.dev.value)||0);
+  const btn = $('#createForm [type=submit]'); busy = true; btn.disabled = true; btn.textContent = 'Launching…';
+  let step = 0, sig = null, mintAddr = null;
+  try {
+    stepUI(0,'on');
+    const up = await api('/api/upload', { name, symbol, description, twitter:$('#cX').value, telegram:$('#cTg').value, website:$('#cWeb').value, model, image: await fileB64(file), imageType: file.type });
+    step = 1; stepUI(1,'on');
+    const mint = window.solanaWeb3.Keypair.generate(); mintAddr = mint.publicKey.toBase58();
+    const { tx } = await api('/api/tx', { action:'create', publicKey:wallet, mint:mintAddr, name, symbol, uri:up.uri, amount:dev });
+    step = 2; stepUI(2,'on','check your wallet');
+    const signed = await signTx(tx, [mint]);
+    step = 3; stepUI(3,'on');
+    sig = await sendTx(signed);
+    step = 4; stepUI(4,'on','usually under a minute');
+    await confirmSig(sig);
+    let coin = { mint:mintAddr, signature:sig, creator:wallet, name, symbol, description, image:up.image, uri:up.uri, model, createdAt:Date.now() };
+    try { coin = (await api('/api/coins', { mint:mintAddr, signature:sig, name, symbol, description, image:up.image, uri:up.uri, model })).coin; }
+    catch(err){ m.className='formmsg bad'; m.innerHTML = `$${esc(symbol)} launched, but listing it on Anthropad failed (${esc(err.message)}). <a href="https://pump.fun/coin/${mintAddr}" target="_blank" rel="noopener">Open on pump.fun ↗</a>`; stepUI(4,'fail'); return; }
+    stepUI(5,'');
+    live = [coin, ...live.filter(c=>c.mint!==mintAddr)];
+    m.className = 'formmsg good'; m.innerHTML = `$${esc(symbol)} is live. <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">View transaction ↗</a>`;
+    refreshBal();
+    setTimeout(() => { location.hash = 'mint-'+mintAddr; $('#createForm').reset(); imgURL = null; $('#cImgPrev').innerHTML = '+'; $('#cSteps').hidden = true; m.textContent = ''; renderModels(); renderPrev(); }, 1500);
+  } catch(err){
+    stepUI(step,'fail');
+    m.className = 'formmsg bad';
+    m.innerHTML = esc(friendly(err)) + (sig ? ` <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">Check on Solscan ↗</a>` : '');
+  } finally { busy = false; btn.disabled = false; btn.textContent = 'Launch coin'; }
+};
+
+// ---------- live coins ----------
+var live = [], curMint = null, lside = 'buy';
+const dex = {};
+async function loadLive(){
+  try { const r = await fetch(API + '/api/coins'); const j = await r.json(); live = j.coins || []; } catch(e){ live = []; }
+  await enrichLive(live.slice(0,30)); renderLive(); renderTicker();
+}
+async function enrichLive(list){
+  if (!list.length) return;
+  try {
+    const r = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + list.map(c=>c.mint).join(','));
+    const j = await r.json();
+    (j.pairs||[]).forEach(p => { const a = p.baseToken && p.baseToken.address; if (!a) return; const b = dex[a]; if (!b || ((p.liquidity&&p.liquidity.usd)||0) > ((b.liquidity&&b.liquidity.usd)||0)) dex[a] = p; });
+  } catch(e){}
+}
+function liveCard(c){
+  const d = dex[c.mint], mm = MODELS.find(x=>x.name===c.model), ch = d && d.priceChange && d.priceChange.h24;
+  return `<button class="card" data-mint="${esc(c.mint)}"><img class="av" src="${esc(c.image)}" alt="" loading="lazy" style="object-fit:cover"><div style="min-width:0"><div class="nm">${esc(c.name)} <span>$${esc(c.symbol)}</span></div><div class="by">${mm?tierBadge(mm)+' '+esc(mm.short)+' · ':''}${ago(Math.max(1,Math.floor((Date.now()-c.createdAt)/1000)))} ago</div><div class="ds">${esc(c.description||'')}</div><div class="meta"><span>MC <b>${d&&(d.marketCap||d.fdv)?fmtUsd(d.marketCap||d.fdv):'new'}</b></span>${ch!=null?`<span class="chg ${ch>=0?'up':'dn'}">${ch>=0?'+':''}${ch.toFixed(0)}%</span>`:''}<span>by ${esc(short(c.creator))}</span></div></div></button>`;
+}
+function renderLive(){
+  $('#liveSub').textContent = live.length ? live.length + ' real coin' + (live.length===1?'':'s') + ' launched here' : 'real coins launched here';
+  $('#liveGrid').innerHTML = live.length ? live.map(liveCard).join('') : `<div class="empty">No live launches yet. <a href="#create" style="color:var(--accent);font-weight:500">Launch the first one</a></div>`;
+}
+$('#liveGrid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) location.hash = 'mint-' + c.dataset.mint; });
+
+async function renderLiveCoin(mint, quiet){
+  curMint = mint;
+  let c = live.find(x=>x.mint===mint);
+  if (!c){ if (!quiet) $('#lHead').innerHTML = '<p style="color:var(--muted)">Loading…</p>'; await loadLive(); c = live.find(x=>x.mint===mint); }
+  if (curMint !== mint) return;
+  $('#lPump').href = 'https://pump.fun/coin/' + encodeURIComponent(mint);
+  if (!c){ $('#lHead').innerHTML = `<div><h1>Not listed on Anthropad</h1><div class="sub"><a href="https://pump.fun/coin/${encodeURIComponent(mint)}" target="_blank" rel="noopener" style="color:var(--accent)">Open on pump.fun ↗</a></div></div>`; return; }
+  if (!dex[mint]) await enrichLive([c]);
+  const d = dex[mint], mm = MODELS.find(x=>x.name===c.model), ch = d && d.priceChange && d.priceChange.h24;
+  $('#lHead').innerHTML = `<img class="av" src="${esc(c.image)}" alt=""><div><h1>${esc(c.name)}<span>$${esc(c.symbol)}</span></h1><div class="sub"><button class="ca" id="lCa" title="Copy contract address">${esc(short(mint))} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg></button>${mm?tierBadge(mm)+'<span>'+esc(mm.short)+'</span>':''}<span>by ${esc(short(c.creator))}</span><span>${ago(Math.max(1,Math.floor((Date.now()-c.createdAt)/1000)))} ago</span></div></div><div class="px"><b>${d&&(d.marketCap||d.fdv)?fmtUsd(d.marketCap||d.fdv):'New'}</b>${ch!=null?`<span class="chg ${ch>=0?'up':'dn'}">${ch>=0?'▲':'▼'} ${Math.abs(ch).toFixed(1)}% 24h</span>`:'<span class="chg" style="color:var(--dim)">waiting for first trades</span>'}</div>`;
+  $('#lCa').onclick = () => { navigator.clipboard?.writeText(mint).then(()=>toast('Contract address copied'),()=>toast(mint)); };
+  if (!quiet || !$('#lChart iframe')) $('#lChart').innerHTML = d ? `<iframe title="${esc(c.symbol)} chart" src="https://dexscreener.com/solana/${encodeURIComponent(mint)}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=light&theme=light&chartStyle=1&chartType=usd&interval=5"></iframe>` : `<div class="wait"><div><b style="color:var(--text)">Chart loads after the first trades</b><br>DexScreener usually picks up new pump.fun coins within a few minutes.</div></div>`;
+  $('#lAbout').innerHTML = `<h4>About</h4><p class="note" style="color:var(--text)">${esc(c.description||'No description.')}</p><div class="row"><span>Launch transaction</span><a href="https://solscan.io/tx/${esc(c.signature)}" target="_blank" rel="noopener" style="color:var(--accent)">Solscan ↗</a></div><div class="row"><span>Metadata</span><a href="${esc(c.uri)}" target="_blank" rel="noopener" style="color:var(--accent)">View ↗</a></div>`;
+  const tx = d && d.txns && d.txns.h24;
+  $('#lStats').innerHTML = `<h4>Market</h4>${d ? `<div class="row"><span>Price</span><b>$${Number(d.priceUsd||0).toPrecision(3)}</b></div><div class="row"><span>Volume 24h</span><b>${fmtUsd((d.volume&&d.volume.h24)||0)}</b></div><div class="row"><span>Buys / sells 24h</span><b>${tx?tx.buys+' / '+tx.sells:'–'}</b></div><div class="row"><span>Where it trades</span><b>${d.dexId==='pumpfun'?'Bonding curve':'Graduated · '+esc(d.dexId)}</b></div>` : '<p class="note">No market data yet. It shows here once DexScreener indexes the coin.</p>'}<div class="row"><span>Data</span><a href="https://dexscreener.com/solana/${encodeURIComponent(mint)}" target="_blank" rel="noopener" style="color:var(--accent)">DexScreener ↗</a></div>`;
+  const [st, txt] = modelStatus(c.model);
+  $('#lAgent').innerHTML = `<h4><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>Claude agent</h4><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${mm?tierBadge(mm):''}<b style="font-size:14px">${esc(mm?mm.name:c.model||'Not set')}</b><span class="status"><i></i>${st||'—'}</span></div><p>${txt} The agent switches on when Anthropad agents go live.</p>`;
+  if (!quiet) setLSide(lside);
+}
+function setLSide(x){
+  lside = x; $$('[data-lside]').forEach(b=>b.classList.toggle('on', b.dataset.lside===x));
+  const c = live.find(y=>y.mint===curMint);
+  $('#lGo').className = 'btn go '+x; $('#lGo').textContent = (x==='buy'?'Buy':'Sell') + (c?' $'+c.symbol:'');
+  $('#lUnit').textContent = x==='buy' ? 'SOL' : '%'; $('#lAmt').value = x==='buy' ? '0.1' : '50';
+  $('#lPresets').innerHTML = (x==='buy'?['0.05','0.1','0.5','1']:['25','50','75','100']).map(v=>`<button type="button" data-v="${v}">${v}${x==='buy'?' SOL':'%'}</button>`).join('');
+  $$('#lPresets button').forEach(b=>b.onclick=()=>{ $('#lAmt').value=b.dataset.v; });
+  $('#lMsg').textContent = '';
+}
+$$('[data-lside]').forEach(b=>b.onclick=()=>setLSide(b.dataset.lside));
+$('#lGo').onclick = async () => {
+  const msg = $('#lMsg'), btn = $('#lGo');
+  if (!provider){ openModal(); msg.textContent = 'Connect a wallet to trade.'; return; }
+  const v = parseFloat($('#lAmt').value) || 0; if (v <= 0){ msg.textContent = 'Enter an amount first.'; return; }
+  btn.disabled = true; let sig = null;
+  try {
+    msg.textContent = 'Building transaction…';
+    const { tx } = await api('/api/tx', { action:lside, publicKey:wallet, mint:curMint, amount:v });
+    msg.textContent = 'Approve in your wallet…';
+    const signed = await signTx(tx, []);
+    msg.textContent = 'Sending…'; sig = await sendTx(signed);
+    msg.textContent = 'Confirming…'; await confirmSig(sig);
+    msg.innerHTML = `Done. <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">View on Solscan ↗</a>`;
+    refreshBal();
+  } catch(e){ msg.innerHTML = esc(friendly(e)) + (sig?` <a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">Solscan ↗</a>`:''); }
+  finally { btn.disabled = false; }
+};
+
+// ---------- wallet ----------
+const WALLETS = {
+  Phantom: { get: () => (window.phantom && window.phantom.solana) || (window.solana && window.solana.isPhantom ? window.solana : null), url:'https://phantom.com/' },
+  Solflare: { get: () => window.solflare && window.solflare.isSolflare ? window.solflare : null, url:'https://solflare.com/' },
+  Backpack: { get: () => (window.backpack && (window.backpack.solana || window.backpack)) || null, url:'https://backpack.app/' },
+};
+function openModal(){ $('#scrim').classList.add('on'); $('.wallets button').focus(); }
+function closeModal(){ $('#scrim').classList.remove('on'); }
+function setWallet(){
+  $('#connectBtn').textContent = wallet ? short(wallet) : 'Connect wallet';
+  $('#meName').textContent = wallet ? short(wallet) : 'Not connected';
+  $('#meSub').textContent = wallet ? 'Loading balance…' : 'Connect a wallet to trade';
+  $('#meRow .pf').textContent = wallet ? wallet[0] : '?';
+}
+async function refreshBal(){ if (!wallet) return; try { const r = await rpc('getBalance', [wallet]); $('#meSub').textContent = (r.value/1e9).toFixed(3) + ' SOL'; } catch(e){ $('#meSub').textContent = 'Connected'; } }
+async function connectWallet(name, silent){
+  const w = WALLETS[name], p = w && w.get();
+  if (!p){ if (!silent){ toast(name + " isn't installed in this browser"); window.open(w.url, '_blank', 'noopener'); } return; }
+  try {
+    const r = await p.connect(silent ? { onlyIfTrusted:true } : undefined);
+    const pk = (r && r.publicKey) || p.publicKey; if (!pk) throw new Error('No account');
+    provider = p; wallet = pk.toString();
+    try { localStorage.setItem('plug-wallet-name', name); } catch(e){}
+    setWallet(); refreshBal(); renderPrev();
+    if (!silent){ closeModal(); toast(name + ' connected'); }
+    if (p.on) p.on('accountChanged', k => { if (k){ wallet = k.toString(); setWallet(); refreshBal(); } else disconnect(); });
+  } catch(e){ if (!silent) toast('Connection cancelled'); }
+}
+function disconnect(){ try { provider && provider.disconnect && provider.disconnect(); } catch(e){} provider = null; wallet = null; try { localStorage.removeItem('plug-wallet-name'); } catch(e){} setWallet(); toast('Wallet disconnected'); }
+function autoConnect(){ let n = null; try { n = localStorage.getItem('plug-wallet-name'); } catch(e){} if (n && WALLETS[n]) setTimeout(() => connectWallet(n, true), 400); }
+$('#connectBtn').onclick = () => wallet ? disconnect() : openModal();
+$$('.wallets button').forEach(b => b.onclick = () => connectWallet(b.dataset.w));
+$('#mClose').onclick = closeModal;
+$('#scrim').onclick = e => { if (e.target.id==='scrim') closeModal(); };
+addEventListener('keydown', e => { if (e.key==='Escape'){ closeModal(); $('#side').classList.remove('open'); } });
+$('[data-agents]').onclick = e => { e.preventDefault(); toast('Agents are coming next'); };
+$('[data-port]').onclick = e => { e.preventDefault(); wallet ? toast('Portfolio is coming next') : openModal(); };
+
+// ---------- routing ----------
+let route = 'explore';
+function go(){
+  const hsh = location.hash.slice(1) || 'explore';
+  route = hsh.startsWith('coin-') ? 'coin' : hsh.startsWith('mint-') ? 'live' : (hsh==='create' ? 'create' : 'explore');
+  $$('.view').forEach(v=>v.classList.remove('on')); $('#v-'+route).classList.add('on');
+  $$('.navl a[data-nav]').forEach(a=>a.classList.toggle('on', a.dataset.nav===route));
+  $('#side').classList.remove('open');
+  if (route==='coin') renderCoin(hsh.slice(5)); else current = null;
+  if (route==='explore'){ renderKoth(); renderGrid(); if (typeof renderLive==='function') renderLive(); }
+  if (route==='create') renderPrev();
+  if (route==='live') renderLiveCoin(hsh.slice(5)); else curMint = null;
+  scrollTo(0,0);
+}
+addEventListener('hashchange', go);
+$('#menuBtn').onclick = () => $('#side').classList.toggle('open');
+
+setWallet(); renderRecents(); renderModels(); go(); loadLive(); autoConnect();
+setInterval(()=>{ if (route==='live' && curMint){ delete dex[curMint]; renderLiveCoin(curMint, true); } }, 20000);
+})();
+</script>
+</body>
+</html>

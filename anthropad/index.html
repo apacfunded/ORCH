@@ -86,6 +86,11 @@ a{color:inherit;text-decoration:none}
 .send{margin-left:auto;width:40px;height:40px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center}
 .send:hover{background:var(--accent-h)}
 .send svg{width:18px;height:18px}
+.thinking{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;font-size:14px;color:var(--muted)}
+.thinking[hidden]{display:none}
+.thinking i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.send[disabled]{opacity:.5;cursor:wait}
 .ideas{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
 .ideas button{font-size:14px;color:var(--muted);border:1px solid var(--line);background:var(--bg);padding:7px 12px;border-radius:999px;min-height:36px}
 .ideas button:hover{color:var(--text);border-color:var(--line2)}
@@ -360,13 +365,14 @@ a{color:inherit;text-decoration:none}
       </div>
       <form class="composer" id="composer">
         <label for="idea" class="sr">Describe a coin to launch</label>
-        <textarea id="idea" rows="2" placeholder="What are you launching today?"></textarea>
+        <textarea id="idea" rows="2" placeholder="Describe your coin and Claude names it. Try: a dog that buys back its own coin"></textarea>
         <div class="comp-row">
           <a class="chip" href="#create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Add image</a>
           <button type="button" class="chip" id="pickModel"><span class="agent" style="background:none;padding:0"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></span><span id="pickModelLbl">Pick a Claude model</span></button>
           <button class="send" type="submit" aria-label="Start launch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
         </div>
       </form>
+      <div class="thinking" id="thinking" hidden><i></i>Naming your coin…</div>
       <div class="ideas" id="ideas"></div>
 
       <div class="sec-h"><h2>Live on Anthropad</h2><small id="liveSub">real coins launched here</small></div>
@@ -626,7 +632,23 @@ $('#hello').textContent = h<5 ? 'Up late? Launch something' : h<12 ? 'Good morni
 const IDEAS = ['A dog that buys back its own coin','A coin whose agent tweets the chart','Burn half of every fee','Airdrop to holders over 7 days'];
 $('#ideas').innerHTML = IDEAS.map(i=>`<button type="button">${i}</button>`).join('');
 $$('#ideas button').forEach(b => b.onclick = () => { $('#idea').value = b.textContent; $('#idea').focus(); });
-$('#composer').onsubmit = e => { e.preventDefault(); const v = $('#idea').value.trim(); location.hash = 'create'; if (v){ $('#cDesc').value = v; $('#cDesc').dispatchEvent(new Event('input')); } setTimeout(()=>$('#cName').focus(),50); };
+$('#composer').onsubmit = async e => {
+  e.preventDefault(); const v = $('#idea').value.trim();
+  if (!v){ location.hash = 'create'; setTimeout(()=>$('#cName').focus(),50); return; }
+  const btn = $('#composer .send'), ta = $('#idea');
+  if (btn.disabled) return;
+  btn.disabled = true; ta.disabled = true; $('#thinking').hidden = false;
+  let out = null;
+  try { out = await api('/api/prompt', { idea: v, model }); } catch(err){ out = null; }
+  btn.disabled = false; ta.disabled = false; $('#thinking').hidden = true;
+  $('#cName').value = out && out.name ? out.name : '';
+  $('#cTick').value = out && out.symbol ? out.symbol : '';
+  $('#cDesc').value = out && out.description ? out.description : v;
+  ['cName','cTick','cDesc'].forEach(id => $('#'+id).dispatchEvent(new Event('input')));
+  location.hash = 'create';
+  const m = $('#cMsg'); m.className = 'formmsg'; m.textContent = out ? 'Filled in from your idea. Change anything, add an image, then launch.' : 'Could not reach the namer. Fill in the name and ticker yourself.';
+  setTimeout(()=>{ $('#cImg').focus(); }, 60);
+};
 $('#idea').addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); $('#composer').requestSubmit(); } });
 
 // ---------- explore ----------

@@ -34,6 +34,9 @@ a{color:inherit;text-decoration:none}
 .side{background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:14px 12px}
 .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;font:600 20px var(--serif)}
 .brand svg{width:34px;height:34px;border-radius:9px;border:1px solid var(--line)}
+.xlink{display:inline-flex;align-items:center;gap:8px;margin:0 8px 12px;padding:6px 10px;border:1px solid var(--line2);border-radius:999px;font-size:13px;font-weight:500;color:var(--text);background:var(--surface);width:max-content;min-height:32px}
+.xlink:hover{background:var(--sunk)}
+.xlink svg{width:13px;height:13px}
 .indie{font-size:12px;color:var(--dim);padding:0 8px 12px;margin-top:-8px;line-height:1.4}
 .newbtn{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:10px;font-weight:500;color:var(--accent)}
 .newbtn:hover{background:var(--sunk)}
@@ -336,6 +339,7 @@ a{color:inherit;text-decoration:none}
       Anthropad
     </a>
     <p class="indie">Independent project. Not made by or affiliated with Anthropic.</p>
+    <a class="xlink" href="https://x.com/Anthropad_sol" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@Anthropad_sol</a>
     <a class="newbtn" href="#create"><span class="plus">+</span>New coin</a>
     <nav class="navl" aria-label="Main">
       <a href="#explore" data-nav="explore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg>Explore</a>
@@ -400,7 +404,7 @@ a{color:inherit;text-decoration:none}
         <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Search name or ticker" aria-label="Search coins"></label>
       </div>
       <div class="grid" id="grid"></div>
-      <div class="foot"><span>Anthropad · $ANTHROPAD on Solana</span><span>Independent project. Not affiliated with or endorsed by Anthropic. Not financial advice.</span></div>
+      <div class="foot"><span>Anthropad · $ANTHROPAD on Solana · <a href="https://x.com/Anthropad_sol" target="_blank" rel="noopener" style="color:var(--accent)">X @Anthropad_sol</a></span><span>Independent project. Not affiliated with or endorsed by Anthropic. Not financial advice.</span></div>
     </section>
 
     <!-- COIN -->

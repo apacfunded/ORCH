@@ -273,6 +273,12 @@ a{color:inherit;text-decoration:none}
 .lsteps li.on{color:var(--text);font-weight:500} .lsteps li.done{color:var(--up)} .lsteps li.fail{color:var(--down)}
 .lsteps li i{width:16px;text-align:center;font-style:normal}
 .formmsg a,.msg a{color:var(--accent);font-weight:500}
+.cabar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin:-6px auto 18px;padding:8px 10px 8px 16px;border:1px solid var(--line,#e2dacb);border-radius:999px;background:#fffaf2;width:max-content;max-width:100%;font-size:14px}
+.cabar .cal{font-weight:600;color:var(--accent,#c96442)}
+.cabar .cav{font-family:var(--mono,monospace);color:var(--muted,#6b6862);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw}
+.cabar button,.cabar a{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line,#e2dacb);background:#fff;font:inherit;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;color:inherit}
+.cabar [hidden]{display:none!important}
+.cabar a{background:var(--accent,#c96442);color:#fff;border-color:transparent}
 .demo-note{font-size:13px;color:#9a7420;background:#f6eedb;border-radius:10px;padding:8px 12px;margin-bottom:14px;display:inline-block}
 .ext{margin-left:auto;font-size:13px;color:var(--accent);font-weight:500;padding:6px 8px;min-height:32px;display:inline-flex;align-items:center}
 .chart iframe{width:100%;height:100%;border:0;display:block}
@@ -347,7 +353,7 @@ a{color:inherit;text-decoration:none}
       <a href="#explore" data-agents><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Agents<span class="soon">soon</span></a>
       <a href="#explore" data-port><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M16 13h2M3 10h18"/></svg>Portfolio</a>
     </nav>
-    <div class="sidehead">Recents</div>
+    <div class="sidehead">New launches</div>
     <div class="recents" id="recents"></div>
     <div class="me" id="meRow">
       <div class="pf">?</div>
@@ -367,6 +373,7 @@ a{color:inherit;text-decoration:none}
       <div class="greet">
         <h1><svg class="spark" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#f4efe4"/><circle cx="29" cy="203" r="6" fill="#c96442"/><circle cx="29" cy="261" r="12" fill="#c96442"/><circle cx="29" cy="319" r="5" fill="#c96442"/><circle cx="87" cy="87" r="10" fill="#c96442"/><circle cx="87" cy="145" r="10" fill="#c96442"/><circle cx="87" cy="203" r="8" fill="#c96442"/><circle cx="87" cy="261" r="22" fill="#c96442"/><circle cx="87" cy="319" r="6" fill="#c96442"/><circle cx="87" cy="377" r="12" fill="#c96442"/><circle cx="87" cy="435" r="8" fill="#c96442"/><circle cx="145" cy="87" r="10" fill="#c96442"/><circle cx="145" cy="145" r="24" fill="#c96442"/><circle cx="145" cy="203" r="9" fill="#c96442"/><circle cx="145" cy="261" r="29" fill="#c96442"/><circle cx="145" cy="319" r="12" fill="#c96442"/><circle cx="145" cy="377" r="23" fill="#c96442"/><circle cx="145" cy="435" r="8" fill="#c96442"/><circle cx="203" cy="29" r="6" fill="#c96442"/><circle cx="203" cy="87" r="8" fill="#c96442"/><circle cx="203" cy="145" r="9" fill="#c96442"/><circle cx="203" cy="203" r="29" fill="#c96442"/><circle cx="203" cy="261" r="29" fill="#c96442"/><circle cx="203" cy="319" r="29" fill="#c96442"/><circle cx="203" cy="377" r="8" fill="#c96442"/><circle cx="203" cy="435" r="8" fill="#c96442"/><circle cx="203" cy="493" r="5" fill="#c96442"/><circle cx="261" cy="29" r="12" fill="#c96442"/><circle cx="261" cy="87" r="22" fill="#c96442"/><circle cx="261" cy="145" r="29" fill="#c96442"/><circle cx="261" cy="203" r="29" fill="#c96442"/><circle cx="261" cy="261" r="29" fill="#c96442"/><circle cx="261" cy="319" r="29" fill="#c96442"/><circle cx="261" cy="377" r="28" fill="#c96442"/><circle cx="261" cy="435" r="21" fill="#c96442"/><circle cx="261" cy="493" r="10" fill="#c96442"/><circle cx="319" cy="29" r="5" fill="#c96442"/><circle cx="319" cy="87" r="6" fill="#c96442"/><circle cx="319" cy="145" r="12" fill="#c96442"/><circle cx="319" cy="203" r="29" fill="#c96442"/><circle cx="319" cy="261" r="29" fill="#c96442"/><circle cx="319" cy="319" r="29" fill="#c96442"/><circle cx="319" cy="377" r="10" fill="#c96442"/><circle cx="319" cy="435" r="6" fill="#c96442"/><circle cx="319" cy="493" r="4" fill="#c96442"/><circle cx="377" cy="87" r="12" fill="#c96442"/><circle cx="377" cy="145" r="23" fill="#c96442"/><circle cx="377" cy="203" r="8" fill="#c96442"/><circle cx="377" cy="261" r="28" fill="#c96442"/><circle cx="377" cy="319" r="10" fill="#c96442"/><circle cx="377" cy="377" r="22" fill="#c96442"/><circle cx="377" cy="435" r="9" fill="#c96442"/><circle cx="435" cy="87" r="8" fill="#c96442"/><circle cx="435" cy="145" r="8" fill="#c96442"/><circle cx="435" cy="203" r="8" fill="#c96442"/><circle cx="435" cy="261" r="21" fill="#c96442"/><circle cx="435" cy="319" r="6" fill="#c96442"/><circle cx="435" cy="377" r="9" fill="#c96442"/><circle cx="435" cy="435" r="5" fill="#c96442"/><circle cx="493" cy="203" r="5" fill="#c96442"/><circle cx="493" cy="261" r="10" fill="#c96442"/><circle cx="493" cy="319" r="4" fill="#c96442"/></svg><span id="hello">Good evening</span></h1>
       </div>
+      <div class="cabar" id="caBar"><span class="cal">$ANTHROPAD</span><span class="cav" id="caVal">CA dropping soon</span><button type="button" class="cacopy" id="caCopy" hidden>Copy CA</button><a class="cabuy" id="caBuy" target="_blank" rel="noopener" hidden>Buy on pump.fun ↗</a></div>
       <form class="composer" id="composer">
         <label for="idea" class="sr">Describe a coin to launch</label>
         <div class="ta-wrap"><textarea id="idea" rows="2" aria-describedby="ph"></textarea><div class="ph" id="ph" aria-hidden="true"></div></div>
@@ -379,9 +386,10 @@ a{color:inherit;text-decoration:none}
       <div class="thinking" id="thinking" hidden><i></i>Naming your coin…</div>
       <div class="ideas" id="ideas"></div>
 
-      <div class="sec-h"><h2>Live on Anthropad</h2><small id="liveSub">real coins launched here</small></div>
+      <div class="sec-h"><h2>Latest launches</h2><small id="liveSub">launched on Anthropad</small></div>
       <div class="grid" id="liveGrid"><div class="empty">Loading live launches…</div></div>
 
+      <div id="demoWrap" hidden>
       <div class="sec-h"><h2>King of the hill</h2><small>closest to graduating</small></div>
       <div class="koth" id="koth" role="link" tabindex="0"></div>
 
@@ -404,6 +412,7 @@ a{color:inherit;text-decoration:none}
         <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Search name or ticker" aria-label="Search coins"></label>
       </div>
       <div class="grid" id="grid"></div>
+      </div>
       <div class="foot"><span>Anthropad · $ANTHROPAD on Solana · <a href="https://x.com/Anthropad_sol" target="_blank" rel="noopener" style="color:var(--accent)">X @Anthropad_sol</a></span><span>Independent project. Not affiliated with or endorsed by Anthropic. Not financial advice.</span></div>
     </section>
 
@@ -618,9 +627,13 @@ const coins = SEED.map(([name,ticker,tier,rel,mcap,desc,agent]) => {
 const byT = t => coins.find(c => c.ticker===t);
 let filter = 'trending', query = '';
 let wallet = null, provider = null;
-let recents = []; try { recents = JSON.parse(localStorage.getItem('plug-recents')||'[]'); } catch(e){}
+const MAIN_CA = ''; // $ANTHROPAD contract address goes here
+(function(){ if (!MAIN_CA) return; const v=document.getElementById('caVal'); v.textContent = MAIN_CA; v.title = MAIN_CA;
+  const c=document.getElementById('caCopy'), b=document.getElementById('caBuy'); c.hidden=false; b.hidden=false; b.href='https://pump.fun/coin/'+MAIN_CA;
+  c.onclick=()=>{ navigator.clipboard?.writeText(MAIN_CA).then(()=>{ c.textContent='Copied'; setTimeout(()=>c.textContent='Copy CA',1500); }); }; })();
+let recents = [];
 recents = recents.filter(t => SEED.some(s=>s[1]===t));
-if (!recents.length) recents = ['MYTHOS52','FABLE52','OPUS55','SONNET55','HAIKU55'];
+
 
 // ---------- ui helpers ----------
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('on'),2200); }
@@ -724,6 +737,8 @@ const tierBadge = c => c.tier ? `<span class="tbadge" style="color:${c.tier==='m
 
 // recents
 function renderRecents(){
+  if (typeof live!=='undefined' && live.length){ $('#recents').innerHTML = live.slice(0,8).map(c=>`<a href="#mint-${esc(c.mint)}"><img class="av" src="${esc(c.image)}" alt="" style="object-fit:cover"><span class="t">${esc(c.name)}</span><b>$${esc(c.symbol)}</b></a>`).join(''); return; }
+  $('#recents').innerHTML = '<p style="font-size:13px;color:var(--dim);padding:4px 12px">New launches show here.</p>'; return;
   $('#recents').innerHTML = recents.map(byT).filter(Boolean).map(c=>`<a href="#coin-${c.ticker}">${avatar(c.ticker)}<span class="t">${esc(c.name)}</span><b style="color:${c.chg>=0?'var(--up)':'var(--down)'}">${c.chg>=0?'+':''}${c.chg.toFixed(0)}%</b></a>`).join('');
 }
 function pushRecent(t){ recents = [t, ...recents.filter(x=>x!==t)].slice(0,8); try{localStorage.setItem('plug-recents',JSON.stringify(recents))}catch(e){} renderRecents(); }
@@ -749,7 +764,7 @@ for (let i=0;i<14;i++) tick.push(fakeTrade(coins[Math.floor(Math.random()*coins.
 renderTicker();
 
 let current = null, side = 'buy', candles = [], trades = [];
-setInterval(() => {
+if (false) setInterval(() => {
   const c = Math.random()<.35 && current ? current : coins[Math.floor(Math.random()*coins.length)];
   const t = fakeTrade(c);
   const move = (t.sol*SOLUSD) * (t.buy?1:-1) * .9;
@@ -840,7 +855,8 @@ const NEWEST = { mythos:'Fable 5.2', fable:'Fable 5.2', opus:'Opus 5.5', sonnet:
 function modelStatus(name){
   const m = MODELS.find(x=>x.name===name); if (!m) return ['',''];
   if (CURRENT.includes(m.name)) return ['Current','The agent runs on this exact model.'];
-  if (m.tier==='mythos') return ['Restricted','Mythos access is limited. Until it opens up, the agent runs on Fable 5.2, the public Mythos-class model.'];
+  if (m.name==='Claude Mythos 5.2') return ['Current','The agent runs on this exact model.'];
+  if (m.tier==='mythos') return ['Older','The agent runs on Claude Mythos 5.2, the newest Mythos model.'];
   return ['Older','The agent runs on this model while Anthropic still serves it, then moves up to '+NEWEST[m.tier]+'.'];
 }
 let model = 'Claude Opus 5.5';
@@ -997,7 +1013,7 @@ var live = [], curMint = null, lside = 'buy';
 const dex = {};
 async function loadLive(){
   try { const r = await fetch(API + '/api/coins'); const j = await r.json(); live = j.coins || []; } catch(e){ live = []; }
-  await enrichLive(live.slice(0,30)); renderLive(); renderTicker();
+  await enrichLive(live.slice(0,30)); renderLive(); renderTicker(); renderRecents();
 }
 async function enrichLive(list){
   if (!list.length) return;
@@ -1012,7 +1028,7 @@ function liveCard(c){
   return `<button class="card" data-mint="${esc(c.mint)}"><img class="av" src="${esc(c.image)}" alt="" loading="lazy" style="object-fit:cover"><div style="min-width:0"><div class="nm">${esc(c.name)} <span>$${esc(c.symbol)}</span></div><div class="by">${mm?tierBadge(mm)+' '+esc(mm.short)+' · ':''}${ago(Math.max(1,Math.floor((Date.now()-c.createdAt)/1000)))} ago</div><div class="ds">${esc(c.description||'')}</div><div class="meta"><span>MC <b>${d&&(d.marketCap||d.fdv)?fmtUsd(d.marketCap||d.fdv):'new'}</b></span>${ch!=null?`<span class="chg ${ch>=0?'up':'dn'}">${ch>=0?'+':''}${ch.toFixed(0)}%</span>`:''}<span>by ${esc(short(c.creator))}</span></div></div></button>`;
 }
 function renderLive(){
-  $('#liveSub').textContent = live.length ? live.length + ' real coin' + (live.length===1?'':'s') + ' launched here' : 'real coins launched here';
+  $('#liveSub').textContent = live.length ? live.length + ' coin' + (live.length===1?'':'s') + ' launched on Anthropad' : 'launched on Anthropad';
   $('#liveGrid').innerHTML = live.length ? live.map(liveCard).join('') : `<div class="empty">No live launches yet. <a href="#create" style="color:var(--accent);font-weight:500">Launch the first one</a></div>`;
 }
 $('#liveGrid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) location.hash = 'mint-' + c.dataset.mint; });
@@ -1106,12 +1122,13 @@ $('[data-port]').onclick = e => { e.preventDefault(); wallet ? toast('Portfolio 
 let route = 'explore';
 function go(){
   const hsh = location.hash.slice(1) || 'explore';
+  if (hsh.startsWith('coin-')){ location.replace('#explore'); return; }
   route = hsh.startsWith('coin-') ? 'coin' : hsh.startsWith('mint-') ? 'live' : (hsh==='create' ? 'create' : 'explore');
   $$('.view').forEach(v=>v.classList.remove('on')); $('#v-'+route).classList.add('on');
   $$('.navl a[data-nav]').forEach(a=>a.classList.toggle('on', a.dataset.nav===route));
   $('#side').classList.remove('open');
   if (route==='coin') renderCoin(hsh.slice(5)); else current = null;
-  if (route==='explore'){ renderKoth(); renderGrid(); if (typeof renderLive==='function') renderLive(); }
+  if (route==='explore'){ if (typeof renderLive==='function') renderLive(); }
   if (route==='create') renderPrev();
   if (route==='live') renderLiveCoin(hsh.slice(5)); else curMint = null;
   scrollTo(0,0);

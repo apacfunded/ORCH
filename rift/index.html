@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rift — pick your supply</title>
+<meta name="description" content="Rift is the Solana launchpad where you pick how many coins your coin has, from 1 million to 1 trillion.">
+<link rel="icon" type="image/png" href="logo.png">
+<meta property="og:title" content="Rift — pick your supply">
+<meta property="og:description" content="The Solana launchpad where you pick how many coins your coin has, from 1 million to 1 trillion.">
+<meta property="og:image" content="https://rift.orch.lol/banner.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@rift_solona">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14060a; --night:#1f0b11; --cream:#fff3e2; --white:#ffffff;
+  --red:#ff3b52; --red-d:#a5142a; --yellow:#ffd23f; --yellow-d:#b98a00;
+  --soft:#e9c3c6; --dim:#6a4a4f;
+  --font:"Fredoka",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--font);font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.05}
+p{margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;border-radius:10px}
+.tag{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:600;font-size:14px;letter-spacing:.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px;border:3px solid var(--ink);transform:rotate(-2deg)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border-radius:16px;border:3px solid var(--ink);font:600 18px var(--font);text-decoration:none;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.btn-red{background:var(--red);color:var(--white);box-shadow:0 6px 0 var(--red-d)}
+.btn-yellow{background:var(--yellow);color:var(--ink);box-shadow:0 6px 0 var(--yellow-d)}
+.btn:hover{transform:translateY(-2px)}
+.btn-red:hover{box-shadow:0 8px 0 var(--red-d)}
+.btn-yellow:hover{box-shadow:0 8px 0 var(--yellow-d)}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--red-d)}
+.btn-sm{min-height:44px;font-size:16px;padding:0 18px;border-radius:14px;box-shadow:0 4px 0 var(--red-d)}
+
+.nav{position:sticky;top:0;z-index:20;background:var(--ink);border-bottom:3px solid var(--night)}
+.nav .wrap{display:flex;align-items:center;gap:14px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:26px}
+.logo img{width:40px;height:40px;border-radius:12px;border:3px solid var(--ink);display:block}
+.nav nav{display:flex;gap:2px;margin-left:auto}
+.nav nav a{text-decoration:none;color:var(--soft);font-weight:500;font-size:16px;padding:10px 12px;border-radius:10px}
+.nav nav a:hover{color:var(--white)}
+.xlink{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;padding:0 12px;border-radius:14px;border:3px solid #3a1820;text-decoration:none;font-weight:500;font-size:16px;color:var(--cream);transition:border-color .15s}
+.xlink:hover{border-color:var(--soft)}
+.xlink svg{width:18px;height:18px}
+@media (max-width:860px){.nav nav{display:none}.nav .xlink{margin-left:auto}.nav .xlink span{display:none}}
+
+.hero{position:relative;overflow:hidden;padding:72px 0 100px;min-height:calc(100vh - 68px);display:flex;align-items:center;--bx:50%}
+.hero>.wrap{position:relative;z-index:3;width:100%}
+#beam{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.planet{position:absolute;border-radius:50%;z-index:1;pointer-events:none;border:3px solid var(--ink);animation:bob 7s ease-in-out infinite alternate}
+.planet.p1{width:120px;height:120px;left:calc(var(--bx) - 260px);top:9%;background:radial-gradient(circle at 70% 30%,#ffb38a 0 9px,transparent 10px),radial-gradient(circle at 30% 62%,#e2703f 0 14px,transparent 15px),radial-gradient(circle at 62% 74%,#e2703f 0 8px,transparent 9px),#ff8f55;box-shadow:inset -16px -12px 0 rgba(0,0,0,.2)}
+.planet.p2{width:56px;height:56px;left:calc(var(--bx) + 150px);top:74%;background:radial-gradient(circle at 35% 40%,#e0b21f 0 7px,transparent 8px),var(--yellow);box-shadow:inset -8px -6px 0 rgba(0,0,0,.18);animation-duration:9s;animation-delay:-3s}
+.planet.p3{width:74px;height:74px;left:calc(var(--bx) + 96px);top:7%;background:#c86bff;box-shadow:inset -10px -8px 0 rgba(0,0,0,.22);animation-duration:11s;animation-delay:-6s}
+@keyframes bob{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-16px) rotate(4deg)}}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:150px;align-items:center}
+.hero h1{font-size:clamp(46px,6vw,78px);margin:18px 0 18px}
+.hero h1 em{font-style:normal;color:var(--yellow)}
+.lede{color:var(--soft);font-size:21px;max-width:25em}
+.lede b{color:var(--white);font-weight:600}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+.pop{animation:pop .6s cubic-bezier(.3,1.5,.5,1) both}
+.pop.d1{animation-delay:.08s}.pop.d2{animation-delay:.16s}.pop.d3{animation-delay:.24s}.pop.d4{animation-delay:.34s}
+@keyframes pop{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
+.rv{opacity:0;transform:translateY(26px) scale(.96);transition:opacity .45s ease,transform .6s cubic-bezier(.3,1.5,.5,1);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+
+.card{background:var(--cream);color:var(--ink);border:3px solid var(--ink);border-radius:24px;padding:24px;box-shadow:7px 7px 0 var(--red)}
+.card.y{box-shadow:7px 7px 0 var(--yellow)}
+.card p{color:var(--dim)}
+
+.picker{padding:22px}
+.picker-head{display:flex;align-items:center;gap:16px}
+.picker-head>div:first-child{flex:1;min-width:0}
+.q{font-weight:600;font-size:18px;color:var(--dim)}
+.big{font-weight:600;font-size:clamp(30px,8.4vw,48px);line-height:1.05;white-space:nowrap}
+.digits{font-size:16px;color:var(--dim)}
+.pie{flex:none;width:86px;height:86px;border-radius:50%;border:4px solid var(--ink);box-shadow:0 0 0 5px #e9963a,0 0 0 8px var(--ink);margin:8px;transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+.pie.bump{transform:scale(1.12) rotate(8deg)}
+.sr{position:absolute;left:-9999px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:48px;background:transparent;margin:12px 0 0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:18px;border-radius:9px;border:3px solid var(--ink);background:linear-gradient(to right,var(--red) var(--fill,50%),var(--white) var(--fill,50%))}
+input[type=range]::-moz-range-track{height:12px;border-radius:9px;border:3px solid var(--ink);background:var(--white)}
+input[type=range]::-moz-range-progress{height:12px;border-radius:9px;background:var(--red)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);margin-top:-13px;box-shadow:0 4px 0 var(--ink)}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink)}
+.scale{display:flex;justify-content:space-between;font-size:15px;font-weight:500;color:var(--dim)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{min-height:44px;min-width:52px;padding:0 14px;border-radius:14px;border:3px solid var(--ink);background:var(--white);color:var(--ink);font:600 16px var(--font);cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .12s,box-shadow .12s,background .12s}
+.chip:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
+.chip:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.chip[aria-pressed=true]{background:var(--yellow)}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.res{border:3px solid var(--ink);border-radius:18px;padding:12px 14px;background:var(--white);min-width:0}
+.res.r{background:#ffe1e5}.res.g{background:#fff0b8}
+.res small{display:block;font-size:15px;font-weight:500;color:var(--dim)}
+.res b{display:block;font-weight:600;font-size:clamp(15px,4.2vw,22px);line-height:1.2;overflow-wrap:anywhere}
+.res i{display:block;font-style:normal;font-size:14px;color:var(--dim)}
+.verdict{margin-top:14px;font-weight:500;font-size:16px;color:var(--ink);background:var(--white);border:3px dashed var(--ink);border-radius:14px;padding:10px 14px}
+.picker .btn{width:100%;margin-top:16px}
+
+section{padding:84px 0}
+.band{background:var(--night)}
+.sec-head{max-width:680px;margin-bottom:40px}
+.sec-head h2{font-size:clamp(34px,4.6vw,52px);margin:14px 0 10px}
+.sec-head p{color:var(--soft);font-size:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.grid3 .card{transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
+.grid3 .card:hover{transform:translateY(-6px) rotate(-1deg)}
+.grid3 h3{font-size:26px;margin:16px 0 6px}
+.grid3 .n{font-weight:600;font-size:20px;color:var(--red-d)}
+.slice{width:112px;height:112px;border-radius:50%;border:4px solid var(--ink);box-shadow:0 0 0 6px #e9963a,0 0 0 9px var(--ink);margin:10px}
+.step{display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:var(--red);color:var(--white);border:3px solid var(--ink);font-weight:600;font-size:30px;box-shadow:0 5px 0 var(--ink)}
+
+.launch{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:start}
+form.card{display:grid;gap:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font-weight:600;font-size:16px;margin-bottom:6px}
+.field input{width:100%;height:52px;padding:0 14px;border-radius:14px;border:3px solid var(--ink);background:var(--white);color:var(--ink);font:500 18px var(--font)}
+.field input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 4px #ffc2ca}
+.field .hint{font-size:14px;color:var(--dim);margin-top:6px}
+.field .err{font-size:15px;font-weight:500;color:var(--red-d);margin-top:6px}
+.status{font-weight:500;font-size:16px;padding:12px 14px;border-radius:14px;background:#d9f7e7;border:3px solid var(--ink);display:none}
+.status.show{display:block}
+.preview{position:sticky;top:92px}
+.preview .ticker{font-weight:600;font-size:36px;line-height:1.1;margin-top:12px;overflow-wrap:anywhere}
+.preview .name{color:var(--dim);margin-bottom:14px}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:3px dotted #d8c3b0;font-size:17px}
+.kv span{color:var(--dim)}
+.kv b{font-weight:600;text-align:right;overflow-wrap:anywhere}
+
+.table-card{padding:6px 0;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{text-align:left;padding:14px 22px;font-size:17px;white-space:nowrap}
+th{font-weight:600;font-size:14px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+td{border-top:3px dotted #d8c3b0;font-weight:500}
+td b{font-weight:600}
+td span.nm{color:var(--dim);font-weight:400}
+tbody tr:hover{background:#ffe9cf}
+.bar{display:inline-block;width:96px;height:16px;border-radius:8px;border:3px solid var(--ink);background:var(--white);vertical-align:middle;margin-right:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--red);width:0;transition:width 1s cubic-bezier(.2,.8,.2,1) .2s}
+.in .bar i{width:var(--w)}
+.note{display:inline-block;margin-top:6px;font-size:15px;font-weight:500;color:var(--ink);background:var(--yellow);border:3px solid var(--ink);border-radius:999px;padding:4px 14px}
+
+.faq{max-width:780px;display:grid;gap:16px}
+details.card{padding:0;box-shadow:5px 5px 0 var(--yellow)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:64px;padding:10px 22px;font-weight:600;font-size:20px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";flex:none;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--red);color:var(--white);border:3px solid var(--ink);font-size:24px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{padding:0 22px 20px;font-size:18px}
+
+footer{padding:44px 0 110px;border-top:3px solid var(--night)}
+.foot{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.foot-right{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.ca{display:flex;align-items:center;gap:10px;font-size:16px;color:var(--soft);border:3px solid #3a1820;border-radius:14px;padding:0 14px;min-height:44px}
+.fine{font-size:14px;color:var(--soft);margin-top:22px;max-width:60ch}
+
+.sticky-cta{display:none}
+@media (max-width:900px){
+  body{font-size:17px}
+  .hero{padding:36px 0 56px;min-height:0;display:block;--bx:calc(100% - 26px)}
+  .hero-text{padding-right:40px}
+  .planet.p1{width:60px;height:60px;left:auto;right:58px;top:16px}.planet.p2,.planet.p3{display:none}
+  .hero-grid,.launch{grid-template-columns:1fr;gap:36px}
+  .grid3{grid-template-columns:1fr}
+  section{padding:60px 0}
+  .preview{position:static}
+  .card{box-shadow:5px 5px 0 var(--red)}.card.y{box-shadow:5px 5px 0 var(--yellow)}
+  .sticky-cta{display:block;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(16px + env(safe-area-inset-bottom));background:var(--ink);border-top:3px solid var(--night)}
+  .sticky-cta .btn{width:100%}
+}
+@media (max-width:480px){.results{grid-template-columns:1fr}.res b{font-size:22px}.row{grid-template-columns:1fr}.picker{padding:18px}.pie{width:62px;height:62px}.lede{font-size:19px}.hero-cta .btn{flex:1 1 100%}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.chip,.card,.bar i,.pie{transition:none}.pop,.planet{animation:none}.rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Rift home"><img src="logo.png" alt="" width="40" height="40">Rift</a>
+    <nav aria-label="Main">
+      <a href="#why">Why it matters</a>
+      <a href="#how">How it works</a>
+      <a href="#coins">Coins</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="xlink" href="https://x.com/rift_solona" target="_blank" rel="noopener" aria-label="Rift on X, @rift_solona">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.3l8-9.1L1 2h7l4.8 6.4zm-1.2 18h1.9L7 3.9H5z"/></svg>
+      <span>@rift_solona</span>
+    </a>
+    <a class="btn btn-red btn-sm" href="#launch">Launch a coin</a>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero" id="hero">
+  <div class="planet p1"></div><div class="planet p2"></div><div class="planet p3"></div>
+  <canvas id="beam" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <span class="tag pop">Solana launchpad</span>
+      <h1 class="pop d1">Your coin.<br><em>Your supply.</em></h1>
+      <p class="lede pop d2">Everywhere else, every coin has <b>1 billion</b> coins. On Rift <b>you choose</b> how many: 1 million, 1 trillion, or anything in between.</p>
+      <div class="hero-cta pop d3">
+        <a class="btn btn-red" href="#launch">Launch a coin</a>
+        <a class="btn btn-yellow" href="#why">Why it matters</a>
+      </div>
+    </div>
+
+    <div class="card picker pop d4" aria-label="Supply picker">
+      <div class="picker-head">
+        <div>
+          <div class="q">How many coins?</div>
+          <div class="big" id="bigWord" aria-live="polite">1 billion</div>
+          <div class="digits num" id="digits">1,000,000,000 coins</div>
+        </div>
+        <div class="pie" id="pie" aria-hidden="true"></div>
+      </div>
+      <label for="supplyRange" class="sr">Supply</label>
+      <input type="range" id="supplyRange" min="0" max="600" step="1" value="300" aria-valuetext="1 billion coins">
+      <div class="scale" aria-hidden="true"><span>Fewer coins</span><span>More coins</span></div>
+      <div class="presets" role="group" aria-label="Quick picks">
+        <button class="chip" type="button" data-s="1000000">1M</button>
+        <button class="chip" type="button" data-s="21000000">21M</button>
+        <button class="chip" type="button" data-s="100000000">100M</button>
+        <button class="chip" type="button" data-s="1000000000">1B</button>
+        <button class="chip" type="button" data-s="69000000000">69B</button>
+        <button class="chip" type="button" data-s="1000000000000">1T</button>
+      </div>
+      <div class="results">
+        <div class="res r"><small>1 coin costs</small><b class="num" id="outPrice">$0.000005</b><i>at launch</i></div>
+        <div class="res g"><small>$20 gets you</small><b class="num" id="outCoins">4,000,000</b><i>coins</i></div>
+      </div>
+      <div class="verdict" id="verdict">This is the normal amount. Every pump.fun coin has it.</div>
+      <a class="btn btn-red" href="#launch">Launch with this supply</a>
+    </div>
+  </div>
+</div>
+
+<section id="why" class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Why it matters</span>
+      <h2>Same pizza. More slices.</h2>
+      <p>Your coin is worth the same at launch no matter what you pick. Supply only decides how many pieces it's cut into.</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="slice" style="background:repeating-conic-gradient(var(--ink) 0 2.5deg,var(--yellow) 2.5deg 90deg)"></div><h3>Few coins</h3><div class="n num">21,000,000</div><p>Big slices. Each coin costs more, so it feels rare.</p></div>
+      <div class="card y"><div class="slice" style="background:repeating-conic-gradient(var(--ink) 0 2.5deg,var(--yellow) 2.5deg 30deg)"></div><h3>Normal</h3><div class="n num">1,000,000,000</div><p>What every other coin uses. Prices look the way people expect.</p></div>
+      <div class="card"><div class="slice" style="background:repeating-conic-gradient(var(--ink) 0 2.5deg,var(--yellow) 2.5deg 9deg)"></div><h3>Tons of coins</h3><div class="n num">1,000,000,000,000</div><p>Tiny slices. Each coin is super cheap, so $20 buys billions.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">How it works</span>
+      <h2>3 steps. That's it.</h2>
+    </div>
+    <div class="grid3">
+      <div class="card y"><div class="step">1</div><h3>Name your coin</h3><p>Add a name, a ticker and a picture.</p></div>
+      <div class="card"><div class="step">2</div><h3>Pick your supply</h3><p>Slide to choose how many coins exist.</p></div>
+      <div class="card y"><div class="step">3</div><h3>Launch</h3><p>Your coin goes live. The supply is locked forever.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="launch" class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Launch</span>
+      <h2>Set up your coin</h2>
+      <p>Fill this in to see what buyers will get. Launching opens when Rift goes live.</p>
+    </div>
+    <div class="launch">
+      <form class="card" id="launchForm" novalidate>
+        <div class="row">
+          <div class="field"><label for="fName">Coin name</label><input id="fName" autocomplete="off" maxlength="32"><div class="err" id="eName" role="alert"></div></div>
+          <div class="field"><label for="fTicker">Ticker</label><input id="fTicker" autocomplete="off" maxlength="10"><div class="err" id="eTicker" role="alert"></div></div>
+        </div>
+        <div class="field">
+          <label for="fSupply">How many coins</label>
+          <input id="fSupply" class="num" inputmode="numeric" autocomplete="off" value="1,000,000,000">
+          <div class="hint">Anything from 1,000,000 to 1,000,000,000,000.</div>
+          <div class="err" id="eSupply" role="alert"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="fDev">Your first buy (SOL)</label><input id="fDev" class="num" inputmode="decimal" autocomplete="off" value="1"></div>
+          <div class="field"><label for="fImg">Picture</label><input id="fImg" type="file" accept="image/*" style="padding:11px 12px;font-size:15px"></div>
+        </div>
+        <button class="btn btn-red" type="submit">Launch coin</button>
+        <div class="status" id="status" role="status"></div>
+      </form>
+      <aside class="card y preview" aria-label="Launch preview">
+        <span class="tag">Preview</span>
+        <div class="ticker" id="pTicker">$TICKER</div>
+        <div class="name" id="pName">Your coin</div>
+        <div class="kv"><span>Coins</span><b class="num" id="pSupply">1,000,000,000</b></div>
+        <div class="kv"><span>1 coin costs</span><b class="num" id="pPrice">$0.000005</b></div>
+        <div class="kv"><span>$20 gets you</span><b class="num" id="pCoins">4,000,000</b></div>
+        <div class="kv"><span>Supply after launch</span><b>Locked</b></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="coins">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Coins</span>
+      <h2>Launched with Rift</h2>
+      <span class="note">Example data until launch</span>
+    </div>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>Coin</th><th>How many coins</th><th>1 coin costs</th><th>Market cap</th><th>Bonding</th></tr></thead>
+        <tbody id="coinRows"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="band">
+  <div class="wrap">
+    <div class="sec-head"><span class="tag">FAQ</span><h2>Quick answers</h2></div>
+    <div class="faq">
+      <details class="card" open><summary>Does more supply make my coin worth more?</summary><p>No. Your coin starts at the same market cap either way. Supply only changes the price of one coin and how many coins a buyer gets.</p></details>
+      <details class="card"><summary>What can I pick?</summary><p>Any whole number from 1 million to 1 trillion. Tap a quick pick or type your own.</p></details>
+      <details class="card"><summary>Can I change it later?</summary><p>No. Supply is set once, at launch. Nobody can make more coins after that, not even you.</p></details>
+      <details class="card"><summary>Why pick fewer coins?</summary><p>Each coin costs more and the number is easy to count. It makes a coin feel rare.</p></details>
+      <details class="card"><summary>Why pick more coins?</summary><p>Each coin is very cheap, so a small buy gets a huge bag. Great for classic meme coins.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a class="logo" href="#top"><img src="logo.png" alt="" width="40" height="40">Rift</a>
+      <div class="foot-right">
+        <a class="xlink" href="https://x.com/rift_solona" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.3l8-9.1L1 2h7l4.8 6.4zm-1.2 18h1.9L7 3.9H5z"/></svg>
+          <span>@rift_solona</span>
+        </a>
+        <div class="ca"><b>CA</b><span>Posted here at launch</span></div>
+      </div>
+    </div>
+    <p class="fine">Meme coins are high risk and can go to zero. Nothing on this page is financial advice.</p>
+  </div>
+</footer>
+
+<div class="sticky-cta"><a class="btn btn-red" href="#launch">Launch a coin</a></div>
+
+<script>
+(function(){
+  var beamTarget=1;
+  var MIN=1e6, MAX=1e12, STD=1e9, CAP=5000, BUY=20;
+  var $=function(id){return document.getElementById(id)};
+  var range=$('supplyRange'), chips=[].slice.call(document.querySelectorAll('.chip'));
+  var supply=STD;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function commas(n){return Math.round(n).toLocaleString('en-US')}
+  function price(p){
+    if(p>=1) return '$'+p.toFixed(2);
+    var d=Math.min(14,Math.ceil(-Math.log10(p))+2);
+    return '$'+p.toFixed(d).replace(/0+$/,'').replace(/\.$/,'');
+  }
+  function word(n){
+    var u=[[1e12,'trillion'],[1e9,'billion'],[1e6,'million']];
+    for(var i=0;i<u.length;i++){ if(n>=u[i][0]){ return (Math.round(n/u[i][0]*100)/100)+' '+u[i][1]; } }
+    return commas(n);
+  }
+  function fromSlider(v){
+    var raw=Math.pow(10,6+v/100);
+    var mag=Math.pow(10,Math.floor(Math.log10(raw))-1);
+    return Math.min(MAX,Math.max(MIN,Math.round(raw/mag)*mag));
+  }
+  function toSlider(s){return Math.round((Math.log10(s)-6)*100)}
+  function times(x){return commas(x>=10?x:Math.round(x*10)/10)+'×'}
+  function verdict(s){
+    var r=STD/s;
+    if(Math.abs(r-1)<1e-9) return 'This is the normal amount. Every pump.fun coin has it.';
+    return r>1 ? 'Fewer coins: each one costs '+times(r)+' more than normal.'
+               : 'More coins: each one is '+times(1/r)+' cheaper than normal.';
+  }
+  var lastSlices=0;
+  function render(src){
+    var p=CAP/supply, coins=BUY/p, v=toSlider(supply);
+    $('bigWord').textContent=word(supply);
+    $('digits').textContent=commas(supply)+' coins';
+    $('outPrice').textContent=price(p);
+    $('outCoins').textContent=commas(coins);
+    $('verdict').textContent=verdict(supply);
+    if(src!=='range') range.value=v;
+    range.style.setProperty('--fill',(v/6)+'%');
+    range.setAttribute('aria-valuetext',word(supply)+' coins');
+    var slices=4+Math.round(v/600*22)*2;
+    if(slices!==lastSlices){
+      var pie=$('pie');
+      pie.style.background='repeating-conic-gradient(var(--ink) 0 2.5deg,var(--yellow) 2.5deg '+(360/slices)+'deg)';
+      if(lastSlices && !reduce){pie.classList.add('bump');clearTimeout(pie._t);pie._t=setTimeout(function(){pie.classList.remove('bump')},160)}
+      lastSlices=slices;
+    }
+    beamTarget=.55+v/600*1.25;
+    chips.forEach(function(c){c.setAttribute('aria-pressed',String(+c.dataset.s===supply))});
+    if(src!=='field') $('fSupply').value=commas(supply);
+    $('pSupply').textContent=commas(supply);
+    $('pPrice').textContent=price(p);
+    $('pCoins').textContent=commas(coins);
+    $('eSupply').textContent='';
+  }
+
+  range.addEventListener('input',function(){supply=fromSlider(+range.value);render('range')});
+  chips.forEach(function(c){c.addEventListener('click',function(){tweenTo(+c.dataset.s)})});
+  var tw=null;
+  function tweenTo(target){
+    if(reduce){supply=target;render();return}
+    var a=Math.log10(supply),b=Math.log10(target),t0=performance.now();
+    cancelAnimationFrame(tw);
+    (function step(now){
+      var k=Math.min(1,(now-t0)/420),e=1-Math.pow(1-k,3);
+      supply=k<1?fromSlider((a+(b-a)*e-6)*100):target;render();
+      if(k<1) tw=requestAnimationFrame(step);
+    })(t0);
+  }
+
+  $('fSupply').addEventListener('input',function(){
+    var n=parseInt(this.value.replace(/[^\d]/g,''),10);
+    if(!n){return}
+    if(n<MIN||n>MAX){$('eSupply').textContent='Pick a number from 1,000,000 to 1,000,000,000,000.';return}
+    supply=n;render('field');
+  });
+  $('fSupply').addEventListener('blur',function(){this.value=commas(supply);$('eSupply').textContent=''});
+  $('fName').addEventListener('input',function(){$('pName').textContent=this.value.trim()||'Your coin';$('eName').textContent=''});
+  $('fTicker').addEventListener('input',function(){
+    this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    $('pTicker').textContent='$'+(this.value||'TICKER');$('eTicker').textContent='';
+  });
+  $('launchForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var ok=true;
+    if(!$('fName').value.trim()){$('eName').textContent='Add a coin name.';ok=false}
+    if(!$('fTicker').value.trim()){$('eTicker').textContent='Add a ticker.';ok=false}
+    var st=$('status');
+    if(!ok){st.classList.remove('show');return}
+    st.textContent='Launching opens when Rift goes live. Your setup: $'+$('fTicker').value+' with '+word(supply)+' coins.';
+    st.classList.add('show');
+  });
+
+  var rows=[['RARE','Rare Pepe',21e6,48200,71],['ZILLION','Zillion',1e12,31900,52],['HUNDO','Hundo',1e8,22400,38],['NICE','Nice',69e9,15700,27],['ONEM','One Mil',1e6,9300,14],['PLAIN','Plain',1e9,6100,6]];
+  $('coinRows').innerHTML=rows.map(function(r){
+    return '<tr><td><b>$'+r[0]+'</b> <span class="nm">'+r[1]+'</span></td>'+
+      '<td class="num">'+word(r[2])+'</td><td class="num">'+price(r[3]/r[2])+'</td>'+
+      '<td class="num">$'+commas(r[3])+'</td><td><span class="bar"><i style="--w:'+r[4]+'%"></i></span><span class="num">'+r[4]+'%</span></td></tr>';
+  }).join('');
+
+  render();
+
+  var rv=[].slice.call(document.querySelectorAll('.sec-head,.grid3 .card,.launch>*,.table-card,.faq details'));
+  if(!reduce && 'IntersectionObserver' in window){
+    rv.forEach(function(el){
+      el.classList.add('rv');
+      var sibs=[].slice.call(el.parentNode.children);
+      el.style.setProperty('--d',(Math.min(sibs.indexOf(el),5)*0.09)+'s');
+    });
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    rv.forEach(function(el){io.observe(el)});
+  } else { rv.forEach(function(el){el.classList.add('in')}); }
+
+  /* cartoon rift: a zigzag crack that pops out coins */
+  var cv=$('beam'), hero=$('hero'), cx=cv.getContext('2d'), W=0,H=0,bx=0,scale=1,running=true,coins=[],small=false;
+  function hash(n){var x=Math.sin(n*127.1)*43758.5453;return x-Math.floor(x)}
+  function size(){
+    var r=hero.getBoundingClientRect(), d=Math.min(2,window.devicePixelRatio||1);
+    W=r.width;H=r.height;cv.width=Math.round(W*d);cv.height=Math.round(H*d);cx.setTransform(d,0,0,d,0,0);
+    small=W<900; bx=small?W-26:W/2;
+  }
+  var STEP=58;
+  function centre(i,q){var u=i*STEP/H;return bx+(i%2?1:-1)*(7+hash(i)*11)*(.35+u)*(small?.5:1)+(hash(i*13+q)-.5)*3}
+  function half(i){var u=Math.min(1,i*STEP/H);return (3+u*u*15)*scale*Math.min(1,u/.06)*(small?.6:1)+(small?0:Math.pow(u,9)*Math.min(W*.3,330))}
+  function layer(q,k,extra,col){
+    var n=Math.ceil(H/STEP)+1,i;
+    cx.beginPath();
+    for(i=0;i<=n;i++) cx.lineTo(centre(i,q)-half(i)*k-extra,i*STEP);
+    for(i=n;i>=0;i--) cx.lineTo(centre(i,q)+half(i)*k+extra,i*STEP);
+    cx.closePath();cx.fillStyle=col;cx.fill();
+  }
+  function star(x,y,r,a){cx.globalAlpha=a;cx.fillStyle='#fff3e2';cx.beginPath();
+    cx.moveTo(x,y-r);cx.quadraticCurveTo(x,y,x+r,y);cx.quadraticCurveTo(x,y,x,y+r);cx.quadraticCurveTo(x,y,x-r,y);cx.quadraticCurveTo(x,y,x,y-r);cx.fill();cx.globalAlpha=1}
+  function frame(ms){
+    var t=ms/1000, q=Math.floor(t*7), i;
+    scale+=(beamTarget-scale)*.1;
+    cx.clearRect(0,0,W,H);
+    for(i=0;i<(small?12:30);i++){
+      var sx=hash(i+1)*W, sy=hash(i+50)*H*.92;
+      star(sx,sy,3+hash(i+90)*5+Math.sin(t*2+i)*1.5,.3+.3*Math.sin(t*1.7+i*2));
+    }
+    layer(q,1,7,'#14060a');
+    layer(q,1,3,'#7a0f20');
+    layer(q,1,0,'#ff3b52');
+    layer(q,.6,0,'#ffd23f');
+    layer(q,.26,0,'#fffbe8');
+    var max=small?6:Math.round(10+scale*16);
+    if(!reduce && coins.length<max && Math.random()<.05+scale*.09){
+      var cy=H*(.22+Math.random()*.6), dir=small?-1:(Math.random()<.5?-1:1);
+      coins.push({x:bx,y:cy,vx:dir*(1.2+Math.random()*2.4),vy:-(1.6+Math.random()*2.6),r:7+Math.random()*4,l:1,sp:Math.random()*6});
+    }
+    for(i=coins.length-1;i>=0;i--){var c=coins[i];c.x+=c.vx;c.y+=c.vy;c.vy+=.07;c.l-=.008;
+      if(c.l<=0||c.y>H+20){coins.splice(i,1);continue}
+      var sq=Math.abs(Math.cos(t*5+c.sp))*.75+.25;
+      cx.globalAlpha=Math.min(1,c.l*3);
+      cx.beginPath();cx.ellipse(c.x,c.y,c.r*sq,c.r,0,0,Math.PI*2);cx.fillStyle='#ffd23f';cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#14060a';cx.stroke();
+      cx.beginPath();cx.ellipse(c.x,c.y,c.r*sq*.45,c.r*.5,0,0,Math.PI*2);cx.lineWidth=2;cx.strokeStyle='#b98a00';cx.stroke();
+      cx.globalAlpha=1;}
+    if(running && !reduce) requestAnimationFrame(frame);
+  }
+  size();
+  window.addEventListener('resize',function(){size();if(reduce||!running)frame(0)});
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){var on=es[0].isIntersecting;if(on&&!running&&!reduce){running=true;requestAnimationFrame(frame)}else if(!on){running=false}}).observe(hero);
+  }
+  if(reduce){scale=beamTarget;frame(0)} else requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

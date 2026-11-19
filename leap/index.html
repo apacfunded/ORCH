@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leap — migrate your coin early</title>
+<meta name="description" content="Leap is a Solana launchpad where coins migrate at a lower market cap once they earn it: real holders, real volume, fair distribution.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1a30; --surface:#15243f; --surface2:#1c3052; --line:#27406a; --line2:#35568c;
+  --text:#eef6ff; --muted:#a9bdd8; --faint:#7790b3;
+  --sage:#7cc4ff; --sage-hi:#b9defd; --sage-soft:#1c3a66; --sage-mid:#4a86c7;
+  --peach:#4f7fb8; --peach-soft:#1c3052; --lilac-soft:#1c3052; --sky-soft:#17365e; --butter-soft:#1c3052;
+  --water:#17335c; --water2:#0e1a30;
+  --warn:#fb7185;
+  --r:18px; --r-sm:12px;
+  --shadow:0 1px 2px rgba(70,50,20,.05),0 8px 28px rgba(70,50,20,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 15px/1.6 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:0}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+.serif{font-family:Fraunces,Georgia,serif;font-optical-sizing:auto}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+:focus-visible{outline:2px solid var(--sage);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- top bar ---------- */
+.demo-bar{background:var(--sage-soft);color:var(--sage-hi);font-size:13px;text-align:center;padding:7px 16px}
+header{position:sticky;top:0;z-index:20;background:rgba(14,26,48,.94);border-bottom:1px solid var(--line);backdrop-filter:saturate(1.2)}
+header .wrap{display:flex;align-items:center;gap:28px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;font:600 22px Fraunces,serif;letter-spacing:-.01em}
+.nav{display:flex;gap:4px}
+.nav a{padding:8px 14px;border-radius:999px;color:var(--muted);font-weight:500;font-size:14px}
+.nav a:hover{color:var(--text);background:var(--surface2)}
+.nav a.on{color:var(--text);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.hr{margin-left:auto;display:flex;gap:10px;align-items:center}
+.wallet{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer}
+.wallet .d{width:8px;height:8px;border-radius:50%;background:var(--sage)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;font-weight:500;font-size:15px;border:1px solid var(--line2);background:var(--surface);cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--sage);border-color:var(--sage);color:#0e1a30}
+.btn.primary:hover{background:var(--sage-hi)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- mobile tab bar ---------- */
+.tabbar{display:none}
+@media (max-width:860px){
+  .nav,.hr .btn{display:none}
+  .tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;justify-content:center;font-size:12px;color:var(--muted);border-radius:12px}
+  .tabbar a.on{color:var(--sage-hi);background:var(--sage-soft)}
+  .tabbar svg{width:20px;height:20px}
+  body{padding-bottom:76px}
+}
+
+/* ---------- generic ---------- */
+main{min-height:70vh}
+.page{padding:32px 0 56px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:24px}
+h1{font:600 clamp(36px,5.4vw,64px)/1.04 Fraunces,serif;letter-spacing:-.025em}
+h2{font:600 clamp(26px,3vw,34px)/1.15 Fraunces,serif;letter-spacing:-.015em}
+h3{font:600 20px/1.25 Fraunces,serif}
+.lead{font-size:18px;color:var(--muted);max-width:56ch}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--sage-hi);background:var(--sage-soft);border-radius:999px;padding:4px 12px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:999px;white-space:nowrap;background:var(--surface2);color:var(--muted)}
+.pill.mig{background:var(--sage-soft);color:var(--sage-hi)}
+.pill.close{background:var(--peach-soft);color:#a5d8ff}
+.pill.new{background:var(--sky-soft);color:#7dd3fc}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;z-index:50;background:var(--text);color:#0e1a30;padding:12px 18px;border-radius:14px;font-size:14px;transition:.25s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:860px){.toast{bottom:92px}}
+
+/* ---------- avatars ---------- */
+.av{flex-shrink:0;display:grid;place-items:center;border-radius:28%;overflow:hidden;font-family:Fraunces,serif;font-weight:600;color:#1d2a3a}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---------- home ---------- */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding:44px 0 28px}
+.hero h1 em{font-style:italic;color:var(--sage)}
+.hero .lead{margin:18px 0 26px}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap}
+.ca{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding:10px 12px 10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);max-width:100%}
+.ca code{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.ca.pending code{color:var(--muted)}
+.pond{position:relative;border-radius:28px;background:linear-gradient(180deg,#17335c 0%,#0e1a30 100%);border:1px solid var(--line);overflow:hidden;aspect-ratio:1.25}
+.pond svg{width:100%;height:100%;display:block}
+.pond .goals{position:absolute;left:16px;top:16px;display:flex;flex-direction:column;gap:6px}
+.goalchip{display:flex;align-items:center;gap:8px;background:rgba(21,36,63,.94);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-size:13px;font-weight:500;transition:.3s}
+.goalchip i{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);display:grid;place-items:center;transition:.3s}
+.goalchip.ok i{background:var(--sage);border-color:var(--sage)}
+.goalchip.ok i::after{content:"";width:8px;height:5px;border-left:2px solid #0e1a30;border-bottom:2px solid #0e1a30;transform:rotate(-45deg) translate(1px,-1px)}
+.pond .banner{position:absolute;right:16px;bottom:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 14px;font-size:14px;font-weight:500;opacity:0;transform:translateY(6px);transition:.35s}
+.pond .banner.show{opacity:1;transform:none}
+.statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 48px}
+.stat{padding:18px 20px}
+.stat .n{font:600 28px Fraunces,serif;letter-spacing:-.01em}
+.stat .l{font-size:13px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:52px}
+.step{padding:24px}
+.step .num{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:600 18px Fraunces,serif;margin-bottom:14px}
+.step p{color:var(--muted);margin-top:6px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:52px}
+.compare .card{padding:26px}
+.compare ul{list-style:none;margin-top:14px;display:grid;gap:10px}
+.compare li{display:flex;gap:10px;color:var(--muted)}
+.compare li b{color:var(--text);font-weight:500}
+.dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;margin-top:9px;background:var(--line2)}
+.dot.g{background:var(--sage)}
+.cta-band{padding:36px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;background:var(--sage);border-color:var(--sage);color:#0e1a30}
+.cta-band p{opacity:.85}
+.cta-band .btn{background:#0e1a30;color:#fff;border-color:#0e1a30}
+
+/* ---------- coin cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ccard{display:flex;flex-direction:column;gap:14px;padding:18px;transition:transform .15s,border-color .15s}
+.ccard:hover{transform:translateY(-2px);border-color:var(--line2)}
+.ccard .top{display:flex;gap:12px;align-items:center}
+.ccard .nm{font-weight:600;line-height:1.25}
+.ccard .tk{font-size:13px;color:var(--muted)}
+.ccard .st{margin-left:auto}
+.ccard .desc{font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:44px}
+.ccard .row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.ccard .row b{color:var(--text);font-weight:600}
+.mini{position:relative;height:8px;border-radius:8px;background:var(--surface2)}
+.mini .f{position:absolute;inset:0 auto 0 0;border-radius:8px;background:var(--peach)}
+.mini .f.m{background:var(--sage)}
+.mini .tk2{position:absolute;top:-3px;width:3px;height:14px;border-radius:2px;background:var(--line2)}
+.mini .tk2.open{background:var(--sage)}
+
+/* ---------- explore ---------- */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;min-height:46px;border-radius:999px;border:1px solid var(--line);background:var(--surface);padding:0 18px 0 44px}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.seg{display:flex;background:var(--surface2);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+select.sel{min-height:46px;border-radius:999px;border:1px solid var(--line);background:var(--surface);padding:0 16px}
+.empty{padding:48px 24px;text-align:center}
+.empty p{color:var(--muted);margin:8px 0 18px}
+
+/* ---------- coin page ---------- */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:500;margin-bottom:16px;min-height:36px}
+.back:hover{color:var(--text)}
+.chead{padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.chead .who{flex:1;min-width:220px}
+.chead .who h1{font-size:clamp(30px,4vw,42px)}
+.chead .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:14px;margin-top:4px}
+.chead .mc{text-align:right}
+.chead .mc .n{font:600 34px Fraunces,serif}
+.chead .acts{display:flex;gap:8px;width:100%;flex-wrap:wrap}
+.cgrid{display:grid;grid-template-columns:1fr 360px;gap:14px;margin-top:14px;align-items:start}
+.col{display:grid;gap:14px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}
+.lily{position:relative;height:96px;margin:6px 40px 0}
+.lily .track{position:absolute;left:0;right:0;top:34px;height:6px;border-radius:6px;background:var(--surface2)}
+.lily .fill{position:absolute;left:0;top:34px;height:6px;border-radius:6px;background:var(--peach);transition:width .4s}
+.lily .fill.m{background:var(--sage)}
+.lily .padn{position:absolute;top:17px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:90px}
+.lily .padn .lp{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:2px solid var(--line2);display:grid;place-items:center;position:relative}
+.lily .padn.open .lp{background:var(--sage-soft);border-color:var(--sage)}
+.lily .padn.landed .lp{background:var(--sage);border-color:var(--sage)}
+.lily .padn .lp svg{width:18px;height:18px}
+.lily .padn b{font-size:13px;font-weight:600}
+.lily .padn span{font-size:12px;color:var(--muted);margin-top:-6px}
+.lily .me{position:absolute;top:26px;width:22px;height:22px;border-radius:50%;background:var(--peach);border:3px solid var(--surface);box-shadow:0 2px 6px rgba(0,0,0,.15);transform:translateX(-50%);transition:left .4s}
+.lily .me.m{background:var(--sage)}
+.goalgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.tierbox{border:1px solid var(--line);border-radius:var(--r-sm);padding:16px}
+.tierbox.met{border-color:var(--sage-mid);background:#1a2f52}
+.tierbox .th{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.g{margin-top:10px}
+.g .gl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.g .gl b{color:var(--text);font-weight:500}
+.bar{height:6px;border-radius:6px;background:var(--surface2);overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;border-radius:6px;background:var(--peach);transition:width .4s}
+.bar i.ok{background:var(--sage)}
+.trade .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface2);border-radius:999px;padding:4px;margin-bottom:16px}
+.trade .tabs button{border:0;background:none;min-height:40px;border-radius:999px;font-weight:600;cursor:pointer;color:var(--muted)}
+.trade .tabs button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.trade .tabs button.on.sell{color:var(--warn)}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+.inp{position:relative}
+.inp input,.field input,.field textarea{width:100%;min-height:48px;border-radius:var(--r-sm);border:1px solid var(--line2);background:var(--surface);padding:0 14px;font-size:16px}
+.field textarea{padding:12px 14px;min-height:96px;resize:vertical;line-height:1.5}
+.inp .unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;font-weight:500}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:34px;padding:0 12px;font-size:13px;font-weight:500;cursor:pointer}
+.chips button:hover{border-color:var(--line2)}
+.kv{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-top:12px}
+.kv b{color:var(--text);font-weight:500}
+.trade .go{width:100%;margin-top:16px}
+.trade .go.sell{background:var(--warn);border-color:var(--warn)}
+.landed-box{text-align:center;padding:10px 4px}
+.landed-box .big{width:64px;height:64px;border-radius:50%;background:var(--sage-soft);display:grid;place-items:center;margin:0 auto 12px}
+.list{display:grid}
+.list .li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.list .li:last-child{border-bottom:0}
+#cTrades .li{display:grid;grid-template-columns:1.4fr .7fr 1fr .9fr}
+#cTrades .li>span:nth-child(3){text-align:right}
+#cTrades .li>span:last-child{text-align:right}
+.side-b{color:var(--sage-hi);font-weight:600}
+.side-s{color:var(--warn);font-weight:600}
+.addr{font-variant-numeric:tabular-nums;color:var(--muted)}
+.you{font-weight:600;color:var(--sage-hi)}
+
+/* ---------- launch ---------- */
+.lgrid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+.lform{padding:28px;display:grid;gap:20px}
+.lform .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hint{font-size:13px;color:var(--muted);font-weight:400}
+.err{font-size:13px;color:var(--warn);font-weight:400;display:none}
+.field.bad .err{display:block}
+.field.bad input,.field.bad textarea{border-color:var(--warn)}
+.upload{display:flex;gap:14px;align-items:center}
+.upload label.btn{cursor:pointer}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:36px;height:36px;border-radius:50%;border:2px solid transparent;cursor:pointer;outline-offset:2px}
+.swatches button.on{border-color:var(--text)}
+.preview{position:sticky;top:96px}
+.preview .lbl{font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:500}
+.rulebox{background:var(--sage-soft);border-radius:var(--r-sm);padding:14px 16px;font-size:14px;color:var(--sage-hi)}
+
+/* ---------- how ---------- */
+.how-hero{padding:24px 0 36px;max-width:760px}
+.how-hero .lead{margin-top:16px}
+table.tiers{width:100%;border-collapse:collapse;font-size:15px}
+table.tiers th{text-align:left;font-size:13px;color:var(--muted);font-weight:500;padding:0 12px 12px 0;border-bottom:1px solid var(--line)}
+table.tiers td{padding:16px 12px 16px 0;border-bottom:1px solid var(--line)}
+table.tiers tr:last-child td{border-bottom:0}
+table.tiers .cap{font:600 20px Fraunces,serif;color:var(--sage-hi)}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.qa details{border-bottom:1px solid var(--line);padding:16px 0}
+.qa details:last-child{border-bottom:0}
+.qa summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:16px;min-height:28px;align-items:center}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:"";flex-shrink:0;width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:.2s}
+.qa details[open] summary::after{transform:rotate(-135deg)}
+.qa p{color:var(--muted);margin-top:8px;max-width:70ch}
+
+/* ---------- migrated ---------- */
+.mrow{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow.h{font-size:13px;color:var(--muted);font-weight:500;padding-top:16px;padding-bottom:12px}
+.mrow .c{display:flex;gap:12px;align-items:center;min-width:0}
+.mrow .c div{min-width:0}
+.mrow .c b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved{color:var(--sage-hi);font-weight:600}
+
+footer{border-top:1px solid var(--line);margin-top:24px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:28px 20px;font-size:14px;color:var(--muted)}
+footer .links{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+footer button{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:14px;min-height:36px}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .hero{grid-template-columns:1fr;gap:28px;padding-top:28px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .cgrid,.lgrid{grid-template-columns:1fr}
+  .cgrid .col{display:contents}
+  .o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}
+  .preview{position:static}
+  .statrow{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .grid,.steps,.compare,.twocol,.goalgrid{grid-template-columns:1fr}
+  .lform .two{grid-template-columns:1fr}
+  .lform{padding:20px}
+  .chead .mc{text-align:left;width:100%}
+  .mrow{grid-template-columns:1.6fr 1fr 1fr}
+  .mrow .hide-s{display:none}
+  .wallet .wl{display:none}
+  header .wrap{gap:12px}
+  .lily .padn{width:70px}
+  table.tiers{font-size:14px}
+  table.tiers .hide-s{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">Leap is launching soon. Launches on this page are previews until the launchpad goes live.</div>
+
+<header>
+  <div class="wrap">
+    <a href="#home" class="logo" aria-label="Leap home">
+      <svg class="logo-wings" width="36" height="36" viewBox="0 0 512 512" aria-hidden="true"></svg>
+      Leap
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#home" data-r="home">Home</a>
+      <a href="#explore" data-r="explore">Explore</a>
+      <a href="#migrated" data-r="migrated">Leaped</a>
+      <a href="#how" data-r="how">How it works</a>
+    </nav>
+    <div class="hr">
+      <a class="wallet" href="https://x.com/Leap_soll" target="_blank" rel="noopener" aria-label="Leap on X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.2 8.2L23 22h-6.6l-5.1-6.7L5.4 22H2.3l7.7-8.8L1.6 2h6.8l4.6 6.1L18.9 2Zm-1.2 18h1.7L7.1 3.9H5.3L17.7 20Z"/></svg></a>
+      <button class="wallet" id="wallet" type="button" title="Demo wallet. Click to add 10 demo SOL."><span class="d"></span><span class="wl">Demo wallet</span><b id="walletSol">25.00 SOL</b></button>
+      <a class="btn primary" href="#launch">Launch a coin</a>
+    </div>
+  </div>
+</header>
+
+<main id="view" tabindex="-1"></main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Leap · A launchpad for coins that earn an early migration.</span>
+    <span class="links">
+      <a href="#how">How it works</a>
+      <a href="https://x.com/Leap_soll" target="_blank" rel="noopener">X @Leap_soll</a>
+      <button type="button" id="reset">Reset demo data</button>
+    </span>
+  </div>
+</footer>
+
+<nav class="tabbar" aria-label="Main">
+  <a href="#home" data-r="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+  <a href="#explore" data-r="explore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Explore</a>
+  <a href="#launch" data-r="launch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Launch</a>
+  <a href="#migrated" data-r="migrated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18c4-9 9-12 16-12"/><path d="M15 6h5v5"/></svg>Leaped</a>
+  <a href="#how" data-r="how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg>Help</a>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   Engine: bonding curve, tiers, migration
+   ========================================================= */
+const SOL_USD = 150;            // demo assumption
+const SUPPLY  = 1e9;
+const V0      = 30;             // virtual SOL
+const K       = 30 * 1.073e9;   // constant product
+const STD_CAP = 69000;
+const TIERS = [
+  {key:'t1', name:'Tier 1', cap:25000, holders:300, vol:150, top:25},
+  {key:'t2', name:'Tier 2', cap:40000, holders:150, vol:80,  top:35},
+];
+const COLORS = ['#d6e6fb','#fde0c4','#e1dcf7','#cfeefa','#fbefc0','#f8d6de','#d8efe3','#e6e9ef'];
+
+const mcap = c => ((V0 + c.r) ** 2 / K) * SUPPLY * SOL_USD;
+const holders = c => { let n=0; for (const k in c.bal) if (c.bal[k] > 1) n++; return n; };
+const top10 = c => {
+  const v = Object.values(c.bal).filter(x=>x>1).sort((a,b)=>b-a);
+  const tot = v.reduce((s,x)=>s+x,0); if (!tot) return 100;
+  return v.slice(0,10).reduce((s,x)=>s+x,0) / tot * 100;
+};
+const meets = (c,t) => holders(c) >= t.holders && c.vol >= t.vol && top10(c) < t.top;
+
+function addHist(c, now){
+  c.hist.push([now, Math.round(mcap(c))]);
+  if (c.hist.length > 180) c.hist = c.hist.filter((_,i)=> i%2===0 || i===c.hist.length-1);
+}
+function checkMigrate(c, now){
+  if (c.migrated) return;
+  const m = mcap(c);
+  for (const t of TIERS) if (m >= t.cap && meets(c,t)) { c.migrated = {tier:t.name, cap:Math.round(m), at:now}; return; }
+  if (m >= STD_CAP) c.migrated = {tier:'Standard', cap:Math.round(m), at:now};
+}
+function buy(c, w, sol, now=Date.now()){
+  if (c.migrated || sol <= 0) return 0;
+  const vs0 = V0 + c.r, vs1 = vs0 + sol;
+  const tok = K/vs0 - K/vs1;
+  c.r += sol; c.vol += sol;
+  c.bal[w] = (c.bal[w]||0) + tok;
+  c.trades.unshift({w, s:'b', sol, tok, t:now});
+  if (c.trades.length > 40) c.trades.length = 40;
+  addHist(c, now); checkMigrate(c, now);
+  return tok;
+}
+function sell(c, w, tok, now=Date.now()){
+  if (c.migrated || tok <= 0 || !(c.bal[w] >= tok - 1e-6)) return 0;
+  tok = Math.min(tok, c.bal[w]);
+  const vs0 = V0 + c.r, vt0 = K/vs0, vs1 = K/(vt0 + tok);
+  const sol = Math.max(0, vs0 - vs1);
+  c.r = Math.max(0, c.r - sol); c.vol += sol;
+  c.bal[w] -= tok; if (c.bal[w] < 1) delete c.bal[w];
+  c.trades.unshift({w, s:'s', sol, tok, t:now});
+  if (c.trades.length > 40) c.trades.length = 40;
+  addHist(c, now); checkMigrate(c, now);
+  return sol;
+}
+const quoteBuy  = (c, sol) => K/(V0+c.r) - K/(V0+c.r+sol);
+const quoteSell = (c, tok) => { const vs0=V0+c.r; return Math.max(0, vs0 - K/(K/vs0 + tok)); };
+
+/* closeness: best progress toward any tier (0..1) */
+function closeness(c){
+  if (c.migrated) return 1;
+  const m = mcap(c); let best = 0;
+  for (const t of TIERS){
+    const p = Math.min(1, holders(c)/t.holders) * .3 + Math.min(1, c.vol/t.vol) * .3 +
+              Math.min(1, Math.max(0,(100-top10(c))/(100-t.top))) * .15 + Math.min(1, m/t.cap) * .25;
+    best = Math.max(best, p);
+  }
+  return best;
+}
+function status(c){
+  if (c.migrated) return {k:'mig', t:'Leaped at '+usd(c.migrated.cap)};
+  if (closeness(c) > .8) return {k:'close', t:'Close to leaping'};
+  if (Date.now() - c.createdAt < 1000*60*60*3) return {k:'new', t:'New'};
+  return {k:'', t:'On the curve'};
+}
+
+/* =========================================================
+   State
+   ========================================================= */
+const KEY = 'leap-site-v4';
+let S;
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const rw = () => { let a=''; for (let i=0;i<8;i++) a += B58[Math.random()*58|0]; return a.slice(0,4)+'…'+a.slice(4); };
+
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+function load(){
+  try { const raw = localStorage.getItem(KEY); if (raw) { S = JSON.parse(raw); return; } } catch(e){}
+  seed();
+}
+function newCoin({name,ticker,desc,color,img,creator,createdAt,official}){
+  let base = ticker.toLowerCase().replace(/[^a-z0-9]/g,'') || 'coin', id = base, n = 2;
+  while (S && S.coins.some(c=>c.id===id)) id = base + '-' + n++;
+  const c = {id,name,ticker,desc:desc||'',color,img:img||'',creator,createdAt,official:!!official,r:0,vol:0,bal:{},trades:[],hist:[[createdAt,Math.round(mcap({r:0}))]],migrated:null};
+  return c;
+}
+/* market activity: mostly small buys from new wallets */
+function randomTrade(c, now, size=1){
+  const keys = Object.keys(c.bal).filter(k=>k!=='you');
+  const roll = Math.random();
+  if (roll < .62 || keys.length < 5) {
+    const w = (roll < .5 || !keys.length) ? rw() : keys[Math.random()*keys.length|0];
+    buy(c, w, +(size * (0.03 + Math.random()**2.2 * 0.55)).toFixed(3), now);
+  } else {
+    const w = keys[Math.random()*keys.length|0];
+    sell(c, w, c.bal[w] * (0.3 + Math.random()*0.7), now);
+  }
+}
+function seed(){
+  S = {user:{sol:25}, coins:[]};
+  const now = Date.now(), H = 3600e3;
+  const plan = [];
+  for (const p of plan){
+    const created = now - p.age*H;
+    const c = newCoin({name:p.n,ticker:p.t,desc:p.d,color:COLORS[p.c],creator:rw(),createdAt:created,official:p.official});
+    const total = p.until==='mig' ? 4000 : p.trades;
+    for (let i=0;i<total && !c.migrated;i++){
+      const t = created + (i/total) * (p.age*H*0.92);
+      randomTrade(c, t, p.size || (p.until==='mig' ? 0.6 : 0.75));
+    }
+    S.coins.push(c);
+  }
+}
+
+/* =========================================================
+   Helpers
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function usd(n){ if (n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if (n>=1e3) return '$'+(n/1e3).toFixed(1).replace(/\.0$/,'')+'K'; return '$'+Math.round(n); }
+const sol = n => n.toFixed(n<1?3:2)+' SOL';
+function tokf(n){ if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return n.toFixed(0); }
+function ago(t){ const s=(Date.now()-t)/1000; if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m ago'; if(s<86400) return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
+const coinById = id => S.coins.find(c=>c.id===id);
+const who = w => w==='you' ? '<span class="you">You</span>' : '<span class="addr">'+esc(w)+'</span>';
+function avatar(c, size=44){
+  const inner = c.img ? `<img src="${c.img}" alt="">` : `<span style="font-size:${Math.round(size*.42)}px">${esc((c.ticker||'?')[0])}</span>`;
+  return `<span class="av" style="width:${size}px;height:${size}px;background:${c.color}" aria-hidden="true">${inner}</span>`;
+}
+let toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
+const leafIcon = (col='#7cc4ff') => `<svg viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg>`;
+
+function miniBar(c){
+  const m = c.migrated ? c.migrated.cap : mcap(c);
+  const w = Math.min(100, m/STD_CAP*100);
+  const ticks = TIERS.map(t=>`<span class="tk2 ${meets(c,t)?'open':''}" style="left:${t.cap/STD_CAP*100}%"></span>`).join('');
+  return `<div class="mini" role="img" aria-label="Progress to migration"><span class="f ${c.migrated?'m':''}" style="width:${w}%"></span>${ticks}</div>`;
+}
+function coinCard(c){
+  const st = status(c);
+  return `<a class="card ccard" href="#coin-${c.id}">
+    <div class="top">${avatar(c)}<div><div class="nm">${esc(c.name)}</div><div class="tk">$${esc(c.ticker)}</div></div>
+      <span class="st pill ${st.k}">${st.t}</span></div>
+    <div class="desc">${esc(c.desc||'No description yet.')}</div>
+    ${miniBar(c)}
+    <div class="row"><span>Market cap <b>${usd(c.migrated?c.migrated.cap:mcap(c))}</b></span><span>${holders(c)} holders</span></div>
+  </a>`;
+}
+
+/* wings, same drawing as the Leap PFP */
+function leafPath(L,w){ return `M0 0 C ${L*.25} ${-w*.62}, ${L*.72} ${-w*.55}, ${L} 0 C ${L*.72} ${w*.45}, ${L*.25} ${w*.5}, 0 0Z`; }
+function wingsSVG(cols=['#ffffff','#eef5fc','#ffffff'], sep='#b9d9fb', sw=3){
+  const tiers=[[9,-52,58,212,104,46,cols[0]],[8,-42,50,150,78,44,cols[1]],[6,-30,40,86,52,42,cols[2]]];
+  let one='';
+  for (const [n,a0,a1,L0,L1,w,c] of tiers) for (let i=n-1;i>=0;i--){ const t=i/(n-1);
+    one+=`<path d="${leafPath(L0+(L1-L0)*t,w)}" fill="${c}" stroke="${sep}" stroke-width="${sw}" stroke-linejoin="round" transform="translate(270 272) rotate(${(a0+(a1-a0)*t).toFixed(1)})"/>`; }
+  return `<g>${one}</g><g transform="translate(512 0) scale(-1 1)">${one}</g>`;
+}
+const BLOOM=`<circle cx="359" cy="256" r="133" fill="#8fd0ff" opacity=".72"/><circle cx="288" cy="354" r="133" fill="#5fb4f7" opacity=".72"/><circle cx="173" cy="317" r="133" fill="#b8e2ff" opacity=".72"/><circle cx="173" cy="195" r="133" fill="#74c0fb" opacity=".72"/><circle cx="288" cy="158" r="133" fill="#a3d8ff" opacity=".72"/><circle cx="256" cy="256" r="34" fill="#ffffff"/>`;
+document.querySelectorAll('.logo-wings').forEach(el=>{ el.innerHTML = `<clipPath id="lgc"><circle cx="256" cy="256" r="256"/></clipPath><g clip-path="url(#lgc)"><rect width="512" height="512" fill="#0e1a30"/>${BLOOM}</g><circle cx="256" cy="256" r="250" fill="none" stroke="#35568c" stroke-width="12"/>`; });
+
+/* =========================================================
+   Pages
+   ========================================================= */
+const pages = {};
+
+/* ---------- HOME ---------- */
+pages.home = () => `
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Solana launchpad</span>
+      <h1 style="margin-top:16px">Your coin can migrate <em>early.</em></h1>
+      <p class="lead">On most launchpads a coin has to climb to about $69K before it migrates. On Leap, a coin that has real holders, real volume and fair distribution migrates sooner, at $25K or $40K.</p>
+      <div class="ctas"><a class="btn primary" href="#launch">Launch a coin</a><a class="btn" href="#how">How it works</a></div>
+      <div class="ca" id="caBox"><span class="small muted">$LEAP CA</span><code id="caText">LEAP_CA_PLACEHOLDER</code><button class="btn sm" type="button" id="caCopy">Copy</button><a class="btn sm" id="caPump" target="_blank" rel="noopener" href="https://pump.fun/coin/LEAP_CA_PLACEHOLDER">pump.fun</a></div>
+    </div>
+    <div class="pond" aria-label="Animation: a coin meets its goals and takes off at $25K instead of $69K">
+      <div class="goals">
+        <div class="goalchip" data-g="0"><i></i>300 holders</div>
+        <div class="goalchip" data-g="1"><i></i>150 SOL volume</div>
+        <div class="goalchip" data-g="2"><i></i>Top 10 under 25%</div>
+      </div>
+      <svg viewBox="0 0 500 400" aria-hidden="true">
+        <g filter="url(#hb)" opacity=".55"><circle cx="90" cy="320" r="70" fill="#7cc4ff"/><circle cx="430" cy="90" r="80" fill="#3b82c4"/><circle cx="300" cy="380" r="70" fill="#4f7fb8"/></g><filter id="hb" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter>
+        ${altLine(140,'$69K','Standard')}
+        ${altLine(205,'$40K','Tier 2')}
+        <g id="line25">${altLine(270,'$25K','Tier 1')}</g>
+        <path id="trail" d="" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="3 10" stroke-linecap="round" opacity=".9"/>
+        <g id="hopper" transform="translate(190 360)"><circle r="30" fill="#0e1a30" stroke="#fff" stroke-width="3"/><clipPath id="hc"><circle r="28"/></clipPath><g clip-path="url(#hc)"><g transform="scale(.11) translate(-256 -256)">${BLOOM}</g></g></g>
+      </svg>
+      <div class="banner" id="pondBanner">Took off at $25K, not $69K</div>
+    </div>
+  </section>
+
+  <div class="statrow" id="homeStats">${homeStats()}</div>
+
+  <div class="sec-head"><div><h2>How Leap works</h2><p class="muted">Three steps. No settings to tune.</p></div></div>
+  <div class="steps">
+    <div class="card step"><div class="num" style="background:var(--sky-soft)">1</div><h3>Launch your coin</h3><p>Pick a name, ticker and picture. Your coin starts on a bonding curve, like any launchpad.</p></div>
+    <div class="card step"><div class="num" style="background:var(--peach-soft)">2</div><h3>Grow a real community</h3><p>Leap watches every trade for three goals: holders, volume, and how much the top 10 wallets hold.</p></div>
+    <div class="card step"><div class="num" style="background:var(--sage-soft)">3</div><h3>Take off early</h3><p>When your coin hits a tier's goals and its market cap, it migrates right then, at $25K or $40K.</p></div>
+  </div>
+
+  <div class="sec-head"><div><h2>Close to leaping</h2><p class="muted">Coins nearest to an early migration right now.</p></div><a class="btn sm" href="#explore">See all coins</a></div>
+  <div class="grid" id="closeList" style="margin-bottom:52px">${closeList()}</div>
+
+  <div class="compare">
+    <div class="card"><h3>A standard launchpad</h3><ul>
+      <li><span class="dot"></span><span>Every coin has to reach <b>about $69K</b> before it migrates.</span></li>
+      <li><span class="dot"></span><span>Coins with real communities still stall on the curve.</span></li>
+      <li><span class="dot"></span><span>One whale can push a coin through on its own.</span></li></ul></div>
+    <div class="card" style="border-color:var(--sage-mid)"><h3>Leap</h3><ul>
+      <li><span class="dot g"></span><span>Coins take off at <b>$25K or $40K</b> once they earn it.</span></li>
+      <li><span class="dot g"></span><span>Goals reward real holders and real volume, not one big buy.</span></li>
+      <li><span class="dot g"></span><span>A coin that doesn't meet a tier still migrates at the standard cap.</span></li></ul></div>
+  </div>
+
+  <div class="sec-head"><div><h2>Recently leaped</h2><p class="muted">Coins that migrated early.</p></div><a class="btn sm" href="#migrated">All leaped coins</a></div>
+  <div class="grid" id="recentMig" style="margin-bottom:52px">${recentMig()}</div>
+
+  <div class="card cta-band"><div><h2 style="color:#0e1a30">Give your coin a head start.</h2><p>Launching takes about a minute.</p></div><a class="btn" href="#launch">Launch a coin</a></div>
+</div>`;
+
+function altLine(y,cap,lbl){
+  return `<line x1="20" x2="400" y1="${y}" y2="${y}" stroke="#fff" stroke-width="2" stroke-dasharray="6 8" opacity=".85"/>
+    <text x="410" y="${y+6}" font-family="Fraunces, serif" font-weight="600" font-size="18" fill="#f3f0ff">${cap}</text>
+    <text x="410" y="${y+24}" font-family="Figtree, sans-serif" font-size="12" fill="#a9bdd8">${lbl}</text>`;
+}
+function homeStats(){
+  const mig = S.coins.filter(c=>c.migrated);
+  const early = mig.filter(c=>c.migrated.tier!=='Standard');
+  const avg = early.length ? early.reduce((s,c)=>s+c.migrated.cap,0)/early.length : 0;
+  const vol = S.coins.reduce((s,c)=>s+c.vol,0);
+  return `<div class="card stat"><div class="n">${S.coins.length}</div><div class="l">Coins launched</div></div>
+  <div class="card stat"><div class="n">${early.length}</div><div class="l">Leaped early</div></div>
+  <div class="card stat"><div class="n">${avg?usd(avg):'—'}</div><div class="l">Average early migration</div></div>
+  <div class="card stat"><div class="n">${Math.round(vol).toLocaleString()} SOL</div><div class="l">Total volume</div></div>`;
+}
+const closeList = () => S.coins.filter(c=>!c.migrated).sort((a,b)=>closeness(b)-closeness(a)).slice(0,3).map(coinCard).join('') || emptyCard('No coins on the curve yet.');
+const recentMig = () => S.coins.filter(c=>c.migrated).sort((a,b)=>b.migrated.at-a.migrated.at).slice(0,3).map(coinCard).join('') || emptyCard('No coins have leaped yet.');
+const emptyCard = t => `<div class="card empty" style="grid-column:1/-1"><h3>${t}</h3><p>Be the first.</p><a class="btn primary" href="#launch">Launch a coin</a></div>`;
+
+let pondRAF;
+function startPond(){
+  cancelAnimationFrame(pondRAF);
+  const hop = $('#hopper'); if (!hop) return;
+  const chips = [...document.querySelectorAll('.goalchip')], banner = $('#pondBanner'), trail = $('#trail'), l25 = $('#line25');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const place = (x,y,r=0)=>hop.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${r.toFixed(1)})`);
+  const glow = on => l25.querySelectorAll('line').forEach(l=>{ l.setAttribute('stroke', on?'#7cc4ff':'#fff'); l.setAttribute('stroke-width', on?4:2); l.setAttribute('stroke-dasharray', on?'0':'6 8'); });
+  if (reduce){ chips.forEach(c=>c.classList.add('ok')); place(250,270); glow(true); banner.classList.add('show'); return; }
+  const CYCLE = 7600;
+  function f(ts){
+    if (!document.body.contains(hop)) return;
+    const e = ts % CYCLE;
+    chips.forEach((c,i)=> c.classList.toggle('ok', e > 600 + i*700));
+    let x, y, r=0;
+    if (e < 2900){ const u = e/2900; x = 190 + 50*u + Math.sin(e/260)*4; y = 368 - 80*u + Math.sin(e/180)*4; trail.setAttribute('d',''); }
+    else if (e < 3600){ const u=(e-2900)/700; x = 240 + 10*u; y = 288 - 18*u; }
+    else if (e < 5200){ const u=(e-3600)/1600, k=u*u; x = 250 + 300*k; y = 270 - 350*k; r = 0;
+      trail.setAttribute('d', `M240 288 Q 262 262 ${x.toFixed(1)} ${(y+6).toFixed(1)}`); }
+    else { x = 600; y = -120; }
+    glow(e >= 3300 && e < 7200);
+    banner.classList.toggle('show', e >= 3300 && e < 7200);
+    place(x,y,r);
+    pondRAF = requestAnimationFrame(f);
+  }
+  pondRAF = requestAnimationFrame(f);
+}
+
+/* ---------- EXPLORE ---------- */
+const ex = {q:'', f:'all', s:'new'};
+pages.explore = () => `
+<div class="wrap page">
+  <div class="sec-head"><div><h1 style="font-size:clamp(32px,4vw,46px)">Explore coins</h1><p class="muted" style="margin-top:6px">Every coin launched on Leap, with how close it is to leaping.</p></div><a class="btn primary" href="#launch">Launch a coin</a></div>
+  <div class="toolbar">
+    <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search by name or ticker" aria-label="Search coins" value="${esc(ex.q)}"></div>
+    <div class="seg" role="tablist" aria-label="Filter">
+      ${[['all','All'],['curve','On the curve'],['close','Close'],['mig','Leaped'],['mine','Mine']].map(([k,l])=>`<button type="button" data-f="${k}" class="${ex.f===k?'on':''}">${l}</button>`).join('')}
+    </div>
+    <select class="sel" id="sort" aria-label="Sort">
+      <option value="new" ${ex.s==='new'?'selected':''}>Newest</option>
+      <option value="mc" ${ex.s==='mc'?'selected':''}>Market cap</option>
+      <option value="close" ${ex.s==='close'?'selected':''}>Closest to leaping</option>
+    </select>
+  </div>
+  <div class="grid" id="exploreGrid">${exploreGrid()}</div>
+</div>`;
+function exploreGrid(){
+  let list = S.coins.slice();
+  const q = ex.q.trim().toLowerCase();
+  if (q) list = list.filter(c=>c.name.toLowerCase().includes(q)||c.ticker.toLowerCase().includes(q));
+  if (ex.f==='curve') list = list.filter(c=>!c.migrated);
+  if (ex.f==='close') list = list.filter(c=>!c.migrated && closeness(c)>.8);
+  if (ex.f==='mig') list = list.filter(c=>c.migrated);
+  if (ex.f==='mine') list = list.filter(c=>c.creator==='you');
+  if (ex.s==='new') list.sort((a,b)=>b.createdAt-a.createdAt);
+  if (ex.s==='mc') list.sort((a,b)=>(b.migrated?b.migrated.cap:mcap(b))-(a.migrated?a.migrated.cap:mcap(a)));
+  if (ex.s==='close') list.sort((a,b)=>closeness(b)-closeness(a));
+  if (!list.length){
+    if (ex.f==='mine') return emptyCard("You haven't launched a coin yet.");
+    return `<div class="card empty" style="grid-column:1/-1"><h3>No coins match that.</h3><p>Try another name or filter.</p></div>`;
+  }
+  return list.map(coinCard).join('');
+}
+function bindExplore(){
+  $('#q').addEventListener('input', e=>{ ex.q = e.target.value; $('#exploreGrid').innerHTML = exploreGrid(); });
+  document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
+    ex.f = b.dataset.f; document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b)); $('#exploreGrid').innerHTML = exploreGrid();
+  }));
+  $('#sort').addEventListener('change', e=>{ ex.s = e.target.value; $('#exploreGrid').innerHTML = exploreGrid(); });
+}
+
+/* ---------- COIN PAGE ---------- */
+let cur = null, tradeSide = 'b';
+pages.coin = id => {
+  const c = coinById(id);
+  if (!c) return `<div class="wrap page"><div class="card empty"><h3>We couldn't find that coin.</h3><p>It may have been removed when the demo was reset.</p><a class="btn primary" href="#explore">Explore coins</a></div></div>`;
+  cur = c.id;
+  const st = status(c);
+  return `
+<div class="wrap page">
+  <a class="back" href="#explore">← All coins</a>
+  <div class="card chead">
+    ${avatar(c,76)}
+    <div class="who">
+      <h1>${esc(c.name)}</h1>
+      <div class="meta"><span><b style="color:var(--text)">$${esc(c.ticker)}</b></span><span>·</span><span>by ${c.creator==='you'?'<span class="you">you</span>':esc(c.creator)}</span><span>·</span><span>${ago(c.createdAt)}</span>
+        <span class="pill ${st.k}" id="cStatus">${st.t}</span>${c.official?'<span class="pill new">Official</span>':''}</div>
+    </div>
+    <div class="mc"><div class="small muted">Market cap</div><div class="n" id="cMc">${usd(c.migrated?c.migrated.cap:mcap(c))}</div></div>
+    <div class="acts">
+      <button class="btn sm" type="button" id="copyLink">Copy link</button>
+      <a class="btn sm" target="_blank" rel="noopener" href="https://x.com/intent/tweet?text=${encodeURIComponent('$'+c.ticker+' is on Leap, the launchpad where coins migrate early. @Leap_soll')}">Share on X</a>
+    </div>
+  </div>
+
+  <div class="cgrid">
+    <div class="col">
+      <div class="card pad chart o2"><div class="sec-head" style="margin-bottom:8px"><h3>Market cap</h3><span class="small muted">Lines mark each migration point</span></div><div id="cChart">${chart(c)}</div></div>
+      <div class="card pad o3"><h3>Road to migration</h3><p class="small muted" style="margin-top:4px">A filled marker means the coin has met that tier's goals and will take off when it reaches that market cap.</p><div id="cLily">${lily(c)}</div></div>
+      <div class="card pad o4"><h3>Goals</h3><div class="goalgrid" id="cGoals">${goals(c)}</div></div>
+      <div class="card pad o6"><div class="sec-head" style="margin-bottom:4px"><h3>Recent trades</h3><span class="small muted">Live</span></div><div class="list" id="cTrades">${trades(c)}</div></div>
+    </div>
+    <div class="col">
+      <div class="card pad trade o1" id="cTrade">${tradePanel(c)}</div>
+      <div class="card pad o5"><h3>Top holders</h3><div class="list" id="cHolders" style="margin-top:6px">${holderList(c)}</div></div>
+      <div class="card pad o7"><h3>About</h3><p class="muted" style="margin-top:6px">${esc(c.desc||'No description yet.')}</p>
+        <div class="kv"><span>Leap page</span><b>leap/${esc(c.id)}</b></div>
+        <div class="kv"><span>Launched</span><b>${new Date(c.createdAt).toLocaleDateString()}</b></div>
+        <div class="kv"><span>Volume</span><b id="cVol">${sol(c.vol)}</b></div></div>
+    </div>
+  </div>
+</div>`;
+};
+function chart(c){
+  const W=640,H=240,P=10;
+  const pts = c.hist.length>1 ? c.hist : [[c.createdAt,c.hist[0][1]],[Date.now(),c.hist[0][1]]];
+  const t0=pts[0][0], t1=pts[pts.length-1][0]||t0+1;
+  const maxV = Math.max(STD_CAP*1.08, ...pts.map(p=>p[1]));
+  const X = t => P + (t-t0)/Math.max(1,t1-t0)*(W-2*P);
+  const Y = v => H-P - v/maxV*(H-2*P);
+  const d = pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(' ');
+  const lines = [...TIERS.map(t=>[t.cap,t.name+' · '+usd(t.cap),meets(c,t)]),[STD_CAP,'Standard · $69K',true]].map(([v,l,ok])=>
+    `<line x1="${P}" x2="${W-P}" y1="${Y(v)}" y2="${Y(v)}" stroke="${ok?'#4a86c7':'#27406a'}" stroke-dasharray="4 5"/><text x="${W-P}" y="${Y(v)-6}" text-anchor="end" font-size="12" font-family="Figtree" fill="#a9bdd8">${l}</text>`).join('');
+  const col = c.migrated ? '#7cc4ff' : '#4f7fb8';
+  const last = pts[pts.length-1];
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Market cap chart">
+    <defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".25"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${lines}
+    <path d="${d} L ${X(last[0])} ${H-P} L ${P} ${H-P} Z" fill="url(#cg)"/>
+    <path d="${d}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="${X(last[0])}" cy="${Y(last[1])}" r="5" fill="${col}" stroke="#15243f" stroke-width="2"/>
+  </svg>`;
+}
+function lily(c){
+  const m = c.migrated ? c.migrated.cap : mcap(c);
+  const landedKey = c.migrated ? c.migrated.tier : null;
+  const pos = c.migrated ? (TIERS.find(t=>t.name===landedKey)?.cap ?? STD_CAP)/STD_CAP*100 : Math.min(100, m/STD_CAP*100);
+  const pads = [...TIERS.map(t=>({cap:t.cap,name:t.name,open:meets(c,t)})),{cap:STD_CAP,name:'Standard',open:true}].map(p=>{
+    const landed = landedKey===p.name;
+    const cls = landed ? 'landed' : (p.open && !c.migrated ? 'open' : '');
+    const icon = landed ? leafIcon('#0e1a30') : (p.open && !c.migrated ? leafIcon() : '');
+    return `<div class="padn ${cls}" style="left:${p.cap/STD_CAP*100}%"><div class="lp">${icon}</div><b>${usd(p.cap)}</b><span>${p.name}</span></div>`;
+  }).join('');
+  return `<div class="lily"><div class="track"></div><div class="fill ${c.migrated?'m':''}" style="width:${pos}%"></div>${pads}<div class="me ${c.migrated?'m':''}" style="left:${pos}%" title="${esc(c.ticker)} now"></div></div>`;
+}
+function goals(c){
+  const h = holders(c), tp = top10(c);
+  return TIERS.map(t=>{
+    const ok = meets(c,t);
+    const row = (lbl, val, need, p, good) => `<div class="g"><div class="gl"><span>${lbl}</span><b>${val} <span class="muted" style="font-weight:400">/ ${need}</span></b></div><div class="bar"><i class="${good?'ok':''}" style="width:${Math.min(100,p*100)}%"></i></div></div>`;
+    return `<div class="tierbox ${ok?'met':''}">
+      <div class="th"><b>${t.name} · ${usd(t.cap)}</b><span class="pill ${ok?'mig':''}">${ok?'Goals met':'In progress'}</span></div>
+      ${row('Holders', h, t.holders, h/t.holders, h>=t.holders)}
+      ${row('Volume', Math.round(c.vol)+' SOL', t.vol+' SOL', c.vol/t.vol, c.vol>=t.vol)}
+      ${row('Top 10 hold', tp.toFixed(1)+'%', 'under '+t.top+'%', Math.max(0,(100-tp)/(100-t.top)), tp<t.top)}
+    </div>`;
+  }).join('');
+}
+const trades = c => c.trades.slice(0,10).map(t=>`<div class="li"><span>${who(t.w)}</span><span class="${t.s==='b'?'side-b':'side-s'}">${t.s==='b'?'Buy':'Sell'}</span><span>${sol(t.sol)}</span><span class="muted small">${ago(t.t)}</span></div>`).join('') || '<p class="muted small" style="padding:10px 0">No trades yet.</p>';
+function holderList(c){
+  const arr = Object.entries(c.bal).filter(([,v])=>v>1).sort((a,b)=>b[1]-a[1]);
+  const tot = arr.reduce((s,[,v])=>s+v,0) || 1;
+  return arr.slice(0,10).map(([w,v],i)=>`<div class="li"><span class="muted small" style="width:20px">${i+1}</span><span style="flex:1">${who(w)}</span><b>${(v/tot*100).toFixed(1)}%</b></div>`).join('') || '<p class="muted small" style="padding:10px 0">No holders yet.</p>';
+}
+function tradePanel(c){
+  if (c.migrated){
+    const early = c.migrated.tier!=='Standard';
+    return `<div class="landed-box"><div class="big">${leafIcon()}</div><h3>${early?'This coin leaped early':'This coin migrated'}</h3>
+      <p class="muted" style="margin-top:6px">${esc(c.ticker)} migrated at ${usd(c.migrated.cap)}${early?' ('+c.migrated.tier+')':''}. Trading has moved off the curve to the AMM.</p>
+      ${c.bal.you?`<div class="kv"><span>You hold</span><b>${tokf(c.bal.you)} ${esc(c.ticker)}</b></div>`:''}</div>`;
+  }
+  const mine = c.bal.you || 0;
+  return `<div class="tabs" role="tablist"><button type="button" data-s="b" class="${tradeSide==='b'?'on':''}">Buy</button><button type="button" data-s="s" class="sell ${tradeSide==='s'?'on':''}">Sell</button></div>
+  <form id="tradeForm" novalidate>
+    <label class="field">${tradeSide==='b'?'Amount':'Amount to sell'}
+      <div class="inp"><input id="amt" inputmode="decimal" autocomplete="off" placeholder="${tradeSide==='b'?'0.5':'0'}"><span class="unit">${tradeSide==='b'?'SOL':esc(c.ticker)}</span></div></label>
+    <div class="chips">${tradeSide==='b' ? ['0.1','0.5','1','2'].map(v=>`<button type="button" data-v="${v}">${v} SOL</button>`).join('') : ['25','50','100'].map(v=>`<button type="button" data-p="${v}">${v}%</button>`).join('')}</div>
+    <div class="kv"><span>You get</span><b id="est">—</b></div>
+    <div class="kv"><span>Your SOL</span><b id="mySol">${sol(S.user.sol)}</b></div>
+    <div class="kv"><span>You hold</span><b id="myTok">${tokf(mine)} ${esc(c.ticker)}</b></div>
+    <p class="err" id="tErr" style="margin-top:10px"></p>
+    <button class="btn primary go ${tradeSide==='s'?'sell':''}" type="submit">${tradeSide==='b'?'Buy':'Sell'} $${esc(c.ticker)}</button>
+  </form>`;
+}
+function bindTrade(){
+  const c = coinById(cur); if (!c || c.migrated) return;
+  document.querySelectorAll('#cTrade .tabs button').forEach(b=>b.addEventListener('click',()=>{ tradeSide=b.dataset.s; $('#cTrade').innerHTML=tradePanel(c); bindTrade(); }));
+  const amt = $('#amt'), est = $('#est'), err = $('#tErr');
+  const upd = () => {
+    const v = parseFloat(amt.value); err.style.display='none';
+    if (!(v>0)) { est.textContent='—'; return; }
+    est.textContent = tradeSide==='b' ? tokf(quoteBuy(c,v))+' '+c.ticker : sol(quoteSell(c,v));
+  };
+  amt.addEventListener('input', upd);
+  document.querySelectorAll('#cTrade .chips button').forEach(b=>b.addEventListener('click',()=>{
+    if (b.dataset.v) amt.value = b.dataset.v;
+    else amt.value = Math.floor((c.bal.you||0) * b.dataset.p/100);
+    upd(); amt.focus();
+  }));
+  $('#tradeForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const v = parseFloat(amt.value);
+    const fail = m => { err.textContent=m; err.style.display='block'; };
+    if (!(v>0)) return fail(tradeSide==='b'?'Enter how much SOL to spend.':'Enter how many tokens to sell.');
+    if (tradeSide==='b'){
+      if (v > S.user.sol) return fail(`You have ${sol(S.user.sol)}. Tap the wallet at the top to add demo SOL.`);
+      const got = buy(c,'you',v); S.user.sol -= v;
+      toast(`Bought ${tokf(got)} $${c.ticker}`);
+    } else {
+      if (!c.bal.you) return fail(`You don't hold any $${c.ticker} yet.`);
+      if (v > c.bal.you + 1e-6) return fail(`You hold ${tokf(c.bal.you)} $${c.ticker}.`);
+      const got = sell(c,'you',v); S.user.sol += got;
+      toast(`Sold for ${sol(got)}`);
+    }
+    save(); refreshCoin(true); updateWallet();
+  });
+}
+function refreshCoin(full){
+  const c = coinById(cur); if (!c || !$('#cChart')) return;
+  const wasMig = $('#cTrade .landed-box') !== null;
+  $('#cChart').innerHTML = chart(c);
+  $('#cLily').innerHTML = lily(c);
+  $('#cGoals').innerHTML = goals(c);
+  $('#cTrades').innerHTML = trades(c);
+  $('#cHolders').innerHTML = holderList(c);
+  $('#cMc').textContent = usd(c.migrated?c.migrated.cap:mcap(c));
+  $('#cVol').textContent = sol(c.vol);
+  const st = status(c); const sEl=$('#cStatus'); sEl.className='pill '+st.k; sEl.textContent=st.t;
+  if (full || (!!c.migrated !== wasMig)) { $('#cTrade').innerHTML = tradePanel(c); bindTrade(); }
+  else { const ms=$('#mySol'); if(ms) ms.textContent=sol(S.user.sol); }
+}
+
+/* ---------- LAUNCH ---------- */
+const draft = {name:'',ticker:'',desc:'',color:COLORS[0],img:'',dev:''};
+pages.launch = () => `
+<div class="wrap page">
+  <div style="max-width:640px;margin-bottom:24px"><h1 style="font-size:clamp(32px,4vw,46px)">Launch a coin</h1><p class="muted" style="margin-top:8px">Your coin gets its own page right away. Hit a tier's goals and it migrates early.</p></div>
+  <div class="lgrid">
+    <form class="card lform" id="lf" novalidate>
+      <div class="two">
+        <label class="field" id="fName">Name<input name="name" maxlength="32" placeholder="Morning Dew" value="${esc(draft.name)}" autocomplete="off"><span class="err">Add a name for your coin.</span></label>
+        <label class="field" id="fTicker">Ticker<input name="ticker" maxlength="10" placeholder="DEW" value="${esc(draft.ticker)}" autocomplete="off"><span class="hint">Letters and numbers, up to 10.</span><span class="err">Add a ticker using letters and numbers.</span></label>
+      </div>
+      <label class="field">Description<textarea name="desc" maxlength="280" placeholder="What's your coin about?">${esc(draft.desc)}</textarea><span class="hint">Optional. Up to 280 characters.</span></label>
+      <div class="field"><span>Picture</span>
+        <div class="upload"><span id="upPrev">${avatar({ticker:draft.ticker||'?',color:draft.color,img:draft.img},56)}</span>
+          <label class="btn sm" for="img">Upload image</label><input id="img" type="file" accept="image/*" hidden>
+          ${draft.img?'<button class="btn sm" type="button" id="rmImg">Remove</button>':''}</div>
+        <span class="hint">No image? We'll make one from your ticker and this color.</span>
+        <div class="swatches" role="radiogroup" aria-label="Avatar color">${COLORS.map(c=>`<button type="button" role="radio" aria-checked="${c===draft.color}" aria-label="Color ${c}" data-c="${c}" class="${c===draft.color?'on':''}" style="background:${c}"></button>`).join('')}</div>
+      </div>
+      <label class="field" id="fDev">First buy (optional)
+        <div class="inp"><input name="dev" inputmode="decimal" placeholder="0" value="${esc(draft.dev)}" autocomplete="off"><span class="unit">SOL</span></div>
+        <span class="hint">Buy your own coin at launch. Max 5 SOL, so no one starts with a whale bag.</span><span class="err" id="devErr"></span></label>
+      <div class="rulebox">Your coin migrates at <b>$25K</b> with 300 holders, 150 SOL volume and top 10 under 25%; at <b>$40K</b> with 150 holders, 80 SOL and top 10 under 35%; otherwise at the standard <b>$69K</b>.</div>
+      <button class="btn primary" type="submit" style="justify-self:start">Launch coin</button>
+    </form>
+    <div class="preview"><div class="lbl">Preview</div><div id="lPrev">${previewCard()}</div></div>
+  </div>
+</div>`;
+function previewCard(){
+  const c = newCoin({name:draft.name||'Your coin',ticker:(draft.ticker||'TICKER').toUpperCase(),desc:draft.desc||'Your description shows here.',color:draft.color,img:draft.img,creator:'you',createdAt:Date.now()});
+  const dev = Math.min(5, parseFloat(draft.dev)||0); if (dev>0) buy(c,'you',dev);
+  return coinCard(c).replace('<a ','<div ').replace(/<\/a>$/,'</div>').replace(/href="[^"]*"/,'');
+}
+function bindLaunch(){
+  const f = $('#lf');
+  const rePrev = () => { $('#lPrev').innerHTML = previewCard(); $('#upPrev').innerHTML = avatar({ticker:(draft.ticker||'?').toUpperCase(),color:draft.color,img:draft.img},56); };
+  const validName = () => draft.name.trim().length>0;
+  const validTick = () => /^[A-Za-z0-9]{1,10}$/.test(draft.ticker.trim());
+  const devMsg = () => { const v = draft.dev.trim(); if (!v) return ''; const n = parseFloat(v);
+    if (!(n>=0) || isNaN(n)) return 'Enter a number, like 0.5.'; if (n>5) return 'First buys are capped at 5 SOL.'; if (n>S.user.sol) return `You have ${sol(S.user.sol)}. Tap the wallet at the top to add demo SOL.`; return ''; };
+  const mark = (id, bad, msg) => { const el=$(id); el.classList.toggle('bad', bad); if (msg!==undefined) el.querySelector('.err').textContent = msg; };
+  f.name.addEventListener('input', e=>{ draft.name=e.target.value; if (validName()) mark('#fName',false); rePrev(); });
+  f.ticker.addEventListener('input', e=>{ e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase(); draft.ticker=e.target.value; if (validTick()) mark('#fTicker',false); rePrev(); });
+  f.desc.addEventListener('input', e=>{ draft.desc=e.target.value; rePrev(); });
+  f.dev.addEventListener('input', e=>{ draft.dev=e.target.value; if (!devMsg()) mark('#fDev',false); rePrev(); });
+  f.name.addEventListener('blur', ()=>mark('#fName',!validName()));
+  f.ticker.addEventListener('blur', ()=>mark('#fTicker',!validTick()));
+  f.dev.addEventListener('blur', ()=>{ const m=devMsg(); mark('#fDev',!!m,m); });
+  document.querySelectorAll('.swatches button').forEach(b=>b.addEventListener('click',()=>{
+    draft.color=b.dataset.c; document.querySelectorAll('.swatches button').forEach(x=>{x.classList.toggle('on',x===b); x.setAttribute('aria-checked', x===b);}); rePrev();
+  }));
+  $('#img').addEventListener('change', e=>{
+    const file = e.target.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => { const im = new Image(); im.onload = () => {
+      const cv = document.createElement('canvas'); cv.width = cv.height = 160;
+      const s = Math.min(im.width, im.height); cv.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,160,160);
+      draft.img = cv.toDataURL('image/jpeg', .82); $('#view').innerHTML = pages.launch(); bindLaunch();
+    }; im.onerror = () => toast("That file couldn't be read as an image. Try a PNG or JPG."); im.src = rd.result; };
+    rd.readAsDataURL(file);
+  });
+  const rm = $('#rmImg'); if (rm) rm.addEventListener('click', ()=>{ draft.img=''; $('#view').innerHTML = pages.launch(); bindLaunch(); });
+  f.addEventListener('submit', e=>{
+    e.preventDefault();
+    const dm = devMsg();
+    mark('#fName',!validName()); mark('#fTicker',!validTick()); mark('#fDev',!!dm,dm);
+    if (!validName() || !validTick() || dm){ const first = f.querySelector('.bad input'); if (first) first.focus(); return; }
+    const c = newCoin({name:draft.name.trim(),ticker:draft.ticker.trim().toUpperCase(),desc:draft.desc.trim(),color:draft.color,img:draft.img,creator:'you',createdAt:Date.now()});
+    const dev = parseFloat(draft.dev)||0;
+    if (dev>0){ buy(c,'you',dev); S.user.sol -= dev; }
+    S.coins.unshift(c); save(); updateWallet();
+    Object.assign(draft,{name:'',ticker:'',desc:'',img:'',dev:''});
+    toast(`$${c.ticker} is live. This is its page.`);
+    location.hash = 'coin-'+c.id;
+  });
+}
+
+/* ---------- HOW ---------- */
+pages.how = () => `
+<div class="wrap page">
+  <div class="how-hero">
+    <span class="eyebrow">How it works</span>
+    <h1 style="margin-top:16px;font-size:clamp(34px,4.6vw,54px)">Leap lets a coin migrate at a lower market cap once it's earned it.</h1>
+    <p class="lead">Every coin starts on a bonding curve. Usually that means waiting until about $69K to migrate, and most coins never get there. Leap checks every trade for signs of a real community. When a coin has them, it migrates early.</p>
+  </div>
+
+  <div class="card pad" style="margin-bottom:14px">
+    <div class="sec-head"><h2>The tiers</h2><span class="small muted">A coin migrates at the first tier whose goals and market cap it reaches.</span></div>
+    <table class="tiers">
+      <thead><tr><th>Tier</th><th>Migrates at</th><th>Holders</th><th>Volume</th><th class="hide-s">Top 10 hold</th></tr></thead>
+      <tbody>
+        <tr><td>Tier 1</td><td class="cap">$25K</td><td>300+</td><td>150 SOL</td><td class="hide-s">under 25%</td></tr>
+        <tr><td>Tier 2</td><td class="cap">$40K</td><td>150+</td><td>80 SOL</td><td class="hide-s">under 35%</td></tr>
+        <tr><td>Standard</td><td class="cap" style="color:var(--muted)">$69K</td><td class="muted">no goals</td><td class="muted">no goals</td><td class="hide-s muted">no goals</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="twocol">
+    <div class="card pad"><h3>What the goals check</h3>
+      <div class="kv" style="margin-top:14px"><span><b>Holders</b>: wallets holding the coin right now.</span></div>
+      <div class="kv"><span><b>Volume</b>: all SOL traded on the curve, buys and sells.</span></div>
+      <div class="kv"><span><b>Top 10 hold</b>: share held by the 10 biggest wallets. Lower is fairer.</span></div></div>
+    <div class="card pad"><h3>What happens when a coin leaps</h3>
+      <p class="muted" style="margin-top:14px">The curve closes and the coin's liquidity moves to the AMM, the same thing that happens at a standard migration, just sooner. The coin's page keeps its history and shows where it leaped.</p></div>
+  </div>
+
+  <div class="card pad" style="margin-bottom:14px"><h2 style="margin-bottom:6px">Questions</h2><div class="qa">
+    <details open><summary>Why would I want my coin to migrate early?</summary><p>Most coins stall on the curve long before $69K, even when they have a real community. Leap lets those coins move on once they've proven themselves.</p></details>
+    <details><summary>Can someone fake the goals?</summary><p>The top 10 check stops one wallet from pushing a coin through. Leap also caps the first buy at 5 SOL. When Leap goes live, wallets bundled with the creator won't count as holders.</p></details>
+    <details><summary>What if my coin doesn't meet any tier?</summary><p>Nothing is lost. It stays on the curve and migrates at the standard $69K, like any other launchpad.</p></details>
+    <details><summary>How is this different from picking a graduation cap?</summary><p>On Leap, nobody picks the cap. The coin earns it, so an early leap tells buyers something real.</p></details>
+    <details><summary>What is $LEAP?</summary><p>The official Leap token and the first coin launched on Leap.</p></details>
+    <details><summary>Is this live?</summary><p>Not yet. Right now Leap runs in demo mode: launches, trades and migrations work, but they happen in your browser with demo SOL. Nothing touches the blockchain.</p></details>
+  </div></div>
+
+  <div class="card cta-band"><div><h2 style="color:#0e1a30">Try it now.</h2><p>Launch a demo coin and watch it work toward a leap.</p></div><a class="btn" href="#launch">Launch a coin</a></div>
+</div>`;
+
+/* ---------- MIGRATED ---------- */
+pages.migrated = () => `
+<div class="wrap page">
+  <div class="sec-head"><div><h1 style="font-size:clamp(32px,4vw,46px)">Leaped coins</h1><p class="muted" style="margin-top:6px">Every coin that has migrated, and how much earlier it got there than the $69K standard.</p></div></div>
+  <div class="statrow" id="migStats" style="margin:0 0 18px">${migStats()}</div>
+  <div class="card" id="migList">${migList()}</div>
+</div>`;
+function migStats(){
+  const m = S.coins.filter(c=>c.migrated), e = m.filter(c=>c.migrated.tier!=='Standard');
+  const t1 = m.filter(c=>c.migrated.tier==='Tier 1').length, t2 = m.filter(c=>c.migrated.tier==='Tier 2').length;
+  return `<div class="card stat"><div class="n">${m.length}</div><div class="l">Migrated</div></div>
+  <div class="card stat"><div class="n">${e.length}</div><div class="l">Leaped early</div></div>
+  <div class="card stat"><div class="n">${t1}</div><div class="l">At Tier 1 ($25K)</div></div>
+  <div class="card stat"><div class="n">${t2}</div><div class="l">At Tier 2 ($40K)</div></div>`;
+}
+function migList(){
+  const m = S.coins.filter(c=>c.migrated).sort((a,b)=>b.migrated.at-a.migrated.at);
+  if (!m.length) return `<div class="empty"><h3>No coins have leaped yet.</h3><p>Launch one and work toward Tier 1.</p><a class="btn primary" href="#launch">Launch a coin</a></div>`;
+  return `<div class="mrow h"><span>Coin</span><span>Migrated at</span><span>Tier</span><span class="hide-s">Earlier than standard</span></div>` +
+    m.map(c=>{ const saved = Math.max(0, 1 - c.migrated.cap/STD_CAP);
+      return `<a class="mrow" href="#coin-${c.id}"><span class="c">${avatar(c,40)}<div><b>${esc(c.name)}</b><span class="small muted">$${esc(c.ticker)} · ${ago(c.migrated.at)}</span></div></span>
+      <span style="font-weight:600">${usd(c.migrated.cap)}</span><span><span class="pill ${c.migrated.tier!=='Standard'?'mig':''}">${c.migrated.tier}</span></span>
+      <span class="hide-s ${saved>.05?'saved':'muted'}">${saved>.05?Math.round(saved*100)+'% lower':'—'}</span></a>`; }).join('');
+}
+
+/* =========================================================
+   Router + live market
+   ========================================================= */
+let curRoute = '';
+function render(){
+  const h = location.hash.slice(1) || 'home';
+  const [r, ...rest] = h.split('-');
+  const name = r==='coin' ? 'coin' : (pages[r] ? r : 'home');
+  const view = $('#view');
+  view.innerHTML = name==='coin' ? pages.coin(rest.join('-')) : pages[name]();
+  if (name!=='coin') cur = null;
+  curRoute = name;
+  document.querySelectorAll('[data-r]').forEach(a=>a.classList.toggle('on', a.dataset.r===name || (name==='coin' && a.dataset.r==='explore')));
+  document.title = name==='coin' && cur ? `$${coinById(cur).ticker} · Leap` : ({home:'Leap — migrate your coin early',explore:'Explore · Leap',launch:'Launch · Leap',how:'How it works · Leap',migrated:'Leaped coins · Leap'}[name]);
+  window.scrollTo(0,0);
+  if (name==='home'){ startPond(); const ca='LEAP_CA_PLACEHOLDER', box=$('#caBox');
+    if (ca.startsWith('LEAP_CA')){ $('#caText').textContent='Dropping soon'; box.classList.add('pending'); $('#caPump').style.display='none'; $('#caCopy').style.display='none'; }
+    else $('#caCopy').addEventListener('click',()=>{ try{ navigator.clipboard.writeText(ca).then(()=>toast('CA copied'),()=>toast(ca)); }catch(e){ toast(ca); } }); }
+  if (name==='explore') bindExplore();
+  if (name==='launch') bindLaunch();
+  if (name==='coin' && cur){ tradeSide='b'; bindTrade();
+    $('#copyLink').addEventListener('click',()=>{ const u = location.href; try{ navigator.clipboard.writeText(u).then(()=>toast('Link copied'),()=>toast(u)); }catch(e){ toast(u); } }); }
+}
+function updateWallet(){ $('#walletSol').textContent = S.user.sol.toFixed(2)+' SOL'; }
+
+function marketTick(){
+  const live = S.coins.filter(c=>!c.migrated);
+  if (!live.length) return;
+  const weighted = live.flatMap(c=> c.creator==='you' ? [c,c,c] : [c]);
+  const c = weighted[Math.random()*weighted.length|0];
+  const was = !!c.migrated;
+  randomTrade(c, Date.now(), 0.9);
+  if (!was && c.migrated && c.creator==='you') toast(`Your coin $${c.ticker} leaped at ${usd(c.migrated.cap)}!`);
+  save();
+  if (curRoute==='coin' && cur===c.id) refreshCoin(false);
+  else if (curRoute==='home'){ $('#homeStats').innerHTML=homeStats(); $('#closeList').innerHTML=closeList(); $('#recentMig').innerHTML=recentMig(); }
+  else if (curRoute==='explore' && !document.activeElement?.closest?.('.toolbar')) $('#exploreGrid').innerHTML=exploreGrid();
+  else if (curRoute==='migrated'){ $('#migStats').innerHTML=migStats(); $('#migList').innerHTML=migList(); }
+}
+
+$('#wallet').addEventListener('click', ()=>{ S.user.sol += 10; save(); updateWallet(); toast('Added 10 demo SOL'); });
+let resetArm = false;
+$('#reset').addEventListener('click', e=>{
+  if (!resetArm){ resetArm = true; e.target.textContent = 'Click again to reset'; setTimeout(()=>{ resetArm=false; e.target.textContent='Reset demo data'; }, 3000); return; }
+  try{ localStorage.removeItem(KEY); }catch(_){}
+  seed(); save(); updateWallet(); resetArm=false; e.target.textContent='Reset demo data'; location.hash='home'; render(); toast('Demo data reset');
+});
+
+load(); updateWallet();
+window.addEventListener('hashchange', render);
+render();
+
+</script>
+</body>
+</html>

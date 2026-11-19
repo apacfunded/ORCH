@@ -272,6 +272,19 @@ a{color:inherit;text-decoration:none}
 .coin-h img.av{object-fit:cover}
 .btn[disabled]{opacity:.6;cursor:wait}
 
+/* model picker */
+.mpick{max-width:460px}
+.mlist{max-height:300px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:var(--bg);overscroll-behavior:contain}
+.mlist .mg-h{position:sticky;top:0;background:var(--bg);padding:8px 12px 4px;margin:0;z-index:1}
+.mrow{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow:hover{background:var(--sunk)}
+.mrow.on{background:var(--accent-soft)}
+.mrow .av{width:36px;height:36px;border-radius:8px;flex:none}
+.mrow b{font-weight:500;display:block}
+.mrow small{color:var(--dim);font-size:12px}
+.mrow .chk{margin-left:auto;color:var(--accent);font-weight:600}
+
 /* modal */
 .scrim{position:fixed;inset:0;background:rgba(31,30,27,.35);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
 .scrim.on{display:flex}
@@ -336,7 +349,7 @@ a{color:inherit;text-decoration:none}
   <div class="main">
     <header class="topbar">
       <button class="menu" id="menuBtn" aria-label="Open sidebar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      <div class="ticker" aria-label="Live trades"><div class="ticker-in" id="ticker"></div></div>
+      <div style="flex:1"></div>
       <button class="btn btn-dark" id="connectBtn">Connect wallet</button>
     </header>
 
@@ -350,7 +363,7 @@ a{color:inherit;text-decoration:none}
         <textarea id="idea" rows="2" placeholder="What are you launching today?"></textarea>
         <div class="comp-row">
           <a class="chip" href="#create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Add image</a>
-          <a class="chip" href="#create"><span class="agent" style="background:none;padding:0"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></span>Pick a Claude model</a>
+          <button type="button" class="chip" id="pickModel"><span class="agent" style="background:none;padding:0"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></span><span id="pickModelLbl">Pick a Claude model</span></button>
           <button class="send" type="submit" aria-label="Start launch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
         </div>
       </form>
@@ -494,6 +507,15 @@ a{color:inherit;text-decoration:none}
       <button data-w="Backpack"><i style="background:#e33e3f"></i>Backpack</button>
     </div>
     <button class="btn btn-o" style="width:100%" id="mClose">Cancel</button>
+  </div>
+</div>
+<div class="scrim" id="mscrim" role="dialog" aria-modal="true" aria-labelledby="mpTitle">
+  <div class="modal mpick">
+    <h3 id="mpTitle">Pick a Claude model</h3>
+    <p>This model runs your coin's agent.</p>
+    <label class="search" style="width:100%;margin:0 0 10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="mpSearch" placeholder="Search models" aria-label="Search models"></label>
+    <div class="mlist" id="mlist" role="listbox"></div>
+    <button class="btn btn-o" style="width:100%;margin-top:12px" id="mpClose">Cancel</button>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -659,6 +681,7 @@ function fakeTrade(c){
 }
 const tick = [];
 function renderTicker(){
+  return;
   if (typeof live!=='undefined' && live.length){
     const li = live.slice(0,14).map(c=>{ const mm = MODELS.find(m=>m.name===c.model); return `<a class="tk b" href="#mint-${c.mint}"><img class="av" src="${esc(c.image)}" alt="" style="object-fit:cover">$${esc(c.symbol)} <em>launched</em> with ${mm?esc(mm.short):'Claude'}</a>`; }).join('');
     $('#ticker').innerHTML = li + li; return;
@@ -679,7 +702,6 @@ setInterval(() => {
   if (c===current){ trades.unshift(t); trades = trades.slice(0,30); const last = candles[candles.length-1]; last.c = c.mcap; last.h = Math.max(last.h,c.mcap); last.l=Math.min(last.l,c.mcap); renderCoinLive(); }
   if (route==='explore'){ const el = document.querySelector(`.card[data-t="${c.ticker}"]`); if (el && filter!=='new'){ el.outerHTML = cardHTML(c); const n=document.querySelector(`.card[data-t="${c.ticker}"]`); if(n && !reduce){ n.classList.add('flash'); } } renderKoth(); }
 }, 1800);
-setInterval(renderTicker, 9000);
 
 // ---------- coin page ----------
 function buildCandles(c){
@@ -777,6 +799,32 @@ function noteModel(){
   $('#mNote').innerHTML = `<b>${esc(m.short)}</b> · ${st}. ${txt}`;
   $('#cModelOut').textContent = m.short;
 }
+
+// ---------- model picker (explore page) ----------
+let picked = null;
+function renderPicker(q){
+  q = (q||'').toLowerCase();
+  const order = ['mythos','fable','opus','sonnet','haiku','legacy'];
+  $('#mlist').innerHTML = order.map(t => {
+    const rows = MODELS.filter(m=>m.tier===t && (!q || m.name.toLowerCase().includes(q))).slice().reverse();
+    if (!rows.length) return '';
+    return `<div class="mg-h">${TIERS[t][2]}</div>` + rows.map(m => { const [st] = modelStatus(m.name); return `<button type="button" class="mrow ${m.name===picked?'on':''}" data-m="${m.name}" role="option" aria-selected="${m.name===picked}">${tierAvatar(coins.find(c=>c.ticker===m.ticker)||m, m.name)}<span><b>${esc(m.short)}</b><small>${st}</small></span>${m.name===picked?'<span class="chk">✓</span>':''}</button>`; }).join('');
+  }).join('') || '<div class="empty" style="padding:20px">No model matches that.</div>';
+}
+function openPicker(){ renderPicker(''); $('#mpSearch').value=''; $('#mscrim').classList.add('on'); $('#mpSearch').focus(); }
+function closePicker(){ $('#mscrim').classList.remove('on'); $('#pickModel').focus(); }
+$('#pickModel').onclick = openPicker;
+$('#mpClose').onclick = closePicker;
+$('#mscrim').onclick = e => { if (e.target.id==='mscrim') closePicker(); };
+$('#mpSearch').oninput = e => renderPicker(e.target.value.trim());
+$('#mlist').addEventListener('click', e => {
+  const b = e.target.closest('.mrow'); if (!b) return;
+  picked = b.dataset.m; model = picked;
+  const m = MODELS.find(x=>x.name===picked);
+  $('#pickModelLbl').textContent = m.short;
+  closePicker(); toast(m.short + ' selected');
+  if ($('#models').children.length){ const r = $(`#models input[value="${picked}"]`); if (r){ r.checked = true; } noteModel(); renderPrev(); }
+});
 
 // ---------- chain helpers ----------
 const API = /vercel\.app$/.test(location.hostname) ? '' : 'https://plug-launchpad-aislopv1-8230.vercel.app';
@@ -994,7 +1042,7 @@ $('#connectBtn').onclick = () => wallet ? disconnect() : openModal();
 $$('.wallets button').forEach(b => b.onclick = () => connectWallet(b.dataset.w));
 $('#mClose').onclick = closeModal;
 $('#scrim').onclick = e => { if (e.target.id==='scrim') closeModal(); };
-addEventListener('keydown', e => { if (e.key==='Escape'){ closeModal(); $('#side').classList.remove('open'); } });
+addEventListener('keydown', e => { if (e.key==='Escape'){ closeModal(); closePicker(); $('#side').classList.remove('open'); } });
 $('[data-agents]').onclick = e => { e.preventDefault(); toast('Agents are coming next'); };
 $('[data-port]').onclick = e => { e.preventDefault(); wallet ? toast('Portfolio is coming next') : openModal(); };
 

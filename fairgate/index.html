@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#eceee8">
-<title>Fairgate · bundlers stop at the gate</title>
+<meta name="theme-color" content="#070a16">
+<title>Fairgate · launch it, nobody bundles it</title>
 <meta name="description" content="The anti-bundle Solana launchpad. Random open slot, sniper tax, 4 buys per slot, early-sell tax, and a live bundle check on every coin.">
 <meta property="og:title" content="Fairgate">
 <meta property="og:description" content="Launch it. Nobody bundles it. Random open slot, sniper tax and a live bundle check on every coin.">
@@ -16,13 +16,13 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: Exposure's app shell (left icon sidebar, top search, card sections, hash-routed views) on a midnight field of linked wallets: deep navy, periwinkle signal, mint = clean, rose = blocked */
 :root{
-  --paper:#eceee8;--glow:#f5f6f2;--card:#f8f9f5;--card2:#e2e5dd;--ink:#0f1411;--muted:#59605b;--line:rgba(15,20,17,.13);--signal:#0f1411;--on-signal:#ffffff;--signal-soft:rgba(15,20,17,.06);--burn:#e0383e;--ok:#0e9a52;--warn:#c99a00;--floor:rgba(15,20,17,.06);--shadow:0 1px 0 rgba(15,20,17,.04);--r1:#e2e5dd;--r2:#d6dad0;--r3:#c4c9bd;--rc1:#d6dad0;--rc2:#0f1411;--rc3:#0f1411;--rc4:#2a312c;--rc5:#ffffff;--rc6:#3a423d;--rt:#0f1411;--ra:#0f1411;--rm:#59605b;--b1:#0f1411;--b2:#0f1411;--bb:#0f1411;--bink:#ffffff;--bh:#2a312c;--g1:#0f1411;--g2:#0e9a52;--dot:#0e9a52;--avd:#ffffff;
-  --display:"Archivo","Inter",system-ui,sans-serif; --body:"Archivo","Inter",system-ui,sans-serif; --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,monospace;
-  color-scheme:light;
+  --paper:#070a16;--glow:#121b3d;--card:rgba(14,20,40,.80);--card2:rgba(22,30,58,.88);--ink:#eef1ff;--muted:#97a3c7;--line:rgba(150,168,235,.15);--signal:#a3b1ff;--on-signal:#0b1030;--signal-soft:rgba(163,177,255,.14);--burn:#ff6f91;--ok:#5ee6c4;--warn:#ffc06e;--floor:rgba(120,140,255,.16);--shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -16px rgba(0,0,0,.7);--r1:#0d1230;--r2:#1a2152;--r3:#2a3478;--rc1:#2f3a8c;--rc2:#a3b1ff;--rc3:#e5e9ff;--rc4:#6d7dff;--rc5:#0b1030;--rc6:#c3ccff;--rt:#f2f4ff;--ra:#c3ccff;--rm:#97a3c7;--b1:#bdc7ff;--b2:#8f9fff;--bb:#7f8ff5;--bink:#0b1030;--bh:#c7d0ff;--g1:#8f9fff;--g2:#5ee6c4;--dot:#5ee6c4;--avd:#0b1030;
+  --display:"Plus Jakarta Sans",system-ui,sans-serif; --body:"Plus Jakarta Sans",system-ui,sans-serif; --mono:"Martian Mono",ui-monospace,monospace;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -964,175 +964,107 @@ h1,h2,h3{letter-spacing:-.03em}
 @media(max-width:560px){.heroCaA{flex-basis:100%;order:3}}
 .heroCopy h1+.heroCa{margin:4px 0 22px}
 
-/* ===== Fairgate "checkpoint": bone paper, ink, hazard yellow only on the gate. Archivo (wide display), JetBrains Mono for slots and addresses. ===== */
-:root{--navH:64px;--haz:#ffd400;--hazStripe:repeating-linear-gradient(135deg,var(--haz) 0 12px,#0f1411 12px 24px)}
-#bg{display:none}
-body{background:var(--paper);-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(15,20,17,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(15,20,17,.045) 1px,transparent 1px);background-size:56px 56px;
-  -webkit-mask:linear-gradient(#000,transparent 70%);mask:linear-gradient(#000,transparent 70%)}
+/* ===== v2: "the gate" — top navigation, centred hero under an arch, flatter hairline surfaces. Same palette and logo. ===== */
+:root{--display:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif;--navH:64px;--arch:rgba(163,177,255,.38)}
+h1,h2,h3,.pageH{font-family:var(--display);font-weight:700}
+h2{font-size:clamp(24px,2.4vw,30px);letter-spacing:-.035em}
 
-/* --- type --- */
-h1,h2,h3,.pageH{font-family:var(--display);font-stretch:118%;font-weight:800;letter-spacing:-.02em;text-transform:none}
-h2{font-size:clamp(22px,2.4vw,28px)}
-.pageH{font-size:clamp(34px,4.4vw,54px);line-height:1}
-.hero h1 em{background:none;color:inherit;-webkit-text-fill-color:currentColor;font-style:normal}
-.eyebrow,.kicker{font-family:var(--mono);letter-spacing:.04em;text-transform:none;font-size:12.5px;color:var(--muted)}
-.kicker .dot{background:var(--ok)}
+/* --- surfaces: hairline, no cursor spotlight, one radius scale --- */
+.card,.list,.tablewrap,.statbar,.gate{background:rgba(12,17,36,.72);border:1px solid var(--line);border-radius:18px;box-shadow:none}
+.grid .card:hover{transform:none;border-color:rgba(163,177,255,.4);box-shadow:none}
+.btn{border-radius:12px}
+.btn.sig{box-shadow:none}
+.btn.sig:hover{box-shadow:0 0 0 4px rgba(163,177,255,.18)}
+.chip{border-radius:10px}
+.eyebrow,.kicker{letter-spacing:.08em}
 
-/* --- surfaces: flat paper cards with a hard hairline, small radius --- */
-.card,.list,.tablewrap,.statbar,.gate{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:none}
-.card,.list,.tablewrap{transition:border-color .2s}
-.grid .card:hover{transform:none;box-shadow:none;border-color:rgba(15,20,17,.45)}
-.rowLink:hover,.pay.rowLink:hover{background:rgba(15,20,17,.04)}
-
-/* --- buttons and chips --- */
-.btn{border-radius:8px;font-weight:700;letter-spacing:-.005em}
-.btn.sig{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:none}
-.btn.sig:hover{background:var(--ink);color:var(--haz);box-shadow:none}
-.btn.ghost{background:transparent;border-color:rgba(15,20,17,.25);color:var(--ink)}
-.btn.ghost:hover{border-color:var(--ink)}
-.btn.buy{box-shadow:none}
-.chip{background:transparent;border-color:rgba(15,20,17,.2);color:var(--ink);border-radius:6px}
-.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
-.prog{background:rgba(15,20,17,.08)}
-.prog i,.meter i{background:var(--ink)}
-.st.gold{color:var(--ink);border-color:rgba(15,20,17,.35)}
-.st.solid{background:var(--burn);color:#fff;border-color:var(--burn)}
-.gateBig b.gold{background:none;-webkit-text-fill-color:currentColor;color:var(--ink)}
-.xpFace{background:var(--haz)!important;color:#0f1411!important;box-shadow:inset 0 0 0 6px #0f1411}
-.logo .logoImg{box-shadow:none}
-.search input{background:var(--card)}
-.ckForm input{background:var(--card);color:var(--ink);font-family:var(--mono);border-radius:8px}
-.ckForm input:focus{outline:2px solid var(--ink)}
-.track2{background:rgba(15,20,17,.06)}
-.t-cap{background:rgba(15,20,17,.07);color:var(--ink)}
-.dial span{background:var(--card)}
-.pumpNote{border-color:rgba(201,154,0,.45)!important;background:rgba(255,212,0,.10)!important}
-
-/* --- top navigation --- */
-.side{background:rgba(236,238,232,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.topbar{background:transparent;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* --- desktop: top navigation replaces the sidebar --- */
 @media (min-width:901px){
   .shell{display:block}
-  .side{position:fixed;inset:0 0 auto 0;height:var(--navH);z-index:30;flex-direction:row;align-items:center;gap:22px;padding:0 380px 0 24px;border-right:0;border-bottom:1px solid var(--line)}
-  .side .logo{padding:0;flex:none;font-stretch:118%;font-weight:800}
-  .side .tabs{flex-direction:row;gap:0;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+  .side{position:fixed;inset:0 0 auto 0;height:var(--navH);z-index:30;flex-direction:row;align-items:center;gap:20px;padding:0 380px 0 24px;
+    border-right:0;border-bottom:1px solid var(--line);background:rgba(7,10,22,.78)}
+  .side .logo{padding:0;flex:none}
+  .side nav.tabs,.side .tabs{flex-direction:row;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
   .side .tabs::-webkit-scrollbar{display:none}
-  .side .tabs a{position:relative;min-height:40px;padding:8px 12px;border-radius:6px;font-size:14px;font-weight:600;white-space:nowrap;color:var(--muted)}
-  .side .tabs a svg,.side .tabs a[data-v="launch"]{display:none}
-  .side .tabs a:hover{color:var(--ink)}
+  .side .tabs a{position:relative;min-height:40px;padding:8px 12px;border-radius:10px;font-size:14px;white-space:nowrap;gap:0}
+  .side .tabs a svg{display:none}
+  .side .tabs a[data-v="launch"]{display:none}
   .side .tabs a.on{background:none;box-shadow:none;color:var(--ink)}
-  .side .tabs a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-12px;height:3px;background:var(--ink)}
+  .side .tabs a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-12px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--signal),var(--ok))}
   .sideFoot{display:none}
   .mainCol{padding-top:var(--navH)}
-  .topbar{position:fixed;top:0;right:0;left:auto;height:var(--navH);z-index:31;padding:0 24px;gap:10px;width:auto}
+  .topbar{position:fixed;top:0;right:0;left:auto;height:var(--navH);z-index:31;padding:0 24px;gap:10px;background:none;border:0;
+    -webkit-backdrop-filter:none;backdrop-filter:none;width:auto}
   .topbar .search{flex:none;width:44px;transition:width .25s cubic-bezier(.2,.8,.2,1)}
   .topbar .search:focus-within{width:300px}
-  .topbar .search input{padding-left:40px;padding-right:12px;cursor:pointer;border-radius:8px}
+  .topbar .search input{padding-left:40px;padding-right:12px;cursor:pointer}
   .topbar .search:focus-within input{cursor:text}
   .topbar .search:not(:focus-within) input::placeholder{color:transparent}
   .topbar .search kbd{display:none}
+  .navSweep{top:calc(var(--navH) - 2px)}
 }
-@media (min-width:901px) and (max-width:1200px){.side{gap:12px;padding-right:350px}.side .tabs a{padding:8px 8px;font-size:13.5px}.side .tabs a.on::after{left:8px;right:8px}}
-@media (max-width:900px){.mbar{background:rgba(236,238,232,.94)!important}}
-main{max-width:1200px;margin-inline:auto;position:relative;z-index:1}
-.navSweep{display:none}
 
-/* --- live strip --- */
-.demoBar{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;color:var(--muted);padding:10px 0;margin:6px 0 0}
-.demoBar i{background:var(--ok)}
-.demoBar b{color:var(--ink)}
+main{max-width:1200px;margin-inline:auto}
 
-/* --- hero --- */
-#v-explore .heroSplit{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center;padding:56px 0 40px;margin:0}
-#v-explore .heroSplit::before,#v-explore .heroSplit::after{display:none}
-#v-explore .heroCopy{text-align:left;align-items:flex-start;display:block;max-width:none}
-.heroSplit h1{font-size:clamp(46px,6.4vw,88px);line-height:.92;font-stretch:125%;font-weight:900;letter-spacing:-.035em;margin:18px 0 22px}
-#v-explore .heroCopy>p{font-size:18px;line-height:1.55;color:#2c332e;max-width:52ch;margin:0}
-#v-explore .heroCopy .cta{justify-content:flex-start;margin-top:28px}
-.heroCa{border-radius:8px;border:1px solid var(--ink);background:var(--card);margin-top:26px}
-.heroCopy h1+.heroCa{margin:0 0 22px}
-.heroCaL{color:var(--ink);font-family:var(--mono);font-weight:600}
-.heroCaA{font-family:var(--mono)}
+/* --- live strip: slim and centred --- */
+.demoBar{justify-content:center;border-style:solid;border-color:rgba(94,230,196,.25);background:rgba(94,230,196,.06);border-radius:999px;padding:8px 18px;width:fit-content;max-width:100%;margin:8px auto 0}
 
-/* the gate log: the one loud element */
-.gateLog{margin:0;background:#0f1411;color:#e9ece6;border-radius:12px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(15,20,17,.55)}
-.glBar{height:16px;background:var(--hazStripe)}
-.gateLog figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 20px 10px;border-bottom:1px solid rgba(233,236,230,.12)}
-.gateLog figcaption b{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:17px}
-.gateLog figcaption span{font-family:var(--mono);font-size:12px;color:#9aa39c}
-.glRows{list-style:none;margin:0;padding:6px 0 10px}
-.glRows li{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;padding:11px 20px;font-size:14px;border-bottom:1px dashed rgba(233,236,230,.08)}
-.glRows li:last-child{border-bottom:0}
-.glRows .s{font-family:var(--mono);font-size:12.5px;color:#9aa39c}
-.glRows .w{color:#e9ece6}
-.glRows .v{font-family:var(--mono);font-size:12px;font-weight:600;padding:4px 8px;border-radius:4px;white-space:nowrap}
-.glRows .no .v{background:rgba(224,56,62,.16);color:#ff8a8e}
-.glRows .no .w{color:#b9c0ba;text-decoration:line-through;text-decoration-color:rgba(255,138,142,.6)}
-.glRows .tx .v{background:rgba(255,212,0,.16);color:var(--haz)}
-.glRows .op .v{background:var(--haz);color:#0f1411}
-.glRows .ok .v{background:rgba(14,154,82,.2);color:#5fdc98}
-@media (prefers-reduced-motion:no-preference){
-  .glRows li{opacity:0;animation:glIn .45s cubic-bezier(.2,.8,.2,1) forwards}
-  .glRows li:nth-child(1){animation-delay:.25s}.glRows li:nth-child(2){animation-delay:.75s}.glRows li:nth-child(3){animation-delay:1.15s}
-  .glRows li:nth-child(4){animation-delay:1.55s}.glRows li:nth-child(5){animation-delay:1.95s}.glRows li:nth-child(6){animation-delay:2.45s}
-  .glBar{animation:glBar 1s steps(2) .2s 2}
-}
-@keyframes glIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
-@keyframes glBar{50%{filter:brightness(1.35)}}
+/* --- hero: centred under the gate arch --- */
+#v-explore .heroSplit{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:28px;padding:72px 24px 40px;margin-top:24px;isolation:isolate}
+#v-explore .heroSplit::before{content:"";position:absolute;z-index:-1;left:50%;top:0;width:min(860px,100%);height:100%;transform:translateX(-50%);
+  border:1px solid var(--arch);border-bottom:0;border-radius:430px 430px 0 0;
+  background:radial-gradient(ellipse 70% 55% at 50% 0%,rgba(163,177,255,.13),transparent 70%);
+  -webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}
+#v-explore .heroSplit::after{content:"";position:absolute;z-index:-1;left:50%;top:22px;width:min(780px,90%);height:calc(100% - 22px);transform:translateX(-50%);
+  border:1px dashed rgba(94,230,196,.22);border-bottom:0;border-radius:390px 390px 0 0;
+  -webkit-mask:linear-gradient(#000 40%,transparent 85%);mask:linear-gradient(#000 40%,transparent 85%)}
+#v-explore .heroCopy{display:flex;flex-direction:column;align-items:center;max-width:720px}
+#v-explore .heroCopy .kicker{justify-content:center}
+.heroSplit h1{font-size:clamp(46px,7vw,92px);letter-spacing:-.05em;line-height:.95}
+#v-explore .heroCopy>p{max-width:560px;margin-inline:auto}
+#v-explore .heroCopy .cta{justify-content:center}
+.heroCopy h1+.heroCa{margin:18px auto 6px;width:fit-content;max-width:100%;text-align:left}
 
-/* bundle check bar under the hero */
-#v-explore .gate{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:8px 28px;align-items:center;padding:22px 24px;border:1px solid var(--ink);border-radius:10px;margin-bottom:8px}
+/* bundle check becomes a single wide bar under the copy */
+#v-explore .gate{width:min(720px,100%);padding:18px;text-align:left;border-color:rgba(163,177,255,.32);background:rgba(10,14,30,.85)}
 #v-explore .gate .eyebrow{display:none}
-#v-explore .gate .gateBig{display:grid;gap:4px;margin:0}
-#v-explore .gate .gateBig b{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:22px!important}
+#v-explore .gate .gateBig{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+#v-explore .gate .gateBig b{font-size:20px!important;letter-spacing:-.02em;background:none;color:var(--ink);-webkit-text-fill-color:currentColor}
 #v-explore .gate .gateBig span{color:var(--muted);font-size:14px}
-#v-explore .gate .msg{grid-column:1/-1;margin:0}
-#v-explore .gate .msg:empty{display:none}
+#v-explore .gate .ckForm input{border-radius:12px}
 
-/* rules strip: the launch in order */
-.rulesStrip{margin:44px 0 12px}
-.rsHead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;border-bottom:1px solid var(--ink);padding-bottom:14px}
-.rsHead p{margin:0;color:var(--muted);max-width:56ch}
-.rsHead p b{color:var(--ink)}
-.rsList{list-style:none;counter-reset:rs;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
-.rsList li{counter-increment:rs;padding:20px 18px 22px;border-right:1px solid var(--line);display:grid;gap:8px;align-content:start}
-.rsList li:last-child{border-right:0}
-.rsList li::before{content:counter(rs,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--muted)}
-.rsList b{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:17px}
-.rsList span{color:#3d443f;font-size:14px;line-height:1.5}
-
-/* stats */
-#v-explore .statbar{background:none;border:0;border-radius:0;border-block:1px solid var(--line);margin-top:36px}
+/* stats: open row of numbers, no box */
+#v-explore .statbar{background:none;border:0;border-radius:0;border-block:1px solid var(--line);margin-top:8px}
 .statbar>div{background:none}
-.statbar b{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:30px}
+.statbar b{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:-.03em}
 
+/* --- section heads --- */
 .sec-head{align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
-.card.coin{padding:18px;gap:14px}
-.card.coin .kv{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:12px 0 0}
+.sec-head p{max-width:560px}
 
-@media (max-width:1000px){
-  #v-explore .heroSplit{grid-template-columns:1fr;gap:32px;padding-top:32px}
-  .rsList{grid-template-columns:1fr 1fr}
-  .rsList li{border-bottom:1px solid var(--line)}
-  #v-explore .gate{grid-template-columns:1fr}
-}
-@media (max-width:560px){
-  .heroSplit h1{font-size:clamp(40px,12vw,56px)}
-  .rsList{grid-template-columns:1fr}.rsList li{border-right:0}
-  .rsHead{flex-direction:column;align-items:flex-start}
-  .glRows li{grid-template-columns:56px 1fr;row-gap:6px}.glRows .v{grid-column:2;justify-self:start}
+/* --- coin cards --- */
+.card.coin{padding:18px;gap:14px}
+.card.coin .kv{background:none;border:0;padding:0;border-top:1px solid var(--line);padding-top:12px;border-radius:0}
+.card.coin .prog{height:4px}
+.card.coin .coin-actions .btn{flex:1}
+
+/* --- page heads elsewhere --- */
+.pageH{font-size:clamp(36px,4.6vw,58px);letter-spacing:-.045em}
+
+@media (max-width:900px){
+  #v-explore .heroSplit{padding:40px 8px 24px;margin-top:8px}
+  #v-explore .heroSplit::before{border-radius:220px 220px 0 0}
+  #v-explore .heroSplit::after{display:none}
+  .heroSplit h1{font-size:clamp(40px,11vw,60px)}
+  .demoBar{border-radius:14px}
 }
 @media (prefers-reduced-motion:reduce){.topbar .search{transition:none}}
-#v-explore{gap:56px}
-#v-explore .heroSplit{padding-bottom:0}
-#v-explore .gate{margin:-24px 0 0}
-.rulesStrip{margin:0}
+#v-explore .gate{display:flex;flex-direction:column;gap:12px;min-height:0;height:auto}
+#v-explore .gate .gateBig{justify-content:flex-start;margin:0}
+#v-explore .gate .msg:empty{display:none}
+#v-explore .heroSplit{padding-bottom:28px}
 #v-explore .statbar{width:100%;margin-top:0}
-.xpIntro h1{background:none;-webkit-text-fill-color:currentColor;color:var(--ink);font-stretch:125%;font-weight:900}
-.xpFace span{color:#0f1411;text-shadow:none;font-stretch:118%}
-.pump #v-explore .sec-head p{max-width:52ch}
+@media (min-width:901px) and (max-width:1200px){.side{gap:12px;padding-right:350px}.side .tabs a{padding:8px 8px;font-size:13.5px}.side .tabs a.on::after{left:8px;right:8px}}
 
 </style>
 </head>
@@ -1193,35 +1125,13 @@ main{max-width:1200px;margin-inline:auto;position:relative;z-index:1}
     <div class="hero heroSplit">
       <div class="heroCopy">
         <div class="kicker"><span class="dot"></span><span>Anti-bundle launchpad</span></div>
-        <h1>Bundlers stop<br>at the gate.</h1>
-        <p>Fairgate opens every coin at a slot nobody can predict, taxes the first-minute snipers into the coin's own liquidity and caps every wallet at 2% while the launch settles. A block-0 bundle doesn't land.</p>
-        <div class="cta"><a class="btn sig" href="#launch">Launch a coin <span class="arr" aria-hidden="true">→</span></a><a class="btn ghost" href="#how">How the gate works</a></div>
+        <h1>Launch it.<br><em>Nobody</em> bundles it.</h1>
+        <p>Every coin on Fairgate opens at a slot nobody can predict, taxes snipers and early dumpers into its own liquidity, and shows a live bundle check on its page.</p>
+        <div class="cta"><a class="btn sig" href="#launch">Launch a coin <span class="arr" aria-hidden="true">→</span></a><a class="btn ghost" href="#how">How it works</a></div>
         <div class="heroCa" id="heroCa" hidden><span class="heroCaL">$GATE CA</span><code class="heroCaA" id="heroCaA"></code><button class="btn sm ghost" type="button" id="heroCaCopy">Copy</button><a class="btn sm sig" id="heroCaBuy" target="_blank" rel="noopener">Buy</a></div>
       </div>
-      <figure class="gateLog" aria-label="Example launch: how the gate treats each buy">
-        <div class="glBar" aria-hidden="true"></div>
-        <figcaption><b>Gate log</b><span>Example launch</span></figcaption>
-        <ol class="glRows">
-          <li class="no"><span class="s">slot 0</span><span class="w">20-wallet bundle · 18 SOL</span><span class="v">Bounced · not open yet</span></li>
-          <li class="op"><span class="s">slot 9</span><span class="w">Trading opens at a random slot</span><span class="v">Gate up</span></li>
-          <li class="tx"><span class="s">slot 9</span><span class="w">Sniper buys 1 SOL</span><span class="v">90% tax to liquidity</span></li>
-          <li class="no"><span class="s">slot 9</span><span class="w">5th buy in the same slot</span><span class="v">Rejected · 4 per slot</span></li>
-          <li class="no"><span class="s">slot 22</span><span class="w">Wallet tries to reach 2.4%</span><span class="v">Rejected · 2% cap</span></li>
-          <li class="ok"><span class="s">slot 160</span><span class="w">Normal buy · 0.5 SOL</span><span class="v">1% fee · through</span></li>
-        </ol>
-      </figure>
+      <div class="card gate" id="gate" aria-live="off"></div>
     </div>
-    <div class="card gate" id="gate" aria-live="off"></div>
-    <section class="rulesStrip" aria-labelledby="rsH">
-      <div class="rsHead"><h2 id="rsH">What a bundler hits</h2><p>Every coin gets the same rules, written in when it launches and frozen after.</p></div>
-      <ol class="rsList">
-        <li><b>Random open</b><span>Trading opens 1–31 slots after a seed slot that didn't exist yet when the coin was created. Bundles built for slot 0 fail.</span></li>
-        <li><b>Sniper tax</b><span>90% on the open slot, falling to 1% over about a minute. The tax goes into the coin's liquidity, not to us.</span></li>
-        <li><b>4 buys per slot</b><span>While the launch settles, a slot takes 4 buys. A 20-wallet bundle in one slot gets 16 rejections.</span></li>
-        <li><b>2% wallet cap</b><span>For the first 5 minutes no wallet can hold more than 2% of supply.</span></li>
-        <li><b>Capped dev buy</b><span>The creator can buy at launch, up to 2%, at the normal fee, and it's tagged as the dev buy for everyone to see.</span></li>
-      </ol>
-    </section>
     <div class="statbar" role="group" aria-label="Live totals">
       <div><small>Taxes to liquidity</small><b id="hTax">—</b></div>
       <div><small>Bundled buys blocked</small><b id="hBlocked">—</b></div>
@@ -1439,7 +1349,7 @@ main{max-width:1200px;margin-inline:auto;position:relative;z-index:1}
   <section class="view" id="v-coin" hidden><div id="coinPage"></div></section>
 </main>
 <div class="demoToast" id="demoToast" aria-live="polite"></div>
-<footer><span>Fairgate · bundlers stop at the gate.</span><span class="mono"><a href="#rules">Rules</a> · <a href="#terms">Terms</a></span></footer>
+<footer><span>Fairgate · launches nobody can bundle.</span><span class="mono"><a href="#rules">Rules</a> · <a href="#terms">Terms</a></span></footer>
 </div>
 </div>
 
@@ -1453,7 +1363,7 @@ main{max-width:1200px;margin-inline:auto;position:relative;z-index:1}
 // programId set (and mode not "pump"): coins launch on the Fairgate program. Neither: pre-launch page.
 const FG_API = (window.FG_API || "").replace(/\/$/, "");
 const SITE_URL = window.FG_SITE || "https://orch.lol/fairgate/";
-const CONFIG = Object.assign({ mode: "pump", programId: "", rpc: FG_API + "/api/rpc", tokenMint: "5j4YS1eCx3a3WHeSUJYi74978NJ7UueRGcZ3HTvfpump" }, window.FG_CONFIG || {});
+const CONFIG = Object.assign({ mode: "pump", programId: "", rpc: FG_API + "/api/rpc", tokenMint: "" }, window.FG_CONFIG || {});
 const PUMP = CONFIG.mode === "pump" && !!window.FG;
 const LIVE = !PUMP && !!(CONFIG.programId && window.FG);
 const PRELAUNCH = !LIVE && !PUMP;
@@ -1465,7 +1375,7 @@ const shortW = (w) => (w === YOU ? (ME ? shortW2(ME) : "you") : shortW2(w));
 const shortW2 = (w) => (w && w.length > 10 ? w.slice(0, 4) + "…" + w.slice(-4) : w || "");
 const empty = (msg, cta) => `<div class="empty"><p>${msg}</p>${cta || ""}</div>`;
 const emptyRow = (cols, msg) => `<tr><td colspan="${cols}" class="emptyCell">${msg}</td></tr>`;
-const COLORS = ["#0f1411", "#24302a", "#3a3324", "#1e2e33", "#33262a", "#2b3326", "#14261e", "#30302a"];
+const COLORS = ["#2a3470", "#24406b", "#3b2e6e", "#1f4f5c", "#33306a", "#2b3f63", "#40306a", "#25475e"];
 const colFor = (s) => COLORS[[...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
 const avatar = (name, cls = "", col) => `<div class="av ${cls}" style="--c:${col || colFor(name)}" aria-hidden="true">${esc(String(name || "?")[0].toUpperCase())}</div>`;
 const coinAv = (c, cls = "lg sq") => c.img
@@ -2893,11 +2803,9 @@ function pumpStart() {
   if (bar) bar.innerHTML = `<i></i><b>Live.</b> Coins launch on pump.fun from your own wallet. Fairgate adds a live bundle check to every coin.`;
   const hero = document.querySelector("#v-explore .heroCopy");
   if (hero) {
-    hero.querySelector("p").textContent = "Fairgate is built to stop bundles at launch. Today coins launch on pump.fun from your own wallet with a capped dev buy, and every coin gets a live bundle check: linked wallets, shared funders and what they still hold.";
-    const fc = document.querySelector(".gateLog figcaption span"); if (fc) fc.textContent = "Example launch on the Fairgate program";
-    const rs = document.querySelector(".rulesStrip .rsHead p"); if (rs) rs.innerHTML = "These rules go on-chain with the Fairgate program and are frozen into every coin. <b>Live now:</b> pump.fun launches with a capped dev buy and a bundle check on every coin.";
+    hero.querySelector("h1").innerHTML = "Launch it.<br><em>Catch</em> every bundle.";
+    hero.querySelector("p").textContent = "Launch on pump.fun from Fairgate and every coin gets a live bundle check: linked wallets, shared funders, launch-block buys and how much they still hold. Paste any pump.fun address to check it.";
   }
-  const cp = document.querySelector("#coinGrid")?.closest("div")?.querySelector(".sec-head p"); if (cp) cp.textContent = "Coins launched from Fairgate. Open one to see who bought early and what they still hold.";
   const lp = document.querySelector("#v-launch .sec-head p");
   if (lp) lp.textContent = "Your coin launches on pump.fun from your own wallet, and its Fairgate page shows a live bundle check. Dev buys are capped at 0.5 SOL.";
   const note = `<div class="card pumpNote"><b>Right now coins launch on pump.fun.</b> Fairgate checks every coin for bundles. The on-chain launch rules on this page (random open slot, sniper tax, wallet caps, early-sell tax) switch on when the Fairgate program goes live.</div>`;
@@ -2924,6 +2832,141 @@ function pumpStart() {
   setInterval(() => { if (curView === "coin" && coinKey) pumpDetail(coinKey); }, 20000);
   addEventListener("hashchange", () => { const k = location.hash.slice(1); if (k.startsWith("coin-")) { coinKey = decodeURIComponent(k.slice(5)); pumpCoinPage(); } });
 }
+
+</script>
+<script>
+// ===== Interactive background: a field of wallets =====
+// Dots drift in depth layers. Near the cursor they link up (like the bundle check linking wallets);
+// a few "bundled" dots light up rose. Scrolling moves the layers at different speeds and shifts the aurora.
+(function () {
+  const cv = document.createElement("canvas");
+  cv.id = "bg"; cv.setAttribute("aria-hidden", "true");
+  document.body.prepend(cv);
+  const g = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0, dpr = 1, pts = [], mx = -1e4, my = -1e4, tx = 0, ty = 0, ax = 0, ay = 0, sy = scrollY, vsy = 0, lastSy = scrollY, t0 = performance.now(), raf = 0;
+  const FIELD = 1.8; // field is taller than the screen so parallax has room
+
+  function resize() {
+    dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(Math.min(170, Math.max(50, (W * H) / 8500)));
+    pts = Array.from({ length: n }, () => ({
+      x: Math.random() * W, y: Math.random() * H * FIELD, z: Math.random(),
+      vx: (Math.random() - 0.5) * 0.12, vy: (Math.random() - 0.5) * 0.12,
+      ph: Math.random() * Math.PI * 2, bundled: Math.random() < 0.1,
+    }));
+    if (!ax) { ax = tx = W * 0.65; ay = ty = H * 0.3; }
+    draw(performance.now());
+  }
+
+  function aurora(scrollP, time) {
+    // three soft lights; one trails the cursor, the others drift with scroll
+    const hue = scrollP; // 0 at top → 1 at bottom
+    const lights = [
+      [ax, ay, Math.max(W, H) * 0.55, `rgba(${Math.round(110 - 30 * hue)},${Math.round(125 + 40 * hue)},255,.20)`],
+      [W * (0.15 + 0.1 * Math.sin(time / 9000)), H * (0.85 - 0.5 * hue), Math.max(W, H) * 0.5, `rgba(45,${Math.round(190 + 30 * hue)},180,.12)`],
+      [W * (0.9 - 0.2 * hue), H * (0.05 + 0.6 * hue), Math.max(W, H) * 0.4, `rgba(${Math.round(170 + 40 * hue)},110,255,.10)`],
+    ];
+    for (const [x, y, r, c] of lights) {
+      const gr = g.createRadialGradient(x, y, 0, x, y, r);
+      gr.addColorStop(0, c); gr.addColorStop(1, "rgba(7,10,22,0)");
+      g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    }
+  }
+
+  function draw(now) {
+    const time = now - t0;
+    const docH = Math.max(1, document.documentElement.scrollHeight - H);
+    const p = Math.min(1, Math.max(0, sy / docH));
+    g.clearRect(0, 0, W, H);
+    aurora(p, time);
+    const span = H * FIELD;
+    const screen = [];
+    for (const d of pts) {
+      if (!reduce) { d.x += d.vx; d.y += d.vy; if (d.x < -20) d.x = W + 20; if (d.x > W + 20) d.x = -20; }
+      // parallax: deeper dots move less with scroll
+      let y = (((d.y - sy * (0.12 + 0.55 * d.z)) % span) + span) % span - H * 0.4;
+      let x = d.x;
+      // cursor pull
+      const dx = mx - x, dy = my - y, dist = Math.hypot(dx, dy);
+      let near = 0;
+      if (dist < 260) { near = 1 - dist / 260; x += dx * near * 0.12 * (0.3 + d.z); y += dy * near * 0.12 * (0.3 + d.z); }
+      // scroll speed stretches dots a little
+      screen.push({ x, y, z: d.z, near, bundled: d.bundled, tw: 0.75 + 0.25 * Math.sin(time / 700 + d.ph) });
+    }
+    // links
+    g.lineWidth = 1;
+    for (let i = 0; i < screen.length; i++) {
+      const a = screen[i];
+      for (let j = i + 1; j < screen.length; j++) {
+        const b = screen[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        if (Math.abs(dx) > 130 || Math.abs(dy) > 130) continue;
+        const d = Math.hypot(dx, dy);
+        const lim = 70 + 60 * Math.max(a.near, b.near);
+        if (d > lim) continue;
+        const k = (1 - d / lim);
+        const hot = Math.min(a.near, b.near);
+        if (a.bundled && b.bundled && hot > 0) g.strokeStyle = `rgba(255,111,145,${(0.15 + 0.5 * hot) * k})`;
+        else if (hot > 0) g.strokeStyle = `rgba(${Math.round(163 - 70 * hot)},${Math.round(177 + 53 * hot)},${Math.round(255 - 59 * hot)},${(0.08 + 0.55 * hot) * k})`;
+        else g.strokeStyle = `rgba(163,177,255,${0.08 * k})`;
+        g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke();
+      }
+    }
+    // dots
+    const stretch = Math.min(18, Math.abs(vsy) * 0.6);
+    for (const s of screen) {
+      const r = (0.6 + 1.6 * s.z) * (1 + s.near * 0.8);
+      const alpha = (0.28 + 0.55 * s.z) * s.tw + s.near * 0.45;
+      g.fillStyle = s.bundled && s.near > 0.15 ? `rgba(255,111,145,${Math.min(1, alpha + 0.2)})` : s.near > 0.2 ? `rgba(150,240,220,${Math.min(1, alpha)})` : `rgba(190,200,255,${alpha})`;
+      if (stretch > 1.5 && !reduce) {
+        g.fillRect(s.x - r / 2, s.y - (stretch * s.z) / 2 * Math.sign(vsy || 1), r, Math.max(r, stretch * s.z));
+      } else {
+        g.beginPath(); g.arc(s.x, s.y, r, 0, Math.PI * 2); g.fill();
+      }
+      if (s.near > 0.55) { g.fillStyle = `rgba(163,177,255,${0.08 * s.near})`; g.beginPath(); g.arc(s.x, s.y, r * 6, 0, Math.PI * 2); g.fill(); }
+    }
+  }
+
+  function frame(now) {
+    raf = 0;
+    ax += (tx - ax) * 0.06; ay += (ty - ay) * 0.06;
+    vsy = scrollY - lastSy; lastSy = scrollY; sy += (scrollY - sy) * 0.18;
+    draw(now);
+    if (!reduce && !document.hidden) raf = requestAnimationFrame(frame);
+  }
+  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener("pointermove", (e) => { mx = e.clientX; my = e.clientY; tx = e.clientX; ty = e.clientY; kick(); }, { passive: true });
+  addEventListener("pointerleave", () => { mx = my = -1e4; });
+  document.addEventListener("pointerout", (e) => { if (!e.relatedTarget) { mx = my = -1e4; } });
+  addEventListener("scroll", () => { if (reduce) { sy = scrollY; draw(performance.now()); } else kick(); }, { passive: true });
+  addEventListener("resize", resize);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) kick(); });
+  resize(); kick();
+
+  // card spotlight follows the cursor
+  document.addEventListener("pointermove", (e) => {
+    const el = e.target.closest && e.target.closest(".card,.list,.tablewrap,.statbar,.gate");
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", e.clientX - r.left + "px");
+    el.style.setProperty("--my", e.clientY - r.top + "px");
+  }, { passive: true });
+
+  // sections slide up as they scroll in (they're visible from the start)
+  if (!reduce && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { rootMargin: "0px 0px -8% 0px" });
+    const arm = () => document.querySelectorAll(".view:not([hidden]) > *").forEach((el) => {
+      if (el.dataset.rv) return; el.dataset.rv = "1";
+      const r = el.getBoundingClientRect();
+      if (r.top > innerHeight * 0.92) { el.classList.add("rv"); io.observe(el); }
+    });
+    addEventListener("hashchange", () => setTimeout(arm, 50));
+    document.addEventListener("click", () => setTimeout(arm, 80));
+    setTimeout(arm, 100);
+  }
+})();
 
 </script>
 </body>

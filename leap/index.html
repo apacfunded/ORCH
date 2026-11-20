@@ -289,7 +289,7 @@ footer button{border:0;background:none;color:var(--muted);text-decoration:underl
 </head>
 <body>
 
-<div class="demo-bar">Leap is launching soon. Launches on this page are previews until the launchpad goes live.</div>
+<div class="demo-bar">$LEAP is live on pump.fun. Launches on this page are previews until the launchpad goes live.</div>
 
 <header>
   <div class="wrap">
@@ -521,7 +521,7 @@ pages.home = () => `
       <h1 style="margin-top:16px">Your coin can migrate <em>early.</em></h1>
       <p class="lead">On most launchpads a coin has to climb to about $69K before it migrates. On Leap, a coin that has real holders, real volume and fair distribution migrates sooner, at $25K or $40K.</p>
       <div class="ctas"><a class="btn primary" href="#launch">Launch a coin</a><a class="btn" href="#how">How it works</a></div>
-      <div class="ca" id="caBox"><span class="small muted">$LEAP CA</span><code id="caText">LEAP_CA_PLACEHOLDER</code><button class="btn sm" type="button" id="caCopy">Copy</button><a class="btn sm" id="caPump" target="_blank" rel="noopener" href="https://pump.fun/coin/LEAP_CA_PLACEHOLDER">pump.fun</a></div>
+      <div class="ca" id="caBox"><span class="small muted">$LEAP CA</span><code id="caText">2qD5sEY5bk9rWJRrXcG8vqBfp8M4PH3gcEVtrYRdpump</code><button class="btn sm" type="button" id="caCopy">Copy</button><a class="btn sm" id="caPump" target="_blank" rel="noopener" href="https://pump.fun/coin/2qD5sEY5bk9rWJRrXcG8vqBfp8M4PH3gcEVtrYRdpump">pump.fun</a></div>
     </div>
     <div class="pond" aria-label="Animation: a coin meets its goals and takes off at $25K instead of $69K">
       <div class="goals">
@@ -981,7 +981,7 @@ function render(){
   document.querySelectorAll('[data-r]').forEach(a=>a.classList.toggle('on', a.dataset.r===name || (name==='coin' && a.dataset.r==='explore')));
   document.title = name==='coin' && cur ? `$${coinById(cur).ticker} · Leap` : ({home:'Leap — migrate your coin early',explore:'Explore · Leap',launch:'Launch · Leap',how:'How it works · Leap',migrated:'Leaped coins · Leap'}[name]);
   window.scrollTo(0,0);
-  if (name==='home'){ startPond(); const ca='LEAP_CA_PLACEHOLDER', box=$('#caBox');
+  if (name==='home'){ startPond(); const ca='2qD5sEY5bk9rWJRrXcG8vqBfp8M4PH3gcEVtrYRdpump', box=$('#caBox');
     if (ca.startsWith('LEAP_CA')){ $('#caText').textContent='Dropping soon'; box.classList.add('pending'); $('#caPump').style.display='none'; $('#caCopy').style.display='none'; }
     else $('#caCopy').addEventListener('click',()=>{ try{ navigator.clipboard.writeText(ca).then(()=>toast('CA copied'),()=>toast(ca)); }catch(e){ toast(ca); } }); }
   if (name==='explore') bindExplore();

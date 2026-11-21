@@ -1,7 +1,8 @@
 // Blox AI game-idea writer. POST { idea, name, ticker, style, like } -> { text }
 // Runs on Vercel AI Gateway, authenticated with the deployment's own OIDC token
 // (or AI_GATEWAY_API_KEY if one is set). No key is ever sent to the browser.
-const MODEL = process.env.BLOX_AI_MODEL || 'anthropic/claude-haiku-5.5';
+// Tried in order; a model the account's plan can't use (403) is skipped.
+const MODELS = [process.env.BLOX_AI_MODEL, 'anthropic/claude-haiku-5.5', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b'].filter(Boolean);
 const ORIGINS = ['https://httpss.lol', 'https://blox-blond.vercel.app'];
 const hits = new Map(); // best-effort per-instance rate limit
 
@@ -51,22 +52,28 @@ module.exports = async (req, res) => {
   ].filter(Boolean).join('\n');
 
   try {
-    const r = await fetch('https://ai-gateway.vercel.sh/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: MODEL, max_tokens: 220, temperature: 0.9, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: user }] }),
-      signal: AbortSignal.timeout(20000),
-    });
-    if (!r.ok) {
-      const off = r.status === 401 || r.status === 402 || r.status === 403;
-      console.error('idea: gateway', r.status, (await r.text()).slice(0, 300));
-      res.status(off ? 503 : 502).json({ error: off ? 'off' : 'The AI writer did not answer. Try again.' });
+    let lastStatus = 0;
+    for (const model of MODELS) {
+      const r = await fetch('https://ai-gateway.vercel.sh/v1/chat/completions', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, max_tokens: 900, reasoning_effort: 'low', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: user }] }),
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) {
+        lastStatus = r.status;
+        console.error('idea: gateway', model, r.status, (await r.text()).slice(0, 200));
+        if (r.status === 403 || r.status === 404 || r.status === 400) continue;
+        break;
+      }
+      const j = await r.json();
+      const text = clean(j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content, 400).replace(/^["'\u201c]+|["'\u201d]+$/g, '');
+      if (!text) { lastStatus = 502; continue; }
+      res.status(200).json({ text });
       return;
     }
-    const j = await r.json();
-    const text = clean(j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content, 400).replace(/^["'“]+|["'”]+$/g, '');
-    if (!text) { res.status(502).json({ error: 'The AI writer did not answer. Try again.' }); return; }
-    res.status(200).json({ text });
+    const off = lastStatus === 401 || lastStatus === 402 || lastStatus === 403;
+    res.status(off ? 503 : 502).json({ error: off ? 'off' : 'The AI writer did not answer. Try again.' });
   } catch (e) {
     console.error('idea: error', e && e.message);
     res.status(502).json({ error: 'The AI writer did not answer. Try again.' });

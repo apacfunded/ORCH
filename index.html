@@ -7,8 +7,13 @@
 <meta name="description" content="Launch a coin on Blox and it gets its own Roblox game. Money the game makes buys back the coin and burns it.">
 <meta property="og:title" content="Blox">
 <meta property="og:description" content="Every coin gets its own Roblox game. Game revenue buys back the coin and burns it.">
-<meta property="og:image" content="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/abe4431e-5523-48c5-b81a-22ead8e6c096.jpg">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://blox-blond.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://httpss.lol/blox">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blox-blond.vercel.app/og.png">
 <meta name="theme-color" content="#e9eef5">
 <link rel="icon" href="https://d2ol7oe51mr4n9.cloudfront.net/user_3K5xdyyILiZysqAFASaQNChCHCw/8647b512-f675-4869-9b6e-f550d191ddc7.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -119,6 +124,9 @@ nav .wrap{display:flex;align-items:center;gap:18px;min-height:68px}
 
 /* chart */
 .feed{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--ink2);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+.search{display:grid;gap:7px;margin-bottom:16px;font-weight:500;font-size:15px;max-width:600px}
+.srow{display:flex;gap:8px;flex-wrap:wrap}
+.srow input{flex:1;min-width:170px;background:var(--paper)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .fchip{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font-weight:500;font-size:15px;cursor:pointer;color:var(--ink2)}
 .fchip:hover{color:var(--ink)}
@@ -283,6 +291,11 @@ footer .small{width:100%;color:#9fb0cf;font-size:14px;max-width:80ch}
       <div><h2>Top on Roblox right now</h2><p>The most played games on Roblox. Pick one and we'll use its style for your coin's game.</p></div>
       <span class="feed" id="feed"><span class="dot wait"></span><span id="feedText">Loading the chart</span></span>
     </div>
+    <form class="search" id="gsearch" role="search">
+      <label for="gq">Search any Roblox game</label>
+      <div class="srow"><input type="text" id="gq" maxlength="50" autocomplete="off" enterkeyhint="search"><button class="btn sm" type="submit" id="gbtn">Search</button><button class="btn sm ghost" type="button" id="gclear" hidden>Show top chart</button></div>
+      <span class="hint" id="gmsg" role="status" hidden></span>
+    </form>
     <div class="filters" id="filters" role="group" aria-label="Filter by game style"></div>
     <div class="panel chart" id="chart"></div>
     <p class="note">These are real Roblox games, listed for inspiration. They were not made on Blox and their creators are not connected to Blox.</p>
@@ -462,7 +475,7 @@ function drawPlate(games){
 }
 
 /* ---- chart ---- */
-let GAMES=SNAP.slice(),filter="All",plateDrawn=false;
+let GAMES=SNAP.slice(),FOUND=null,filter="All",plateDrawn=false;
 const chart=document.getElementById("chart"),filters=document.getElementById("filters");
 function drawFilters(){
   const have=["All",...STYLES.filter(s=>GAMES.some(g=>styleOf(g)===s))];
@@ -471,7 +484,8 @@ function drawFilters(){
 }
 filters.addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;filter=b.dataset.s;drawFilters();drawChart()});
 function drawChart(){
-  const rows=GAMES.map((g,i)=>({g,rank:i+1})).filter(x=>filter==="All"||styleOf(x.g)===filter);
+  const rows=FOUND?FOUND.map(g=>({g,rank:""})):GAMES.map((g,i)=>({g,rank:i+1})).filter(x=>filter==="All"||styleOf(x.g)===filter);
+  filters.hidden=!!FOUND;
   let h=`<div class="row head"><span></span><span></span><span>Game</span><span>Style</span><span>Playing now</span><span>Visits</span><span></span></div>`;
   h+=rows.map(({g,rank})=>{
     const nm=esc(clean(g.name)),st=styleOf(g);
@@ -486,7 +500,7 @@ function drawChart(){
     </div>`}).join("");
   chart.innerHTML=h;
 }
-chart.addEventListener("click",e=>{const b=e.target.closest("[data-use]");if(!b)return;const g=GAMES.find(x=>String(x.id)===b.dataset.use);if(g)useStyle(g)});
+chart.addEventListener("click",e=>{const b=e.target.closest("[data-use]");if(!b)return;const g=[...(FOUND||[]),...GAMES].find(x=>String(x.id)===b.dataset.use);if(g)useStyle(g)});
 
 /* ---- live feed from Roblox (through the public RoProxy mirror) ---- */
 async function j(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
@@ -494,7 +508,18 @@ function setFeed(live){
   document.querySelector("#feed .dot").className="dot"+(live?"":" wait");
   document.getElementById("feedText").textContent=live?"Live from Roblox":"Chart from "+SNAP_DATE;
 }
+const FEED="https://blox-blond.vercel.app/api/roblox";
+function showTop(list){
+  GAMES=list;setFeed(true);drawFilters();if(!FOUND)drawChart();
+  if(!plateDrawn||!plate.querySelector("img")){drawPlate(GAMES);plateDrawn=true}
+}
 async function loadLive(){
+  try{
+    const d=await j(FEED);if(!d.games||d.games.length<6)throw new Error("short");
+    const known=new Map(SNAP.map(g=>[String(g.id),g]));
+    showTop(d.games.map(g=>{const o=known.get(String(g.id))||{};return {...g,by:g.by||o.by||"",visits:g.visits||o.visits||0,g1:g.g1||o.g1||"",g2:g.g2||o.g2||"",icon:g.icon||o.icon||""}}));
+    return;
+  }catch(e){}
   try{
     const sid=(crypto.randomUUID?crypto.randomUUID():"b10c0000-0000-4000-8000-"+Date.now().toString(16).padStart(12,"0"));
     const top=await j("https://apis.roproxy.com/explore-api/v1/get-sort-content?sessionId="+sid+"&sortId=top-playing-now");
@@ -513,13 +538,27 @@ async function loadLive(){
         by:d&&d.creator?d.creator.name:(o.by||""),visits:d?d.visits:(o.visits||0),
         g1:d?d.genre_l1:(o.g1||""),g2:d?d.genre_l2:(o.g2||""),icon:im.get(k)||o.icon||""};
     });
-    setFeed(true);drawFilters();drawChart();
-    if(!plateDrawn||!plate.querySelector("img")){drawPlate(GAMES);plateDrawn=true}
+    showTop(GAMES);
   }catch(e){setFeed(false)}
 }
 drawPlate(GAMES);drawFilters();drawChart();
 loadLive();
 setInterval(()=>{if(!document.hidden)loadLive()},120000);
+
+/* ---- game search ---- */
+const gq=document.getElementById("gq"),gmsg=document.getElementById("gmsg"),gclear=document.getElementById("gclear"),gbtn=document.getElementById("gbtn");
+function note(t){gmsg.textContent=t||"";gmsg.hidden=!t}
+document.getElementById("gsearch").addEventListener("submit",async e=>{
+  e.preventDefault();const q=gq.value.trim();if(!q){gq.focus();return}
+  gbtn.textContent="Searching";gbtn.setAttribute("aria-disabled","true");note("");
+  try{
+    const d=await j(FEED+"?q="+encodeURIComponent(q));
+    if(!d.games||!d.games.length){note("No games matched that search. Try a different name.")}
+    else{FOUND=d.games;gclear.hidden=false;drawChart();note(d.games.length+(d.games.length===1?" game found":" games found"))}
+  }catch(err){note("Search couldn't reach Roblox. Try again in a minute.")}
+  gbtn.textContent="Search";gbtn.removeAttribute("aria-disabled");
+});
+gclear.onclick=()=>{FOUND=null;gclear.hidden=true;gq.value="";note("");drawChart()};
 
 /* ---- launch form ---- */
 const fName=document.getElementById("fName"),fTicker=document.getElementById("fTicker"),stylesBox=document.getElementById("styles");

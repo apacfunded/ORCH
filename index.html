@@ -188,6 +188,12 @@ legend{font-weight:500;font-size:15px;margin-bottom:9px;padding:0}
 .inspo div{min-width:0;flex:1}
 .inspo b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .inspo button{min-height:44px;padding:0 12px;border:0;background:none;color:var(--blue-d);font-weight:500;cursor:pointer;border-radius:10px}
+.ideabox{display:grid;gap:10px}
+.airow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.airow #aiCount{margin-left:auto}
+.btn.ai{background:var(--ink);box-shadow:0 4px 0 #000}
+.btn.ai:hover{background:#16264a}
+.btn.ai:active{box-shadow:0 1px 0 #000}
 .err{color:#b3261e;font-size:14px;font-weight:500}
 .preview{position:sticky;top:92px;display:grid;gap:12px}
 .preview>p{font-weight:500;font-size:15px;color:var(--ink2)}
@@ -333,9 +339,17 @@ footer .small{width:100%;color:#9fb0cf;font-size:14px;max-width:80ch}
           <div><span class="hint">Styled like</span><b id="inspoName"></b></div>
           <button type="button" id="inspoClear">Remove</button>
         </div>
-        <label class="f" for="fDesc">What should the game be about? <span class="hint">Optional. It helps us build it.</span>
-          <textarea id="fDesc" maxlength="400"></textarea>
-        </label>
+        <div class="ideabox">
+          <label class="f" for="fDesc">What should the game be about? <span class="hint">Type a few words, then let AI write the full idea. You can edit it after.</span>
+            <textarea id="fDesc" maxlength="400" aria-describedby="aiMsg"></textarea>
+          </label>
+          <div class="airow">
+            <button class="btn sm ai" type="button" id="aiBtn"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 1.500l1.900 4.900 4.900 1.900-4.900 1.900L10 15.100 8.100 10.200 3.200 8.300l4.900-1.900z" fill="currentColor"/><path d="M16 13l.800 2.200L19 16l-2.200.800L16 19l-.800-2.200L13 16l2.200-.800z" fill="currentColor"/></svg><span id="aiLabel">Write with AI</span></button>
+            <button class="btn sm ghost" type="button" id="aiUndo" hidden>Undo</button>
+            <span class="hint num" id="aiCount">0 / 400</span>
+          </div>
+          <span class="hint" id="aiMsg" role="status" hidden></span>
+        </div>
         <button class="btn" type="submit">Launch coin</button>
       </form>
       <div class="preview">
@@ -593,6 +607,28 @@ document.getElementById("fImg").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();r.onload=()=>{imgURL=r.result;document.getElementById("picBox").innerHTML=`<img src="${imgURL}" alt="">`;render()};r.readAsDataURL(f);
 });
+/* ---- AI idea writer ---- */
+const IDEA_API="https://blox-blond.vercel.app/api/idea";
+const fDesc=document.getElementById("fDesc"),aiBtn=document.getElementById("aiBtn"),aiLabel=document.getElementById("aiLabel"),aiUndo=document.getElementById("aiUndo"),aiMsg=document.getElementById("aiMsg"),aiCount=document.getElementById("aiCount");
+let aiPrev=null,aiBusy=false;
+function aiNote(t){aiMsg.textContent=t||"";aiMsg.hidden=!t}
+function countIdea(){aiCount.textContent=fDesc.value.length+" / 400"}
+fDesc.addEventListener("input",countIdea);
+aiBtn.addEventListener("click",async()=>{
+  if(aiBusy)return;
+  const idea=fDesc.value.trim(),name=fName.value.trim();
+  if(!idea&&!name){aiNote("Type a few words about the game, or add a coin name, and AI will write the rest.");fDesc.focus();return}
+  aiBusy=true;aiLabel.textContent="Writing";aiBtn.setAttribute("aria-disabled","true");aiNote("");
+  try{
+    const r=await fetch(IDEA_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idea,name,ticker:fTicker.value.trim(),style:document.querySelector("input[name=style]:checked").value,like:inspo?clean(inspo.name):""})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok&&d.text){aiPrev=fDesc.value;fDesc.value=d.text.slice(0,400);countIdea();aiUndo.hidden=false;aiLabel.textContent="Write another";aiNote("Written by AI. Edit anything you want to change.")}
+    else{aiLabel.textContent=aiPrev===null?"Write with AI":"Write another";aiNote(d.error==="off"?"The AI writer isn't switched on yet. You can still type your idea.":(d.error||"The AI writer did not answer. Try again."))}
+  }catch(e){aiLabel.textContent=aiPrev===null?"Write with AI":"Write another";aiNote("The AI writer couldn't be reached. Check your connection and try again.")}
+  aiBusy=false;aiBtn.removeAttribute("aria-disabled");
+});
+aiUndo.onclick=()=>{if(aiPrev===null)return;fDesc.value=aiPrev;aiPrev=null;aiUndo.hidden=true;aiLabel.textContent="Write with AI";countIdea();aiNote("")};
+
 document.getElementById("launchForm").addEventListener("submit",e=>{
   e.preventDefault();fName.dataset.t=1;
   const n=!fName.value.trim(),t=!fTicker.value.trim();

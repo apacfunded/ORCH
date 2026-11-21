@@ -69,6 +69,8 @@ nav .wrap{display:flex;align-items:center;gap:18px;min-height:68px}
 /* hero */
 .hero{padding:56px 0 30px;position:relative}
 .hero .top{display:grid;grid-template-columns:1.02fr .98fr;gap:28px;align-items:center}
+.hero .top>*{min-width:0}
+.ca{display:flex!important;width:fit-content}
 .status{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 12px;font-weight:500;font-size:14px;color:var(--ink2)}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--live);flex:none}
 .dot.wait{background:#e0a100}
@@ -417,7 +419,7 @@ footer .small{width:100%;color:#9fb0cf;font-size:14px;max-width:80ch}
 
 <script>
 /* ---- coin settings: paste the CA here when $BLOX is live ---- */
-const CA="";
+const CA="GtAgcqjAEwir2sjMdTkMABU8F3SFkMuMnKQ1CxANpump";
 const TICKER="BLOX";
 
 /* ---- snapshot of Roblox's Top Playing Now chart, used if the live feed can't be reached ---- */
